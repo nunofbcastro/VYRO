@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'app_services.dart';
 import 'l10n/strings.dart';
 import 'router/app_router.dart';
 import 'theme/vyro_theme.dart';
@@ -31,7 +32,8 @@ class SettingsScope extends InheritedNotifier<AppSettings> {
 }
 
 class VyroApp extends StatefulWidget {
-  const VyroApp({super.key});
+  const VyroApp({super.key, required this.services});
+  final AppServices services;
 
   @override
   State<VyroApp> createState() => _VyroAppState();
@@ -43,18 +45,21 @@ class _VyroAppState extends State<VyroApp> {
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: settings,
-    builder: (context, _) => SettingsScope(
-      settings: settings,
-      child: MaterialApp(
-        title: 'VYRO',
-        debugShowCheckedModeBanner: false,
-        theme: VyroTheme.light,
-        darkTheme: VyroTheme.dark,
-        themeMode: settings.themeMode,
-        locale: settings.locale,
-        supportedLocales: VyroStrings.supportedLocales,
-        onGenerateRoute: VyroRouter.onGenerateRoute,
-        initialRoute: '/',
+    builder: (context, _) => AppServicesScope(
+      services: widget.services,
+      child: SettingsScope(
+        settings: settings,
+        child: MaterialApp(
+          title: 'VYRO',
+          debugShowCheckedModeBanner: false,
+          theme: VyroTheme.light,
+          darkTheme: VyroTheme.dark,
+          themeMode: settings.themeMode,
+          locale: settings.locale,
+          supportedLocales: VyroStrings.supportedLocales,
+          onGenerateRoute: VyroRouter.onGenerateRoute,
+          initialRoute: '/',
+        ),
       ),
     ),
   );

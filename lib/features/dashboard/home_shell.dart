@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/l10n/strings.dart';
-import '../nutrition/nutrition_page.dart';
+import '../nutrition/nutrition_diary_page.dart';
 import '../profile/profile_page.dart';
 import '../progress/progress_page.dart';
 import '../workouts/training_page.dart';
@@ -22,7 +22,7 @@ class _HomeShellState extends State<HomeShell> {
     final t = stringsOf(context);
     final pages = [
       const HomePage(),
-      const NutritionPage(),
+      const NutritionDiaryPage(),
       const TrainingPage(),
       const ProgressPage(),
       const ProfilePage(),

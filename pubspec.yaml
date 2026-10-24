@@ -7,8 +7,12 @@ environment:
   sdk: '>=3.11.0 <4.0.0'
 
 dependencies:
+  dio: 5.11.1
+  drift: 2.35.2
+  drift_flutter: 0.3.1
   flutter:
     sdk: flutter
+  mobile_scanner: 7.4.2
 
 flutter:
   uses-material-design: true
@@ -16,3 +20,6 @@ flutter:
     - brand/logos/vyro-mark-dark.svg
     - brand/logos/vyro-mark-lime.svg
     - brand/logos/vyro-wordmark.svg
+dev_dependencies:
+  build_runner: 2.17.1
+  drift_dev: 2.35.2

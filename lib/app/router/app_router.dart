@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../features/dashboard/home_shell.dart';
+import '../../features/barcode/barcode_scanner_page.dart';
 import '../../features/design_showcase/design_system_page.dart';
 import '../../features/demo/demo_page.dart';
-import '../../features/nutrition/nutrition_page.dart';
+import '../../features/nutrition/nutrition_diary_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/progress/progress_page.dart';
 import '../../features/workouts/training_page.dart';
@@ -20,7 +21,17 @@ class VyroRouter {
       case '/home':
         return MaterialPageRoute<void>(builder: (_) => const HomeShell());
       case '/nutrition':
-        return MaterialPageRoute<void>(builder: (_) => const NutritionPage());
+        return MaterialPageRoute<void>(
+          builder: (_) => const NutritionDiaryPage(),
+        );
+      case '/barcode':
+        return MaterialPageRoute<void>(
+          builder: (_) => BarcodeScannerPage(
+            day: settings.arguments is DateTime
+                ? settings.arguments! as DateTime
+                : DateTime.now(),
+          ),
+        );
       case '/training':
         return MaterialPageRoute<void>(builder: (_) => const TrainingPage());
       case '/progress':

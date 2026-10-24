@@ -149,6 +149,45 @@ class VyroStrings {
     'goalNutrition': 'Melhorar a alimentação',
     'goalRoutine': 'Criar uma rotina',
     'splashLine': 'Nutrição e treino, ao teu ritmo.',
+    'daySummary': 'Resumo do dia',
+    'foodName': 'Alimento',
+    'quantity': 'Quantidade',
+    'grams': 'g',
+    'kcalPer100': 'kcal por 100 g',
+    'proteinPer100': 'Proteína por 100 g',
+    'carbsPer100': 'Hidratos por 100 g',
+    'fatPer100': 'Gordura por 100 g',
+    'selectMeal': 'Refeição',
+    'scannerIntro':
+        'Usa a câmara para identificar um produto. A imagem é processada no dispositivo.',
+    'startScanner': 'Ativar câmara',
+    'manualBarcode': 'Introduzir código manualmente',
+    'barcodeHint': 'EAN-13, EAN-8 ou UPC',
+    'lookup': 'Procurar produto',
+    'productNotFound':
+        'Produto não encontrado. Podes adicionar os dados manualmente.',
+    'lookupOffline':
+        'Sem ligação. Tenta um produto guardado ou introduz os dados manualmente.',
+    'invalidBarcode': 'Código inválido. Usa um EAN-8, EAN-13 ou UPC-A válido.',
+    'cameraError':
+        'Não foi possível ativar a câmara. Podes introduzir o código manualmente.',
+    'rateLimit': 'O serviço está ocupado. Aguarda um pouco e tenta novamente.',
+    'lookupError': 'Não foi possível consultar o produto.',
+    'offAttribution':
+        'Dados do produto: Open Food Facts (ODbL). Valores em falta não equivalem a zero.',
+    'entryAdded': 'Refeição guardada neste dispositivo.',
+    'editEntry': 'Editar alimento',
+    'deleteEntry': 'Eliminar alimento',
+    'deleteConfirm': 'Queres eliminar este registo?',
+    'cancel': 'Cancelar',
+    'delete': 'Eliminar',
+    'mealSourceManual': 'Introdução manual',
+    'mealSourceOff': 'Open Food Facts',
+    'noMeals': 'Ainda não adicionaste alimentos a este dia.',
+    'totalsPartial':
+        'Total incompleto: faltam dados nutricionais em alguns alimentos.',
+    'manualOnlyWeb':
+        'No navegador, introduz o código manualmente para evitar carregar motores de leitura externos.',
   };
 
   static const _en = <String, String>{
@@ -286,6 +325,45 @@ class VyroStrings {
     'goalNutrition': 'Improve nutrition',
     'goalRoutine': 'Build a routine',
     'splashLine': 'Nutrition and training, at your pace.',
+    'daySummary': 'Daily summary',
+    'foodName': 'Food',
+    'quantity': 'Quantity',
+    'grams': 'g',
+    'kcalPer100': 'kcal per 100 g',
+    'proteinPer100': 'Protein per 100 g',
+    'carbsPer100': 'Carbs per 100 g',
+    'fatPer100': 'Fat per 100 g',
+    'selectMeal': 'Meal',
+    'scannerIntro':
+        'Use the camera to identify a product. Images are processed on this device.',
+    'startScanner': 'Enable camera',
+    'manualBarcode': 'Enter a barcode manually',
+    'barcodeHint': 'EAN-13, EAN-8 or UPC',
+    'lookup': 'Look up product',
+    'productNotFound': 'Product not found. You can enter the details manually.',
+    'lookupOffline':
+        'No connection. Try a saved product or enter the details manually.',
+    'invalidBarcode':
+        'Invalid code. Use a valid EAN-8, EAN-13 or UPC-A barcode.',
+    'cameraError':
+        'Could not start the camera. You can enter the barcode manually.',
+    'rateLimit': 'The service is busy. Wait a moment and try again.',
+    'lookupError': 'Could not look up this product.',
+    'offAttribution':
+        'Product data: Open Food Facts (ODbL). Missing values are not zero.',
+    'entryAdded': 'Meal saved on this device.',
+    'editEntry': 'Edit food',
+    'deleteEntry': 'Delete food',
+    'deleteConfirm': 'Delete this entry?',
+    'cancel': 'Cancel',
+    'delete': 'Delete',
+    'mealSourceManual': 'Manual entry',
+    'mealSourceOff': 'Open Food Facts',
+    'noMeals': 'You have not added any foods to this day yet.',
+    'totalsPartial':
+        'Incomplete total: nutrition values are missing for some foods.',
+    'manualOnlyWeb':
+        'In a browser, enter the barcode manually so no external scanning engine is loaded.',
   };
 }
 
