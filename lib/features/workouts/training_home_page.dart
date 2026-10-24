@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
+import '../../app/theme/vyro_shell.dart';
 import '../../core/widgets/vyro_widgets.dart';
 import '../../core/database/app_database.dart';
 import 'data/workout_repository.dart';
@@ -23,8 +24,9 @@ class _TrainingPageState extends State<TrainingPage> {
     final t = stringsOf(context);
     final repository = AppServicesScope.of(context).workoutRepository;
     _planFuture ??= repository.loadOrCreatePlan();
-    return Scaffold(
-      appBar: AppBar(title: Text(t.get('training'))),
+    return VyroPageScaffold(
+      title: t.get('training'),
+      eyebrow: t.get('plans'),
       body: FutureBuilder<WorkoutPlanData>(
         future: _planFuture,
         builder: (context, snapshot) {
@@ -53,8 +55,7 @@ class _TrainingPageState extends State<TrainingPage> {
               setState(() => _planFuture = repository.reloadPlan());
               await _planFuture;
             },
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+            child: VyroPageBody(
               children: [
                 SectionTitle(
                   t.get('plans'),

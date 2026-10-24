@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../core/ui/vyro_ui.dart';
+
 import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
 import '../../core/database/app_database.dart';
-import '../../core/widgets/vyro_widgets.dart';
 import '../nutrition/domain/food_product.dart';
 import '../workouts/data/workout_repository.dart';
 
@@ -27,16 +28,15 @@ class _ProgressPageState extends State<ProgressPage> {
     return ContentPage(
       title: t.get('progress'),
       children: [
-        SegmentedButton<int>(
-          segments: [
-            const ButtonSegment(value: 7, label: Text('7D')),
-            const ButtonSegment(value: 30, label: Text('30D')),
-            const ButtonSegment(value: 90, label: Text('90D')),
-            ButtonSegment(value: 365, label: Text(t.isEnglish ? '1Y' : '1A')),
-          ],
-          selected: {_rangeDays},
-          onSelectionChanged: (value) =>
-              setState(() => _rangeDays = value.first),
+        VyroSegmentedControl<int>(
+          value: _rangeDays,
+          segments: {
+            7: '7D',
+            30: '30D',
+            90: '90D',
+            365: t.isEnglish ? '1Y' : '1A',
+          },
+          onChanged: (value) => setState(() => _rangeDays = value),
         ),
         const SizedBox(height: 20),
         StreamBuilder<List<WorkoutSession>>(

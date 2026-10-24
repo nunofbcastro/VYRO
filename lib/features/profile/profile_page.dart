@@ -12,6 +12,7 @@ class ProfilePage extends StatelessWidget {
     final t = stringsOf(context);
     final settings = SettingsScope.of(context);
     return ContentPage(
+      showDemo: true,
       title: t.get('profile'),
       children: [
         Card(

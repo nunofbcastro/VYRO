@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/l10n/strings.dart';
+import '../../app/theme/vyro_shell.dart';
 import 'data/workout_repository.dart';
 
 class WorkoutDayPage extends StatefulWidget {
@@ -23,8 +24,8 @@ class _WorkoutDayPageState extends State<WorkoutDayPage> {
   Widget build(BuildContext context) {
     final t = stringsOf(context);
     _dayFuture ??= widget.repository.loadDay(widget.dayId);
-    return Scaffold(
-      appBar: AppBar(title: Text(t.get('workoutDay'))),
+    return VyroSubpageScaffold(
+      title: t.get('workoutDay'),
       body: FutureBuilder<WorkoutDayData?>(
         future: _dayFuture,
         builder: (context, snapshot) {

@@ -125,6 +125,7 @@ class _ProfileSetupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ContentPage(
+    showDemo: true,
     title: t.get('profileSetup'),
     children: [
       const DemoBadge(),
@@ -328,6 +329,7 @@ class _FoodReviewPage extends StatelessWidget {
   final VyroStrings t;
   @override
   Widget build(BuildContext context) => ContentPage(
+    showDemo: true,
     title: t.get('foodReview'),
     children: [
       const DemoBadge(),
@@ -369,6 +371,7 @@ class _ProductPage extends StatelessWidget {
   final VyroStrings t;
   @override
   Widget build(BuildContext context) => ContentPage(
+    showDemo: true,
     title: t.get('product'),
     children: [
       const DemoBadge(),
@@ -417,6 +420,7 @@ class _WorkoutDayPage extends StatelessWidget {
   final VyroStrings t;
   @override
   Widget build(BuildContext context) => ContentPage(
+    showDemo: true,
     title: t.get('workoutDay'),
     children: [
       const DemoBadge(),
@@ -454,6 +458,7 @@ class _SessionPage extends StatelessWidget {
   final VyroStrings t;
   @override
   Widget build(BuildContext context) => ContentPage(
+    showDemo: true,
     title: t.get('session'),
     children: [
       const DemoBadge(),
@@ -500,6 +505,7 @@ class _CoachPage extends StatelessWidget {
   final VyroStrings t;
   @override
   Widget build(BuildContext context) => ContentPage(
+    showDemo: true,
     title: t.get('coach'),
     children: [
       const DemoBadge(),

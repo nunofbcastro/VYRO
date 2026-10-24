@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 240" role="img" aria-label="VYRO">
+  <rect width="900" height="240" rx="32" fill="#F8FAF7"/>
+  <polygon points="54.4,66.4 100.8,66.4 128.0,140.0 155.2,66.4 201.6,66.4 148.8,184.8 107.2,184.8" fill="#171A20"/><polygon points="155.2,66.4 201.6,66.4 190.5,91.4 146.0,91.4" fill="#F8FAF7"/><polygon points="155.2,66.4 201.6,66.4 192.3,87.2 147.5,87.2" fill="#4A741A"/>
+  <text x="236" y="166" fill="#171A20" font-family="Inter,'SF Pro Display',Arial,sans-serif" font-size="118" font-weight="800" letter-spacing="26">VYRO</text>
+</svg>

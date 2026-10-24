@@ -6,149 +6,142 @@ import 'package:flutter/services.dart';
 import '../../app/app.dart';
 import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
+import '../../app/theme/appearance_sheet.dart';
 import '../../core/database/app_database.dart';
-import '../../core/widgets/vyro_widgets.dart';
+import '../../core/ui/vyro_ui.dart';
 
-class ProfileSettingsPage extends StatelessWidget {
+class ProfileSettingsPage extends StatefulWidget {
   const ProfileSettingsPage({super.key});
+
+  @override
+  State<ProfileSettingsPage> createState() => _ProfileSettingsPageState();
+}
+
+class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
+  AppServices? _services;
+  Future<VyroProfile?>? _profileFuture;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final services = AppServicesScope.of(context);
+    if (!identical(services, _services)) {
+      _services = services;
+      _profileFuture = services.database.getUserProfile();
+    }
+  }
+
+  void _reload() {
+    final services = _services;
+    if (services == null) return;
+    setState(() => _profileFuture = services.database.getUserProfile());
+  }
 
   @override
   Widget build(BuildContext context) {
     final t = stringsOf(context);
-    final services = AppServicesScope.of(context);
+    final services = _services!;
     final settings = SettingsScope.of(context);
     return FutureBuilder<VyroProfile?>(
-      future: services.database.getUserProfile(),
+      future: _profileFuture,
       builder: (context, snapshot) {
         final profile = snapshot.data;
         return ContentPage(
           title: t.get('profile'),
           children: [
-            Card(
-              child: ListTile(
-                leading: const CircleAvatar(child: Icon(Icons.person_outline)),
-                title: Text(
-                  (profile?.name.trim().isNotEmpty ?? false)
+            VyroGroupedSection(
+              children: [
+                VyroListRow(
+                  icon: Icons.person_rounded,
+                  title: (profile?.name.trim().isNotEmpty ?? false)
                       ? profile!.name
                       : t.get('profileNotSet'),
+                  subtitle:
+                      '${t.get('goal')}: ${_goalName(t, profile?.goal ?? 'routine')}'
+                      ' · ${(profile?.calorieGoal ?? 2200).round()} kcal',
+                  onTap: () => _editProfile(context, services, profile),
                 ),
-                subtitle: Text(
-                  '${t.get('goal')}: ${_goalName(t, profile?.goal ?? 'routine')}',
+                VyroListRow(
+                  icon: Icons.auto_awesome_outlined,
+                  title: t.get('generatePlan'),
+                  subtitle: t.get('generatePlanSubtitle'),
+                  onTap: () => _generatePlan(context, services),
                 ),
-                trailing: const Icon(Icons.edit_outlined),
-                onTap: () => _editProfile(context, services, profile),
-              ),
+              ],
             ),
-            const SizedBox(height: 22),
-            ActionCard(
-              icon: Icons.auto_awesome_outlined,
-              title: t.get('generatePlan'),
-              subtitle: t.get('generatePlanSubtitle'),
-              onTap: () => _generatePlan(context, services),
+            const SizedBox(height: 24),
+            VyroGroupedSection(
+              header: t.get('settings'),
+              children: [
+                VyroListRow(
+                  icon: Icons.palette_outlined,
+                  iconColor: Theme.of(context).colorScheme.secondary,
+                  title: t.get('appearance'),
+                  value: t.get(switch (settings.themeMode) {
+                    ThemeMode.dark => 'dark',
+                    ThemeMode.light => 'light',
+                    ThemeMode.system => 'system',
+                  }),
+                  onTap: () => showAppearanceSheet(context),
+                ),
+                VyroListRow(
+                  icon: Icons.language_rounded,
+                  iconColor: Theme.of(context).colorScheme.secondary,
+                  title: t.get('language'),
+                  value: settings.locale.languageCode == 'en' ? 'EN' : 'PT',
+                  onTap: () => showAppearanceSheet(context),
+                ),
+              ],
             ),
-            const SizedBox(height: 18),
-            SectionTitle(t.get('settings')),
-            Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.palette_outlined),
-                    title: Text(t.get('appearance')),
-                    trailing: DropdownButton<ThemeMode>(
-                      value: settings.themeMode,
-                      underline: const SizedBox(),
-                      items: [ThemeMode.dark, ThemeMode.light, ThemeMode.system]
-                          .map(
-                            (mode) => DropdownMenuItem(
-                              value: mode,
-                              child: Text(
-                                t.get(switch (mode) {
-                                  ThemeMode.dark => 'dark',
-                                  ThemeMode.light => 'light',
-                                  ThemeMode.system => 'system',
-                                }),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (value) {
-                        if (value != null) settings.setTheme(value);
-                      },
-                    ),
-                  ),
-                  const Divider(height: 1, indent: 56),
-                  ListTile(
-                    leading: const Icon(Icons.language),
-                    title: Text(t.get('language')),
-                    trailing: DropdownButton<String>(
-                      value: settings.locale.languageCode,
-                      underline: const SizedBox(),
-                      items: const [
-                        DropdownMenuItem(value: 'pt', child: Text('Português')),
-                        DropdownMenuItem(value: 'en', child: Text('English')),
-                      ],
-                      onChanged: (value) {
-                        if (value != null)
-                          settings.setLocale(
-                            value == 'pt'
-                                ? const Locale('pt', 'PT')
-                                : const Locale('en'),
-                          );
-                      },
-                    ),
-                  ),
-                ],
-              ),
+            const SizedBox(height: 24),
+            VyroGroupedSection(
+              header: t.get('privacy'),
+              footer: t.get('privacyLocalExplanation'),
+              children: [
+                VyroListRow(
+                  icon: Icons.policy_outlined,
+                  title: t.get('privacyPolicy'),
+                  onTap: () => Navigator.pushNamed(context, '/privacy'),
+                ),
+                VyroListRow(
+                  icon: Icons.ios_share_outlined,
+                  title: t.get('exportData'),
+                  subtitle: t.get('exportDataSubtitle'),
+                  onTap: () => _export(context, services),
+                ),
+                VyroListRow(
+                  icon: Icons.file_open_outlined,
+                  title: t.get('importData'),
+                  subtitle: t.get('importDataSubtitle'),
+                  onTap: () => _import(context, services, settings),
+                ),
+                VyroListRow(
+                  icon: Icons.delete_outline_rounded,
+                  title: t.get('deleteAllData'),
+                  subtitle: t.get('deleteAllSubtitle'),
+                  destructive: true,
+                  onTap: () => _deleteAll(context, services),
+                ),
+              ],
             ),
-            const SizedBox(height: 22),
-            SectionTitle(t.get('privacy')),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.lock_outline),
-                title: Text(t.get('localOnly')),
-                subtitle: Text(t.get('privacyLocalExplanation')),
-              ),
-            ),
-            const SizedBox(height: 8),
-            ActionCard(
-              icon: Icons.policy_outlined,
-              title: t.get('privacyPolicy'),
-              subtitle: t.get('privacyPolicySubtitle'),
-              onTap: () => Navigator.pushNamed(context, '/privacy'),
-            ),
-            const SizedBox(height: 8),
-            ActionCard(
-              icon: Icons.ios_share_outlined,
-              title: t.get('exportData'),
-              subtitle: t.get('exportDataSubtitle'),
-              onTap: () => _export(context, services),
-            ),
-            const SizedBox(height: 8),
-            ActionCard(
-              icon: Icons.file_open_outlined,
-              title: t.get('importData'),
-              subtitle: t.get('importDataSubtitle'),
-              onTap: () => _import(context, services, settings),
-            ),
-            const SizedBox(height: 8),
-            ActionCard(
-              icon: Icons.delete_outline,
-              title: t.get('deleteAllData'),
-              subtitle: t.get('deleteAllSubtitle'),
-              onTap: () => _deleteAll(context, services),
-            ),
-            const SizedBox(height: 20),
-            ActionCard(
-              icon: Icons.palette,
-              title: t.get('design'),
-              subtitle: t.get('designSubtitle'),
-              onTap: () => Navigator.pushNamed(context, '/design-system'),
-            ),
-            const SizedBox(height: 8),
-            ActionCard(
-              icon: Icons.waving_hand_outlined,
-              title: t.get('onboarding'),
-              onTap: () => Navigator.pushNamed(context, '/onboarding'),
+            const SizedBox(height: 24),
+            VyroGroupedSection(
+              header: 'VYRO',
+              children: [
+                VyroListRow(
+                  icon: Icons.waving_hand_outlined,
+                  iconColor: Theme.of(context).colorScheme.tertiary,
+                  title: t.get('restartTutorial'),
+                  onTap: () => Navigator.pushNamed(context, '/onboarding'),
+                ),
+                VyroListRow(
+                  icon: Icons.widgets_outlined,
+                  iconColor: Theme.of(context).colorScheme.tertiary,
+                  title: t.get('design'),
+                  subtitle: t.get('designSubtitle'),
+                  onTap: () => Navigator.pushNamed(context, '/design-system'),
+                ),
+              ],
             ),
           ],
         );
@@ -341,7 +334,7 @@ class ProfileSettingsPage extends StatelessWidget {
       }
 
       await services.database.saveUserProfile(
-        VyroProfile(
+        (profile ?? const VyroProfile()).copyWith(
           name: name.text.trim(),
           goal: goal,
           activityLevel: activity,
@@ -355,11 +348,15 @@ class ProfileSettingsPage extends StatelessWidget {
           proteinGoal: parse(protein, profile?.proteinGoal ?? 140),
           carbsGoal: parse(carbs, profile?.carbsGoal ?? 260),
           fatGoal: parse(fat, profile?.fatGoal ?? 75),
-          locale: profile?.locale ?? 'pt',
-          theme: profile?.theme ?? 'dark',
+          onboardingCompleted: true,
         ),
       );
-      if (context.mounted) Navigator.pushReplacementNamed(context, '/profile');
+      if (context.mounted) {
+        _reload();
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(t.get('savedLocally'))));
+      }
     }
     name.dispose();
     kcal.dispose();
@@ -455,7 +452,7 @@ class ProfileSettingsPage extends StatelessWidget {
       if (!context.mounted) return;
       final settings = SettingsScope.of(context);
       settings.resetAfterDeletion();
-      Navigator.pushReplacementNamed(context, '/profile');
+      Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
 
@@ -480,7 +477,11 @@ class ProfileSettingsPage extends StatelessWidget {
     );
     if (confirmed != true) return;
     await services.workoutRepository.createPlanFromProfile();
-    if (context.mounted) Navigator.pushReplacementNamed(context, '/training');
+    if (!context.mounted) return;
+    _reload();
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(t.get('planCreated'))));
   }
 
   Future<void> _import(
@@ -564,9 +565,10 @@ class ProfileSettingsPage extends StatelessWidget {
     if (replace != true) return;
     try {
       await services.database.importAllData(decoded);
-      await settings.load(services);
+      await settings.refreshProfile();
       if (!context.mounted) return;
-      Navigator.pushReplacementNamed(context, '/profile');
+      _reload();
+      Navigator.of(context).popUntil((route) => route.isFirst);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(t.get('importSuccess'))));

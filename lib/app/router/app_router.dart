@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../root_gate.dart';
+import '../splash_page.dart';
 import '../../features/dashboard/home_shell.dart';
 import '../../features/barcode/barcode_scanner_page.dart';
 import '../../features/design_showcase/design_system_page.dart';
 import '../../features/demo/demo_page.dart';
 import '../../features/nutrition/nutrition_diary_page.dart';
 import '../../features/nutrition/photo_food_page.dart';
+import '../../features/onboarding/onboarding_flow.dart';
+import '../../features/onboarding/setup_wizard_page.dart';
 import '../../features/pose/motion_page.dart';
 import '../../features/profile/profile_settings_page.dart';
 import '../../features/profile/privacy_policy_page.dart';
@@ -16,7 +20,17 @@ class VyroRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute<void>(builder: (_) => const HomeShell());
+        return MaterialPageRoute<void>(builder: (_) => const VyroRoot());
+      case '/splash':
+        return MaterialPageRoute<void>(builder: (_) => const SplashPage());
+      case '/onboarding':
+        return MaterialPageRoute<void>(
+          builder: (_) => const OnboardingFlow(preview: true),
+        );
+      case '/profile-setup':
+        return MaterialPageRoute<void>(
+          builder: (_) => const SetupWizardPage(preview: true),
+        );
       case '/design-system':
         return MaterialPageRoute<void>(
           builder: (_) => const DesignSystemPage(),
@@ -50,10 +64,6 @@ class VyroRouter {
       case '/progress':
         return MaterialPageRoute<void>(builder: (_) => const ProgressPage());
       case '/profile':
-        return MaterialPageRoute<void>(
-          builder: (_) => const ProfileSettingsPage(),
-        );
-      case '/profile-setup':
         return MaterialPageRoute<void>(
           builder: (_) => const ProfileSettingsPage(),
         );

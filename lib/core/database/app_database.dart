@@ -34,7 +34,7 @@ class AppDatabase extends _$AppDatabase {
       );
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -48,6 +48,17 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createTable(workoutSessions);
         await migrator.createTable(exerciseSets);
         await migrator.createTable(bodyMeasurements);
+      }
+      if (from < 3) {
+        await migrator.addColumn(foodEntries, foodEntries.portionUnit);
+        await migrator.addColumn(foodEntries, foodEntries.portionCount);
+        await migrator.addColumn(cachedProducts, cachedProducts.servingSize);
+        await migrator.addColumn(cachedProducts, cachedProducts.servingGrams);
+        await migrator.addColumn(cachedProducts, cachedProducts.packageGrams);
+        await migrator.addColumn(cachedProducts, cachedProducts.liquid);
+        // Older cached lookups lack serving/pack data; it is only a cache,
+        // so drop it and let products be fetched again with portions.
+        await delete(cachedProducts).go();
       }
     },
     beforeOpen: (_) async {
@@ -81,6 +92,12 @@ class AppDatabase extends _$AppDatabase {
   Future<CachedProduct?> cachedProduct(String barcode) => (select(
     cachedProducts,
   )..where((product) => product.barcode.equals(barcode))).getSingleOrNull();
+
+  Future<List<CachedProduct>> recentCachedProducts({int limit = 6}) =>
+      (select(cachedProducts)
+            ..orderBy([(product) => OrderingTerm.desc(product.lastFetchedAt)])
+            ..limit(limit))
+          .get();
 
   Future<void> cacheProduct(CachedProductsCompanion product) async {
     await into(cachedProducts).insertOnConflictUpdate(product);
@@ -146,12 +163,12 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> saveUserProfile(VyroProfile profile) async {
+    // `customStatement` takes plain values; passing `Variable` objects here
+    // breaks the web (wasm) executor with "Unknown db value" and the returned
+    // future never completes.
     await customStatement(
       'INSERT OR REPLACE INTO vyro_preferences (key, value) VALUES (?, ?)',
-      [
-        Variable.withString('profile'),
-        Variable.withString(jsonEncode(profile.toJson())),
-      ],
+      ['profile', jsonEncode(profile.toJson())],
     );
   }
 
@@ -276,9 +293,10 @@ class AppDatabase extends _$AppDatabase {
         ).insert(FoodEntryRecord.fromJson(row).toCompanion(true));
       }
       for (final row in cachedProductRows) {
-        await into(
-          cachedProducts,
-        ).insert(CachedProduct.fromJson(row).toCompanion(true));
+        await into(cachedProducts).insert(
+          // Exports made before schema v3 have no `liquid` flag.
+          CachedProduct.fromJson({'liquid': false, ...row}).toCompanion(true),
+        );
       }
       if (rawProfile != null) {
         await saveUserProfile(VyroProfile.fromJson(rawProfile));
@@ -302,12 +320,19 @@ class VyroProfile {
     this.fatGoal = 75,
     this.locale = 'pt',
     this.theme = 'dark',
+    this.sex = 'unspecified',
+    this.age = 30,
+    this.heightCm = 175,
+    this.weightKg = 75,
+    this.onboardingCompleted = false,
   });
-  final String name, goal, locale, theme;
+  final String name, goal, locale, theme, sex;
   final String activityLevel, dietaryChoice, workoutExperience;
   final List<String> availableEquipment;
-  final int trainingDays;
+  final int trainingDays, age;
+  final double heightCm, weightKg;
   final double calorieGoal, proteinGoal, carbsGoal, fatGoal;
+  final bool onboardingCompleted;
   factory VyroProfile.fromJson(Map<String, dynamic> json) {
     double positiveNumber(String key, double fallback) {
       final value = (json[key] as num?)?.toDouble();
@@ -331,6 +356,7 @@ class VyroProfile {
     final activity = json['activityLevel'] as String? ?? 'moderate';
     final diet = json['dietaryChoice'] as String? ?? 'none';
     final experience = json['workoutExperience'] as String? ?? 'beginner';
+    final sex = json['sex'] as String? ?? 'unspecified';
     return VyroProfile(
       name: json['name'] as String? ?? '',
       goal: const {'strength', 'nutrition', 'routine'}.contains(goal)
@@ -355,6 +381,13 @@ class VyroProfile {
       theme: const {'light', 'dark', 'system'}.contains(json['theme'])
           ? json['theme'] as String
           : 'dark',
+      sex: const {'female', 'male', 'unspecified'}.contains(sex)
+          ? sex
+          : 'unspecified',
+      age: ((json['age'] as num?)?.toInt() ?? 30).clamp(14, 100),
+      heightCm: positiveNumber('heightCm', 175).clamp(120, 230),
+      weightKg: positiveNumber('weightKg', 75).clamp(30, 300),
+      onboardingCompleted: json['onboardingCompleted'] == true,
     );
   }
   Map<String, Object?> toJson() => {
@@ -371,6 +404,11 @@ class VyroProfile {
     'fatGoal': fatGoal,
     'locale': locale,
     'theme': theme,
+    'sex': sex,
+    'age': age,
+    'heightCm': heightCm,
+    'weightKg': weightKg,
+    'onboardingCompleted': onboardingCompleted,
   };
   VyroProfile copyWith({
     String? name,
@@ -386,6 +424,11 @@ class VyroProfile {
     double? fatGoal,
     String? locale,
     String? theme,
+    String? sex,
+    int? age,
+    double? heightCm,
+    double? weightKg,
+    bool? onboardingCompleted,
   }) => VyroProfile(
     name: name ?? this.name,
     goal: goal ?? this.goal,
@@ -400,5 +443,10 @@ class VyroProfile {
     fatGoal: fatGoal ?? this.fatGoal,
     locale: locale ?? this.locale,
     theme: theme ?? this.theme,
+    sex: sex ?? this.sex,
+    age: age ?? this.age,
+    heightCm: heightCm ?? this.heightCm,
+    weightKg: weightKg ?? this.weightKg,
+    onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
   );
 }

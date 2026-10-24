@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../app/l10n/strings.dart';
+import '../../app/theme/vyro_chrome.dart';
+import '../../app/theme/vyro_shell.dart';
+import '../../app/theme/vyro_theme.dart';
 
 class DemoBadge extends StatelessWidget {
   const DemoBadge({super.key});
@@ -37,13 +40,36 @@ class SectionTitle extends StatelessWidget {
   final VoidCallback? onAction;
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(
-        child: Text(title, style: Theme.of(context).textTheme.titleLarge),
-      ),
-      if (action != null) TextButton(onPressed: onAction, child: Text(action!)),
-    ],
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: 15.5,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.2,
+            ),
+          ),
+        ),
+        if (action != null)
+          TextButton(
+            onPressed: onAction,
+            style: TextButton.styleFrom(
+              foregroundColor: VyroTheme.accentTextOf(context),
+              minimumSize: const Size(44, 36),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              textStyle: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            child: Text(action!),
+          ),
+      ],
+    ),
   );
 }
 
@@ -55,65 +81,78 @@ class MetricCard extends StatelessWidget {
     this.unit,
     this.icon,
     this.progress,
+    this.accent,
   });
   final String label;
   final String value;
   final String? unit;
   final IconData? icon;
   final double? progress;
+  final Color? accent;
 
   @override
-  Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(16),
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = accent ?? theme.colorScheme.primary;
+    return VyroCard(
+      radius: 20,
+      padding: const EdgeInsets.fromLTRB(16, 15, 16, 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              if (icon != null)
-                Icon(
-                  icon,
-                  size: 17,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              if (icon != null) const SizedBox(width: 8),
+              if (icon != null) ...[
+                Icon(icon, size: 15, color: color),
+                const SizedBox(width: 6),
+              ],
               Expanded(
                 child: Text(
                   label,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           Text.rich(
             TextSpan(
               text: value,
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontSize: 22),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.8,
+                color: theme.colorScheme.onSurface,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
               children: [
                 if (unit != null)
-                  TextSpan(
-                    text: ' $unit',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
+                  TextSpan(text: ' $unit', style: theme.textTheme.bodySmall),
               ],
             ),
           ),
           if (progress != null) ...[
             const SizedBox(height: 12),
-            LinearProgressIndicator(
-              value: progress!.clamp(0, 1),
-              minHeight: 5,
-              borderRadius: BorderRadius.circular(8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(99),
+              child: LinearProgressIndicator(
+                value: progress!.clamp(0, 1),
+                minHeight: 5,
+                color: color,
+                backgroundColor: theme.colorScheme.outline.withValues(
+                  alpha: 0.55,
+                ),
+              ),
             ),
           ],
         ],
       ),
-    ),
-  );
+    );
+  }
 }
 
 class ActionCard extends StatelessWidget {
@@ -124,53 +163,69 @@ class ActionCard extends StatelessWidget {
     this.subtitle,
     this.onTap,
     this.trailing,
+    this.accent,
   });
   final IconData icon;
   final String title;
   final String? subtitle;
   final VoidCallback? onTap;
   final Widget? trailing;
+  final Color? accent;
 
   @override
-  Widget build(BuildContext context) => Card(
-    child: InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(icon, color: Theme.of(context).colorScheme.primary),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: Theme.of(context).textTheme.titleMedium),
-                  if (subtitle != null)
-                    Text(
-                      subtitle!,
-                      style: Theme.of(context).textTheme.bodySmall,
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = accent ?? theme.colorScheme.primary;
+    final radius = BorderRadius.circular(20);
+    return VyroCard(
+      radius: 20,
+      padding: EdgeInsets.zero,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: radius,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  child: Icon(icon, size: 20, color: color),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(title, style: theme.textTheme.titleMedium),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 2),
+                        Text(subtitle!, style: theme.textTheme.bodySmall),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                trailing ??
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: theme.textTheme.bodySmall?.color,
                     ),
-                ],
-              ),
+              ],
             ),
-            trailing ?? const Icon(Icons.chevron_right),
-          ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class ContentPage extends StatelessWidget {
@@ -178,7 +233,7 @@ class ContentPage extends StatelessWidget {
     super.key,
     required this.title,
     required this.children,
-    this.showDemo = true,
+    this.showDemo = false,
     this.padding = const EdgeInsets.fromLTRB(20, 8, 20, 28),
   });
   final String title;
@@ -187,19 +242,9 @@ class ContentPage extends StatelessWidget {
   final EdgeInsets padding;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(title),
-      actions: [
-        if (showDemo)
-          const Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Center(child: DemoBadge()),
-          ),
-      ],
-    ),
-    body: SafeArea(
-      child: ListView(padding: padding, children: children),
-    ),
+  Widget build(BuildContext context) => VyroPageScaffold(
+    title: title,
+    showDemo: showDemo,
+    body: VyroPageBody(children: children, padding: padding),
   );
 }

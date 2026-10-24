@@ -13,6 +13,12 @@ class FoodEntries extends Table {
   RealColumn get carbsPer100g => real().nullable()();
   RealColumn get fatPer100g => real().nullable()();
   TextColumn get source => text().withDefault(const Constant('manual'))();
+
+  /// How the amount was entered: grams, serving, unit or package.
+  TextColumn get portionUnit => text().nullable()();
+
+  /// Number of portions; `quantityGrams` stays the source of truth.
+  RealColumn get portionCount => real().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
@@ -26,6 +32,10 @@ class CachedProducts extends Table {
   RealColumn get carbsPer100g => real().nullable()();
   RealColumn get fatPer100g => real().nullable()();
   TextColumn get nutriScore => text().nullable()();
+  TextColumn get servingSize => text().nullable()();
+  RealColumn get servingGrams => real().nullable()();
+  RealColumn get packageGrams => real().nullable()();
+  BoolColumn get liquid => boolean().withDefault(const Constant(false))();
   DateTimeColumn get lastFetchedAt => dateTime()();
 
   @override

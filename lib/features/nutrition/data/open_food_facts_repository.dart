@@ -5,12 +5,17 @@ import 'package:drift/drift.dart';
 
 import '../../../core/database/app_database.dart';
 import '../domain/food_product.dart';
+import '../domain/portion.dart';
 
 abstract interface class ProductLookupRepository {
   Future<FoodProduct?> findByBarcode(
     String barcode, {
     String languageCode = 'pt',
   });
+
+  /// Products already looked up on this device, newest first. Served from
+  /// the local cache only, so it works offline.
+  Future<List<FoodProduct>> recentProducts({int limit = 6});
 }
 
 class OpenFoodFactsRepository implements ProductLookupRepository {
@@ -52,7 +57,9 @@ class OpenFoodFactsRepository implements ProductLookupRepository {
         '/product/$normalized',
         queryParameters: {
           'fields':
-              'code,product_name,product_name_en,brands,quantity,nutriments,nutriscore_grade',
+              'code,product_name,product_name_en,brands,quantity,nutriments,'
+              'nutriscore_grade,serving_size,serving_quantity,'
+              'product_quantity,product_quantity_unit',
           'lc': languageCode,
         },
       );
@@ -73,11 +80,23 @@ class OpenFoodFactsRepository implements ProductLookupRepository {
       final kcal =
           _number(nutrientData['energy-kcal_100g']) ??
           (energyKj == null ? null : energyKj / 4.184);
+      final quantity = _nonEmpty(data['quantity']);
+      final servingSize = _nonEmpty(data['serving_size']);
+      final pack = parsePackQuantity(quantity);
+      final quantityUnit = _nonEmpty(
+        data['product_quantity_unit'],
+      )?.toLowerCase();
       final product = FoodProduct(
         barcode: normalized,
         name: name,
         brand: _nonEmpty(data['brands']),
-        quantity: _nonEmpty(data['quantity']),
+        quantity: quantity,
+        servingSize: servingSize,
+        servingGrams:
+            _positive(data['serving_quantity']) ??
+            parseServingGrams(servingSize),
+        packageGrams: _positive(data['product_quantity']) ?? pack?.totalAmount,
+        liquid: quantityUnit == 'ml' || (pack?.liquid ?? false),
         kcalPer100g: kcal,
         proteinPer100g: _number(nutrientData['proteins_100g']),
         carbsPer100g: _number(nutrientData['carbohydrates_100g']),
@@ -97,6 +116,12 @@ class OpenFoodFactsRepository implements ProductLookupRepository {
       throw const ProductLookupException.offline();
     }
   }
+
+  @override
+  Future<List<FoodProduct>> recentProducts({int limit = 6}) async =>
+      (await database.recentCachedProducts(
+        limit: limit,
+      )).map(_fromCache).toList();
 
   Future<void> _waitForRateLimit() async {
     final last = _lastRequestAt;
@@ -118,6 +143,10 @@ class OpenFoodFactsRepository implements ProductLookupRepository {
     carbsPer100g: product.carbsPer100g,
     fatPer100g: product.fatPer100g,
     nutriScore: product.nutriScore,
+    servingSize: product.servingSize,
+    servingGrams: product.servingGrams,
+    packageGrams: product.packageGrams,
+    liquid: product.liquid,
   );
 
   CachedProductsCompanion _toCache(FoodProduct product) =>
@@ -131,6 +160,10 @@ class OpenFoodFactsRepository implements ProductLookupRepository {
         carbsPer100g: Value(product.carbsPer100g),
         fatPer100g: Value(product.fatPer100g),
         nutriScore: Value(product.nutriScore),
+        servingSize: Value(product.servingSize),
+        servingGrams: Value(product.servingGrams),
+        packageGrams: Value(product.packageGrams),
+        liquid: Value(product.liquid),
         lastFetchedAt: DateTime.now(),
       );
 
@@ -138,6 +171,11 @@ class OpenFoodFactsRepository implements ProductLookupRepository {
     if (value is num) return value.toDouble();
     if (value is String) return double.tryParse(value.replaceAll(',', '.'));
     return null;
+  }
+
+  static double? _positive(Object? value) {
+    final number = _number(value);
+    return number != null && number > 0 && number.isFinite ? number : null;
   }
 
   static String? _nonEmpty(Object? value) {

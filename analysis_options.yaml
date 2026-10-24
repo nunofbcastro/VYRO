@@ -4,6 +4,9 @@ analyzer:
     - android/**
     - ios/**
     - web/**
+    - .tooling/**
+    - .dart_tool/**
+    - "**/*.g.dart"
 linter:
   rules:
     avoid_print: true

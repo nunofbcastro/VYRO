@@ -1,1 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 240" role="img" aria-label="VYRO wordmark"><rect width="980" height="240" rx="32" fill="#0B0D10"/><g fill="#F5F7F8" font-family="Inter,Arial,sans-serif" font-size="140" font-weight="800" letter-spacing="14"><text x="95" y="172">VYRO</text></g><rect x="826" y="85" width="19" height="80" rx="9" fill="#B8F36B"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 240" role="img" aria-label="VYRO">
+  <rect width="900" height="240" rx="32" fill="#0B0D10"/>
+  <polygon points="54.4,66.4 100.8,66.4 128.0,140.0 155.2,66.4 201.6,66.4 148.8,184.8 107.2,184.8" fill="#F5F7F8"/><polygon points="155.2,66.4 201.6,66.4 190.5,91.4 146.0,91.4" fill="#0B0D10"/><polygon points="155.2,66.4 201.6,66.4 192.3,87.2 147.5,87.2" fill="#B8F36B"/>
+  <text x="236" y="166" fill="#F5F7F8" font-family="Inter,'SF Pro Display',Arial,sans-serif" font-size="118" font-weight="800" letter-spacing="26">VYRO</text>
+</svg>

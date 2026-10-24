@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../app/l10n/strings.dart';
+import '../../app/theme/vyro_shell.dart';
 import 'domain/movenet_service.dart';
 
 class MotionPage extends StatefulWidget {
@@ -38,8 +39,8 @@ class _MotionPageState extends State<MotionPage> {
   Widget build(BuildContext context) {
     final t = stringsOf(context);
     final camera = _camera;
-    return Scaffold(
-      appBar: AppBar(title: Text(t.get('motion'))),
+    return VyroSubpageScaffold(
+      title: t.get('motion'),
       body: camera == null
           ? SafeArea(
               child: ListView(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../app/app.dart';
 import '../../app/l10n/strings.dart';
 import '../../app/theme/vyro_theme.dart';
 import '../../core/widgets/vyro_widgets.dart';
+import 'kit_showcase.dart';
 
 class DesignSystemPage extends StatelessWidget {
   const DesignSystemPage({super.key});
@@ -32,14 +34,17 @@ class DesignSystemPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = stringsOf(context);
+    final settings = SettingsScope.of(context);
     final cs = Theme.of(context).colorScheme;
     return ContentPage(
+      showDemo: true,
       title: t.get('design'),
       children: [
         const DemoBadge(),
         const SizedBox(height: 12),
         Text(t.get('demoNote'), style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 24),
+        const KitShowcase(),
         SectionTitle(t.get('colors')),
         Wrap(
           spacing: 10,
@@ -101,6 +106,57 @@ class DesignSystemPage extends StatelessWidget {
           value: '1,640',
           unit: '/ 2,450',
           progress: .67,
+        ),
+        const SizedBox(height: 24),
+        SectionTitle(t.get('appearance')),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${t.get('appearance')} · ${t.get('language')}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilledButton.tonalIcon(
+                      onPressed: () => settings.setTheme(
+                        settings.themeMode == ThemeMode.dark
+                            ? ThemeMode.light
+                            : ThemeMode.dark,
+                      ),
+                      icon: Icon(
+                        settings.themeMode == ThemeMode.dark
+                            ? Icons.light_mode_outlined
+                            : Icons.dark_mode_outlined,
+                      ),
+                      label: Text(
+                        settings.themeMode == ThemeMode.dark
+                            ? t.get('light')
+                            : t.get('dark'),
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => settings.setLocale(
+                        settings.locale.languageCode == 'pt'
+                            ? const Locale('en')
+                            : const Locale('pt', 'PT'),
+                      ),
+                      icon: const Icon(Icons.translate_rounded),
+                      label: Text(
+                        settings.locale.languageCode == 'pt' ? 'EN' : 'PT',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
         const SizedBox(height: 24),
         SectionTitle(t.get('screens')),

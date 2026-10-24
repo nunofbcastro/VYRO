@@ -125,6 +125,28 @@ class $FoodEntriesTable extends FoodEntries
     requiredDuringInsert: false,
     defaultValue: const Constant('manual'),
   );
+  static const VerificationMeta _portionUnitMeta = const VerificationMeta(
+    'portionUnit',
+  );
+  @override
+  late final GeneratedColumn<String> portionUnit = GeneratedColumn<String>(
+    'portion_unit',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _portionCountMeta = const VerificationMeta(
+    'portionCount',
+  );
+  @override
+  late final GeneratedColumn<double> portionCount = GeneratedColumn<double>(
+    'portion_count',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -150,6 +172,8 @@ class $FoodEntriesTable extends FoodEntries
     carbsPer100g,
     fatPer100g,
     source,
+    portionUnit,
+    portionCount,
     createdAt,
   ];
   @override
@@ -247,6 +271,24 @@ class $FoodEntriesTable extends FoodEntries
         source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
       );
     }
+    if (data.containsKey('portion_unit')) {
+      context.handle(
+        _portionUnitMeta,
+        portionUnit.isAcceptableOrUnknown(
+          data['portion_unit']!,
+          _portionUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('portion_count')) {
+      context.handle(
+        _portionCountMeta,
+        portionCount.isAcceptableOrUnknown(
+          data['portion_count']!,
+          _portionCountMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -306,6 +348,14 @@ class $FoodEntriesTable extends FoodEntries
         DriftSqlType.string,
         data['${effectivePrefix}source'],
       )!,
+      portionUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}portion_unit'],
+      ),
+      portionCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}portion_count'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -331,6 +381,12 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
   final double? carbsPer100g;
   final double? fatPer100g;
   final String source;
+
+  /// How the amount was entered: grams, serving, unit or package.
+  final String? portionUnit;
+
+  /// Number of portions; `quantityGrams` stays the source of truth.
+  final double? portionCount;
   final DateTime createdAt;
   const FoodEntryRecord({
     required this.id,
@@ -344,6 +400,8 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
     this.carbsPer100g,
     this.fatPer100g,
     required this.source,
+    this.portionUnit,
+    this.portionCount,
     required this.createdAt,
   });
   @override
@@ -370,6 +428,12 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
       map['fat_per100g'] = Variable<double>(fatPer100g);
     }
     map['source'] = Variable<String>(source);
+    if (!nullToAbsent || portionUnit != null) {
+      map['portion_unit'] = Variable<String>(portionUnit);
+    }
+    if (!nullToAbsent || portionCount != null) {
+      map['portion_count'] = Variable<double>(portionCount);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -397,6 +461,12 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
           ? const Value.absent()
           : Value(fatPer100g),
       source: Value(source),
+      portionUnit: portionUnit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(portionUnit),
+      portionCount: portionCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(portionCount),
       createdAt: Value(createdAt),
     );
   }
@@ -418,6 +488,8 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
       carbsPer100g: serializer.fromJson<double?>(json['carbsPer100g']),
       fatPer100g: serializer.fromJson<double?>(json['fatPer100g']),
       source: serializer.fromJson<String>(json['source']),
+      portionUnit: serializer.fromJson<String?>(json['portionUnit']),
+      portionCount: serializer.fromJson<double?>(json['portionCount']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -436,6 +508,8 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
       'carbsPer100g': serializer.toJson<double?>(carbsPer100g),
       'fatPer100g': serializer.toJson<double?>(fatPer100g),
       'source': serializer.toJson<String>(source),
+      'portionUnit': serializer.toJson<String?>(portionUnit),
+      'portionCount': serializer.toJson<double?>(portionCount),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -452,6 +526,8 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
     Value<double?> carbsPer100g = const Value.absent(),
     Value<double?> fatPer100g = const Value.absent(),
     String? source,
+    Value<String?> portionUnit = const Value.absent(),
+    Value<double?> portionCount = const Value.absent(),
     DateTime? createdAt,
   }) => FoodEntryRecord(
     id: id ?? this.id,
@@ -467,6 +543,8 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
     carbsPer100g: carbsPer100g.present ? carbsPer100g.value : this.carbsPer100g,
     fatPer100g: fatPer100g.present ? fatPer100g.value : this.fatPer100g,
     source: source ?? this.source,
+    portionUnit: portionUnit.present ? portionUnit.value : this.portionUnit,
+    portionCount: portionCount.present ? portionCount.value : this.portionCount,
     createdAt: createdAt ?? this.createdAt,
   );
   FoodEntryRecord copyWithCompanion(FoodEntriesCompanion data) {
@@ -492,6 +570,12 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
           ? data.fatPer100g.value
           : this.fatPer100g,
       source: data.source.present ? data.source.value : this.source,
+      portionUnit: data.portionUnit.present
+          ? data.portionUnit.value
+          : this.portionUnit,
+      portionCount: data.portionCount.present
+          ? data.portionCount.value
+          : this.portionCount,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -510,6 +594,8 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
           ..write('carbsPer100g: $carbsPer100g, ')
           ..write('fatPer100g: $fatPer100g, ')
           ..write('source: $source, ')
+          ..write('portionUnit: $portionUnit, ')
+          ..write('portionCount: $portionCount, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -528,6 +614,8 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
     carbsPer100g,
     fatPer100g,
     source,
+    portionUnit,
+    portionCount,
     createdAt,
   );
   @override
@@ -545,6 +633,8 @@ class FoodEntryRecord extends DataClass implements Insertable<FoodEntryRecord> {
           other.carbsPer100g == this.carbsPer100g &&
           other.fatPer100g == this.fatPer100g &&
           other.source == this.source &&
+          other.portionUnit == this.portionUnit &&
+          other.portionCount == this.portionCount &&
           other.createdAt == this.createdAt);
 }
 
@@ -560,6 +650,8 @@ class FoodEntriesCompanion extends UpdateCompanion<FoodEntryRecord> {
   final Value<double?> carbsPer100g;
   final Value<double?> fatPer100g;
   final Value<String> source;
+  final Value<String?> portionUnit;
+  final Value<double?> portionCount;
   final Value<DateTime> createdAt;
   const FoodEntriesCompanion({
     this.id = const Value.absent(),
@@ -573,6 +665,8 @@ class FoodEntriesCompanion extends UpdateCompanion<FoodEntryRecord> {
     this.carbsPer100g = const Value.absent(),
     this.fatPer100g = const Value.absent(),
     this.source = const Value.absent(),
+    this.portionUnit = const Value.absent(),
+    this.portionCount = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   FoodEntriesCompanion.insert({
@@ -587,6 +681,8 @@ class FoodEntriesCompanion extends UpdateCompanion<FoodEntryRecord> {
     this.carbsPer100g = const Value.absent(),
     this.fatPer100g = const Value.absent(),
     this.source = const Value.absent(),
+    this.portionUnit = const Value.absent(),
+    this.portionCount = const Value.absent(),
     this.createdAt = const Value.absent(),
   }) : day = Value(day),
        mealType = Value(mealType),
@@ -604,6 +700,8 @@ class FoodEntriesCompanion extends UpdateCompanion<FoodEntryRecord> {
     Expression<double>? carbsPer100g,
     Expression<double>? fatPer100g,
     Expression<String>? source,
+    Expression<String>? portionUnit,
+    Expression<double>? portionCount,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -618,6 +716,8 @@ class FoodEntriesCompanion extends UpdateCompanion<FoodEntryRecord> {
       if (carbsPer100g != null) 'carbs_per100g': carbsPer100g,
       if (fatPer100g != null) 'fat_per100g': fatPer100g,
       if (source != null) 'source': source,
+      if (portionUnit != null) 'portion_unit': portionUnit,
+      if (portionCount != null) 'portion_count': portionCount,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -634,6 +734,8 @@ class FoodEntriesCompanion extends UpdateCompanion<FoodEntryRecord> {
     Value<double?>? carbsPer100g,
     Value<double?>? fatPer100g,
     Value<String>? source,
+    Value<String?>? portionUnit,
+    Value<double?>? portionCount,
     Value<DateTime>? createdAt,
   }) {
     return FoodEntriesCompanion(
@@ -648,6 +750,8 @@ class FoodEntriesCompanion extends UpdateCompanion<FoodEntryRecord> {
       carbsPer100g: carbsPer100g ?? this.carbsPer100g,
       fatPer100g: fatPer100g ?? this.fatPer100g,
       source: source ?? this.source,
+      portionUnit: portionUnit ?? this.portionUnit,
+      portionCount: portionCount ?? this.portionCount,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -688,6 +792,12 @@ class FoodEntriesCompanion extends UpdateCompanion<FoodEntryRecord> {
     if (source.present) {
       map['source'] = Variable<String>(source.value);
     }
+    if (portionUnit.present) {
+      map['portion_unit'] = Variable<String>(portionUnit.value);
+    }
+    if (portionCount.present) {
+      map['portion_count'] = Variable<double>(portionCount.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -708,6 +818,8 @@ class FoodEntriesCompanion extends UpdateCompanion<FoodEntryRecord> {
           ..write('carbsPer100g: $carbsPer100g, ')
           ..write('fatPer100g: $fatPer100g, ')
           ..write('source: $source, ')
+          ..write('portionUnit: $portionUnit, ')
+          ..write('portionCount: $portionCount, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -815,6 +927,52 @@ class $CachedProductsTable extends CachedProducts
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _servingSizeMeta = const VerificationMeta(
+    'servingSize',
+  );
+  @override
+  late final GeneratedColumn<String> servingSize = GeneratedColumn<String>(
+    'serving_size',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _servingGramsMeta = const VerificationMeta(
+    'servingGrams',
+  );
+  @override
+  late final GeneratedColumn<double> servingGrams = GeneratedColumn<double>(
+    'serving_grams',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _packageGramsMeta = const VerificationMeta(
+    'packageGrams',
+  );
+  @override
+  late final GeneratedColumn<double> packageGrams = GeneratedColumn<double>(
+    'package_grams',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _liquidMeta = const VerificationMeta('liquid');
+  @override
+  late final GeneratedColumn<bool> liquid = GeneratedColumn<bool>(
+    'liquid',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("liquid" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _lastFetchedAtMeta = const VerificationMeta(
     'lastFetchedAt',
   );
@@ -838,6 +996,10 @@ class $CachedProductsTable extends CachedProducts
     carbsPer100g,
     fatPer100g,
     nutriScore,
+    servingSize,
+    servingGrams,
+    packageGrams,
+    liquid,
     lastFetchedAt,
   ];
   @override
@@ -919,6 +1081,39 @@ class $CachedProductsTable extends CachedProducts
         nutriScore.isAcceptableOrUnknown(data['nutri_score']!, _nutriScoreMeta),
       );
     }
+    if (data.containsKey('serving_size')) {
+      context.handle(
+        _servingSizeMeta,
+        servingSize.isAcceptableOrUnknown(
+          data['serving_size']!,
+          _servingSizeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('serving_grams')) {
+      context.handle(
+        _servingGramsMeta,
+        servingGrams.isAcceptableOrUnknown(
+          data['serving_grams']!,
+          _servingGramsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('package_grams')) {
+      context.handle(
+        _packageGramsMeta,
+        packageGrams.isAcceptableOrUnknown(
+          data['package_grams']!,
+          _packageGramsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('liquid')) {
+      context.handle(
+        _liquidMeta,
+        liquid.isAcceptableOrUnknown(data['liquid']!, _liquidMeta),
+      );
+    }
     if (data.containsKey('last_fetched_at')) {
       context.handle(
         _lastFetchedAtMeta,
@@ -975,6 +1170,22 @@ class $CachedProductsTable extends CachedProducts
         DriftSqlType.string,
         data['${effectivePrefix}nutri_score'],
       ),
+      servingSize: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}serving_size'],
+      ),
+      servingGrams: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}serving_grams'],
+      ),
+      packageGrams: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}package_grams'],
+      ),
+      liquid: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}liquid'],
+      )!,
       lastFetchedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_fetched_at'],
@@ -998,6 +1209,10 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
   final double? carbsPer100g;
   final double? fatPer100g;
   final String? nutriScore;
+  final String? servingSize;
+  final double? servingGrams;
+  final double? packageGrams;
+  final bool liquid;
   final DateTime lastFetchedAt;
   const CachedProduct({
     required this.barcode,
@@ -1009,6 +1224,10 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
     this.carbsPer100g,
     this.fatPer100g,
     this.nutriScore,
+    this.servingSize,
+    this.servingGrams,
+    this.packageGrams,
+    required this.liquid,
     required this.lastFetchedAt,
   });
   @override
@@ -1037,6 +1256,16 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
     if (!nullToAbsent || nutriScore != null) {
       map['nutri_score'] = Variable<String>(nutriScore);
     }
+    if (!nullToAbsent || servingSize != null) {
+      map['serving_size'] = Variable<String>(servingSize);
+    }
+    if (!nullToAbsent || servingGrams != null) {
+      map['serving_grams'] = Variable<double>(servingGrams);
+    }
+    if (!nullToAbsent || packageGrams != null) {
+      map['package_grams'] = Variable<double>(packageGrams);
+    }
+    map['liquid'] = Variable<bool>(liquid);
     map['last_fetched_at'] = Variable<DateTime>(lastFetchedAt);
     return map;
   }
@@ -1066,6 +1295,16 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
       nutriScore: nutriScore == null && nullToAbsent
           ? const Value.absent()
           : Value(nutriScore),
+      servingSize: servingSize == null && nullToAbsent
+          ? const Value.absent()
+          : Value(servingSize),
+      servingGrams: servingGrams == null && nullToAbsent
+          ? const Value.absent()
+          : Value(servingGrams),
+      packageGrams: packageGrams == null && nullToAbsent
+          ? const Value.absent()
+          : Value(packageGrams),
+      liquid: Value(liquid),
       lastFetchedAt: Value(lastFetchedAt),
     );
   }
@@ -1085,6 +1324,10 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
       carbsPer100g: serializer.fromJson<double?>(json['carbsPer100g']),
       fatPer100g: serializer.fromJson<double?>(json['fatPer100g']),
       nutriScore: serializer.fromJson<String?>(json['nutriScore']),
+      servingSize: serializer.fromJson<String?>(json['servingSize']),
+      servingGrams: serializer.fromJson<double?>(json['servingGrams']),
+      packageGrams: serializer.fromJson<double?>(json['packageGrams']),
+      liquid: serializer.fromJson<bool>(json['liquid']),
       lastFetchedAt: serializer.fromJson<DateTime>(json['lastFetchedAt']),
     );
   }
@@ -1101,6 +1344,10 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
       'carbsPer100g': serializer.toJson<double?>(carbsPer100g),
       'fatPer100g': serializer.toJson<double?>(fatPer100g),
       'nutriScore': serializer.toJson<String?>(nutriScore),
+      'servingSize': serializer.toJson<String?>(servingSize),
+      'servingGrams': serializer.toJson<double?>(servingGrams),
+      'packageGrams': serializer.toJson<double?>(packageGrams),
+      'liquid': serializer.toJson<bool>(liquid),
       'lastFetchedAt': serializer.toJson<DateTime>(lastFetchedAt),
     };
   }
@@ -1115,6 +1362,10 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
     Value<double?> carbsPer100g = const Value.absent(),
     Value<double?> fatPer100g = const Value.absent(),
     Value<String?> nutriScore = const Value.absent(),
+    Value<String?> servingSize = const Value.absent(),
+    Value<double?> servingGrams = const Value.absent(),
+    Value<double?> packageGrams = const Value.absent(),
+    bool? liquid,
     DateTime? lastFetchedAt,
   }) => CachedProduct(
     barcode: barcode ?? this.barcode,
@@ -1128,6 +1379,10 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
     carbsPer100g: carbsPer100g.present ? carbsPer100g.value : this.carbsPer100g,
     fatPer100g: fatPer100g.present ? fatPer100g.value : this.fatPer100g,
     nutriScore: nutriScore.present ? nutriScore.value : this.nutriScore,
+    servingSize: servingSize.present ? servingSize.value : this.servingSize,
+    servingGrams: servingGrams.present ? servingGrams.value : this.servingGrams,
+    packageGrams: packageGrams.present ? packageGrams.value : this.packageGrams,
+    liquid: liquid ?? this.liquid,
     lastFetchedAt: lastFetchedAt ?? this.lastFetchedAt,
   );
   CachedProduct copyWithCompanion(CachedProductsCompanion data) {
@@ -1151,6 +1406,16 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
       nutriScore: data.nutriScore.present
           ? data.nutriScore.value
           : this.nutriScore,
+      servingSize: data.servingSize.present
+          ? data.servingSize.value
+          : this.servingSize,
+      servingGrams: data.servingGrams.present
+          ? data.servingGrams.value
+          : this.servingGrams,
+      packageGrams: data.packageGrams.present
+          ? data.packageGrams.value
+          : this.packageGrams,
+      liquid: data.liquid.present ? data.liquid.value : this.liquid,
       lastFetchedAt: data.lastFetchedAt.present
           ? data.lastFetchedAt.value
           : this.lastFetchedAt,
@@ -1169,6 +1434,10 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
           ..write('carbsPer100g: $carbsPer100g, ')
           ..write('fatPer100g: $fatPer100g, ')
           ..write('nutriScore: $nutriScore, ')
+          ..write('servingSize: $servingSize, ')
+          ..write('servingGrams: $servingGrams, ')
+          ..write('packageGrams: $packageGrams, ')
+          ..write('liquid: $liquid, ')
           ..write('lastFetchedAt: $lastFetchedAt')
           ..write(')'))
         .toString();
@@ -1185,6 +1454,10 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
     carbsPer100g,
     fatPer100g,
     nutriScore,
+    servingSize,
+    servingGrams,
+    packageGrams,
+    liquid,
     lastFetchedAt,
   );
   @override
@@ -1200,6 +1473,10 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
           other.carbsPer100g == this.carbsPer100g &&
           other.fatPer100g == this.fatPer100g &&
           other.nutriScore == this.nutriScore &&
+          other.servingSize == this.servingSize &&
+          other.servingGrams == this.servingGrams &&
+          other.packageGrams == this.packageGrams &&
+          other.liquid == this.liquid &&
           other.lastFetchedAt == this.lastFetchedAt);
 }
 
@@ -1213,6 +1490,10 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
   final Value<double?> carbsPer100g;
   final Value<double?> fatPer100g;
   final Value<String?> nutriScore;
+  final Value<String?> servingSize;
+  final Value<double?> servingGrams;
+  final Value<double?> packageGrams;
+  final Value<bool> liquid;
   final Value<DateTime> lastFetchedAt;
   final Value<int> rowid;
   const CachedProductsCompanion({
@@ -1225,6 +1506,10 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
     this.carbsPer100g = const Value.absent(),
     this.fatPer100g = const Value.absent(),
     this.nutriScore = const Value.absent(),
+    this.servingSize = const Value.absent(),
+    this.servingGrams = const Value.absent(),
+    this.packageGrams = const Value.absent(),
+    this.liquid = const Value.absent(),
     this.lastFetchedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1238,6 +1523,10 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
     this.carbsPer100g = const Value.absent(),
     this.fatPer100g = const Value.absent(),
     this.nutriScore = const Value.absent(),
+    this.servingSize = const Value.absent(),
+    this.servingGrams = const Value.absent(),
+    this.packageGrams = const Value.absent(),
+    this.liquid = const Value.absent(),
     required DateTime lastFetchedAt,
     this.rowid = const Value.absent(),
   }) : barcode = Value(barcode),
@@ -1253,6 +1542,10 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
     Expression<double>? carbsPer100g,
     Expression<double>? fatPer100g,
     Expression<String>? nutriScore,
+    Expression<String>? servingSize,
+    Expression<double>? servingGrams,
+    Expression<double>? packageGrams,
+    Expression<bool>? liquid,
     Expression<DateTime>? lastFetchedAt,
     Expression<int>? rowid,
   }) {
@@ -1266,6 +1559,10 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
       if (carbsPer100g != null) 'carbs_per100g': carbsPer100g,
       if (fatPer100g != null) 'fat_per100g': fatPer100g,
       if (nutriScore != null) 'nutri_score': nutriScore,
+      if (servingSize != null) 'serving_size': servingSize,
+      if (servingGrams != null) 'serving_grams': servingGrams,
+      if (packageGrams != null) 'package_grams': packageGrams,
+      if (liquid != null) 'liquid': liquid,
       if (lastFetchedAt != null) 'last_fetched_at': lastFetchedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1281,6 +1578,10 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
     Value<double?>? carbsPer100g,
     Value<double?>? fatPer100g,
     Value<String?>? nutriScore,
+    Value<String?>? servingSize,
+    Value<double?>? servingGrams,
+    Value<double?>? packageGrams,
+    Value<bool>? liquid,
     Value<DateTime>? lastFetchedAt,
     Value<int>? rowid,
   }) {
@@ -1294,6 +1595,10 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
       carbsPer100g: carbsPer100g ?? this.carbsPer100g,
       fatPer100g: fatPer100g ?? this.fatPer100g,
       nutriScore: nutriScore ?? this.nutriScore,
+      servingSize: servingSize ?? this.servingSize,
+      servingGrams: servingGrams ?? this.servingGrams,
+      packageGrams: packageGrams ?? this.packageGrams,
+      liquid: liquid ?? this.liquid,
       lastFetchedAt: lastFetchedAt ?? this.lastFetchedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -1329,6 +1634,18 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
     if (nutriScore.present) {
       map['nutri_score'] = Variable<String>(nutriScore.value);
     }
+    if (servingSize.present) {
+      map['serving_size'] = Variable<String>(servingSize.value);
+    }
+    if (servingGrams.present) {
+      map['serving_grams'] = Variable<double>(servingGrams.value);
+    }
+    if (packageGrams.present) {
+      map['package_grams'] = Variable<double>(packageGrams.value);
+    }
+    if (liquid.present) {
+      map['liquid'] = Variable<bool>(liquid.value);
+    }
     if (lastFetchedAt.present) {
       map['last_fetched_at'] = Variable<DateTime>(lastFetchedAt.value);
     }
@@ -1350,6 +1667,10 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
           ..write('carbsPer100g: $carbsPer100g, ')
           ..write('fatPer100g: $fatPer100g, ')
           ..write('nutriScore: $nutriScore, ')
+          ..write('servingSize: $servingSize, ')
+          ..write('servingGrams: $servingGrams, ')
+          ..write('packageGrams: $packageGrams, ')
+          ..write('liquid: $liquid, ')
           ..write('lastFetchedAt: $lastFetchedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -4387,6 +4708,8 @@ typedef $$FoodEntriesTableCreateCompanionBuilder =
       Value<double?> carbsPer100g,
       Value<double?> fatPer100g,
       Value<String> source,
+      Value<String?> portionUnit,
+      Value<double?> portionCount,
       Value<DateTime> createdAt,
     });
 typedef $$FoodEntriesTableUpdateCompanionBuilder =
@@ -4402,6 +4725,8 @@ typedef $$FoodEntriesTableUpdateCompanionBuilder =
       Value<double?> carbsPer100g,
       Value<double?> fatPer100g,
       Value<String> source,
+      Value<String?> portionUnit,
+      Value<double?> portionCount,
       Value<DateTime> createdAt,
     });
 
@@ -4466,6 +4791,16 @@ class $$FoodEntriesTableFilterComposer
 
   ColumnFilters<String> get source => $composableBuilder(
     column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get portionUnit => $composableBuilder(
+    column: $table.portionUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get portionCount => $composableBuilder(
+    column: $table.portionCount,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4539,6 +4874,16 @@ class $$FoodEntriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get portionUnit => $composableBuilder(
+    column: $table.portionUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get portionCount => $composableBuilder(
+    column: $table.portionCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -4597,6 +4942,16 @@ class $$FoodEntriesTableAnnotationComposer
   GeneratedColumn<String> get source =>
       $composableBuilder(column: $table.source, builder: (column) => column);
 
+  GeneratedColumn<String> get portionUnit => $composableBuilder(
+    column: $table.portionUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get portionCount => $composableBuilder(
+    column: $table.portionCount,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 }
@@ -4643,6 +4998,8 @@ class $$FoodEntriesTableTableManager
                 Value<double?> carbsPer100g = const Value.absent(),
                 Value<double?> fatPer100g = const Value.absent(),
                 Value<String> source = const Value.absent(),
+                Value<String?> portionUnit = const Value.absent(),
+                Value<double?> portionCount = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => FoodEntriesCompanion(
                 id: id,
@@ -4656,6 +5013,8 @@ class $$FoodEntriesTableTableManager
                 carbsPer100g: carbsPer100g,
                 fatPer100g: fatPer100g,
                 source: source,
+                portionUnit: portionUnit,
+                portionCount: portionCount,
                 createdAt: createdAt,
               ),
           createCompanionCallback:
@@ -4671,6 +5030,8 @@ class $$FoodEntriesTableTableManager
                 Value<double?> carbsPer100g = const Value.absent(),
                 Value<double?> fatPer100g = const Value.absent(),
                 Value<String> source = const Value.absent(),
+                Value<String?> portionUnit = const Value.absent(),
+                Value<double?> portionCount = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => FoodEntriesCompanion.insert(
                 id: id,
@@ -4684,6 +5045,8 @@ class $$FoodEntriesTableTableManager
                 carbsPer100g: carbsPer100g,
                 fatPer100g: fatPer100g,
                 source: source,
+                portionUnit: portionUnit,
+                portionCount: portionCount,
                 createdAt: createdAt,
               ),
           withReferenceMapper: (p0) => p0
@@ -4731,6 +5094,10 @@ typedef $$CachedProductsTableCreateCompanionBuilder =
       Value<double?> carbsPer100g,
       Value<double?> fatPer100g,
       Value<String?> nutriScore,
+      Value<String?> servingSize,
+      Value<double?> servingGrams,
+      Value<double?> packageGrams,
+      Value<bool> liquid,
       required DateTime lastFetchedAt,
       Value<int> rowid,
     });
@@ -4745,6 +5112,10 @@ typedef $$CachedProductsTableUpdateCompanionBuilder =
       Value<double?> carbsPer100g,
       Value<double?> fatPer100g,
       Value<String?> nutriScore,
+      Value<String?> servingSize,
+      Value<double?> servingGrams,
+      Value<double?> packageGrams,
+      Value<bool> liquid,
       Value<DateTime> lastFetchedAt,
       Value<int> rowid,
     });
@@ -4800,6 +5171,26 @@ class $$CachedProductsTableFilterComposer
 
   ColumnFilters<String> get nutriScore => $composableBuilder(
     column: $table.nutriScore,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get servingSize => $composableBuilder(
+    column: $table.servingSize,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get servingGrams => $composableBuilder(
+    column: $table.servingGrams,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get packageGrams => $composableBuilder(
+    column: $table.packageGrams,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get liquid => $composableBuilder(
+    column: $table.liquid,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4863,6 +5254,26 @@ class $$CachedProductsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get servingSize => $composableBuilder(
+    column: $table.servingSize,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get servingGrams => $composableBuilder(
+    column: $table.servingGrams,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get packageGrams => $composableBuilder(
+    column: $table.packageGrams,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get liquid => $composableBuilder(
+    column: $table.liquid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get lastFetchedAt => $composableBuilder(
     column: $table.lastFetchedAt,
     builder: (column) => ColumnOrderings(column),
@@ -4915,6 +5326,24 @@ class $$CachedProductsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get servingSize => $composableBuilder(
+    column: $table.servingSize,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get servingGrams => $composableBuilder(
+    column: $table.servingGrams,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get packageGrams => $composableBuilder(
+    column: $table.packageGrams,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get liquid =>
+      $composableBuilder(column: $table.liquid, builder: (column) => column);
+
   GeneratedColumn<DateTime> get lastFetchedAt => $composableBuilder(
     column: $table.lastFetchedAt,
     builder: (column) => column,
@@ -4963,6 +5392,10 @@ class $$CachedProductsTableTableManager
                 Value<double?> carbsPer100g = const Value.absent(),
                 Value<double?> fatPer100g = const Value.absent(),
                 Value<String?> nutriScore = const Value.absent(),
+                Value<String?> servingSize = const Value.absent(),
+                Value<double?> servingGrams = const Value.absent(),
+                Value<double?> packageGrams = const Value.absent(),
+                Value<bool> liquid = const Value.absent(),
                 Value<DateTime> lastFetchedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedProductsCompanion(
@@ -4975,6 +5408,10 @@ class $$CachedProductsTableTableManager
                 carbsPer100g: carbsPer100g,
                 fatPer100g: fatPer100g,
                 nutriScore: nutriScore,
+                servingSize: servingSize,
+                servingGrams: servingGrams,
+                packageGrams: packageGrams,
+                liquid: liquid,
                 lastFetchedAt: lastFetchedAt,
                 rowid: rowid,
               ),
@@ -4989,6 +5426,10 @@ class $$CachedProductsTableTableManager
                 Value<double?> carbsPer100g = const Value.absent(),
                 Value<double?> fatPer100g = const Value.absent(),
                 Value<String?> nutriScore = const Value.absent(),
+                Value<String?> servingSize = const Value.absent(),
+                Value<double?> servingGrams = const Value.absent(),
+                Value<double?> packageGrams = const Value.absent(),
+                Value<bool> liquid = const Value.absent(),
                 required DateTime lastFetchedAt,
                 Value<int> rowid = const Value.absent(),
               }) => CachedProductsCompanion.insert(
@@ -5001,6 +5442,10 @@ class $$CachedProductsTableTableManager
                 carbsPer100g: carbsPer100g,
                 fatPer100g: fatPer100g,
                 nutriScore: nutriScore,
+                servingSize: servingSize,
+                servingGrams: servingGrams,
+                packageGrams: packageGrams,
+                liquid: liquid,
                 lastFetchedAt: lastFetchedAt,
                 rowid: rowid,
               ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../app/l10n/strings.dart';
+import '../../app/theme/vyro_shell.dart';
 import '../../core/database/app_database.dart';
 import '../../core/widgets/vyro_widgets.dart';
 import 'data/workout_repository.dart';
@@ -36,8 +37,8 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
   @override
   Widget build(BuildContext context) {
     final t = stringsOf(context);
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+    return VyroSubpageScaffold(
+      title: widget.title,
       body: StreamBuilder<List<ExerciseSet>>(
         stream: widget.repository.watchSets(widget.sessionId),
         builder: (context, snapshot) {
