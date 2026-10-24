@@ -62,6 +62,10 @@ class VyroStrings {
         'A fotografia fica apenas na memória enquanto este ecrã está aberto.',
     'photoConfirmNote':
         'Confirma o alimento e a porção. A imagem não determina gramas nem nutrientes.',
+    'localFoodReference': 'Alimento simples da referência local (opcional)',
+    'localFoodsNote':
+        'Os dados por 100 g preenchem os campos para rever. Não identificam ingredientes da fotografia.',
+    'nutritionSource': 'Fonte',
     'confirmFood': 'Confirmar alimento',
     'photoSource': 'Sugestão por fotografia',
     'motionSquat': 'Agachamento · demonstração funcional',
@@ -185,12 +189,59 @@ class VyroStrings {
     'editProfile': 'Editar perfil e objetivos',
     'name': 'Nome (opcional)',
     'calorieTarget': 'Objetivo diário de energia',
+    'activityLevel': 'Atividade habitual',
+    'activity_low': 'Pouco ativa',
+    'activity_moderate': 'Moderada',
+    'activity_high': 'Muito ativa',
+    'dietaryChoice': 'Preferência alimentar',
+    'diet_none': 'Sem preferência',
+    'diet_vegetarian': 'Vegetariana',
+    'diet_vegan': 'Vegana',
+    'workoutExperience': 'Experiência de treino',
+    'experience_beginner': 'A começar',
+    'experience_intermediate': 'Intermédia',
+    'trainingDays': 'Dias de treino por semana',
+    'availableEquipment': 'Equipamento disponível',
+    'equipment_bodyweight': 'Peso corporal',
+    'equipment_dumbbells': 'Halteres',
+    'equipment_cable': 'Cabos / máquinas',
+    'generatePlan': 'Gerar plano de treino',
+    'generatePlanSubtitle': 'Usa dias, experiência e equipamento do perfil',
+    'generatePlanConfirm':
+        'Será criado um novo plano. Os planos e histórico anteriores são preservados.',
     'privacyLocalExplanation':
         'Os dados são guardados localmente. A consulta Open Food Facts só ocorre quando pedes uma pesquisa de produto.',
+    'privacyPolicy': 'Política de privacidade',
+    'privacyPolicySubtitle': 'O que é guardado e quando há ligação à Internet',
+    'policyStorageTitle': 'Dados neste dispositivo',
+    'policyStorageBody':
+        'O perfil, objetivos, refeições, treinos, medidas e cache de produtos são guardados na base de dados local da aplicação. Não temos conta nem sincronização VYRO.',
+    'policyNetworkTitle': 'Pedidos de rede',
+    'policyNetworkBody':
+        'A app liga-se à Open Food Facts apenas quando inicias uma pesquisa de código de barras sem resultado em cache. O pedido contém o código do produto e os cabeçalhos técnicos necessários. A app não envia dados de refeições, perfil ou treino para esse serviço.',
+    'policyMediaTitle': 'Câmara e fotografias',
+    'policyMediaBody':
+        'O leitor de produtos e a análise de agachamento pedem acesso à câmara quando os inicias. A classificação de fotografia e os pontos do corpo são calculados no dispositivo. A app não envia nem guarda imagens ou vídeo; a fotografia escolhida fica temporariamente na memória para confirmação.',
+    'policyControlTitle': 'Exportar, importar e apagar',
+    'policyControlBody':
+        'A exportação mostra um JSON local para copiares e guardares. A importação substitui os dados existentes por uma cópia VYRO válida. “Eliminar todos os dados” apaga o perfil, cache e registos desta instalação. Estas ações não apagam cópias que guardaste fora da app.',
+    'policyBackupTitle': 'Cópias do sistema operativo',
+    'policyBackupBody':
+        'O Android está configurado sem cópia automática dos dados da app. No iOS, as regras de cópia do dispositivo e da conta Apple são controladas pelo sistema operativo; revê as definições de cópia do teu dispositivo.',
     'exportData': 'Exportar dados',
     'exportDataSubtitle': 'Copiar um ficheiro JSON com os teus dados locais',
     'exportCopyInstruction':
         'O conteúdo inclui registos de refeições, treinos, medidas e perfil. Copia-o e guarda-o num local seguro.',
+    'importData': 'Importar dados',
+    'importDataSubtitle': 'Restaurar uma exportação VYRO guardada',
+    'importPasteInstruction':
+        'Cola aqui o JSON de uma exportação VYRO. A importação substitui os dados atuais.',
+    'importPasteHint': 'Colar JSON da exportação',
+    'importReplaceConfirm':
+        'Os dados locais atuais serão substituídos pelo conteúdo desta cópia.',
+    'importReplace': 'Substituir dados',
+    'importSuccess': 'Dados restaurados neste dispositivo.',
+    'importInvalid': 'A cópia não é válida ou não pôde ser restaurada.',
     'copyExport': 'Copiar exportação',
     'close': 'Fechar',
     'deleteAllData': 'Eliminar todos os dados',
@@ -251,6 +302,7 @@ class VyroStrings {
     'delete': 'Eliminar',
     'mealSourceManual': 'Introdução manual',
     'mealSourceOff': 'Open Food Facts',
+    'mealSourceLocalReference': 'Referência USDA',
     'noMeals': 'Ainda não adicionaste alimentos a este dia.',
     'totalsPartial':
         'Total incompleto: faltam dados nutricionais em alguns alimentos.',
@@ -337,6 +389,10 @@ class VyroStrings {
     'photoNoImage': 'The photo stays in memory only while this screen is open.',
     'photoConfirmNote':
         'Confirm the food and portion. The image does not determine grams or nutrients.',
+    'localFoodReference': 'Plain food from the local reference (optional)',
+    'localFoodsNote':
+        'Per 100 g values fill the fields for review. They do not identify ingredients in the photo.',
+    'nutritionSource': 'Source',
     'confirmFood': 'Confirm food',
     'photoSource': 'Photo suggestion',
     'motionSquat': 'Squat · functional demo',
@@ -456,12 +512,59 @@ class VyroStrings {
     'editProfile': 'Edit profile and goals',
     'name': 'Name (optional)',
     'calorieTarget': 'Daily energy target',
+    'activityLevel': 'Usual activity',
+    'activity_low': 'Low',
+    'activity_moderate': 'Moderate',
+    'activity_high': 'High',
+    'dietaryChoice': 'Dietary preference',
+    'diet_none': 'No preference',
+    'diet_vegetarian': 'Vegetarian',
+    'diet_vegan': 'Vegan',
+    'workoutExperience': 'Workout experience',
+    'experience_beginner': 'Beginner',
+    'experience_intermediate': 'Intermediate',
+    'trainingDays': 'Training days per week',
+    'availableEquipment': 'Available equipment',
+    'equipment_bodyweight': 'Bodyweight',
+    'equipment_dumbbells': 'Dumbbells',
+    'equipment_cable': 'Cable / machines',
+    'generatePlan': 'Generate workout plan',
+    'generatePlanSubtitle': 'Use your schedule, experience, and equipment',
+    'generatePlanConfirm':
+        'A new plan will be created. Previous plans and workout history are preserved.',
     'privacyLocalExplanation':
         'Data is stored locally. Open Food Facts is queried only when you request a product search.',
+    'privacyPolicy': 'Privacy policy',
+    'privacyPolicySubtitle': 'What is stored and when the app connects',
+    'policyStorageTitle': 'Data on this device',
+    'policyStorageBody':
+        'Your profile, goals, meals, workouts, measurements, and product cache are stored in the app database on this device. VYRO has no account or sync service.',
+    'policyNetworkTitle': 'Network requests',
+    'policyNetworkBody':
+        'The app connects to Open Food Facts only when you start a barcode lookup with no cached result. The request contains the product code and technical headers. The app does not send meal, profile, or workout data to that service.',
+    'policyMediaTitle': 'Camera and photos',
+    'policyMediaBody':
+        'The product scanner and squat analysis request camera access when started. Photo classification and body landmarks run on this device. The app does not send or store images or video; a selected meal photo stays temporarily in memory for confirmation.',
+    'policyControlTitle': 'Export, import, and deletion',
+    'policyControlBody':
+        'Export shows local JSON for you to copy and store. Import replaces current data with a valid VYRO backup. “Delete all data” removes the profile, cache, and records from this installation. These actions cannot remove copies saved outside the app.',
+    'policyBackupTitle': 'Operating system backups',
+    'policyBackupBody':
+        'Android app data backup is disabled. On iOS, device and Apple account backup rules are controlled by the operating system; review your device backup settings.',
     'exportData': 'Export data',
     'exportDataSubtitle': 'Copy a JSON file containing your local data',
     'exportCopyInstruction':
         'This includes meal, workout, measurement, and profile data. Copy it and save it somewhere secure.',
+    'importData': 'Import data',
+    'importDataSubtitle': 'Restore a saved VYRO export',
+    'importPasteInstruction':
+        'Paste the JSON from a VYRO export. Import replaces current data.',
+    'importPasteHint': 'Paste export JSON',
+    'importReplaceConfirm':
+        'Current local data will be replaced with the contents of this backup.',
+    'importReplace': 'Replace data',
+    'importSuccess': 'Data restored on this device.',
+    'importInvalid': 'The backup is invalid or could not be restored.',
     'copyExport': 'Copy export',
     'close': 'Close',
     'deleteAllData': 'Delete all data',
@@ -522,6 +625,7 @@ class VyroStrings {
     'delete': 'Delete',
     'mealSourceManual': 'Manual entry',
     'mealSourceOff': 'Open Food Facts',
+    'mealSourceLocalReference': 'USDA reference',
     'noMeals': 'You have not added any foods to this day yet.',
     'totalsPartial':
         'Incomplete total: nutrition values are missing for some foods.',

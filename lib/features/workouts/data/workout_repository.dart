@@ -62,6 +62,21 @@ class WorkoutRepository {
     return _loadPlan(plan);
   }
 
+  Future<WorkoutPlanData> createPlanFromProfile() async {
+    await _seedCatalog();
+    return database.transaction(() async {
+      final current = await database.getActiveWorkoutPlan();
+      if (current != null) {
+        await (database.update(database.workoutPlans)
+              ..where((plan) => plan.id.equals(current.id)))
+            .write(const WorkoutPlansCompanion(active: Value(false)));
+      }
+      final profile = await database.getUserProfile() ?? const VyroProfile();
+      final plan = await _createPlan(profile);
+      return _loadPlan(plan);
+    });
+  }
+
   Future<WorkoutDayData?> loadDay(int dayId) async {
     final plan = await reloadPlan();
     for (final day in plan.days) {
@@ -247,11 +262,16 @@ class WorkoutRepository {
       .map((row) => row.read<double>('volume'));
 
   Future<WorkoutPlan> _createStarterPlan() async {
+    final profile = await database.getUserProfile() ?? const VyroProfile();
+    return _createPlan(profile);
+  }
+
+  Future<WorkoutPlan> _createPlan(VyroProfile profile) async {
     return database.transaction(() async {
       final planId = await database.addWorkoutPlan(
         WorkoutPlansCompanion.insert(
-          title: 'Plano base · 3 dias',
-          goal: 'forca_e_condicao',
+          title: 'Plano pessoal · ${profile.trainingDays} dias',
+          goal: profile.goal,
         ),
       );
       final dayDefinitions = <(String, String, List<String>)>[
@@ -283,22 +303,56 @@ class WorkoutRepository {
           ['goblet_squat', 'push_up', 'seated_row', 'hip_hinge', 'side_plank'],
         ),
       ];
-      for (var index = 0; index < dayDefinitions.length; index++) {
-        final definition = dayDefinitions[index];
+      final dayCount = profile.trainingDays.clamp(1, 7);
+      final availableEquipment = profile.availableEquipment.toSet();
+      final catalog = (await database.select(database.exerciseCatalog).get())
+          .map(_toInfo)
+          .toList();
+      for (var index = 0; index < dayCount; index++) {
+        final definition = dayDefinitions[index % dayDefinitions.length];
         final dayId = await database.addWorkoutDay(
           WorkoutDaysCompanion.insert(
             planId: planId,
             dayNumber: index + 1,
-            namePt: definition.$1,
-            nameEn: definition.$2,
+            namePt: index < 3
+                ? definition.$1
+                : 'Dia ${String.fromCharCode(65 + index)} · Corpo inteiro',
+            nameEn: index < 3
+                ? definition.$2
+                : 'Day ${String.fromCharCode(65 + index)} · Full body',
           ),
         );
-        for (var position = 0; position < definition.$3.length; position++) {
+        final selectedExercises = definition.$3.where((key) {
+          final matches = catalog.where((exercise) => exercise.key == key);
+          if (matches.isEmpty) return false;
+          final info = matches.first;
+          final needs = info.equipment.toLowerCase();
+          return (needs.contains('peso corporal') &&
+                  availableEquipment.contains('bodyweight')) ||
+              (needs.contains('halteres') &&
+                  availableEquipment.contains('dumbbells')) ||
+              (needs.contains('cabo') && availableEquipment.contains('cable'));
+        }).toList();
+        final safeBodyweightFallback = [
+          'plank',
+          'dead_bug',
+          'push_up',
+          'side_plank',
+          'glute_bridge',
+        ];
+        final exercises = selectedExercises.isEmpty
+            ? safeBodyweightFallback
+            : selectedExercises;
+        for (var position = 0; position < exercises.length; position++) {
           await database.addPlanExercise(
             PlanExercisesCompanion.insert(
               dayId: dayId,
-              exerciseKey: definition.$3[position],
+              exerciseKey: exercises[position],
               sortOrder: position,
+              sets: const Value(3),
+              repTarget: Value(
+                profile.workoutExperience == 'intermediate' ? 8 : 10,
+              ),
             ),
           );
         }

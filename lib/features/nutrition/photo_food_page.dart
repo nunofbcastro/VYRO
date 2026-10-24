@@ -9,6 +9,7 @@ import '../../core/database/app_database.dart';
 import '../../core/platform/image_temp_file.dart';
 import '../../core/widgets/vyro_widgets.dart';
 import 'domain/food_recognition_service.dart';
+import 'domain/local_food_reference.dart';
 
 class PhotoFoodPage extends StatefulWidget {
   const PhotoFoodPage({super.key, this.day});
@@ -189,8 +190,10 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
     final services = AppServicesScope.of(context);
     final draft = await showDialog<_PhotoFoodDraft>(
       context: context,
-      builder: (_) =>
-          _PhotoFoodDialog(candidate: _localizedFoodLabel(candidate.label, t)),
+      builder: (_) => _PhotoFoodDialog(
+        candidate: _localizedFoodLabel(candidate.label, t),
+        english: t.isEnglish,
+      ),
     );
     if (draft == null) return;
     await services.nutritionRepository.addEntry(
@@ -203,7 +206,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
         proteinPer100g: Value(draft.proteinPer100g),
         carbsPer100g: Value(draft.carbsPer100g),
         fatPer100g: Value(draft.fatPer100g),
-        source: const Value('photo_suggestion'),
+        source: Value(draft.source),
       ),
     );
     if (mounted) {
@@ -216,8 +219,9 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
 }
 
 class _PhotoFoodDialog extends StatefulWidget {
-  const _PhotoFoodDialog({required this.candidate});
+  const _PhotoFoodDialog({required this.candidate, required this.english});
   final String candidate;
+  final bool english;
 
   @override
   State<_PhotoFoodDialog> createState() => _PhotoFoodDialogState();
@@ -232,6 +236,7 @@ class _PhotoFoodDialogState extends State<_PhotoFoodDialog> {
   final _carbs = TextEditingController();
   final _fat = TextEditingController();
   String _meal = 'snack';
+  LocalFoodReference? _reference;
 
   @override
   void initState() {
@@ -272,6 +277,47 @@ class _PhotoFoodDialogState extends State<_PhotoFoodDialog> {
                 ],
                 onChanged: (value) => setState(() => _meal = value ?? _meal),
               ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                initialValue: null,
+                decoration: InputDecoration(
+                  labelText: t.get('localFoodReference'),
+                  helperText: t.get('localFoodsNote'),
+                ),
+                items: [
+                  for (final food in localFoodReference)
+                    DropdownMenuItem(
+                      value: food.key,
+                      child: Text(food.name(widget.english)),
+                    ),
+                ],
+                onChanged: (key) {
+                  final matches = localFoodReference.where(
+                    (item) => item.key == key,
+                  );
+                  if (matches.isEmpty) return;
+                  final food = matches.first;
+                  setState(() {
+                    _reference = food;
+                    _name.text = food.name(widget.english);
+                    _kcal.text = food.kcal.toString();
+                    _protein.text = food.protein.toString();
+                    _carbs.text = food.carbs.toString();
+                    _fat.text = food.fat.toString();
+                  });
+                },
+              ),
+              if (_reference != null) ...[
+                const SizedBox(height: 4),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '${t.get('nutritionSource')}: ${_reference!.provenance}',
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 8),
               _field(_name, t.get('foodName'), required: true),
               _field(
                 _quantity,
@@ -321,6 +367,14 @@ class _PhotoFoodDialogState extends State<_PhotoFoodDialog> {
 
   void _save() {
     if (!_formKey.currentState!.validate()) return;
+    final reference = _reference;
+    final retainsReferenceSource =
+        reference != null &&
+        _name.text.trim() == reference.name(widget.english) &&
+        _parse(_kcal.text) == reference.kcal &&
+        _parse(_protein.text) == reference.protein &&
+        _parse(_carbs.text) == reference.carbs &&
+        _parse(_fat.text) == reference.fat;
     Navigator.pop(
       context,
       _PhotoFoodDraft(
@@ -331,6 +385,9 @@ class _PhotoFoodDialogState extends State<_PhotoFoodDialog> {
         proteinPer100g: _parse(_protein.text),
         carbsPer100g: _parse(_carbs.text),
         fatPer100g: _parse(_fat.text),
+        source: retainsReferenceSource
+            ? 'local_reference_${reference.fdcId}'
+            : 'photo_suggestion',
       ),
     );
   }
@@ -345,6 +402,7 @@ class _PhotoFoodDraft {
     required this.proteinPer100g,
     required this.carbsPer100g,
     required this.fatPer100g,
+    required this.source,
   });
   final String meal;
   final String name;
@@ -353,6 +411,7 @@ class _PhotoFoodDraft {
   final double? proteinPer100g;
   final double? carbsPer100g;
   final double? fatPer100g;
+  final String source;
 }
 
 String _dayKey(DateTime date) =>

@@ -372,6 +372,8 @@ class _MealSection extends StatelessWidget {
                   '${_entryKcal(entry, t)} · '
                   '${entry.source == 'open_food_facts'
                       ? t.get('mealSourceOff')
+                      : entry.source.startsWith('local_reference_')
+                      ? '${t.get('mealSourceLocalReference')} · FDC ${entry.source.substring('local_reference_'.length)}'
                       : entry.source == 'photo_suggestion'
                       ? t.get('photoSource')
                       : t.get('mealSourceManual')}',

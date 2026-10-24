@@ -191,12 +191,111 @@ class AppDatabase extends _$AppDatabase {
       if (profile != null) 'userProfile': profile.toJson(),
     };
   }
+
+  Future<void> importAllData(Map<String, dynamic> data) async {
+    if (data['format'] != 'vyro-local-export-v1') {
+      throw const FormatException('Unsupported VYRO export format');
+    }
+    List<Map<String, dynamic>> rows(String key) {
+      final raw = data[key];
+      if (raw == null) throw FormatException('Missing rows in $key');
+      if (raw is! List || raw.length > 100000) {
+        throw FormatException('Invalid rows in $key');
+      }
+      return raw.map((row) {
+        if (row is! Map<String, dynamic>)
+          throw FormatException('Invalid row in $key');
+        return row;
+      }).toList();
+    }
+
+    final exerciseCatalogRows = rows('exerciseCatalog');
+    final workoutPlanRows = rows('workoutPlans');
+    final workoutDayRows = rows('workoutDays');
+    final planExerciseRows = rows('planExercises');
+    final workoutSessionRows = rows('workoutSessions');
+    final exerciseSetRows = rows('exerciseSets');
+    final bodyMeasurementRows = rows('bodyMeasurements');
+    final foodEntryRows = rows('foodEntries');
+    final cachedProductRows = rows('cachedProducts');
+    final rawProfile = data['userProfile'];
+    if (rawProfile != null && rawProfile is! Map<String, dynamic>) {
+      throw const FormatException('Invalid user profile');
+    }
+
+    await transaction(() async {
+      await delete(exerciseSets).go();
+      await delete(workoutSessions).go();
+      await delete(planExercises).go();
+      await delete(workoutDays).go();
+      await delete(workoutPlans).go();
+      await delete(exerciseCatalog).go();
+      await delete(bodyMeasurements).go();
+      await delete(foodEntries).go();
+      await delete(cachedProducts).go();
+      await customStatement('DELETE FROM vyro_preferences');
+
+      for (final row in exerciseCatalogRows) {
+        await into(
+          exerciseCatalog,
+        ).insert(ExerciseCatalogData.fromJson(row).toCompanion(true));
+      }
+      for (final row in workoutPlanRows) {
+        await into(
+          workoutPlans,
+        ).insert(WorkoutPlan.fromJson(row).toCompanion(true));
+      }
+      for (final row in workoutDayRows) {
+        await into(
+          workoutDays,
+        ).insert(WorkoutDay.fromJson(row).toCompanion(true));
+      }
+      for (final row in planExerciseRows) {
+        await into(
+          planExercises,
+        ).insert(PlanExercise.fromJson(row).toCompanion(true));
+      }
+      for (final row in workoutSessionRows) {
+        await into(
+          workoutSessions,
+        ).insert(WorkoutSession.fromJson(row).toCompanion(true));
+      }
+      for (final row in exerciseSetRows) {
+        await into(
+          exerciseSets,
+        ).insert(ExerciseSet.fromJson(row).toCompanion(true));
+      }
+      for (final row in bodyMeasurementRows) {
+        await into(
+          bodyMeasurements,
+        ).insert(BodyMeasurement.fromJson(row).toCompanion(true));
+      }
+      for (final row in foodEntryRows) {
+        await into(
+          foodEntries,
+        ).insert(FoodEntryRecord.fromJson(row).toCompanion(true));
+      }
+      for (final row in cachedProductRows) {
+        await into(
+          cachedProducts,
+        ).insert(CachedProduct.fromJson(row).toCompanion(true));
+      }
+      if (rawProfile != null) {
+        await saveUserProfile(VyroProfile.fromJson(rawProfile));
+      }
+    });
+  }
 }
 
 class VyroProfile {
   const VyroProfile({
     this.name = '',
     this.goal = 'routine',
+    this.activityLevel = 'moderate',
+    this.dietaryChoice = 'none',
+    this.workoutExperience = 'beginner',
+    this.availableEquipment = const ['bodyweight', 'dumbbells', 'cable'],
+    this.trainingDays = 3,
     this.calorieGoal = 2200,
     this.proteinGoal = 140,
     this.carbsGoal = 260,
@@ -205,20 +304,67 @@ class VyroProfile {
     this.theme = 'dark',
   });
   final String name, goal, locale, theme;
+  final String activityLevel, dietaryChoice, workoutExperience;
+  final List<String> availableEquipment;
+  final int trainingDays;
   final double calorieGoal, proteinGoal, carbsGoal, fatGoal;
-  factory VyroProfile.fromJson(Map<String, dynamic> json) => VyroProfile(
-    name: json['name'] as String? ?? '',
-    goal: json['goal'] as String? ?? 'routine',
-    calorieGoal: (json['calorieGoal'] as num?)?.toDouble() ?? 2200,
-    proteinGoal: (json['proteinGoal'] as num?)?.toDouble() ?? 140,
-    carbsGoal: (json['carbsGoal'] as num?)?.toDouble() ?? 260,
-    fatGoal: (json['fatGoal'] as num?)?.toDouble() ?? 75,
-    locale: json['locale'] as String? ?? 'pt',
-    theme: json['theme'] as String? ?? 'dark',
-  );
+  factory VyroProfile.fromJson(Map<String, dynamic> json) {
+    double positiveNumber(String key, double fallback) {
+      final value = (json[key] as num?)?.toDouble();
+      return value != null && value.isFinite && value > 0 && value <= 100000
+          ? value
+          : fallback;
+    }
+
+    final rawEquipment = json['availableEquipment'];
+    final equipment = rawEquipment is List
+        ? rawEquipment
+              .whereType<String>()
+              .where(
+                (value) =>
+                    const {'bodyweight', 'dumbbells', 'cable'}.contains(value),
+              )
+              .toSet()
+              .toList()
+        : const ['bodyweight', 'dumbbells', 'cable'];
+    final goal = json['goal'] as String? ?? 'routine';
+    final activity = json['activityLevel'] as String? ?? 'moderate';
+    final diet = json['dietaryChoice'] as String? ?? 'none';
+    final experience = json['workoutExperience'] as String? ?? 'beginner';
+    return VyroProfile(
+      name: json['name'] as String? ?? '',
+      goal: const {'strength', 'nutrition', 'routine'}.contains(goal)
+          ? goal
+          : 'routine',
+      activityLevel: const {'low', 'moderate', 'high'}.contains(activity)
+          ? activity
+          : 'moderate',
+      dietaryChoice: const {'none', 'vegetarian', 'vegan'}.contains(diet)
+          ? diet
+          : 'none',
+      workoutExperience: const {'beginner', 'intermediate'}.contains(experience)
+          ? experience
+          : 'beginner',
+      availableEquipment: equipment.isEmpty ? const ['bodyweight'] : equipment,
+      trainingDays: ((json['trainingDays'] as num?)?.toInt() ?? 3).clamp(1, 7),
+      calorieGoal: positiveNumber('calorieGoal', 2200),
+      proteinGoal: positiveNumber('proteinGoal', 140),
+      carbsGoal: positiveNumber('carbsGoal', 260),
+      fatGoal: positiveNumber('fatGoal', 75),
+      locale: json['locale'] == 'en' ? 'en' : 'pt',
+      theme: const {'light', 'dark', 'system'}.contains(json['theme'])
+          ? json['theme'] as String
+          : 'dark',
+    );
+  }
   Map<String, Object?> toJson() => {
     'name': name,
     'goal': goal,
+    'activityLevel': activityLevel,
+    'dietaryChoice': dietaryChoice,
+    'workoutExperience': workoutExperience,
+    'availableEquipment': availableEquipment,
+    'trainingDays': trainingDays,
     'calorieGoal': calorieGoal,
     'proteinGoal': proteinGoal,
     'carbsGoal': carbsGoal,
@@ -229,6 +375,11 @@ class VyroProfile {
   VyroProfile copyWith({
     String? name,
     String? goal,
+    String? activityLevel,
+    String? dietaryChoice,
+    String? workoutExperience,
+    List<String>? availableEquipment,
+    int? trainingDays,
     double? calorieGoal,
     double? proteinGoal,
     double? carbsGoal,
@@ -238,6 +389,11 @@ class VyroProfile {
   }) => VyroProfile(
     name: name ?? this.name,
     goal: goal ?? this.goal,
+    activityLevel: activityLevel ?? this.activityLevel,
+    dietaryChoice: dietaryChoice ?? this.dietaryChoice,
+    workoutExperience: workoutExperience ?? this.workoutExperience,
+    availableEquipment: availableEquipment ?? this.availableEquipment,
+    trainingDays: trainingDays ?? this.trainingDays,
     calorieGoal: calorieGoal ?? this.calorieGoal,
     proteinGoal: proteinGoal ?? this.proteinGoal,
     carbsGoal: carbsGoal ?? this.carbsGoal,
