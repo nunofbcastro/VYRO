@@ -27,7 +27,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>O VYRO usa a câmara apenas quando pedes para ler o código de barras de um produto.</string>
+	<string>O VYRO usa a câmara quando pedes para ler um código de barras ou iniciar a análise local de agachamentos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Escolher uma imagem para sugerir possíveis pratos no dispositivo.</string>
 	<key>UIApplicationSceneManifest</key>

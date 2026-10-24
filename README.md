@@ -20,5 +20,6 @@ O app usa Português (Portugal) por predefinição, permite trocar para inglês 
 - Planos de treino editáveis, catálogo de exercícios, registo local de séries, temporizador de descanso, retoma de sessões e histórico são funcionais.
 - O progresso apresenta sessões, volume de treino e medições de peso guardados neste dispositivo. As medições de peso são introduzidas pelo utilizador.
 - Reconhecimento de pratos por fotografia usa um classificador LiteRT local; mostra hipóteses, pede confirmação e não estima porções nem nutrientes. Modelo e mapa de etiquetas: Apache 2.0; limitações em `assets/models/NOTICE.md`.
+- Análise local de movimento suporta agachamentos: pede acesso à câmara após um toque, apresenta pontos e conta repetições aproximadas. Não grava vídeo nem avalia técnica ou segurança.
 - O dashboard mantém valores ilustrativos; análise de movimento, exportação e eliminação de dados são trabalho por fazer.
 - A especificação, tokens e guia visual permanecem em `docs/` e `brand/`.

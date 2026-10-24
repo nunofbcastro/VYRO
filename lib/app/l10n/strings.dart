@@ -61,6 +61,25 @@ class VyroStrings {
         'Confirma o alimento e a porção. A imagem não determina gramas nem nutrientes.',
     'confirmFood': 'Confirmar alimento',
     'photoSource': 'Sugestão por fotografia',
+    'motionSquat': 'Agachamento · demonstração funcional',
+    'motionPrivacy':
+        'A câmara só inicia quando carregas no botão. A posição do corpo e as repetições são calculadas no dispositivo; não guardamos nem enviamos imagens ou vídeo.',
+    'motionLimit':
+        'Segue os pontos indicados como referência aproximada. Esta contagem não avalia a técnica, não deteta riscos e não substitui orientação profissional.',
+    'motionStart': 'Ativar câmara e iniciar',
+    'motionStop': 'Parar e fechar câmara',
+    'motionReady': 'Corpo enquadrado · acompanha o movimento',
+    'motionLowConfidence':
+        'Pontos pouco visíveis · melhora a luz e o enquadramento',
+    'motionOutOfFrame': 'Corpo fora do enquadramento · afasta a câmara',
+    'motionPosition': 'Coloca o corpo inteiro à vista, de lado para a câmara',
+    'motionKneeAngle': 'Ângulo médio do joelho · estimativa',
+    'motionAngleUnknown': 'Ângulo do joelho indisponível',
+    'motionReps': 'reps',
+    'motionNoSafety':
+        'A contagem é aproximada e não valida a execução nem a segurança.',
+    'motionUnavailable':
+        'A análise local não está disponível neste dispositivo.',
     'manual': 'Adicionar manualmente',
     'todayTraining': 'Treino de hoje',
     'upper': 'Membros superiores',
@@ -296,6 +315,24 @@ class VyroStrings {
         'Confirm the food and portion. The image does not determine grams or nutrients.',
     'confirmFood': 'Confirm food',
     'photoSource': 'Photo suggestion',
+    'motionSquat': 'Squat · functional demo',
+    'motionPrivacy':
+        'The camera starts only after you tap the button. Pose landmarks and repetitions are calculated on this device; images and video are not saved or sent.',
+    'motionLimit':
+        'Use the markers as an approximate reference. This counter does not assess technique, detect risks or replace professional guidance.',
+    'motionStart': 'Enable camera and start',
+    'motionStop': 'Stop and close camera',
+    'motionReady': 'Body framed · follow the movement',
+    'motionLowConfidence':
+        'Landmarks are hard to see · improve lighting and framing',
+    'motionOutOfFrame': 'Body is out of frame · move the camera back',
+    'motionPosition': 'Keep your full body in view, side-on to the camera',
+    'motionKneeAngle': 'Average knee angle · estimate',
+    'motionAngleUnknown': 'Knee angle unavailable',
+    'motionReps': 'reps',
+    'motionNoSafety':
+        'The rep counter is approximate and does not validate form or safety.',
+    'motionUnavailable': 'On-device analysis is not available on this device.',
     'manual': 'Add manually',
     'todayTraining': "Today's workout",
     'upper': 'Upper body',
