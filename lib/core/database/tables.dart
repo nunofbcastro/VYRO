@@ -31,3 +31,72 @@ class CachedProducts extends Table {
   @override
   Set<Column<Object>> get primaryKey => {barcode};
 }
+
+class WorkoutPlans extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text()();
+  TextColumn get goal => text()();
+  BoolColumn get active => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+class WorkoutDays extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get planId => integer()();
+  IntColumn get dayNumber => integer()();
+  TextColumn get namePt => text()();
+  TextColumn get nameEn => text()();
+}
+
+class ExerciseCatalog extends Table {
+  TextColumn get exerciseKey => text()();
+  TextColumn get namePt => text()();
+  TextColumn get nameEn => text()();
+  TextColumn get muscleGroup => text()();
+  TextColumn get instructionsPt => text()();
+  TextColumn get instructionsEn => text()();
+  TextColumn get equipment => text()();
+  TextColumn get difficulty => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {exerciseKey};
+}
+
+class PlanExercises extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get dayId => integer()();
+  TextColumn get exerciseKey => text()();
+  IntColumn get sortOrder => integer()();
+  IntColumn get sets => integer().withDefault(const Constant(3))();
+  IntColumn get repTarget => integer().withDefault(const Constant(10))();
+  IntColumn get restSeconds => integer().withDefault(const Constant(90))();
+}
+
+class WorkoutSessions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get day => text()();
+  TextColumn get planName => text()();
+  TextColumn get workoutName => text()();
+  DateTimeColumn get startedAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get finishedAt => dateTime().nullable()();
+  TextColumn get status => text().withDefault(const Constant('active'))();
+}
+
+class ExerciseSets extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get sessionId => integer()();
+  TextColumn get exerciseKey => text()();
+  IntColumn get setNumber => integer()();
+  IntColumn get targetReps => integer()();
+  IntColumn get reps => integer().nullable()();
+  RealColumn get weightKg => real().nullable()();
+  BoolColumn get completed => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get completedAt => dateTime().nullable()();
+}
+
+class BodyMeasurements extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get measuredAt => dateTime().withDefault(currentDateAndTime)();
+  RealColumn get weightKg => real()();
+  TextColumn get note => text().nullable()();
+}

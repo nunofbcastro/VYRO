@@ -4,7 +4,7 @@ import '../../app/l10n/strings.dart';
 import '../nutrition/nutrition_diary_page.dart';
 import '../profile/profile_page.dart';
 import '../progress/progress_page.dart';
-import '../workouts/training_page.dart';
+import '../workouts/training_home_page.dart';
 import 'home_page.dart';
 
 class HomeShell extends StatefulWidget {
