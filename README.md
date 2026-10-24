@@ -1,15 +1,20 @@
-# VYRO — Agent + Brand Starter Kit
+# VYRO — Nutrição e treino
 
-Brand and development instructions for a Flutter-first fitness + nutrition app.
+Aplicação Flutter demonstrativa para nutrição e treino, com interface em português (Portugal) e inglês, tema escuro, claro ou definido pelo sistema.
 
-## Contents
-- `AGENTS.md`: canonical instructions for coding agents.
-- `agent.md`: alias for agents expecting that filename.
-- `.agents/skills/`: task-specific coding playbooks.
-- `brand/`: brand guide, vector logo assets, tokens, screen designs.
-- `docs/`: product spec, architecture and phased plan.
+## Executar
 
-## Use
-Extract into a new repo and ask your coding agent: **“Read AGENTS.md and implement Phase 1 from docs/IMPLEMENTATION_PLAN.md. Build a working Flutter project and /design-system screen.”**
+Com o Flutter instalado, a partir da raiz do projeto:
 
-This ZIP does **not** contain a built app or trained AI model. Branding is a concept: trademark and app-store name availability have not been verified.
+```sh
+flutter pub get
+flutter run
+```
+
+O projeto nesta fase contém a base de interface da Fase 1. O menu Perfil permite trocar idioma e tema. A galeria Sistema de design está disponível em `/design-system` ou no ecrã Perfil.
+
+## Estado
+
+- Os valores de nutrição, treino e progresso são dados fictícios de demonstração.
+- Câmara, leitura de código de barras, reconhecimento de alimentos, persistência, treinos e assistente ainda não estão implementados.
+- A especificação, tokens e guia visual permanecem em `docs/` e `brand/`.
