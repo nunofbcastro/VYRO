@@ -96,6 +96,15 @@ class _NutritionDiaryPageState extends State<NutritionDiaryPage> {
                   OutlinedButton.icon(
                     onPressed: () => Navigator.pushNamed(
                       context,
+                      '/photo-camera',
+                      arguments: selectedDay,
+                    ),
+                    icon: const Icon(Icons.photo_camera_outlined),
+                    label: Text(t.get('photo')),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.pushNamed(
+                      context,
                       '/barcode',
                       arguments: selectedDay,
                     ),
@@ -361,7 +370,11 @@ class _MealSection extends StatelessWidget {
                 subtitle: Text(
                   '${entry.quantityGrams.round()} ${t.get('grams')} · '
                   '${_entryKcal(entry, t)} · '
-                  '${entry.source == 'open_food_facts' ? t.get('mealSourceOff') : t.get('mealSourceManual')}',
+                  '${entry.source == 'open_food_facts'
+                      ? t.get('mealSourceOff')
+                      : entry.source == 'photo_suggestion'
+                      ? t.get('photoSource')
+                      : t.get('mealSourceManual')}',
                 ),
                 onTap: () => onEdit(entry),
                 trailing: PopupMenuButton<String>(

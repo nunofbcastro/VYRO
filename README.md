@@ -19,5 +19,6 @@ O app usa Português (Portugal) por predefinição, permite trocar para inglês 
 - Leitor EAN-8/EAN-13/UPC-A para Android e iOS; consulta explícita à Open Food Facts, cache local, atribuição e entrada manual sem câmara. No Web, o código é introduzido manualmente.
 - Planos de treino editáveis, catálogo de exercícios, registo local de séries, temporizador de descanso, retoma de sessões e histórico são funcionais.
 - O progresso apresenta sessões, volume de treino e medições de peso guardados neste dispositivo. As medições de peso são introduzidas pelo utilizador.
-- O dashboard mantém valores ilustrativos; reconhecimento de refeições por fotografia, análise de movimento, exportação e eliminação de dados são trabalho por fazer.
+- Reconhecimento de pratos por fotografia usa um classificador LiteRT local; mostra hipóteses, pede confirmação e não estima porções nem nutrientes. Modelo e mapa de etiquetas: Apache 2.0; limitações em `assets/models/NOTICE.md`.
+- O dashboard mantém valores ilustrativos; análise de movimento, exportação e eliminação de dados são trabalho por fazer.
 - A especificação, tokens e guia visual permanecem em `docs/` e `brand/`.

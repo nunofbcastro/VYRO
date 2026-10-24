@@ -38,6 +38,29 @@ class VyroStrings {
     'snack': 'Lanche',
     'scan': 'Ler código de barras',
     'photo': 'Fotografar refeição',
+    'photoLocalPrivacy':
+        'A classificação é executada neste dispositivo. A fotografia temporária é eliminada após a leitura e não é enviada.',
+    'photoModelCaveat':
+        'O modelo sugere nomes de pratos, tem enviesamento para comida norte-americana e pode falhar. Não reconhece ingredientes nem estima porções, calorias ou alergénios.',
+    'photoNativeOnly':
+        'O reconhecimento por fotografia está disponível na app Android e iOS.',
+    'takePhoto': 'Tirar fotografia',
+    'choosePhoto': 'Escolher da galeria',
+    'photoAnalyzing': 'A analisar localmente…',
+    'photoInvalidImage': 'Não foi possível ler esta imagem.',
+    'photoModelError': 'O modelo local não conseguiu analisar esta imagem.',
+    'photoManualFallback':
+        'Podes continuar a introduzir o alimento manualmente.',
+    'photoNoMatch': 'Sem sugestão útil',
+    'photoUnknown':
+        'Não foi possível identificar um prato com confiança suficiente.',
+    'photoHypothesis': 'hipótese do modelo · confirma antes de guardar',
+    'photoNoImage':
+        'A fotografia fica apenas na memória enquanto este ecrã está aberto.',
+    'photoConfirmNote':
+        'Confirma o alimento e a porção. A imagem não determina gramas nem nutrientes.',
+    'confirmFood': 'Confirmar alimento',
+    'photoSource': 'Sugestão por fotografia',
     'manual': 'Adicionar manualmente',
     'todayTraining': 'Treino de hoje',
     'upper': 'Membros superiores',
@@ -253,6 +276,26 @@ class VyroStrings {
     'snack': 'Snack',
     'scan': 'Scan barcode',
     'photo': 'Photograph meal',
+    'photoLocalPrivacy':
+        'Classification runs on this device. The temporary photo is deleted after analysis and is never sent.',
+    'photoModelCaveat':
+        'The model suggests dish names, is biased toward North American foods and can be wrong. It does not identify ingredients or estimate portions, calories or allergens.',
+    'photoNativeOnly':
+        'Photo recognition is available in the Android and iOS apps.',
+    'takePhoto': 'Take a photo',
+    'choosePhoto': 'Choose from library',
+    'photoAnalyzing': 'Analysing on this device…',
+    'photoInvalidImage': 'Could not read this image.',
+    'photoModelError': 'The local model could not analyse this image.',
+    'photoManualFallback': 'You can continue by entering food manually.',
+    'photoNoMatch': 'No useful suggestion',
+    'photoUnknown': 'Could not identify a dish with enough confidence.',
+    'photoHypothesis': 'model hypothesis · confirm before saving',
+    'photoNoImage': 'The photo stays in memory only while this screen is open.',
+    'photoConfirmNote':
+        'Confirm the food and portion. The image does not determine grams or nutrients.',
+    'confirmFood': 'Confirm food',
+    'photoSource': 'Photo suggestion',
     'manual': 'Add manually',
     'todayTraining': "Today's workout",
     'upper': 'Upper body',

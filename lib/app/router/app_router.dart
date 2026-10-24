@@ -5,6 +5,7 @@ import '../../features/barcode/barcode_scanner_page.dart';
 import '../../features/design_showcase/design_system_page.dart';
 import '../../features/demo/demo_page.dart';
 import '../../features/nutrition/nutrition_diary_page.dart';
+import '../../features/nutrition/photo_food_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/progress/progress_page.dart';
 import '../../features/workouts/training_home_page.dart';
@@ -27,6 +28,14 @@ class VyroRouter {
       case '/barcode':
         return MaterialPageRoute<void>(
           builder: (_) => BarcodeScannerPage(
+            day: settings.arguments is DateTime
+                ? settings.arguments! as DateTime
+                : DateTime.now(),
+          ),
+        );
+      case '/photo-camera':
+        return MaterialPageRoute<void>(
+          builder: (_) => PhotoFoodPage(
             day: settings.arguments is DateTime
                 ? settings.arguments! as DateTime
                 : DateTime.now(),
