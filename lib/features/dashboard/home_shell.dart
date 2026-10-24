@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../app/l10n/strings.dart';
 import '../nutrition/nutrition_diary_page.dart';
-import '../profile/profile_page.dart';
+import '../profile/profile_settings_page.dart';
 import '../progress/progress_page.dart';
 import '../workouts/training_home_page.dart';
-import 'home_page.dart';
+import 'live_home_page.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -21,11 +21,11 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     final t = stringsOf(context);
     final pages = [
-      const HomePage(),
+      const LiveHomePage(),
       const NutritionDiaryPage(),
       const TrainingPage(),
       const ProgressPage(),
-      const ProfilePage(),
+      const ProfileSettingsPage(),
     ];
     final labels = ['home', 'nutrition', 'training', 'progress', 'profile'];
     final icons = [

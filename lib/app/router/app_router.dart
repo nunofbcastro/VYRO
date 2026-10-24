@@ -7,7 +7,7 @@ import '../../features/demo/demo_page.dart';
 import '../../features/nutrition/nutrition_diary_page.dart';
 import '../../features/nutrition/photo_food_page.dart';
 import '../../features/pose/motion_page.dart';
-import '../../features/profile/profile_page.dart';
+import '../../features/profile/profile_settings_page.dart';
 import '../../features/progress/progress_page.dart';
 import '../../features/workouts/training_home_page.dart';
 
@@ -49,7 +49,13 @@ class VyroRouter {
       case '/progress':
         return MaterialPageRoute<void>(builder: (_) => const ProgressPage());
       case '/profile':
-        return MaterialPageRoute<void>(builder: (_) => const ProfilePage());
+        return MaterialPageRoute<void>(
+          builder: (_) => const ProfileSettingsPage(),
+        );
+      case '/profile-setup':
+        return MaterialPageRoute<void>(
+          builder: (_) => const ProfileSettingsPage(),
+        );
       default:
         return MaterialPageRoute<void>(
           settings: settings,

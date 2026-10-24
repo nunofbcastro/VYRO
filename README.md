@@ -21,5 +21,7 @@ O app usa Português (Portugal) por predefinição, permite trocar para inglês 
 - O progresso apresenta sessões, volume de treino e medições de peso guardados neste dispositivo. As medições de peso são introduzidas pelo utilizador.
 - Reconhecimento de pratos por fotografia usa um classificador LiteRT local; mostra hipóteses, pede confirmação e não estima porções nem nutrientes. Modelo e mapa de etiquetas: Apache 2.0; limitações em `assets/models/NOTICE.md`.
 - Análise local de movimento suporta agachamentos: pede acesso à câmara após um toque, apresenta pontos e conta repetições aproximadas. Não grava vídeo nem avalia técnica ou segurança.
-- O dashboard mantém valores ilustrativos; análise de movimento, exportação e eliminação de dados são trabalho por fazer.
+- O dashboard soma os registos reais do dia e usa objetivos editáveis do perfil local; valores de nutrientes em falta continuam assinalados como incompletos.
+- Perfil, idioma (Português/English), tema (escuro/claro/sistema) e objetivos são guardados localmente. A exportação prepara um JSON copiável; a eliminação remove registos, cache e perfil.
+- Telemetria e análise de utilização não estão incluídas. O Android desativa o backup automático da aplicação.
 - A especificação, tokens e guia visual permanecem em `docs/` e `brand/`.

@@ -4,6 +4,7 @@ import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
 import '../../core/database/app_database.dart';
 import '../../core/widgets/vyro_widgets.dart';
+import '../nutrition/domain/food_product.dart';
 import '../workouts/data/workout_repository.dart';
 
 class ProgressPage extends StatefulWidget {
@@ -20,7 +21,9 @@ class _ProgressPageState extends State<ProgressPage> {
   Widget build(BuildContext context) {
     final t = stringsOf(context);
     final repository = AppServicesScope.of(context).workoutRepository;
+    final database = AppServicesScope.of(context).database;
     final cutoff = DateTime.now().subtract(Duration(days: _rangeDays));
+    final cutoffDay = dayKey(cutoff);
     return ContentPage(
       title: t.get('progress'),
       children: [
@@ -62,6 +65,82 @@ class _ProgressPageState extends State<ProgressPage> {
             value: _compactNumber(snapshot.data ?? 0),
             unit: 'kg · ${t.get('allTime')}',
             icon: Icons.show_chart,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  t.get('calories'),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  t.get('calorieHistoryLocal'),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 12),
+                StreamBuilder<List<FoodEntryRecord>>(
+                  stream: database.watchEntriesSince(cutoffDay),
+                  builder: (context, snapshot) {
+                    final daily = <String, double>{};
+                    for (final entry
+                        in snapshot.data ?? const <FoodEntryRecord>[]) {
+                      final kcal = entry.kcalPer100g;
+                      if (kcal == null) continue;
+                      daily.update(
+                        entry.day,
+                        (sum) => sum + kcal * entry.quantityGrams / 100,
+                        ifAbsent: () => kcal * entry.quantityGrams / 100,
+                      );
+                    }
+                    final days = daily.keys.toList()..sort();
+                    if (days.isEmpty)
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        child: Text(t.get('noMeals')),
+                      );
+                    final values = days.map((day) => daily[day]!).toList();
+                    return Column(
+                      children: [
+                        if ((snapshot.data ?? const <FoodEntryRecord>[]).any(
+                          (entry) => entry.kcalPer100g == null,
+                        ))
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                t.get('totalsPartial'),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ),
+                          ),
+                        SizedBox(
+                          height: 130,
+                          child: CustomPaint(
+                            painter: _ChartPainter(
+                              Theme.of(context).colorScheme.primary,
+                              values,
+                            ),
+                            child: const SizedBox.expand(),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [Text(days.first), Text(days.last)],
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 20),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
@@ -47,6 +49,11 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createTable(exerciseSets);
         await migrator.createTable(bodyMeasurements);
       }
+    },
+    beforeOpen: (_) async {
+      await customStatement(
+        'CREATE TABLE IF NOT EXISTS vyro_preferences (key TEXT PRIMARY KEY, value TEXT NOT NULL)',
+      );
     },
   );
 
@@ -122,7 +129,120 @@ class AppDatabase extends _$AppDatabase {
       await delete(workoutPlans).go();
       await delete(exerciseCatalog).go();
       await delete(bodyMeasurements).go();
+      await customStatement('DELETE FROM vyro_preferences');
       return removedEntries;
     });
   }
+
+  Future<VyroProfile?> getUserProfile() async {
+    final row = await customSelect(
+      'SELECT value FROM vyro_preferences WHERE key = ?',
+      variables: [Variable.withString('profile')],
+    ).getSingleOrNull();
+    if (row == null) return null;
+    return VyroProfile.fromJson(
+      jsonDecode(row.read<String>('value')) as Map<String, dynamic>,
+    );
+  }
+
+  Future<void> saveUserProfile(VyroProfile profile) async {
+    await customStatement(
+      'INSERT OR REPLACE INTO vyro_preferences (key, value) VALUES (?, ?)',
+      [
+        Variable.withString('profile'),
+        Variable.withString(jsonEncode(profile.toJson())),
+      ],
+    );
+  }
+
+  Future<void> updateProfileLocale(String value) async {
+    final profile = await getUserProfile() ?? const VyroProfile();
+    await saveUserProfile(profile.copyWith(locale: value));
+  }
+
+  Future<void> updateProfileTheme(String value) async {
+    final profile = await getUserProfile() ?? const VyroProfile();
+    await saveUserProfile(profile.copyWith(theme: value));
+  }
+
+  Future<Map<String, Object?>> exportAllData() async {
+    final entries = await select(foodEntries).get();
+    final products = await select(cachedProducts).get();
+    final plans = await select(workoutPlans).get();
+    final days = await select(workoutDays).get();
+    final exercises = await select(exerciseCatalog).get();
+    final planExercisesRows = await select(planExercises).get();
+    final sessions = await select(workoutSessions).get();
+    final sets = await select(exerciseSets).get();
+    final measurements = await select(bodyMeasurements).get();
+    final profile = await getUserProfile();
+    return {
+      'format': 'vyro-local-export-v1',
+      'exportedAt': DateTime.now().toUtc().toIso8601String(),
+      'foodEntries': entries.map((row) => row.toJson()).toList(),
+      'cachedProducts': products.map((row) => row.toJson()).toList(),
+      'workoutPlans': plans.map((row) => row.toJson()).toList(),
+      'workoutDays': days.map((row) => row.toJson()).toList(),
+      'exerciseCatalog': exercises.map((row) => row.toJson()).toList(),
+      'planExercises': planExercisesRows.map((row) => row.toJson()).toList(),
+      'workoutSessions': sessions.map((row) => row.toJson()).toList(),
+      'exerciseSets': sets.map((row) => row.toJson()).toList(),
+      'bodyMeasurements': measurements.map((row) => row.toJson()).toList(),
+      if (profile != null) 'userProfile': profile.toJson(),
+    };
+  }
+}
+
+class VyroProfile {
+  const VyroProfile({
+    this.name = '',
+    this.goal = 'routine',
+    this.calorieGoal = 2200,
+    this.proteinGoal = 140,
+    this.carbsGoal = 260,
+    this.fatGoal = 75,
+    this.locale = 'pt',
+    this.theme = 'dark',
+  });
+  final String name, goal, locale, theme;
+  final double calorieGoal, proteinGoal, carbsGoal, fatGoal;
+  factory VyroProfile.fromJson(Map<String, dynamic> json) => VyroProfile(
+    name: json['name'] as String? ?? '',
+    goal: json['goal'] as String? ?? 'routine',
+    calorieGoal: (json['calorieGoal'] as num?)?.toDouble() ?? 2200,
+    proteinGoal: (json['proteinGoal'] as num?)?.toDouble() ?? 140,
+    carbsGoal: (json['carbsGoal'] as num?)?.toDouble() ?? 260,
+    fatGoal: (json['fatGoal'] as num?)?.toDouble() ?? 75,
+    locale: json['locale'] as String? ?? 'pt',
+    theme: json['theme'] as String? ?? 'dark',
+  );
+  Map<String, Object?> toJson() => {
+    'name': name,
+    'goal': goal,
+    'calorieGoal': calorieGoal,
+    'proteinGoal': proteinGoal,
+    'carbsGoal': carbsGoal,
+    'fatGoal': fatGoal,
+    'locale': locale,
+    'theme': theme,
+  };
+  VyroProfile copyWith({
+    String? name,
+    String? goal,
+    double? calorieGoal,
+    double? proteinGoal,
+    double? carbsGoal,
+    double? fatGoal,
+    String? locale,
+    String? theme,
+  }) => VyroProfile(
+    name: name ?? this.name,
+    goal: goal ?? this.goal,
+    calorieGoal: calorieGoal ?? this.calorieGoal,
+    proteinGoal: proteinGoal ?? this.proteinGoal,
+    carbsGoal: carbsGoal ?? this.carbsGoal,
+    fatGoal: fatGoal ?? this.fatGoal,
+    locale: locale ?? this.locale,
+    theme: theme ?? this.theme,
+  );
 }
