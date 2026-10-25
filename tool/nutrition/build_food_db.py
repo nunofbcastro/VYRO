@@ -243,7 +243,8 @@ def build():
             for s in used
         },
         'curatedList': 'tool/nutrition/foods_pt.tsv',
-        'curatedSha256': hashlib.sha256(TSV.read_bytes()).hexdigest(),
+        # LF-normalised so the hash is the same on Windows checkouts.
+        'curatedSha256': hashlib.sha256(TSV.read_bytes().replace(b'\r\n', b'\n')).hexdigest(),
         'portionNote': 'Typical portions are VYRO estimates for suggestions; users confirm grams.',
         'foods': foods,
     }
@@ -259,7 +260,7 @@ def main():
         print('foods.json is up to date')
         return
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(text, encoding='utf-8')
+    OUT.write_text(text, encoding='utf-8', newline='\n')
     counts = {}
     for f in db['foods']:
         counts[f['source']] = counts.get(f['source'], 0) + 1
