@@ -7,6 +7,7 @@ import '../../core/ui/vyro_ui.dart';
 import 'data/workout_repository.dart';
 import 'domain/plan_generator.dart';
 import 'domain/week_schedule.dart';
+import 'plan_wizard_page.dart';
 import 'workout_day_page.dart';
 import 'workout_session_page.dart';
 
@@ -21,17 +22,22 @@ class TrainingPage extends StatefulWidget {
 
 class _TrainingPageState extends State<TrainingPage> {
   Future<WorkoutPlanData>? _planFuture;
+  Future<bool>? _personalised;
 
   WorkoutRepository get _repository =>
       AppServicesScope.of(context).workoutRepository;
 
-  void _reload() => setState(() => _planFuture = _repository.reloadPlan());
+  void _reload() => setState(() {
+    _planFuture = _repository.reloadPlan();
+    _personalised = _repository.hasPreferences();
+  });
 
   @override
   Widget build(BuildContext context) {
     final t = stringsOf(context);
     final repository = _repository;
     _planFuture ??= repository.loadOrCreatePlan();
+    _personalised ??= repository.hasPreferences();
     return FutureBuilder<WorkoutPlanData>(
       future: _planFuture,
       builder: (context, snapshot) {
@@ -103,6 +109,49 @@ class _TrainingPageState extends State<TrainingPage> {
     ];
     return VyroPageBody(
       children: [
+        FutureBuilder<bool>(
+          future: _personalised,
+          builder: (context, snapshot) {
+            if (snapshot.data != false) return const SizedBox.shrink();
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: VyroCard(
+                tint: theme.colorScheme.primary.withValues(alpha: 0.08),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.tune_rounded,
+                          color: VyroTheme.accentTextOf(context),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            t.get('personaliseTitle'),
+                            style: theme.textTheme.titleMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      t.get('personaliseBody'),
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 14),
+                    VyroPrimaryButton(
+                      label: t.get('personaliseCta'),
+                      icon: Icons.arrow_forward_rounded,
+                      onPressed: _generate,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
         StreamBuilder<WorkoutSession?>(
           stream: _repository.watchActiveSession(),
           builder: (context, active) {
@@ -485,31 +534,13 @@ class _TrainingPageState extends State<TrainingPage> {
     if (ok == true) await _repository.skipDates(keys);
   }
 
+  /// Opens the plan wizard (questions → AI or rules → preview → save).
   Future<void> _generate() async {
-    final t = stringsOf(context);
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(t.get('generateFromGoals')),
-        content: Text(t.get('generateConfirm')),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(t.get('cancel')),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(t.get('generate')),
-          ),
-        ],
-      ),
+    final saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => const PlanWizardPage()),
     );
-    if (ok != true || !mounted) return;
-    final future = _repository.createPlanFromProfile();
-    setState(() => _planFuture = future);
-    await future;
-    messenger?.showSnackBar(SnackBar(content: Text(t.get('planGenerated'))));
+    if (saved == true && mounted) _reload();
   }
 
   Future<void> _renamePlan(WorkoutPlanData data) async {

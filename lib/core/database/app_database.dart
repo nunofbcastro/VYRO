@@ -168,6 +168,20 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
+  /// Small key/value settings stored next to the profile.
+  Future<String?> getPreference(String key) async {
+    final row = await customSelect(
+      'SELECT value FROM vyro_preferences WHERE key = ?',
+      variables: [Variable.withString(key)],
+    ).getSingleOrNull();
+    return row?.read<String>('value');
+  }
+
+  Future<void> setPreference(String key, String value) => customStatement(
+    'INSERT OR REPLACE INTO vyro_preferences (key, value) VALUES (?, ?)',
+    [key, value],
+  );
+
   Future<void> saveUserProfile(VyroProfile profile) async {
     // `customStatement` takes plain values; passing `Variable` objects here
     // breaks the web (wasm) executor with "Unknown db value" and the returned

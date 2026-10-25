@@ -9,6 +9,7 @@ import '../../app/l10n/strings.dart';
 import '../../app/theme/appearance_sheet.dart';
 import '../../core/database/app_database.dart';
 import '../../core/ui/vyro_ui.dart';
+import '../workouts/plan_wizard_page.dart';
 
 class ProfileSettingsPage extends StatefulWidget {
   const ProfileSettingsPage({super.key});
@@ -463,31 +464,11 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
   }
 
   Future<void> _generatePlan(BuildContext context, AppServices services) async {
-    final t = stringsOf(context);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.get('generatePlan')),
-        content: Text(t.get('generatePlanConfirm')),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(t.get('cancel')),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(t.get('continue')),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
-    await services.workoutRepository.createPlanFromProfile();
-    if (!context.mounted) return;
-    _reload();
-    ScaffoldMessenger.of(
+    await Navigator.push<bool>(
       context,
-    ).showSnackBar(SnackBar(content: Text(t.get('planCreated'))));
+      MaterialPageRoute(builder: (_) => const PlanWizardPage()),
+    );
+    if (context.mounted) _reload();
   }
 
   Future<void> _import(

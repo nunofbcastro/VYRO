@@ -32,8 +32,7 @@ void main() {
 
   test('history is trimmed and empty facts are omitted', () {
     final history = [
-      for (var i = 0; i < 10; i++)
-        ChatTurn(fromUser: i.isEven, text: 'msg $i'),
+      for (var i = 0; i < 10; i++) ChatTurn(fromUser: i.isEven, text: 'msg $i'),
     ];
     final prompt = buildAssistantPrompt(
       question: 'Next?',

@@ -2,7 +2,9 @@ import 'package:drift/drift.dart';
 
 import '../../../core/database/app_database.dart';
 import '../../nutrition/domain/food_product.dart' show dayKey;
+import '../domain/ai_plan.dart';
 import '../domain/plan_generator.dart';
+import '../domain/plan_preferences.dart';
 import '../domain/week_schedule.dart';
 
 class ExerciseInfo {
@@ -76,6 +78,102 @@ class WorkoutRepository {
       final profile = await database.getUserProfile() ?? const VyroProfile();
       final plan = await _createPlan(profile);
       return _loadPlan(plan);
+    });
+  }
+
+  static const _prefsKey = 'plan_preferences';
+
+  /// True once the user answered the plan wizard at least once.
+  Future<bool> hasPreferences() async =>
+      (await database.getPreference(_prefsKey)) != null;
+
+  /// Last wizard answers, or defaults derived from the profile.
+  Future<PlanPreferences> loadPreferences() async {
+    final profile = await database.getUserProfile() ?? const VyroProfile();
+    final fallback = PlanPreferences(
+      goal: profile.goal,
+      experience: profile.workoutExperience,
+      weekdays: defaultWeekdays(profile.trainingDays),
+      equipment: profile.availableEquipment.toSet(),
+    );
+    return PlanPreferences.decode(
+      await database.getPreference(_prefsKey),
+      fallback: fallback,
+    );
+  }
+
+  /// Saves the answers and mirrors goal, days, experience and equipment into
+  /// the profile so the rest of the app stays consistent.
+  Future<void> savePreferences(PlanPreferences prefs) async {
+    await database.setPreference(_prefsKey, prefs.encode());
+    final profile = await database.getUserProfile() ?? const VyroProfile();
+    await database.saveUserProfile(
+      profile.copyWith(
+        goal: prefs.goal,
+        trainingDays: prefs.daysPerWeek,
+        workoutExperience: prefs.experience == 'beginner'
+            ? 'beginner'
+            : 'intermediate',
+        availableEquipment: prefs.equipment.toList(),
+      ),
+    );
+  }
+
+  Future<Map<String, String>> _equipmentOf() async {
+    await _seedCatalog();
+    final rows = await database.select(database.exerciseCatalog).get();
+    return {for (final row in rows) row.exerciseKey: row.equipment};
+  }
+
+  /// Rule-based plan for the wizard answers.
+  Future<GeneratedPlan> rulePlan(PlanPreferences prefs) async => generatePlan(
+    daysPerWeek: prefs.daysPerWeek,
+    goal: prefs.goal,
+    experience: prefs.experience,
+    available: prefs.equipment,
+    equipmentOf: await _equipmentOf(),
+    weekdays: prefs.weekdays,
+    sessionMinutes: prefs.sessionMinutes,
+    emphasis: prefs.emphasis,
+  );
+
+  /// Exercises the user's equipment allows, for the AI prompt.
+  Future<List<CatalogChoice>> catalogChoices(
+    PlanPreferences prefs, {
+    required bool english,
+  }) async {
+    await _seedCatalog();
+    final rows = await database.select(database.exerciseCatalog).get();
+    return [
+      for (final row in rows)
+        if (_allowed(row.equipment, prefs.equipment))
+          CatalogChoice(
+            key: row.exerciseKey,
+            name: english ? row.nameEn : row.namePt,
+            muscleGroup: row.muscleGroup,
+          ),
+    ];
+  }
+
+  static bool _allowed(String equipment, Set<String> available) {
+    final needs = equipment.toLowerCase();
+    return (needs.contains('peso corporal') &&
+            available.contains('bodyweight')) ||
+        (needs.contains('halteres') && available.contains('dumbbells')) ||
+        (needs.contains('cabo') && available.contains('cable'));
+  }
+
+  /// Replaces the active plan with [plan]. History is kept.
+  Future<WorkoutPlanData> savePlan(GeneratedPlan plan, String goal) async {
+    await _seedCatalog();
+    return database.transaction(() async {
+      final current = await database.getActiveWorkoutPlan();
+      if (current != null) {
+        await (database.update(database.workoutPlans)
+              ..where((row) => row.id.equals(current.id)))
+            .write(const WorkoutPlansCompanion(active: Value(false)));
+      }
+      return _loadPlan(await _insertPlan(plan, goal));
     });
   }
 
@@ -269,22 +367,21 @@ class WorkoutRepository {
   }
 
   Future<WorkoutPlan> _createPlan(VyroProfile profile) async {
+    final catalog = await database.select(database.exerciseCatalog).get();
+    final generated = generatePlan(
+      daysPerWeek: profile.trainingDays,
+      goal: profile.goal,
+      experience: profile.workoutExperience,
+      available: profile.availableEquipment.toSet(),
+      equipmentOf: {for (final row in catalog) row.exerciseKey: row.equipment},
+    );
+    return _insertPlan(generated, profile.goal);
+  }
+
+  Future<WorkoutPlan> _insertPlan(GeneratedPlan generated, String goal) {
     return database.transaction(() async {
-      final catalog = await database.select(database.exerciseCatalog).get();
-      final generated = generatePlan(
-        daysPerWeek: profile.trainingDays,
-        goal: profile.goal,
-        experience: profile.workoutExperience,
-        available: profile.availableEquipment.toSet(),
-        equipmentOf: {
-          for (final row in catalog) row.exerciseKey: row.equipment,
-        },
-      );
       final planId = await database.addWorkoutPlan(
-        WorkoutPlansCompanion.insert(
-          title: generated.titlePt,
-          goal: profile.goal,
-        ),
+        WorkoutPlansCompanion.insert(title: generated.titlePt, goal: goal),
       );
       for (var index = 0; index < generated.days.length; index++) {
         final day = generated.days[index];
@@ -311,7 +408,9 @@ class WorkoutRepository {
           );
         }
       }
-      return (await database.getActiveWorkoutPlan())!;
+      return (await (database.select(
+        database.workoutPlans,
+      )..where((row) => row.id.equals(planId))).getSingle());
     });
   }
 

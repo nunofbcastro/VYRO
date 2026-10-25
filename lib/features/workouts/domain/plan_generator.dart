@@ -169,6 +169,8 @@ GeneratedPlan generatePlan({
   required Set<String> available,
   required Map<String, String> equipmentOf,
   List<int>? weekdays,
+  int sessionMinutes = 45,
+  String emphasis = 'balanced',
 }) {
   final days = daysPerWeek.clamp(1, 7);
   final split = _split(days);
@@ -194,12 +196,26 @@ GeneratedPlan generatePlan({
     final seen = counts.update(template.pt, (v) => v + 1, ifAbsent: () => 1);
     final suffix = seen > 1 ? ' $seen' : '';
     final keys = <String>[];
-    for (final slot in template.slots) {
+    void take(_Slot slot) {
       final pick = slot.firstWhere(
         (key) => allowed(key) && !keys.contains(key),
         orElse: () => '',
       );
       if (pick.isNotEmpty) keys.add(pick);
+    }
+
+    // Session length decides how many exercises fit; the emphasis gets at
+    // least one dedicated slot, then generic accessories fill the rest.
+    final target = exercisesForMinutes(sessionMinutes);
+    final focus = _emphasisSlots[emphasis] ?? const <_Slot>[];
+    final mainSlots = focus.isEmpty ? target : target - 1;
+    for (final slot in template.slots) {
+      if (keys.length >= mainSlots) break;
+      take(slot);
+    }
+    for (final slot in [...focus, ..._fillerSlots]) {
+      if (keys.length >= target) break;
+      take(slot);
     }
     if (keys.isEmpty) keys.addAll(['plank', 'dead_bug', 'glute_bridge']);
     planned.add(
@@ -237,6 +253,41 @@ GeneratedPlan generatePlan({
     days: planned,
   );
 }
+
+/// Exercises per session for a target duration (warm-up included).
+int exercisesForMinutes(int minutes) => switch (minutes) {
+  <= 30 => 4,
+  <= 45 => 5,
+  <= 60 => 6,
+  _ => 7,
+};
+
+/// Rough session length: work (≈3 s per rep) plus rest between sets, plus a
+/// 5-minute warm-up. Shown as guidance, not a precise timer.
+int estimateMinutes(Iterable<PlannedSlot> slots) {
+  var seconds = 300;
+  for (final slot in slots) {
+    seconds += slot.sets * (slot.reps * 3 + slot.restSeconds);
+  }
+  return (seconds / 60).round();
+}
+
+const _emphasisSlots = <String, List<_Slot>>{
+  'legs': [_lunge, _glute, _calf],
+  'upper': [_lateral, _biceps, _triceps, _rearDelt],
+  'core': [_core, _coreAlt, _coreSide],
+};
+
+const _fillerSlots = <_Slot>[
+  _core,
+  _glute,
+  _calf,
+  _lateral,
+  _biceps,
+  _triceps,
+  _coreSide,
+  _rearDelt,
+];
 
 const _accessories = {
   'plank',
