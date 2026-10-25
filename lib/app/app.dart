@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app_services.dart';
 import '../core/database/app_database.dart';
 import 'l10n/strings.dart';
+import 'launch_actions.dart';
 import 'root_gate.dart';
 import 'router/app_router.dart';
 import 'theme/vyro_theme.dart';
@@ -129,6 +130,18 @@ class _VyroAppState extends State<VyroApp> {
   void initState() {
     super.initState();
     settings.load(widget.services);
+    settings.addListener(_syncShortcuts);
+    LaunchActions.init();
+  }
+
+  void _syncShortcuts() {
+    if (settings.ready) LaunchActions.updateShortcuts(settings.locale);
+  }
+
+  @override
+  void dispose() {
+    settings.removeListener(_syncShortcuts);
+    super.dispose();
   }
 
   @override
@@ -139,6 +152,7 @@ class _VyroAppState extends State<VyroApp> {
       child: SettingsScope(
         settings: settings,
         child: MaterialApp(
+          navigatorKey: LaunchActions.navigatorKey,
           title: 'VYRO',
           debugShowCheckedModeBanner: false,
           theme: VyroTheme.light,

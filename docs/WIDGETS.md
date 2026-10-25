@@ -7,7 +7,14 @@ VYRO has two widgets. Both show local data only.
 | **Hoje** | 4×2 (Android), medium (iOS) | Calories eaten / goal with a progress bar, calories left (or over), protein, next workout with its day, workouts done this week. |
 | **Calorias** | 2×2 (Android), small (iOS) | Calories left today with a progress bar. |
 
-Tapping a widget opens the app.
+| **Treino da semana** | 4×2 (Android) | Monday to Sunday with each day's status (done ✓, today •, missed !, can't –, rest), the next workout and a **Começar** button. |
+
+The **Hoje** widget has quick-add buttons: **+ Código**, **Foto** and **Manual**. Tapping Calorias opens the diary.
+
+## Deep links and app-icon shortcuts
+Widget buttons open `vyro://action/<id>`, where `<id>` is one of `scan`, `photo`, `manual`, `training` or `assistant`. A long press on the app icon shows the same shortcuts (Ler código de barras, Fotografar refeição, Treino de hoje, Assistente) through the `quick_actions` plugin.
+
+Both go through `LaunchActions` (`lib/app/launch_actions.dart`), which waits until the user is past onboarding, then opens the screen. iOS registers the `vyro` URL scheme in `Info.plist`, and the medium widget shows the same three quick-add buttons.
 
 ## How data flows
 1. `LiveHomePage` builds a `HomeWidgetSnapshot` from today's diary, the profile goals and the weekly schedule.

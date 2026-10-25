@@ -3,4 +3,5 @@
     <string name="widget_empty">Abre a VYRO para ver o teu dia.</string>
     <string name="widget_today_description">Calorias, proteína e próximo treino de hoje.</string>
     <string name="widget_calories_description">Calorias que ainda tens hoje.</string>
+    <string name="widget_training_description">Plano da semana: dias feitos e próximo treino.</string>
 </resources>

@@ -610,6 +610,12 @@ class VyroStrings {
     'originLocal': 'Referência local (USDA)',
     'originHistory': 'Do teu histórico',
     'originNone': 'Sem dados nutricionais',
+    'trainingToday': 'Treino de hoje',
+    'widgetScan': 'Código',
+    'widgetPhoto': 'Foto',
+    'widgetManual': 'Manual',
+    'widgetStart': 'Começar',
+    'widgetTraining': 'Treino da semana',
   };
 
   static const _en = <String, String>{
@@ -1204,6 +1210,12 @@ class VyroStrings {
     'originLocal': 'Local reference (USDA)',
     'originHistory': 'From your history',
     'originNone': 'No nutrition data',
+    'trainingToday': "Today's workout",
+    'widgetScan': 'Barcode',
+    'widgetPhoto': 'Photo',
+    'widgetManual': 'Manual',
+    'widgetStart': 'Start',
+    'widgetTraining': 'Training week',
   };
 }
 

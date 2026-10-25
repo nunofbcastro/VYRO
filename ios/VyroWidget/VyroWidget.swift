@@ -28,6 +28,9 @@ struct VyroEntry: TimelineEntry {
     let lblNext: String
     let lblWeek: String
     let lblProtein: String
+    let lblScan: String
+    let lblPhoto: String
+    let lblManual: String
 
     static func read() -> VyroEntry {
         let d = UserDefaults(suiteName: appGroupId)
@@ -53,7 +56,10 @@ struct VyroEntry: TimelineEntry {
             lblOver: text("lbl_over", "acima do objetivo"),
             lblNext: text("lbl_next", "Próximo treino"),
             lblWeek: text("lbl_week", "treinos feitos"),
-            lblProtein: text("lbl_protein", "Proteína")
+            lblProtein: text("lbl_protein", "Proteína"),
+            lblScan: text("lbl_scan", "Código"),
+            lblPhoto: text("lbl_photo", "Foto"),
+            lblManual: text("lbl_manual", "Manual")
         )
     }
 
@@ -118,7 +124,7 @@ struct VyroWidgetView: View {
                 medium
             }
         }
-        .widgetURL(URL(string: "vyro://home"))
+        .widgetURL(URL(string: "vyro://action/manual"))
     }
 
     private var header: some View {
@@ -133,6 +139,17 @@ struct VyroWidgetView: View {
 
     private var bar: some View {
         ProgressView(value: Double(entry.kcalPercent), total: 100).tint(lime)
+    }
+
+    private func quickLink(_ title: String, _ action: String, primary: Bool) -> some View {
+        Link(destination: URL(string: "vyro://action/\(action)")!) {
+            Text(title)
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(primary ? ink : offWhite)
+                .frame(maxWidth: .infinity, minHeight: 28)
+                .background(primary ? lime : Color.white.opacity(0.08))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
     }
 
     private var small: some View {
@@ -161,6 +178,11 @@ struct VyroWidgetView: View {
                 Spacer()
                 Text("\(entry.lblProtein) \(entry.proteinEaten) / \(entry.proteinGoal) g")
                     .font(.system(size: 12)).foregroundColor(muted)
+            }
+            HStack(spacing: 6) {
+                quickLink("+ " + entry.lblScan, "scan", primary: true)
+                quickLink(entry.lblPhoto, "photo", primary: false)
+                quickLink(entry.lblManual, "manual", primary: false)
             }
             Spacer(minLength: 0)
             HStack(alignment: .bottom) {
@@ -193,6 +215,6 @@ struct VyroWidget: Widget {
         }
         .configurationDisplayName("VYRO")
         .description("Calorias, proteína e próximo treino de hoje.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }

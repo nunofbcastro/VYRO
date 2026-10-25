@@ -18,6 +18,8 @@ class HomeWidgetSnapshot {
     required this.weekDone,
     required this.weekTotal,
     required this.labels,
+    this.weekLabels = const [],
+    this.weekStatus = const [],
   });
 
   final int kcalEaten;
@@ -33,8 +35,15 @@ class HomeWidgetSnapshot {
   final int weekDone;
   final int weekTotal;
 
-  /// Translated labels: kcal, left, over, next, week, protein, title.
+  /// Translated labels: kcal, left, over, next, week, protein, title,
+  /// scan, photo, manual, start, training.
   final Map<String, String> labels;
+
+  /// One-letter weekday labels, Monday first ("S,T,Q,Q,S,S,D").
+  final List<String> weekLabels;
+
+  /// Status per weekday: done | skipped | missed | today | planned | rest.
+  final List<String> weekStatus;
 
   int get kcalLeft => kcalGoal - kcalEaten;
 
@@ -53,6 +62,8 @@ class HomeWidgetSnapshot {
     'next_when': nextWhen,
     'week_done': weekDone,
     'week_total': weekTotal,
+    'week_labels': weekLabels.join(','),
+    'week_status': weekStatus.join(','),
     for (final entry in labels.entries) 'lbl_${entry.key}': entry.value,
   };
 
@@ -77,6 +88,7 @@ class VyroHomeWidgets {
   static const _androidProviders = [
     'com.example.vyro.widgets.VyroTodayWidgetProvider',
     'com.example.vyro.widgets.VyroCaloriesWidgetProvider',
+    'com.example.vyro.widgets.VyroTrainingWidgetProvider',
   ];
   static const _iosKind = 'VyroWidget';
 

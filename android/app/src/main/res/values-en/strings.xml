@@ -3,4 +3,5 @@
     <string name="widget_empty">Open VYRO to see your day.</string>
     <string name="widget_today_description">Today\'s calories, protein and next workout.</string>
     <string name="widget_calories_description">Calories you have left today.</string>
+    <string name="widget_training_description">Week plan: days done and next workout.</string>
 </resources>

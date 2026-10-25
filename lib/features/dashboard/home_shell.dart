@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/l10n/strings.dart';
+import '../../app/launch_actions.dart';
 import '../../app/theme/vyro_shell.dart';
 import '../../core/ui/components/vyro_motion.dart';
 import '../nutrition/nutrition_diary_page.dart';
@@ -27,6 +28,19 @@ class HomeShell extends StatefulWidget {
 
 class _HomeShellState extends State<HomeShell> {
   int index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Widget taps / app-icon shortcuts received earlier open now.
+    LaunchActions.markReady();
+  }
+
+  @override
+  void dispose() {
+    LaunchActions.markNotReady();
+    super.dispose();
+  }
 
   void select(int value) => setState(() => index = value);
 

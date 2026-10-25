@@ -252,7 +252,17 @@ void _publishWidgets({
         : weekdayLong(next.date.weekday, english: t.isEnglish),
     weekDone: progress.done,
     weekTotal: progress.scheduled,
+    weekLabels: [
+      for (final day in week)
+        weekdayShort(day.date.weekday, english: t.isEnglish).substring(0, 1),
+    ],
+    weekStatus: [for (final day in week) day.status.name],
     labels: {
+      'scan': t.get('widgetScan'),
+      'photo': t.get('widgetPhoto'),
+      'manual': t.get('widgetManual'),
+      'start': t.get('widgetStart'),
+      'training': t.get('widgetTraining'),
       'title': t.get('todayShort'),
       'kcal': 'kcal',
       'left': t.get('remaining'),
