@@ -4,6 +4,9 @@ import com.google.mlkit.genai.common.DownloadStatus
 import com.google.mlkit.genai.common.FeatureStatus
 import com.google.mlkit.genai.prompt.GenerativeModel
 import com.google.mlkit.genai.prompt.Generation
+import com.google.mlkit.genai.prompt.ImagePart
+import com.google.mlkit.genai.prompt.TextPart
+import com.google.mlkit.genai.prompt.generateContentRequest
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +40,15 @@ class OnDeviceLlmChannel(messenger: BinaryMessenger) {
                         result.error("bad_args", "Missing prompt", null)
                     } else {
                         generate(prompt, result)
+                    }
+                }
+                "describeImage" -> {
+                    val image = call.argument<ByteArray>("image")
+                    val prompt = call.argument<String>("prompt")
+                    if (image == null || prompt.isNullOrBlank()) {
+                        result.error("bad_args", "Missing image or prompt", null)
+                    } else {
+                        describeImage(image, prompt, result)
                     }
                 }
                 else -> result.notImplemented()
@@ -83,6 +95,22 @@ class OnDeviceLlmChannel(messenger: BinaryMessenger) {
                 val response = client().generateContent(prompt)
                 val text = response.candidates.joinToString("") { it.text.orEmpty() }
                 result.success(text)
+            } catch (e: Exception) {
+                result.error("generation_failed", e.message, null)
+            }
+        }
+    }
+
+    /** Multimodal prompt (photo + text). The JPEG stays in memory only. */
+    private fun describeImage(image: ByteArray, prompt: String, result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val request = generateContentRequest(ImagePart(image), TextPart(prompt)) {
+                    temperature = 0.1f
+                    maxOutputTokens = 512
+                }
+                val response = client().generateContent(request)
+                result.success(response.candidates.joinToString("") { it.text.orEmpty() })
             } catch (e: Exception) {
                 result.error("generation_failed", e.message, null)
             }

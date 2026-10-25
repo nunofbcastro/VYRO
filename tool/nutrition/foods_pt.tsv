@@ -1,0 +1,132 @@
+key	name_pt	name_en	source	source_ref	region	category	portion_g	portion_pt	portion_en	aliases	vision_labels
+rice_white_cooked	Arroz branco cozido	White rice, cooked	usda	Rice, white, long-grain, regular, enriched, cooked	int	cereais	150	1 dose (prato)	1 serving	arroz|arroz branco|arroz cozido|rice|white rice|steamed rice	White rice|Fried rice|Cơm tấm|Red beans and rice|Arroz con pollo|Arroz a la cubana|Hainanese chicken rice|Spanish rice|Galinhada|Rice and gravy|Bento|Coconut rice|Glorified rice|Katsudon|Arroz chaufa|Hayashi rice
+rice_brown_cooked	Arroz integral cozido	Brown rice, cooked	usda	Rice, brown, long-grain, cooked (Includes foods for USDA's Food Distribution Program)	int	cereais	150	1 dose (prato)	1 serving	arroz integral|brown rice	
+pasta_cooked	Massa cozida	Pasta, cooked	usda	Pasta, cooked, enriched, without added salt	int	cereais	180	1 dose (prato)	1 serving	massa|esparguete|macarrão|massa cozida|pasta|spaghetti|penne	Spaghetti|Spaghetti aglio e olio|Pasta salad|Spaghetti alle vongole
+couscous_cooked	Cuscuz cozido	Couscous, cooked	usda	Couscous, cooked	int	cereais	150	1 dose	1 serving	cuscuz|couscous	Couscous
+quinoa_cooked	Quinoa cozida	Quinoa, cooked	usda	Quinoa, cooked	int	cereais	150	1 dose	1 serving	quinoa	
+oats_dry	Flocos de aveia	Rolled oats, dry	usda	Cereals, oats, regular and quick, not fortified, dry	int	cereais	40	1 tigela (seco)	1 bowl (dry)	aveia|flocos de aveia|papas de aveia|oats|oatmeal|porridge	
+bread_white	Pão branco	White bread	usda	Bread, white, commercially prepared (includes soft bread crumbs)	int	padaria	30	1 fatia	1 slice	pão|pão branco|pão de forma|bread|white bread	Rye bread
+bread_white_toasted	Pão torrado	Toasted white bread	usda	Bread, white, commercially prepared, toasted	int	padaria	30	1 fatia	1 slice	torrada|pão torrado|tosta|toast	Tostada|Mollete|Melt sandwich|Cheese sandwich|Milk toast
+bread_wholewheat	Pão integral	Whole-wheat bread	usda	Bread, whole-wheat, commercially prepared	int	padaria	30	1 fatia	1 slice	pão integral|pão de mistura|whole wheat bread	
+bread_roll	Pão (papo-seco)	Bread roll	usda	Rolls, dinner, plain, commercially prepared (includes brown-and-serve)	int	padaria	50	1 unidade	1 roll	papo-seco|carcaça|pão|bread roll|roll	
+pizza_cheese	Pizza de queijo	Cheese pizza	usda	Pizza, cheese topping, regular crust, frozen, cooked	int	pratos	110	1 fatia grande	1 large slice	pizza	New York-style pizza|Neapolitan pizza|Chicago-style pizza|California-style pizza
+beans_red_cooked	Feijão encarnado cozido	Red kidney beans, cooked	usda	Beans, kidney, red, mature seeds, cooked, boiled, without salt	int	leguminosas	130	1 dose	1 serving	feijão|feijão encarnado|feijão vermelho|feijão cozido|kidney beans|beans|red beans	Feijoada|Pork and beans|Rajma|Frijoles charros|Boston baked beans|Pasulj|Ful medames|Chili con carne|Red beans and rice|Baked beans|Feijão de óleo de palma|Cowboy beans
+beans_pinto_cooked	Feijão catarino cozido	Pinto beans, cooked	usda	Beans, pinto, mature seeds, cooked, boiled, without salt	int	leguminosas	130	1 dose	1 serving	feijão catarino|feijão carioca|feijão castanho|pinto beans	
+beans_black_cooked	Feijão preto cozido	Black beans, cooked	usda	Beans, black, mature seeds, cooked, boiled, without salt	int	leguminosas	130	1 dose	1 serving	feijão preto|black beans	
+chickpeas_cooked	Grão-de-bico cozido	Chickpeas, cooked	usda	Chickpeas (garbanzo beans, bengal gram), mature seeds, cooked, boiled, without salt	int	leguminosas	130	1 dose	1 serving	grão|grão-de-bico|chickpeas|garbanzo	Chana masala|Hummus|Falafel
+lentils_cooked	Lentilhas cozidas	Lentils, cooked	usda	Lentils, mature seeds, cooked, boiled, without salt	int	leguminosas	130	1 dose	1 serving	lentilhas|lentils	Dal makhani|Dal
+peas_cooked	Ervilhas cozidas	Green peas, cooked	usda	Peas, green, frozen, cooked, boiled, drained, without salt	int	leguminosas	80	1 dose	1 serving	ervilhas|peas	
+chicken_breast_roasted	Peito de frango grelhado	Chicken breast, grilled	usda	Chicken, broilers or fryers, breast, meat only, cooked, roasted	int	carne	120	1 bife	1 fillet	frango|peito de frango|bife de frango|frango grelhado|chicken|chicken breast|grilled chicken	Tandoori chicken|Chicken sandwich|Churrasco|Chicken fried steak|Patty|Arroz con pollo|Hainanese chicken rice|Escalope|Schnitzel|Chicken Française|Galinhada|Galinha à portuguesa|Kotlet schabowy|Pozharsky cutlet|White cut chicken|Swiss steak|Salisbury steak|Chicken Maryland|Yakitori
+chicken_thigh_roasted	Coxa de frango assada	Chicken thigh, roasted	usda	Chicken, broilers or fryers, thigh, meat only, cooked, roasted	int	carne	100	1 coxa (sem osso)	1 thigh (boneless)	coxa de frango|frango assado|chicken thigh|roast chicken	Fried chicken|Crispy fried chicken
+turkey_breast_roasted	Peito de peru grelhado	Turkey breast, grilled	usda	Turkey, retail parts, breast, meat only, cooked, roasted	int	carne	120	1 bife	1 fillet	peru|bife de peru|peito de peru|turkey	
+beef_sirloin_broiled	Bife de vaca grelhado	Beef steak, grilled	usda	"Beef, top sirloin, steak, separable lean only, trimmed to 1/8"" fat, all grades, cooked, broiled"	int	carne	150	1 bife	1 steak	bife|bife de vaca|vaca|novilho|carne de vaca|steak|beef	Carne asada|Bistek|Shashlik|Churrasco|Steak de Burgo|Delmonico steak|Roast beef|Bife a cavalo|Steak Diane|Bulgogi
+beef_ground_patty	Hambúrguer de vaca	Beef burger patty	usda	Beef, ground, 85% lean meat / 15% fat, patty, cooked, broiled	int	carne	120	1 hambúrguer	1 patty	hambúrguer|carne picada|burger|ground beef	Hamburger|Cheeseburger|Meatball|Kofta|Qeema
+pork_loin_broiled	Lombo de porco grelhado	Pork loin, grilled	usda	Pork, fresh, loin, center loin (chops), bone-in, separable lean only, cooked, broiled	int	carne	130	1 costeleta/bife	1 chop	porco|lombo|bifana|costeleta|febras|pork|pork chop	Pork tenderloin sandwich|Gyro|Souvlaki|Tonkatsu|Kushikatsu
+salmon_cooked	Salmão grelhado	Salmon, grilled	usda	Fish, salmon, Atlantic, farmed, cooked, dry heat	int	peixe	150	1 posta	1 fillet	salmão|salmon	
+cod_cooked	Pescada/peixe branco cozido	Cod, cooked	usda	Fish, cod, Atlantic, cooked, dry heat	int	peixe	150	1 posta	1 fillet	peixe branco|peixe cozido|cod|white fish	Fried fish
+tuna_canned_water	Atum em água (lata)	Tuna in water, canned	usda	Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)	int	peixe	80	1 lata escorrida	1 can, drained	atum|atum em lata|tuna	Tuna fish sandwich
+sardines_canned_oil	Sardinhas em óleo (lata)	Sardines in oil, canned	usda	Fish, sardine, Atlantic, canned in oil, drained solids with bone	int	peixe	90	1 lata escorrida	1 can, drained	sardinhas|sardines	
+shrimp_cooked	Camarão cozido	Shrimp, cooked	usda	Crustaceans, shrimp, cooked	int	peixe	100	1 dose	1 serving	camarão|gambas|shrimp|prawns	White boiled shrimp|Garlic butter shrimp
+egg_boiled	Ovo cozido	Boiled egg	usda	Egg, whole, cooked, hard-boiled	int	ovos	50	1 ovo	1 egg	ovo|ovo cozido|egg|boiled egg	Deviled egg|Tea egg
+egg_fried	Ovo estrelado	Fried egg	usda	Egg, whole, cooked, fried	int	ovos	46	1 ovo	1 egg	ovo estrelado|ovo frito|fried egg	Eggs Benedict|Omelette
+milk_whole	Leite gordo	Whole milk	usda	Milk, whole, 3.25% milkfat, with added vitamin D	int	laticínios	250	1 copo	1 glass	leite|leite gordo|whole milk|milk	
+milk_semi	Leite meio-gordo	Semi-skimmed milk	usda	Milk, reduced fat, fluid, 2% milkfat, with added vitamin A and vitamin D	int	laticínios	250	1 copo	1 glass	leite meio gordo|leite meio-gordo|semi skimmed milk	
+milk_skim	Leite magro	Skimmed milk	usda	Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)	int	laticínios	250	1 copo	1 glass	leite magro|skim milk	
+yogurt_plain_whole	Iogurte natural	Plain yogurt	usda	Yogurt, plain, whole milk	int	laticínios	125	1 iogurte	1 pot	iogurte|iogurte natural|yogurt	Frozen yogurt
+yogurt_greek_nonfat	Iogurte grego magro	Greek yogurt, nonfat	usda	Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)	int	laticínios	150	1 iogurte	1 pot	iogurte grego|skyr|greek yogurt	
+cheese_gouda	Queijo flamengo/gouda	Gouda cheese	usda	Cheese, gouda	int	laticínios	20	1 fatia	1 slice	queijo|queijo flamengo|gouda|cheese	
+cheese_mozzarella	Mozzarella	Mozzarella	usda	Cheese, mozzarella, whole milk	int	laticínios	30	1 dose	1 serving	mozzarella|queijo mozzarella	
+cheese_cottage	Queijo cottage	Cottage cheese	usda	Cheese, cottage, lowfat, 2% milkfat	int	laticínios	100	1 dose	1 serving	cottage|requeijão|queijo fresco|cottage cheese	
+butter_salted	Manteiga	Butter	usda	Butter, salted	int	gorduras	10	1 porção individual	1 pat	manteiga|butter	
+olive_oil	Azeite	Olive oil	usda	Oil, olive, salad or cooking	int	gorduras	10	1 colher de sopa	1 tablespoon	azeite|olive oil	
+lettuce_raw	Alface	Lettuce	usda	Lettuce, green leaf, raw	int	legumes	50	1 dose de salada	1 salad serving	alface|lettuce	Greek salad|Caprese salad|BLT|Cobb salad|Wrap|Coleslaw|Seven-layer salad
+tomato_raw	Tomate	Tomato	usda	Tomatoes, red, ripe, raw, year round average	int	legumes	100	1 tomate médio	1 medium tomato	tomate|tomato|tomatoes	Caprese salad|BLT|Greek salad
+cucumber_raw	Pepino	Cucumber	usda	Cucumber, with peel, raw	int	legumes	60	1 dose	1 serving	pepino|cucumber	Greek salad|Cucumber soup
+carrot_raw	Cenoura	Carrot	usda	Carrots, raw	int	legumes	60	1 cenoura	1 carrot	cenoura|cenoura ralada|carrot	Coleslaw
+cabbage_raw	Couve/repolho cru	Cabbage, raw	usda	Cabbage, raw	int	legumes	70	1 dose	1 serving	couve|repolho|cabbage	Coleslaw
+onion_raw	Cebola	Onion	usda	Onions, raw	int	legumes	40	1/2 cebola	1/2 onion	cebola|onion	Onion ring
+pepper_red_raw	Pimento vermelho	Red pepper	usda	Peppers, sweet, red, raw	int	legumes	60	1/2 pimento	1/2 pepper	pimento|pimento vermelho|red pepper|bell pepper	
+broccoli_cooked	Brócolos cozidos	Broccoli, cooked	usda	Broccoli, cooked, boiled, drained, without salt	int	legumes	90	1 dose	1 serving	brócolos|brocolos|broccoli	
+spinach_cooked	Espinafres cozidos	Spinach, cooked	usda	Spinach, cooked, boiled, drained, without salt	int	legumes	90	1 dose	1 serving	espinafres|spinach	
+green_beans_cooked	Feijão-verde cozido	Green beans, cooked	usda	Beans, snap, green, cooked, boiled, drained, without salt	int	legumes	90	1 dose	1 serving	feijão verde|feijão-verde|green beans	
+zucchini_cooked	Curgete cozida	Zucchini, cooked	usda	Squash, summer, zucchini, includes skin, cooked, boiled, drained, without salt	int	legumes	90	1 dose	1 serving	curgete|courgette|zucchini	
+mushrooms_raw	Cogumelos	Mushrooms	usda	Mushrooms, white, raw	int	legumes	70	1 dose	1 serving	cogumelos|champignons|mushrooms	
+corn_canned	Milho doce (lata)	Sweet corn, canned	usda	Corn, sweet, yellow, canned, whole kernel, drained solids	int	legumes	60	1 dose	1 serving	milho|milho doce|corn|sweet corn	
+potato_boiled	Batata cozida	Boiled potato	usda	Potatoes, boiled, cooked without skin, flesh, without salt	int	tubérculos	150	1 dose (2 batatas)	1 serving	batata|batata cozida|batatas|potato|boiled potatoes	Salt potatoes|Mashed potato|Potato salad
+potato_fries_oven	Batata frita (forno)	French fries, oven	usda	Potatoes, french fried, all types, salt not added in processing, frozen, oven-heated	int	tubérculos	120	1 dose	1 serving	batata frita|batatas fritas|fries|french fries|chips	Cheese fries|Home fries|Potato wedges
+sweet_potato_baked	Batata-doce assada	Sweet potato, baked	usda	Sweet potato, cooked, baked in skin, flesh, without salt	int	tubérculos	150	1 batata-doce	1 sweet potato	batata doce|batata-doce|sweet potato	
+apple_raw	Maçã	Apple	usda	Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)	int	fruta	180	1 maçã média	1 medium apple	maçã|maca|apple	
+banana_raw	Banana	Banana	usda	Bananas, raw	int	fruta	118	1 banana média	1 medium banana	banana	
+orange_raw	Laranja	Orange	usda	Oranges, raw, all commercial varieties	int	fruta	140	1 laranja média	1 medium orange	laranja|orange	
+pear_raw	Pera	Pear	usda	Pears, raw	int	fruta	170	1 pera média	1 medium pear	pera|pear	
+strawberries_raw	Morangos	Strawberries	usda	Strawberries, raw	int	fruta	150	1 taça	1 cup	morangos|strawberries	
+grapes_raw	Uvas	Grapes	usda	Grapes, red or green (European type, such as Thompson seedless), raw	int	fruta	120	1 cacho pequeno	1 small bunch	uvas|grapes	
+kiwi_raw	Kiwi	Kiwi	usda	Kiwifruit, green, raw	int	fruta	75	1 kiwi	1 kiwi	kiwi	
+watermelon_raw	Melancia	Watermelon	usda	Watermelon, raw	int	fruta	250	1 fatia	1 slice	melancia|watermelon	
+melon_raw	Melão/meloa	Melon	usda	Melons, cantaloupe, raw	int	fruta	200	1 fatia	1 slice	melão|meloa|melon|cantaloupe	
+pineapple_raw	Ananás	Pineapple	usda	Pineapple, raw, all varieties	int	fruta	150	1 fatia grossa	1 thick slice	ananás|abacaxi|pineapple	
+mango_raw	Manga	Mango	usda	Mangos, raw	int	fruta	150	1/2 manga	1/2 mango	manga|mango	
+peach_raw	Pêssego	Peach	usda	Peaches, yellow, raw	int	fruta	150	1 pêssego	1 peach	pêssego|pessego|peach	
+avocado_raw	Abacate	Avocado	usda	Avocados, raw, all commercial varieties	int	fruta	70	1/2 abacate	1/2 avocado	abacate|avocado	Guacamole
+almonds	Amêndoas	Almonds	usda	Nuts, almonds	int	frutos secos	25	1 mão-cheia	1 handful	amêndoas|almonds	
+walnuts	Nozes	Walnuts	usda	Nuts, walnuts, english	int	frutos secos	25	1 mão-cheia	1 handful	nozes|walnuts	
+peanut_butter	Manteiga de amendoim	Peanut butter	usda	Peanut butter, smooth style, without salt	int	frutos secos	16	1 colher de sopa	1 tablespoon	manteiga de amendoim|peanut butter	Peanut butter and jelly sandwich
+orange_juice	Sumo de laranja natural	Orange juice, fresh	usda	Orange juice, raw (Includes foods for USDA's Food Distribution Program)	int	bebidas	200	1 copo	1 glass	sumo de laranja|sumo|orange juice|juice	
+sugar	Açúcar	Sugar	usda	Sugars, granulated	int	outros	5	1 pacote	1 sachet	açúcar|acucar|sugar	
+honey	Mel	Honey	usda	Honey	int	outros	20	1 colher de sopa	1 tablespoon	mel|honey	
+cod_salted_boiled	Bacalhau cozido	Salt cod, boiled	ciqual	26024	pt	peixe	150	1 posta	1 portion	bacalhau|bacalhau cozido|bacalhau com grão|bacalhau com todos|salt cod	Bacalhau|Bacalhau com todos|Bacalhau com natas
+hake_steamed	Pescada cozida	Hake, steamed	ciqual	26120	pt	peixe	150	1 posta	1 portion	pescada|pescada cozida|hake	
+sardine_grilled	Sardinha assada	Grilled sardines	ciqual	26136	pt	peixe	120	3 sardinhas (parte comestível)	3 sardines (edible part)	sardinha|sardinhas|sardinha assada|sardinhas assadas|grilled sardines	
+octopus_cooked	Polvo cozido	Octopus, cooked	ciqual	10079	pt	peixe	150	1 dose	1 serving	polvo|polvo à lagareiro|polvo cozido|octopus	
+squid_boiled	Lulas cozidas	Squid, boiled	ciqual	10037	pt	peixe	150	1 dose	1 serving	lula|lulas|lulas grelhadas|squid|calamari	Squid
+squid_fried	Lulas fritas	Squid, fried	ciqual	10084	pt	peixe	120	1 dose	1 serving	lulas fritas|calamares fritos|fried squid	
+sea_bream_baked	Dourada assada	Sea bream, baked	ciqual	27031	pt	peixe	170	1 dourada (porção)	1 fish (portion)	dourada|sea bream	
+sea_bass_baked	Robalo assado	Sea bass, baked	ciqual	27030	pt	peixe	170	1 robalo (porção)	1 fish (portion)	robalo|sea bass	
+tuna_olive_oil	Atum em azeite (lata)	Tuna in olive oil, canned	ciqual	26179	eu	peixe	80	1 lata escorrida	1 can, drained	atum em azeite|atum em óleo|tuna in oil	
+chorizo	Chouriço	Chorizo	ciqual	30315	pt	carne	30	3–4 rodelas	3–4 slices	chouriço|chourico|chorizo	Chorizo
+ham_cooked	Fiambre	Cooked ham	ciqual	28900	eu	carne	30	2 fatias	2 slices	fiambre|presunto cozido|ham	
+pork_tenderloin_cooked	Lombinho de porco	Pork tenderloin, cooked	ciqual	28203	eu	carne	130	1 dose	1 serving	lombinho|febra|febras|pork tenderloin	
+rabbit_cooked	Coelho	Rabbit, cooked	ciqual	34002	pt	carne	150	1 dose	1 serving	coelho|coelho guisado|rabbit	
+beans_white_cooked	Feijão branco cozido	White beans, cooked	ciqual	20502	pt	leguminosas	130	1 dose	1 serving	feijão branco|feijoada à transmontana|white beans	
+bread_country	Pão caseiro/de mistura	Country bread	ciqual	7100	pt	padaria	50	1 fatia grossa	1 thick slice	pão caseiro|pão de mistura|pão alentejano|pão rústico|country bread	
+croissant	Croissant	Croissant	ciqual	7603	eu	padaria	60	1 croissant	1 croissant	croissant|croissã	
+omelette	Omelete simples	Plain omelette	ciqual	22500	eu	ovos	120	1 omelete (2 ovos)	1 omelette (2 eggs)	omelete|omeleta|omelette	Omelette
+paella	Arroz de marisco/paella	Seafood rice / paella	ciqual	25242	pt	pratos	300	1 prato	1 plate	arroz de marisco|arroz de mariscos|paella|seafood rice	Portuguese seafood rice|Paella
+soup_vegetables	Sopa de legumes	Vegetable soup	ciqual	25903	pt	pratos	300	1 prato de sopa	1 bowl	sopa|sopa de legumes|creme de legumes|caldo verde|vegetable soup	Minestrone
+lasagna_meat	Lasanha de carne	Meat lasagna	ciqual	25081	eu	pratos	300	1 dose	1 serving	lasanha|lasagna	
+quiche	Quiche	Quiche	ciqual	25405	eu	pratos	150	1 fatia	1 slice	quiche|tarte salgada	
+egg_flan	Pudim flan	Egg flan	ciqual	19674	pt	sobremesas	100	1 pudim	1 flan	pudim|pudim flan|flan|leite-creme	
+green_salad	Salada verde (sem tempero)	Green salad (undressed)	ciqual	25604	eu	legumes	80	1 dose	1 serving	salada|salada verde|salada mista|salad|green salad	Garden salad|Greek salad|Cobb salad|Salade niçoise|Michigan salad|Seven-layer salad|Sabich salad
+carrot_cooked	Cenoura cozida	Carrot, cooked	ciqual	20352	eu	legumes	80	1 dose	1 serving	cenoura cozida|cooked carrot	
+cauliflower_cooked	Couve-flor cozida	Cauliflower, boiled	ciqual	20017	eu	legumes	90	1 dose	1 serving	couve-flor|couve flor|cauliflower	
+fig_raw	Figo	Fig	ciqual	13012	pt	fruta	50	1 figo	1 fig	figo|figos|fig	
+cherries_raw	Cerejas	Cherries	ciqual	13008	pt	fruta	150	1 taça	1 cup	cerejas|cereja|cherries	
+tangerine_raw	Tangerina/clementina	Tangerine	ciqual	13024	pt	fruta	70	1 tangerina	1 tangerine	tangerina|clementina|mandarina|tangerine	
+plum_raw	Ameixa	Plum	ciqual	13100	pt	fruta	60	1 ameixa	1 plum	ameixa|ameixas|plum	
+sheep_cheese	Queijo de ovelha curado	Cured sheep cheese	ciqual	12747	pt	laticínios	30	1 fatia	1 slice	queijo de ovelha|queijo da serra|queijo curado|sheep cheese	
+red_wine	Vinho tinto	Red wine	ciqual	5214	pt	bebidas	150	1 copo	1 glass	vinho|vinho tinto|wine|red wine	
+beer	Cerveja	Beer	ciqual	5001	pt	bebidas	200	1 imperial (200 ml)	1 small glass (200 ml)	cerveja|imperial|fino|beer	
+beans_carioca_cooked	Feijão carioca cozido	Carioca beans, cooked	taco	561	br	leguminosas	140	1 concha	1 ladle	feijão carioca|carioca beans	Feijoada|Red beans and rice|Frijoles charros|Feijão de óleo de palma
+feijoada	Feijoada	Feijoada	taco	540	br	pratos	250	1 prato fundo	1 deep plate	feijoada|feijoada brasileira	
+farofa	Farofa temperada	Seasoned farofa	taco	131	br	cereais	30	2 colheres de sopa	2 tablespoons	farofa	
+cassava_flour_toasted	Farinha de mandioca torrada	Toasted cassava flour	taco	122	br	cereais	20	1 colher de sopa cheia	1 heaped tablespoon	farinha de mandioca|farinha de pau|cassava flour	
+bread_french_br	Pão francês	French roll (Brazil)	taco	53	br	padaria	50	1 pão	1 roll	pão francês|pão de sal|cacetinho	
+pao_de_queijo	Pão de queijo	Cheese bread	taco	140	br	padaria	60	3 unidades pequenas	3 small pieces	pão de queijo|cheese bread	
+tapioca_butter	Tapioca com manteiga	Tapioca crepe with butter	taco	551	br	padaria	80	1 tapioca	1 crepe	tapioca|beiju	
+cuscuz_milho	Cuscuz de milho	Corn couscous (Brazil)	taco	533	br	cereais	150	1 dose	1 serving	cuscuz de milho|cuscuz nordestino|cuscuz	
+cassava_boiled	Mandioca cozida	Cassava, boiled	taco	129	br	tubérculos	150	1 dose	1 serving	mandioca|aipim|macaxeira|cassava	
+cassava_fried	Mandioca frita	Cassava, fried	taco	132	br	tubérculos	100	1 dose	1 serving	mandioca frita|aipim frito|fried cassava	
+coxinha	Coxinha de frango	Chicken coxinha	taco	386	br	salgados	80	1 coxinha	1 coxinha	coxinha	
+pastel_carne_frito	Pastel de carne frito	Fried meat pastel	taco	56	br	salgados	80	1 pastel	1 pastel	pastel|pastel de carne	
+linguica_grilled	Linguiça de porco grelhada	Pork sausage, grilled	taco	423	br	carne	60	1 gomo	1 link	linguiça|linguica|salsicha fresca	Sausage|Bratwurst
+acai_pulp	Açaí (polpa)	Açaí pulp	taco	168	br	fruta	100	1 polpa	1 pack	açaí|acai	
+acai_bowl	Açaí na tigela (com xarope)	Açaí bowl (with syrup)	taco	167	br	sobremesas	200	1 tigela	1 bowl	açaí na tigela|acai bowl	
+banana_prata	Banana-prata	Banana (prata)	taco	182	br	fruta	70	1 banana	1 banana	banana prata|banana-prata	
+papaya_raw	Mamão papaia	Papaya	taco	226	br	fruta	150	1/2 mamão	1/2 papaya	mamão|papaia|papaya	
+guava_raw	Goiaba	Guava	taco	200	br	fruta	150	1 goiaba	1 guava	goiaba|guava	
+minas_cheese	Queijo minas frescal	Minas fresh cheese	taco	461	br	laticínios	30	1 fatia	1 slice	queijo minas|minas frescal|queijo fresco	
+requeijao_cremoso	Requeijão cremoso	Requeijão (creamy cheese)	taco	468	br	laticínios	20	1 colher de sopa	1 tablespoon	requeijão|requeijao cremoso	
+baiao_de_dois	Baião de dois	Baião de dois	taco	527	br	pratos	250	1 prato	1 plate	baião de dois|baiao de dois	
+salpicao_frango	Salpicão de frango	Chicken salpicão	taco	547	br	pratos	150	1 dose	1 serving	salpicão|salpicao	
+collards_sauteed	Couve refogada	Sautéed collard greens	taco	116	br	legumes	80	1 dose	1 serving	couve refogada|couve à mineira|collard greens	
+guarana_soda	Refrigerante de guaraná	Guaraná soda	taco	481	br	bebidas	350	1 lata	1 can	guaraná|guarana|refrigerante de guaraná	

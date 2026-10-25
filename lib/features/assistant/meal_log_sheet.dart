@@ -7,12 +7,13 @@ import '../../app/l10n/strings.dart';
 import '../../core/database/app_database.dart';
 import '../../core/ui/vyro_ui.dart';
 import '../nutrition/domain/food_product.dart';
-import '../nutrition/domain/local_food_reference.dart';
+import '../nutrition/data/food_database.dart';
 import '../nutrition/meals.dart';
+import '../nutrition/widgets/food_picker_sheet.dart';
 import 'domain/meal_proposal.dart';
 
 /// Review sheet for a meal the assistant proposed. Nutrients never come from
-/// the model: each item is matched to the local USDA reference or the user's
+/// the model: each item is matched to the offline database (USDA/Ciqual/TACO) or the user's
 /// own history, or looked up on Open Food Facts / typed by the user. Nothing
 /// is saved until the user confirms.
 Future<int?> showMealLogSheet(BuildContext context, MealProposal proposal) =>
@@ -72,18 +73,16 @@ class _MealLogSheetState extends State<_MealLogSheet> {
   Future<void> _match() async {
     final english = stringsOf(context).isEnglish;
     final services = AppServicesScope.of(context);
-    final local = [
-      for (final ref in localFoodReference)
-        NutrientSource(
-          label: ref.name(english),
-          origin: 'local_reference',
-          kcal: ref.kcal,
-          protein: ref.protein,
-          carbs: ref.carbs,
-          fat: ref.fat,
-          sourceKey: 'local_reference_${ref.fdcId}',
-        ),
-    ];
+    final db = await FoodDatabase.load();
+    NutrientSource fromDb(FoodRef ref) => NutrientSource(
+      label: ref.name(english),
+      origin: 'local_reference',
+      kcal: ref.kcal,
+      protein: ref.protein,
+      carbs: ref.carbs,
+      fat: ref.fat,
+      sourceKey: ref.sourceKey,
+    );
     final seen = <String>{};
     final history = <NutrientSource>[];
     for (final e in await services.database.recentFoodEntries()) {
@@ -103,9 +102,10 @@ class _MealLogSheetState extends State<_MealLogSheet> {
     if (!mounted) return;
     setState(() {
       for (final row in _rows) {
-        row.source =
-            bestMatch(row.item.name, local) ??
-            bestMatch(row.item.name, history);
+        final ref = db.match(row.item.name);
+        row.source = ref != null
+            ? fromDb(ref)
+            : bestMatch(row.item.name, history);
       }
     });
   }
@@ -118,6 +118,25 @@ class _MealLogSheetState extends State<_MealLogSheet> {
       total += nutrientForPortion(pick(source), row.gramsValue) ?? 0;
     }
     return total;
+  }
+
+  Future<void> _pick(_Row row) async {
+    final english = stringsOf(context).isEnglish;
+    final db = await FoodDatabase.load();
+    if (!mounted) return;
+    final ref = await showFoodPicker(context, db, initialQuery: row.item.name);
+    if (ref == null) return;
+    setState(
+      () => row.source = NutrientSource(
+        label: ref.name(english),
+        origin: 'local_reference',
+        kcal: ref.kcal,
+        protein: ref.protein,
+        carbs: ref.carbs,
+        fat: ref.fat,
+        sourceKey: ref.sourceKey,
+      ),
+    );
   }
 
   Future<void> _search(_Row row) async {
@@ -252,6 +271,7 @@ class _MealLogSheetState extends State<_MealLogSheet> {
                   _ItemRow(
                     row: row,
                     onChanged: () => setState(() {}),
+                    onPick: () => _pick(row),
                     onSearch: () => _search(row),
                     onManual: () => _manual(row),
                   ),
@@ -300,12 +320,14 @@ class _ItemRow extends StatelessWidget {
   const _ItemRow({
     required this.row,
     required this.onChanged,
+    required this.onPick,
     required this.onSearch,
     required this.onManual,
   });
 
   final _Row row;
   final VoidCallback onChanged;
+  final VoidCallback onPick;
   final VoidCallback onSearch;
   final VoidCallback onManual;
 
@@ -354,6 +376,10 @@ class _ItemRow extends StatelessWidget {
                     Wrap(
                       spacing: 4,
                       children: [
+                        TextButton(
+                          onPressed: onPick,
+                          child: Text(t.get('foodPickerTitle')),
+                        ),
                         TextButton(
                           onPressed: onSearch,
                           child: Text(t.get('lookup')),

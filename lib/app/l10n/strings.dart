@@ -12,6 +12,35 @@ class VyroStrings {
   String get(String key) => (isEnglish ? _en : _pt)[key] ?? key;
 
   static const _pt = <String, String>{
+    'photoHeroTitle': 'Fotografa o teu prato',
+    'photoHeroBody':
+        'Identificamos os alimentos no próprio telemóvel e sugerimos quantidades e calorias. Tu confirmas tudo antes de guardar.',
+    'photoFoundFoods': 'Alimentos no prato',
+    'photoEstimateNote':
+        'Os alimentos e as gramas são estimativas a partir da foto: ajusta antes de guardar. As calorias são calculadas como gramas × kcal/100 g.',
+    'nutritionSourcesNote':
+        'Valores por 100 g: USDA FoodData Central, Ciqual 2025 (ANSES) e TACO (NEPA/UNICAMP).',
+    'photoSourceSystem': 'IA do telemóvel',
+    'photoSourceRegions': 'Reconhecimento offline',
+    'photoRegionsNote':
+        'Este telemóvel não tem IA multimodal do sistema (Gemini Nano), por isso usámos o reconhecimento offline, que é aproximado. Confirma os alimentos e adiciona o que faltar.',
+    'photoSystemFailedNote':
+        'A IA do telemóvel não conseguiu analisar a foto; usámos o reconhecimento offline aproximado.',
+    'photoNothingFound':
+        'Não identificámos alimentos com confiança suficiente. Adiciona-os abaixo.',
+    'photoAddFood': 'Adicionar alimento',
+    'photoQuickAdd': 'Falta algum? Toca para adicionar',
+    'photoNoMatchRow':
+        'Sem correspondência na base: toca para escolher o alimento',
+    'photoSaveN': 'Adicionar {n} ao diário',
+    'photoSaved': '{n} alimentos adicionados ao diário',
+    'photoRetake': 'Tirar outra foto',
+    'photoConfidence': 'confiança',
+    'pieces': 'unid.',
+    'foodPickerTitle': 'Escolher alimento',
+    'foodPickerHint': 'Procurar (ex.: arroz, bacalhau, feijão)',
+    'foodPickerEmpty': 'Nenhum alimento encontrado na base offline.',
+    'clear': 'Limpar',
     'home': 'Início',
     'nutrition': 'Nutrição',
     'training': 'Treino',
@@ -607,7 +636,7 @@ class VyroStrings {
     'logMealMissing': 'sem dados',
     'logMealAdded': 'alimentos adicionados ao diário',
     'logMealProposal': 'Refeição sugerida',
-    'originLocal': 'Referência local (USDA)',
+    'originLocal': 'Base offline (USDA/Ciqual/TACO)',
     'originHistory': 'Do teu histórico',
     'originNone': 'Sem dados nutricionais',
     'trainingToday': 'Treino de hoje',
@@ -694,6 +723,34 @@ class VyroStrings {
   };
 
   static const _en = <String, String>{
+    'photoHeroTitle': 'Photograph your plate',
+    'photoHeroBody':
+        'We identify the foods on your phone and suggest amounts and calories. You confirm everything before saving.',
+    'photoFoundFoods': 'Foods on the plate',
+    'photoEstimateNote':
+        'Foods and grams are estimates from the photo: adjust before saving. Calories are grams × kcal/100 g.',
+    'nutritionSourcesNote':
+        'Values per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES) and TACO (NEPA/UNICAMP).',
+    'photoSourceSystem': 'Phone AI',
+    'photoSourceRegions': 'Offline recognition',
+    'photoRegionsNote':
+        'This phone has no multimodal system AI (Gemini Nano), so the approximate offline recognition was used. Confirm the foods and add anything missing.',
+    'photoSystemFailedNote':
+        'The phone AI could not analyse the photo; the approximate offline recognition was used.',
+    'photoNothingFound':
+        'No foods identified with enough confidence. Add them below.',
+    'photoAddFood': 'Add food',
+    'photoQuickAdd': 'Something missing? Tap to add',
+    'photoNoMatchRow': 'Not in the database: tap to choose the food',
+    'photoSaveN': 'Add {n} to diary',
+    'photoSaved': '{n} foods added to the diary',
+    'photoRetake': 'Take another photo',
+    'photoConfidence': 'confidence',
+    'pieces': 'pcs',
+    'foodPickerTitle': 'Choose food',
+    'foodPickerHint': 'Search (e.g. rice, cod, beans)',
+    'foodPickerEmpty': 'No food found in the offline database.',
+    'clear': 'Clear',
     'home': 'Home',
     'nutrition': 'Nutrition',
     'training': 'Training',
@@ -1282,7 +1339,7 @@ class VyroStrings {
     'logMealMissing': 'without data',
     'logMealAdded': 'foods added to the diary',
     'logMealProposal': 'Suggested meal',
-    'originLocal': 'Local reference (USDA)',
+    'originLocal': 'Offline database (USDA/Ciqual/TACO)',
     'originHistory': 'From your history',
     'originNone': 'No nutrition data',
     'trainingToday': "Today's workout",

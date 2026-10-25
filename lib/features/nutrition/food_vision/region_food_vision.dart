@@ -1,0 +1,218 @@
+import 'dart:isolate';
+
+import 'package:flutter/services.dart';
+import 'package:flutter_litert/flutter_litert.dart';
+import 'package:image/image.dart' as img;
+
+import '../data/food_database.dart';
+import '../domain/food_recognition_service.dart'
+    show dequantize, toProbabilities;
+import 'food_vision.dart';
+
+/// Offline multi-food estimate built on the bundled single-label dish
+/// classifier (AIY Food V1): it classifies the whole photo plus overlapping
+/// regions (3×3 and 4×4 grids) and maps the dish labels each region shows to
+/// database foods via `visionLabels` (e.g. "Feijoada" → beans).
+///
+/// This is an approximation: the model knows dish names, not ingredients,
+/// so it can miss foods or suggest wrong ones. Grams are typical portions.
+class RegionFoodVision implements FoodVisionService {
+  RegionFoodVision(this.database);
+
+  final FoodDatabase database;
+
+  static const modelAsset = 'assets/models/aiy_food_v1.tflite';
+  static const labelsAsset = 'assets/models/aiy_food_v1_labels.csv';
+
+  /// Minimum per-region probability for a label to count as evidence.
+  static const minRegionProbability = 0.08;
+
+  /// A food is kept when its best region reached this probability…
+  static const minFoodPeak = 0.14;
+
+  /// …and it appeared in at least this many regions (or the full image).
+  static const minRegions = 2;
+
+  /// Categories where a plate usually has a single food (one main protein,
+  /// one kind of beans).
+  static const exclusiveCategories = {'carne', 'peixe', 'leguminosas'};
+
+  @override
+  Future<FoodVisionResult> analyse(Uint8List imageBytes) async {
+    final model = (await rootBundle.load(modelAsset)).buffer.asUint8List();
+    final labels = await _labels();
+    // Decoding, cropping and 26 inferences run off the UI isolate.
+    final perCrop = await Isolate.run(() => classifyRegions(model, imageBytes));
+    final peak = <String, double>{};
+    final regions = <String, int>{};
+    final score = <String, double>{};
+    String? dish;
+    for (var i = 0; i < perCrop.length; i++) {
+      final ranked = perCrop[i];
+      if (i == 0 && ranked.isNotEmpty) dish = labels[ranked.first.$1];
+      for (final (k, p) in ranked) {
+        final label = labels[k];
+        if (label == null) continue;
+        for (final food in database.forVisionLabel(label)) {
+          score[food.key] = (score[food.key] ?? 0) + p;
+          if (p > (peak[food.key] ?? 0)) peak[food.key] = p;
+          regions[food.key] = (regions[food.key] ?? 0) + 1;
+        }
+      }
+    }
+    final keys =
+        score.keys
+            .where(
+              (k) =>
+                  (peak[k] ?? 0) >= minFoodPeak &&
+                  (regions[k] ?? 0) >= minRegions,
+            )
+            .toList()
+          ..sort((a, b) => score[b]!.compareTo(score[a]!));
+    // Dish labels are ambiguous ("Churrasco" → chicken and beef): keep only
+    // the strongest food of each main-protein category.
+    final proteins = <String>{};
+    keys.removeWhere((k) {
+      final category = database.byKey(k)!.category;
+      if (!exclusiveCategories.contains(category)) return false;
+      return !proteins.add(category);
+    });
+    return FoodVisionResult(
+      source: VisionSource.regionClassifier,
+      dishGuess: dish,
+      foods: [
+        for (final k in keys.take(6))
+          DetectedFood(
+            food: database.byKey(k),
+            label: database.byKey(k)!.namePt,
+            grams: database.byKey(k)!.portionG,
+            confidence: peak[k],
+            source: VisionSource.regionClassifier,
+          ),
+      ],
+    );
+  }
+
+  /// Top labels (index, probability ≥ [minRegionProbability]) for the
+  /// centre square and every grid region. Runs inside a worker isolate.
+  static List<List<(int, double)>> classifyRegions(
+    Uint8List model,
+    Uint8List imageBytes,
+  ) {
+    final decoded = img.decodeImage(imageBytes);
+    if (decoded == null) throw const FormatException('invalid_image');
+    final upright = img.bakeOrientation(decoded);
+    final side = upright.width < upright.height
+        ? upright.width
+        : upright.height;
+    final square = img.copyCrop(
+      upright,
+      x: (upright.width - side) ~/ 2,
+      y: (upright.height - side) ~/ 2,
+      width: side,
+      height: side,
+    );
+    final interpreter = Interpreter.fromBuffer(model);
+    try {
+      return [
+        for (final crop in [
+          square,
+          ..._grid(square, 3, 0.5),
+          ..._grid(square, 4, 0.4),
+        ])
+          _top(_classify(interpreter, crop)),
+      ];
+    } finally {
+      interpreter.close();
+    }
+  }
+
+  static List<(int, double)> _top(List<double> p) {
+    final ranked = [for (var k = 1; k < p.length; k++) k]
+      ..sort((a, b) => p[b].compareTo(p[a]));
+    return [
+      for (final k in ranked.take(5))
+        if (p[k] >= minRegionProbability) (k, p[k]),
+    ];
+  }
+
+  static Iterable<img.Image> _grid(
+    img.Image square,
+    int n,
+    double fraction,
+  ) sync* {
+    final size = (square.width * fraction).round();
+    final step = (square.width - size) / (n - 1);
+    for (var gy = 0; gy < n; gy++) {
+      for (var gx = 0; gx < n; gx++) {
+        yield img.copyCrop(
+          square,
+          x: (gx * step).round(),
+          y: (gy * step).round(),
+          width: size,
+          height: size,
+        );
+      }
+    }
+  }
+
+  static List<double> _classify(Interpreter interpreter, img.Image crop) {
+    final input = interpreter.getInputTensor(0);
+    final output = interpreter.getOutputTensor(0);
+    final size = input.shape[1];
+    final quantizedIn = input.type == TensorType.uint8;
+    final resized = img.copyResize(
+      crop,
+      width: size,
+      height: size,
+      interpolation: img.Interpolation.linear,
+    );
+    final data = [
+      List.generate(
+        size,
+        (y) => List.generate(size, (x) {
+          final px = resized.getPixel(x, y);
+          return quantizedIn
+              ? [px.r.toInt(), px.g.toInt(), px.b.toInt()]
+              : [px.r / 255.0, px.g / 255.0, px.b / 255.0];
+        }),
+      ),
+    ];
+    final classes = output.shape.last;
+    final quantizedOut = output.type == TensorType.uint8;
+    final Object out = quantizedOut
+        ? [List<int>.filled(classes, 0)]
+        : [List<double>.filled(classes, 0)];
+    interpreter.run(data, out);
+    final raw = (out as List).single as List;
+    final values = quantizedOut
+        ? dequantize(
+            raw.cast<int>(),
+            scale: output.params.scale == 0 ? 1 / 256 : output.params.scale,
+            zeroPoint: output.params.zeroPoint,
+          )
+        : raw.cast<double>();
+    final p = List<double>.of(values)..[0] = 0; // drop "background"
+    return toProbabilities(p);
+  }
+
+  static Map<int, String>? _labelCache;
+
+  Future<Map<int, String>> _labels() async {
+    if (_labelCache != null) return _labelCache!;
+    final csv = await rootBundle.loadString(labelsAsset);
+    final labels = <int, String>{};
+    for (final line in csv.split(RegExp(r'\r?\n')).skip(1)) {
+      final comma = line.indexOf(',');
+      if (comma < 0) continue;
+      final id = int.tryParse(line.substring(0, comma).trim());
+      if (id == null) continue;
+      var label = line.substring(comma + 1).trim();
+      if (label.startsWith('"') && label.endsWith('"')) {
+        label = label.substring(1, label.length - 1).replaceAll('""', '"');
+      }
+      labels[id] = label;
+    }
+    return _labelCache = labels;
+  }
+}

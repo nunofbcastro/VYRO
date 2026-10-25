@@ -1,25 +1,33 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:vyro/features/nutrition/domain/food_recognition_service.dart';
+import 'package:vyro/features/nutrition/data/food_database.dart';
+import 'package:vyro/features/nutrition/food_vision/region_food_vision.dart';
 
-/// Runs the real bundled model through [LiteRtFoodRecognitionService] on a
-/// local image. Only on Windows/macOS/Linux hosts with VYRO_FOOD_IMAGE set,
-/// e.g. `VYRO_FOOD_IMAGE=C:\photos\plate.png flutter test test/food_model_probe_test.dart`.
+/// Runs the real bundled classifier through [RegionFoodVision] (the offline
+/// fallback of the photo flow) on a local image. Only on Windows/macOS/Linux
+/// hosts with VYRO_FOOD_IMAGE set, e.g.
+/// `VYRO_FOOD_IMAGE=C:\photos\plate.png flutter test test/food_model_probe_test.dart`.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final path = Platform.environment['VYRO_FOOD_IMAGE'];
   test(
-    'real model returns candidates for a sample photo',
+    'region classifier maps a sample photo to database foods',
     () async {
       final bytes = await File(path!).readAsBytes();
-      final candidates = await LiteRtFoodRecognitionService().recognize(bytes);
+      final db = FoodDatabase.parse(
+        File('assets/nutrition/foods.json').readAsStringSync(),
+      );
+      final result = await RegionFoodVision(db).analyse(bytes);
+      // ignore: avoid_print
+      print('dish: ${result.dishGuess}');
       // ignore: avoid_print
       print([
-        for (final c in candidates)
-          '${c.label} ${(c.confidence * 100).toStringAsFixed(1)}%',
+        for (final f in result.foods)
+          '${f.label} ${((f.confidence ?? 0) * 100).toStringAsFixed(1)}% '
+              '${f.grams.round()} g ${f.kcal?.round()} kcal',
       ]);
-      expect(candidates, isNotEmpty);
+      expect(result.dishGuess, isNotNull);
     },
     skip: path == null || !File(path).existsSync()
         ? 'Set VYRO_FOOD_IMAGE to a local photo to run'

@@ -1,16 +1,25 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:drift/drift.dart' show Value;
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
 import '../../core/database/app_database.dart';
 import '../../core/platform/image_temp_file.dart';
-import '../../core/widgets/vyro_widgets.dart';
-import 'domain/food_recognition_service.dart';
-import 'domain/local_food_reference.dart';
+import '../../core/ui/vyro_ui.dart';
+import 'data/food_database.dart';
+import 'domain/food_product.dart' show dayKey;
+import 'food_vision/food_vision.dart';
+import 'food_vision/region_food_vision.dart';
+import 'food_vision/system_food_vision.dart';
+import 'meals.dart';
+import 'widgets/food_picker_sheet.dart';
 
+/// Photo → foods → grams → diary. Recognition runs on the device
+/// ([FoodVisionPipeline]); nutrients come from the offline database and
+/// every food and amount is confirmed by the user before saving.
 class PhotoFoodPage extends StatefulWidget {
   const PhotoFoodPage({super.key, this.day});
   final DateTime? day;
@@ -19,135 +28,56 @@ class PhotoFoodPage extends StatefulWidget {
   State<PhotoFoodPage> createState() => _PhotoFoodPageState();
 }
 
+/// One editable line of the review list.
+class _Item {
+  _Item(this.detected) : grams = detected.grams;
+  DetectedFood detected;
+  double grams;
+
+  FoodRef? get food => detected.food;
+  double? get kcal => food == null ? null : food!.kcal * grams / 100;
+}
+
+/// Foods offered as one-tap additions when the detector missed them.
+const _quickKeys = [
+  'rice_white_cooked',
+  'beans_red_cooked',
+  'chicken_breast_roasted',
+  'green_salad',
+  'potato_boiled',
+  'pasta_cooked',
+  'egg_fried',
+  'potato_fries_oven',
+];
+
 class _PhotoFoodPageState extends State<PhotoFoodPage> {
   final _picker = ImagePicker();
-  final _recognizer = LiteRtFoodRecognitionService();
+  FoodDatabase? _db;
   Uint8List? _photo;
-  List<FoodCandidate>? _candidates;
+  List<_Item>? _items;
+  FoodVisionResult? _result;
+  late String _meal = mealForTime(DateTime.now());
   bool _busy = false;
+  bool _saving = false;
   String? _error;
 
   @override
-  void dispose() {
-    _photo = null;
-    super.dispose();
+  void initState() {
+    super.initState();
+    FoodDatabase.load().then((db) {
+      if (mounted) setState(() => _db = db);
+    });
   }
 
   @override
-  Widget build(BuildContext context) {
-    final t = stringsOf(context);
-    return ContentPage(
-      title: t.get('photo'),
-      children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.privacy_tip_outlined,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(child: Text(t.get('photoLocalPrivacy'))),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  t.get('photoModelCaveat'),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 14),
-        if (_photo case final photo?) ...[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.memory(
-              photo,
-              height: 230,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(height: 14),
-        ],
-        if (kIsWeb)
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.phone_android),
-              title: Text(t.get('photoNativeOnly')),
-            ),
-          )
-        else ...[
-          OutlinedButton.icon(
-            onPressed: _busy ? null : () => _chooseImage(ImageSource.camera),
-            icon: const Icon(Icons.photo_camera_outlined),
-            label: Text(t.get('takePhoto')),
-          ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: _busy ? null : () => _chooseImage(ImageSource.gallery),
-            icon: const Icon(Icons.photo_library_outlined),
-            label: Text(t.get('choosePhoto')),
-          ),
-        ],
-        if (_busy) ...[
-          const SizedBox(height: 20),
-          const Center(child: CircularProgressIndicator()),
-          const SizedBox(height: 8),
-          Center(child: Text(t.get('photoAnalyzing'))),
-        ],
-        if (_error != null) ...[
-          const SizedBox(height: 16),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.info_outline),
-              title: Text(t.get(_error!)),
-              subtitle: Text(t.get('photoManualFallback')),
-            ),
-          ),
-        ],
-        if (_candidates case final candidates?) ...[
-          const SizedBox(height: 20),
-          SectionTitle(
-            t.get(candidates.isEmpty ? 'photoNoMatch' : 'foodReview'),
-          ),
-          if (candidates.isEmpty)
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.help_outline),
-                title: Text(t.get('photoUnknown')),
-                subtitle: Text(t.get('photoManualFallback')),
-              ),
-            ),
-          for (final candidate in candidates)
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.restaurant_outlined),
-                title: Text(_localizedFoodLabel(candidate.label, t)),
-                subtitle: Text(
-                  '${(candidate.confidence * 100).toStringAsFixed(1)}% · ${t.get('photoHypothesis')}',
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _confirmCandidate(candidate),
-              ),
-            ),
-        ],
-        if (_photo == null) ...[
-          const SizedBox(height: 18),
-          Center(child: Text(t.get('photoNoImage'))),
-        ],
-      ],
-    );
+  void dispose() {
+    _photo = null; // the photo lives in memory only
+    super.dispose();
   }
 
-  Future<void> _chooseImage(ImageSource source) async {
+  // ------------------------------------------------------------ actions
+
+  Future<void> _choose(ImageSource source) async {
     try {
       final file = await _picker.pickImage(
         source: source,
@@ -157,288 +87,808 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
       );
       if (file == null) return;
       final bytes = await file.readAsBytes();
-      // Photo-picker/camera temporary file is deleted as soon as bytes are read.
+      // The picker's temporary file is deleted as soon as bytes are read.
       await deleteTemporaryImage(file.path);
       if (!mounted) return;
       setState(() {
         _photo = bytes;
-        _candidates = null;
+        _items = null;
+        _result = null;
         _error = null;
         _busy = true;
       });
-      try {
-        final candidates = await _recognizer.recognize(bytes);
-        if (mounted) setState(() => _candidates = candidates);
-      } on FormatException {
-        if (mounted) setState(() => _error = 'photoInvalidImage');
-      } catch (_) {
-        if (mounted) setState(() => _error = 'photoModelError');
-      } finally {
-        if (mounted) setState(() => _busy = false);
-      }
+      await _analyse(bytes);
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _error = 'cameraError';
           _busy = false;
         });
+      }
     }
   }
 
-  Future<void> _confirmCandidate(FoodCandidate candidate) async {
-    final t = stringsOf(context);
+  Future<void> _analyse(Uint8List bytes) async {
     final services = AppServicesScope.of(context);
-    final draft = await showDialog<_PhotoFoodDraft>(
-      context: context,
-      builder: (_) => _PhotoFoodDialog(
-        candidate: _localizedFoodLabel(candidate.label, t),
-        english: t.isEnglish,
-      ),
-    );
-    if (draft == null) return;
-    await services.nutritionRepository.addEntry(
-      FoodEntriesCompanion.insert(
-        day: _dayKey(widget.day ?? DateTime.now()),
-        mealType: draft.meal,
-        name: draft.name,
-        quantityGrams: draft.quantityGrams,
-        kcalPer100g: Value(draft.kcalPer100g),
-        proteinPer100g: Value(draft.proteinPer100g),
-        carbsPer100g: Value(draft.carbsPer100g),
-        fatPer100g: Value(draft.fatPer100g),
-        source: Value(draft.source),
-      ),
-    );
-    if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(t.get('entryAdded'))));
-      Navigator.pop(context);
+    try {
+      final db = _db ?? await FoodDatabase.load();
+      final pipeline = FoodVisionPipeline(
+        llm: services.llm,
+        system: SystemFoodVision(db),
+        regions: RegionFoodVision(db),
+      );
+      final result = await pipeline.analyse(bytes);
+      if (!mounted) return;
+      setState(() {
+        _db = db;
+        _result = result;
+        _items = [for (final f in result.foods) _Item(f)];
+      });
+    } on FormatException {
+      if (mounted) setState(() => _error = 'photoInvalidImage');
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _error = 'photoModelError';
+          _items = [];
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
+  }
+
+  Future<void> _change(_Item item) async {
+    final db = _db;
+    if (db == null) return;
+    final food = await showFoodPicker(
+      context,
+      db,
+      initialQuery: item.food == null ? item.detected.label : '',
+    );
+    if (food == null || !mounted) return;
+    setState(() {
+      item.detected = item.detected.copyWith(
+        food: food,
+        source: VisionSource.user,
+      );
+      // An unmatched line had no sensible amount yet: use the food's portion.
+      if (item.food == null) item.grams = food.portionG;
+    });
+  }
+
+  Future<void> _addFromPicker() async {
+    final db = _db;
+    if (db == null) return;
+    final food = await showFoodPicker(context, db);
+    if (food != null) _addFood(food);
+  }
+
+  void _addFood(FoodRef food) {
+    setState(
+      () => (_items ??= []).add(
+        _Item(
+          DetectedFood(
+            food: food,
+            label: food.namePt,
+            grams: food.portionG,
+            source: VisionSource.user,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _save() async {
+    final items = _items ?? const <_Item>[];
+    final ready = items.where((i) => i.food != null && i.grams > 0).toList();
+    if (ready.isEmpty) return;
+    final t = stringsOf(context);
+    final repository = AppServicesScope.of(context).nutritionRepository;
+    setState(() => _saving = true);
+    for (final item in ready) {
+      final food = item.food!;
+      await repository.addEntry(
+        FoodEntriesCompanion.insert(
+          day: dayKey(widget.day ?? DateTime.now()),
+          mealType: _meal,
+          name: food.name(t.isEnglish),
+          quantityGrams: item.grams,
+          kcalPer100g: Value(food.kcal),
+          proteinPer100g: Value(food.protein),
+          carbsPer100g: Value(food.carbs),
+          fatPer100g: Value(food.fat),
+          source: Value(food.sourceKey),
+          portionUnit: const Value('grams'),
+          portionCount: Value(item.grams),
+        ),
+      );
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(t.get('photoSaved').replaceAll('{n}', '${ready.length}')),
+      ),
+    );
+    Navigator.pop(context);
+  }
+
+  // ---------------------------------------------------------------- UI
+
+  @override
+  Widget build(BuildContext context) {
+    final t = stringsOf(context);
+    final items = _items;
+    final ready = items?.where((i) => i.food != null && i.grams > 0) ?? [];
+    return VyroSubpageScaffold(
+      title: t.get('photo'),
+      footer: items == null || items.isEmpty
+          ? null
+          : VyroPrimaryButton(
+              label: t.get('photoSaveN').replaceAll('{n}', '${ready.length}'),
+              icon: Icons.check_rounded,
+              loading: _saving,
+              onPressed: ready.isEmpty || _saving ? null : _save,
+            ),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+        children: [
+          if (_photo == null)
+            _Hero(onPick: kIsWeb || _busy ? null : _choose)
+          else
+            _PhotoHeader(
+              photo: _photo!,
+              busy: _busy,
+              source: _result?.source,
+              onRetake: _busy ? null : () => _choose(ImageSource.camera),
+              onGallery: _busy ? null : () => _choose(ImageSource.gallery),
+            ),
+          if (_error != null) ...[
+            const SizedBox(height: 14),
+            _Notice(
+              icon: Icons.info_outline_rounded,
+              text: '${t.get(_error!)} ${t.get('photoManualFallback')}',
+            ),
+          ],
+          if (items != null && !_busy) ...[
+            const SizedBox(height: 18),
+            _Totals(items: items),
+            const SizedBox(height: 18),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final meal in mealTypes)
+                  VyroPillChip(
+                    label: mealLabel(t, meal),
+                    selected: _meal == meal,
+                    onTap: () => setState(() => _meal = meal),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 22),
+            VyroSectionTitle(
+              label: '${t.get('photoFoundFoods')} · ${items.length}',
+            ),
+            if (_result?.source == VisionSource.regionClassifier)
+              _Notice(
+                icon: Icons.auto_awesome_outlined,
+                text: t.get(
+                  _result?.note == 'systemFailed'
+                      ? 'photoSystemFailedNote'
+                      : 'photoRegionsNote',
+                ),
+              ),
+            if (items.isEmpty)
+              _Notice(
+                icon: Icons.search_off_rounded,
+                text: t.get('photoNothingFound'),
+              ),
+            for (final item in items) ...[
+              const SizedBox(height: 10),
+              VyroFadeSlideIn(
+                key: ObjectKey(item),
+                child: _FoodRow(
+                  item: item,
+                  onChange: () => _change(item),
+                  onGrams: (g) => setState(() => item.grams = g),
+                  onRemove: () => setState(() => items.remove(item)),
+                ),
+              ),
+            ],
+            const SizedBox(height: 14),
+            OutlinedButton.icon(
+              onPressed: _db == null ? null : _addFromPicker,
+              icon: const Icon(Icons.add_rounded),
+              label: Text(t.get('photoAddFood')),
+            ),
+            if (_db case final db?) ...[
+              const SizedBox(height: 14),
+              _QuickAdd(
+                foods: [
+                  for (final key in _quickKeys)
+                    if (db.byKey(key) case final food?)
+                      if (!items.any((i) => i.food?.key == key)) food,
+                ],
+                onAdd: _addFood,
+              ),
+            ],
+            const SizedBox(height: 22),
+            Text(
+              '${t.get('photoEstimateNote')}\n${t.get('nutritionSourcesNote')}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }
 
-class _PhotoFoodDialog extends StatefulWidget {
-  const _PhotoFoodDialog({required this.candidate, required this.english});
-  final String candidate;
-  final bool english;
+class _Hero extends StatelessWidget {
+  const _Hero({required this.onPick});
+  final ValueChanged<ImageSource>? onPick;
 
   @override
-  State<_PhotoFoodDialog> createState() => _PhotoFoodDialogState();
+  Widget build(BuildContext context) {
+    final t = stringsOf(context);
+    final theme = Theme.of(context);
+    final accent = theme.colorScheme.primary;
+    return VyroCard(
+      padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(
+            child: Container(
+              width: 76,
+              height: 76,
+              decoration: BoxDecoration(
+                color: accent.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.restaurant_rounded, size: 34, color: accent),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Text(
+            t.get('photoHeroTitle'),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            t.get('photoHeroBody'),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 22),
+          if (kIsWeb)
+            Text(t.get('photoNativeOnly'), textAlign: TextAlign.center)
+          else ...[
+            VyroPrimaryButton(
+              label: t.get('takePhoto'),
+              icon: Icons.photo_camera_outlined,
+              onPressed: onPick == null
+                  ? null
+                  : () => onPick!(ImageSource.camera),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: onPick == null
+                  ? null
+                  : () => onPick!(ImageSource.gallery),
+              icon: const Icon(Icons.photo_library_outlined),
+              label: Text(t.get('choosePhoto')),
+            ),
+          ],
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              Icon(Icons.lock_outline_rounded, size: 16, color: accent),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  t.get('photoLocalPrivacy'),
+                  style: theme.textTheme.bodySmall,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _PhotoFoodDialogState extends State<_PhotoFoodDialog> {
-  final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _name;
-  final _quantity = TextEditingController();
-  final _kcal = TextEditingController();
-  final _protein = TextEditingController();
-  final _carbs = TextEditingController();
-  final _fat = TextEditingController();
-  String _meal = 'snack';
-  LocalFoodReference? _reference;
+class _PhotoHeader extends StatelessWidget {
+  const _PhotoHeader({
+    required this.photo,
+    required this.busy,
+    required this.source,
+    required this.onRetake,
+    required this.onGallery,
+  });
+
+  final Uint8List photo;
+  final bool busy;
+  final VisionSource? source;
+  final VoidCallback? onRetake;
+  final VoidCallback? onGallery;
 
   @override
-  void initState() {
-    super.initState();
-    _name = TextEditingController(text: widget.candidate);
+  Widget build(BuildContext context) {
+    final t = stringsOf(context);
+    final theme = Theme.of(context);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: SizedBox(
+        height: 230,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.memory(photo, fit: BoxFit.cover, gaplessPlayback: true),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: busy ? 0.6 : 0.45),
+                  ],
+                ),
+              ),
+            ),
+            if (busy)
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(
+                      width: 34,
+                      height: 34,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      t.get('photoAnalyzing'),
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              Positioned(
+                left: 14,
+                right: 10,
+                bottom: 10,
+                child: Row(
+                  children: [
+                    if (source != null)
+                      Flexible(
+                        child: _GlassTag(
+                          icon: source == VisionSource.systemAi
+                              ? Icons.auto_awesome_rounded
+                              : Icons.grid_view_rounded,
+                          label: t.get(
+                            source == VisionSource.systemAi
+                                ? 'photoSourceSystem'
+                                : 'photoSourceRegions',
+                          ),
+                        ),
+                      ),
+                    const Spacer(),
+                    IconButton.filledTonal(
+                      tooltip: t.get('choosePhoto'),
+                      onPressed: onGallery,
+                      icon: const Icon(Icons.photo_library_outlined),
+                    ),
+                    IconButton.filledTonal(
+                      tooltip: t.get('photoRetake'),
+                      onPressed: onRetake,
+                      icon: const Icon(Icons.photo_camera_outlined),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GlassTag extends StatelessWidget {
+  const _GlassTag({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    decoration: BoxDecoration(
+      color: Colors.black.withValues(alpha: 0.45),
+      borderRadius: BorderRadius.circular(99),
+      border: Border.all(color: Colors.white24),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: Colors.white),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            label,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+/// Meal totals: kcal and macros of the matched foods.
+class _Totals extends StatelessWidget {
+  const _Totals({required this.items});
+  final List<_Item> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = stringsOf(context);
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    double sum(double Function(FoodRef) pick) => items.fold(
+      0,
+      (total, i) =>
+          total + (i.food == null ? 0 : pick(i.food!) * i.grams / 100),
+    );
+    final kcal = sum((f) => f.kcal);
+    final macros = [
+      (t.get('protein'), sum((f) => f.protein), scheme.primary),
+      (t.get('carbs'), sum((f) => f.carbs), scheme.tertiary),
+      (t.get('fat'), sum((f) => f.fat), scheme.secondary),
+    ];
+    final grams = items.fold<double>(0, (total, i) => total + i.grams);
+    return VyroCard(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              VyroAnimatedNumber(
+                value: kcal,
+                style: theme.textTheme.displaySmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  height: 1,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text('kcal', style: theme.textTheme.titleMedium),
+              ),
+              const Spacer(),
+              Text(
+                '≈ ${grams.round()} g',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              for (final (label, value, color) in macros)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              label,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${value.round()} g',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FoodRow extends StatefulWidget {
+  const _FoodRow({
+    required this.item,
+    required this.onChange,
+    required this.onGrams,
+    required this.onRemove,
+  });
+
+  final _Item item;
+  final VoidCallback onChange;
+  final ValueChanged<double> onGrams;
+  final VoidCallback onRemove;
+
+  @override
+  State<_FoodRow> createState() => _FoodRowState();
+}
+
+class _FoodRowState extends State<_FoodRow> {
+  late final _grams = TextEditingController(text: _format(widget.item.grams));
+  final _focus = FocusNode();
+
+  static String _format(double g) => g.round().toString();
+
+  @override
+  void didUpdateWidget(_FoodRow old) {
+    super.didUpdateWidget(old);
+    final text = _format(widget.item.grams);
+    if (!_focus.hasFocus && _grams.text != text) _grams.text = text;
   }
 
   @override
   void dispose() {
-    _name.dispose();
-    _quantity.dispose();
-    _kcal.dispose();
-    _protein.dispose();
-    _carbs.dispose();
-    _fat.dispose();
+    _grams.dispose();
+    _focus.dispose();
     super.dispose();
+  }
+
+  void _step(int direction) {
+    final step = widget.item.grams >= 200 ? 25.0 : 10.0;
+    final next = (widget.item.grams + direction * step).clamp(0.0, 2000.0);
+    _grams.text = _format(next);
+    widget.onGrams(next);
   }
 
   @override
   Widget build(BuildContext context) {
     final t = stringsOf(context);
-    return AlertDialog(
-      title: Text(t.get('foodReview')),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(t.get('photoConfirmNote')),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _meal,
-                decoration: InputDecoration(labelText: t.get('selectMeal')),
-                items: [
-                  for (final value in ['breakfast', 'lunch', 'dinner', 'snack'])
-                    DropdownMenuItem(value: value, child: Text(t.get(value))),
-                ],
-                onChanged: (value) => setState(() => _meal = value ?? _meal),
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                initialValue: null,
-                decoration: InputDecoration(
-                  labelText: t.get('localFoodReference'),
-                  helperText: t.get('localFoodsNote'),
-                ),
-                items: [
-                  for (final food in localFoodReference)
-                    DropdownMenuItem(
-                      value: food.key,
-                      child: Text(food.name(widget.english)),
-                    ),
-                ],
-                onChanged: (key) {
-                  final matches = localFoodReference.where(
-                    (item) => item.key == key,
-                  );
-                  if (matches.isEmpty) return;
-                  final food = matches.first;
-                  setState(() {
-                    _reference = food;
-                    _name.text = food.name(widget.english);
-                    _kcal.text = food.kcal.toString();
-                    _protein.text = food.protein.toString();
-                    _carbs.text = food.carbs.toString();
-                    _fat.text = food.fat.toString();
-                  });
-                },
-              ),
-              if (_reference != null) ...[
-                const SizedBox(height: 4),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '${t.get('nutritionSource')}: ${_reference!.provenance}',
-                    style: Theme.of(context).textTheme.labelSmall,
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final item = widget.item;
+    final food = item.food;
+    final detected = item.detected;
+    final accent = food == null ? scheme.tertiary : scheme.primary;
+    final details = food == null
+        ? t.get('photoNoMatchRow')
+        : [
+            '${food.kcal.round()} kcal/100 g',
+            foodSourceTag(food),
+            if (detected.count != null && detected.count! > 1)
+              '${detected.count} ${t.get('pieces')}',
+            if (detected.confidence != null)
+              '${(detected.confidence! * 100).round()}% ${t.get('photoConfidence')}',
+          ].join(' · ');
+    return VyroCard(
+      radius: 20,
+      padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
+      child: Column(
+        children: [
+          InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: widget.onChange,
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 21,
+                  backgroundColor: accent.withValues(alpha: 0.13),
+                  child: Icon(
+                    food == null
+                        ? Icons.help_outline_rounded
+                        : foodCategoryIcon(food.category),
+                    size: 21,
+                    color: accent,
                   ),
                 ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              food?.name(t.isEnglish) ?? detected.label,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.unfold_more_rounded,
+                            size: 16,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        details,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: food == null ? scheme.tertiary : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  tooltip: t.get('delete'),
+                  onPressed: widget.onRemove,
+                  icon: const Icon(Icons.close_rounded, size: 20),
+                ),
               ],
-              const SizedBox(height: 8),
-              _field(_name, t.get('foodName'), required: true),
-              _field(
-                _quantity,
-                '${t.get('quantity')} (${t.get('grams')})',
-                required: true,
-                number: true,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const SizedBox(width: 54),
+              _StepButton(icon: Icons.remove_rounded, onTap: () => _step(-1)),
+              SizedBox(
+                width: 78,
+                child: TextField(
+                  controller: _grams,
+                  focusNode: _focus,
+                  textAlign: TextAlign.center,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                  ],
+                  onChanged: (text) => widget.onGrams(
+                    double.tryParse(text.replaceAll(',', '.')) ?? 0,
+                  ),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                  decoration: const InputDecoration(
+                    isDense: true,
+                    suffixText: 'g',
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 10,
+                    ),
+                  ),
+                ),
               ),
-              _field(_kcal, t.get('kcalPer100'), number: true),
-              _field(_protein, t.get('proteinPer100'), number: true),
-              _field(_carbs, t.get('carbsPer100'), number: true),
-              _field(_fat, t.get('fatPer100'), number: true),
+              _StepButton(icon: Icons.add_rounded, onTap: () => _step(1)),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Text(
+                  item.kcal == null ? '— kcal' : '${item.kcal!.round()} kcal',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
             ],
           ),
-        ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(t.get('cancel')),
+    );
+  }
+}
+
+class _StepButton extends StatelessWidget {
+  const _StepButton({required this.icon, required this.onTap});
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    onPressed: onTap,
+    visualDensity: VisualDensity.compact,
+    icon: Icon(icon, size: 20),
+    style: IconButton.styleFrom(
+      side: BorderSide(color: Theme.of(context).colorScheme.outline),
+    ),
+  );
+}
+
+class _QuickAdd extends StatelessWidget {
+  const _QuickAdd({required this.foods, required this.onAdd});
+  final List<FoodRef> foods;
+  final ValueChanged<FoodRef> onAdd;
+
+  @override
+  Widget build(BuildContext context) {
+    if (foods.isEmpty) return const SizedBox.shrink();
+    final t = stringsOf(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          t.get('photoQuickAdd'),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
-        FilledButton(onPressed: _save, child: Text(t.get('confirmFood'))),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final food in foods)
+              ActionChip(
+                avatar: Icon(foodCategoryIcon(food.category), size: 16),
+                label: Text(food.name(t.isEnglish)),
+                onPressed: () => onAdd(food),
+              ),
+          ],
+        ),
       ],
     );
   }
+}
 
-  Widget _field(
-    TextEditingController controller,
-    String label, {
-    bool required = false,
-    bool number = false,
-  }) => TextFormField(
-    controller: controller,
-    keyboardType: number
-        ? const TextInputType.numberWithOptions(decimal: true)
-        : TextInputType.text,
-    decoration: InputDecoration(labelText: label),
-    validator: (value) {
-      final raw = value?.trim() ?? '';
-      if (required && raw.isEmpty) return stringsOf(context).get('error');
-      if (number && raw.isNotEmpty && _parse(raw) == null)
-        return stringsOf(context).get('error');
-      if (identical(controller, _quantity) && (_parse(raw) ?? 0) <= 0)
-        return stringsOf(context).get('error');
-      return null;
-    },
-  );
+class _Notice extends StatelessWidget {
+  const _Notice({required this.icon, required this.text});
+  final IconData icon;
+  final String text;
 
-  void _save() {
-    if (!_formKey.currentState!.validate()) return;
-    final reference = _reference;
-    final retainsReferenceSource =
-        reference != null &&
-        _name.text.trim() == reference.name(widget.english) &&
-        _parse(_kcal.text) == reference.kcal &&
-        _parse(_protein.text) == reference.protein &&
-        _parse(_carbs.text) == reference.carbs &&
-        _parse(_fat.text) == reference.fat;
-    Navigator.pop(
-      context,
-      _PhotoFoodDraft(
-        meal: _meal,
-        name: _name.text.trim(),
-        quantityGrams: _parse(_quantity.text)!,
-        kcalPer100g: _parse(_kcal.text),
-        proteinPer100g: _parse(_protein.text),
-        carbsPer100g: _parse(_carbs.text),
-        fatPer100g: _parse(_fat.text),
-        source: retainsReferenceSource
-            ? 'local_reference_${reference.fdcId}'
-            : 'photo_suggestion',
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: VyroCard(
+        radius: 18,
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 18, color: theme.colorScheme.primary),
+            const SizedBox(width: 10),
+            Expanded(child: Text(text, style: theme.textTheme.bodySmall)),
+          ],
+        ),
       ),
     );
   }
-}
-
-class _PhotoFoodDraft {
-  const _PhotoFoodDraft({
-    required this.meal,
-    required this.name,
-    required this.quantityGrams,
-    required this.kcalPer100g,
-    required this.proteinPer100g,
-    required this.carbsPer100g,
-    required this.fatPer100g,
-    required this.source,
-  });
-  final String meal;
-  final String name;
-  final double quantityGrams;
-  final double? kcalPer100g;
-  final double? proteinPer100g;
-  final double? carbsPer100g;
-  final double? fatPer100g;
-  final String source;
-}
-
-String _dayKey(DateTime date) =>
-    '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-
-double? _parse(String value) =>
-    double.tryParse(value.trim().replaceAll(',', '.'));
-
-String _localizedFoodLabel(String label, VyroStrings strings) {
-  if (strings.isEnglish) return label.replaceAll('_', ' ');
-  const common = {
-    'Apple': 'Maçã',
-    'Banana': 'Banana',
-    'Bread': 'Pão',
-    'Chicken': 'Frango',
-    'Egg': 'Ovo',
-    'French fries': 'Batatas fritas',
-    'Hamburger': 'Hambúrguer',
-    'Omelette': 'Omeleta',
-    'Pasta': 'Massa',
-    'Pizza': 'Pizza',
-    'Rice': 'Arroz',
-    'Salad': 'Salada',
-    'Salmon': 'Salmão',
-    'Soup': 'Sopa',
-    'Tomato': 'Tomate',
-  };
-  final plain = label.replaceAll('_', ' ');
-  return common[label] ?? plain;
 }

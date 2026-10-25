@@ -1,7 +1,7 @@
 name: vyro
 description: VYRO — nutrição e treino, com privacidade por defeito.
 publish_to: none
-version: 0.4.0+5
+version: 0.5.0+6
 
 environment:
   sdk: '>=3.11.0 <4.0.0'
@@ -32,6 +32,7 @@ flutter:
     - assets/models/aiy_food_v1.tflite
     - assets/models/aiy_food_v1_labels.csv
     - assets/models/movenet_lightning_fp16.tflite
+    - assets/nutrition/foods.json
 dev_dependencies:
   build_runner: 2.17.1
   drift_dev: 2.35.2
