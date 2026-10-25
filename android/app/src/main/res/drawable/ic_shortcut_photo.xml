@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- App-icon shortcut glyph. -->
+<!-- App-icon shortcut: lime glyph on the VYRO dark circle. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp" android:height="24dp"
-    android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="#0B0D10" android:pathData="M9,4L7.2,6H4C2.9,6 2,6.9 2,8v10c0,1.1 0.9,2 2,2h16c1.1,0 2,-0.9 2,-2V8c0,-1.1 -0.9,-2 -2,-2h-3.2L15,4H9z M12,9a4,4 0 1,1 0,8a4,4 0 1,1 0,-8z" />
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:fillColor="#12151A"
+        android:pathData="M24,0a24,24 0 1,1 0,48a24,24 0 1,1 0,-48z" />
+    <group
+        android:translateX="12"
+        android:translateY="12">
+        <path
+            android:fillColor="#B8F36B"
+            android:fillType="evenOdd"
+            android:pathData="M9,4L7.2,6H4C2.9,6 2,6.9 2,8v10c0,1.1 0.9,2 2,2h16c1.1,0 2,-0.9 2,-2V8c0,-1.1 -0.9,-2 -2,-2h-3.2L15,4H9z M12,8.5a4.5,4.5 0 1,1 0,9a4.5,4.5 0 1,1 0,-9z M12,10.3a2.7,2.7 0 1,0 0,5.4a2.7,2.7 0 1,0 0,-5.4z" />
+    </group>
 </vector>

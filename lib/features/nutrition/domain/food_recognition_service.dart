@@ -82,10 +82,7 @@ class LiteRtFoodRecognitionService implements FoodRecognitionService {
             )
           : raw.cast<double>();
       final labels = await _loadLabels();
-      return rankCandidates(
-        _looksLikeProbabilities(values) ? values : _softmax(values),
-        labels,
-      );
+      return rankCandidates(toProbabilities(values), labels);
     } finally {
       await isolate?.close();
       interpreter.close();
@@ -107,17 +104,6 @@ class LiteRtFoodRecognitionService implements FoodRecognitionService {
       labels[id] = label;
     }
     return labels;
-  }
-
-  bool _looksLikeProbabilities(List<double> values) =>
-      values.every((value) => value >= 0 && value <= 1) &&
-      (values.fold<double>(0, (sum, value) => sum + value) - 1).abs() < .05;
-
-  List<double> _softmax(List<double> values) {
-    final maxValue = values.reduce(math.max);
-    final exps = values.map((value) => math.exp(value - maxValue)).toList();
-    final total = exps.fold<double>(0, (sum, value) => sum + value);
-    return exps.map((value) => value / total).toList(growable: false);
   }
 }
 
@@ -150,4 +136,24 @@ List<FoodCandidate> rankCandidates(
         ),
       )
       .toList(growable: false);
+}
+
+/// Model scores → probabilities.
+///
+/// Scores already in [0, 1] come from a softmax layer; a quantized softmax
+/// loses the tiny tails (the bundled model sums to ~0.89), so they are only
+/// renormalised. Applying another softmax there flattened every class to
+/// ~1/2024 and no food was ever shown. Anything else is treated as logits.
+List<double> toProbabilities(List<double> values) {
+  if (values.isEmpty) return values;
+  final isProbability = values.every((v) => v >= 0 && v <= 1);
+  if (isProbability) {
+    final total = values.fold<double>(0, (sum, v) => sum + v);
+    if (total <= 0) return values;
+    return [for (final v in values) v / total];
+  }
+  final maxValue = values.reduce(math.max);
+  final exps = [for (final v in values) math.exp(v - maxValue)];
+  final total = exps.fold<double>(0, (sum, v) => sum + v);
+  return [for (final v in exps) v / total];
 }

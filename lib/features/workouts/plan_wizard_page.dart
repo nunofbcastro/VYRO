@@ -108,6 +108,7 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
           prefs: prefs,
           allowedKeys: {for (final c in choices) c.key},
           fallbackTitles: rules,
+          muscleGroupOf: {for (final c in choices) c.key: c.muscleGroup},
         );
         if (parsed != null) {
           plan = parsed.plan;
@@ -371,22 +372,26 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
         ];
       case 5:
         return [
-          _question(t.get('wizFocusQ')),
+          _question(t.get('wizFocusQ'), t.get('wizFocusHint')),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             alignment: WrapAlignment.center,
             children: [
-              for (final (value, label) in [
-                ('balanced', 'wizFocusBalanced'),
-                ('legs', 'wizFocusLegs'),
-                ('upper', 'wizFocusUpper'),
-                ('core', 'wizFocusCore'),
-              ])
+              VyroPillChip(
+                label: t.get('wizFocusBalanced'),
+                selected: prefs.priorities.isEmpty,
+                onTap: () => _update(prefs.copyWith(priorities: const {})),
+              ),
+              for (final area in PlanPreferences.allPriorities)
                 VyroPillChip(
-                  label: t.get(label),
-                  selected: prefs.emphasis == value,
-                  onTap: () => _update(prefs.copyWith(emphasis: value)),
+                  label: t.get('area_$area'),
+                  selected: prefs.priorities.contains(area),
+                  onTap: () {
+                    final set = {...prefs.priorities};
+                    set.contains(area) ? set.remove(area) : set.add(area);
+                    _update(prefs.copyWith(priorities: set));
+                  },
                 ),
             ],
           ),

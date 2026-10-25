@@ -31,12 +31,18 @@ String buildPlanPrompt(
           : 'composição corporal / perder gordura',
     _ => english ? 'healthy routine' : 'rotina saudável',
   };
-  final emphasis = switch (prefs.emphasis) {
-    'legs' => english ? 'legs and glutes' : 'pernas e glúteos',
-    'upper' => english ? 'upper body' : 'parte superior',
-    'core' => 'core',
-    _ => english ? 'balanced' : 'equilibrado',
+  final priorityNames = {
+    'legs': english ? 'legs' : 'pernas',
+    'glutes': english ? 'glutes' : 'glúteos',
+    'chest': english ? 'chest' : 'peito',
+    'back': english ? 'back' : 'costas',
+    'shoulders': english ? 'shoulders' : 'ombros',
+    'arms': english ? 'arms' : 'braços',
+    'core': 'core',
   };
+  final priorities = prefs.priorities.isEmpty
+      ? 'none (balanced)'
+      : prefs.priorities.map((p) => priorityNames[p] ?? p).join(', ');
   final days = prefs.weekdays
       .map((d) => weekdayLong(d, english: english))
       .join(', ');
@@ -47,10 +53,11 @@ String buildPlanPrompt(
   final language = english ? 'English' : 'Portuguese (Portugal)';
   return '''
 You design gym workout plans. Reply with JSON only, no markdown, no comments.
-Goal: $goal. Experience: ${prefs.experience}. Emphasis: $emphasis.
+Goal: $goal. Experience: ${prefs.experience}.
+Priority areas (EXTRA volume only, never exclusive): $priorities.
 Training days (${prefs.daysPerWeek}): $days. Session length: ${prefs.sessionMinutes} minutes, so $count exercises per day.
 ${prefs.limitations.isEmpty ? '' : 'Limitations to respect (avoid exercises that stress them): ${prefs.limitations}.\n'}Use ONLY these exercise keys: $catalog.
-Balance muscle groups across the week, do not repeat an exercise within a day, put compound exercises first.
+Train the WHOLE body every week: legs, chest, back, shoulders and core must all appear. Priority areas get about one extra exercise per session; they must not replace the other groups. Do not repeat an exercise within a day, put compound exercises first.
 Write day names in $language (short, like "Pernas e glúteos").
 Format:
 {"days":[{"name":"...","exercises":[{"key":"goblet_squat","sets":3,"reps":10}]}],"notes":"one short sentence in $language"}
@@ -74,6 +81,7 @@ AiPlanResult? parseAiPlan(
   required PlanPreferences prefs,
   required Set<String> allowedKeys,
   required GeneratedPlan fallbackTitles,
+  Map<String, String> muscleGroupOf = const {},
 }) {
   final start = raw.indexOf('{');
   final end = raw.lastIndexOf('}');
@@ -127,6 +135,22 @@ AiPlanResult? parseAiPlan(
         exercises: slots,
       ),
     );
+  }
+  // A plan that drops a major area (e.g. only "priority" days) is rejected
+  // so the balanced rule-based plan is used instead.
+  if (muscleGroupOf.isNotEmpty) {
+    final covered = {
+      for (final day in days)
+        for (final slot in day.exercises) muscleGroupOf[slot.exerciseKey],
+    };
+    const required = [
+      {'legs', 'glutes', 'hamstrings'},
+      {'chest', 'shoulders'},
+      {'back'},
+    ];
+    for (final group in required) {
+      if (covered.intersection(group).isEmpty) return null;
+    }
   }
   final notes = (json['notes'] as String?)?.trim();
   return AiPlanResult(

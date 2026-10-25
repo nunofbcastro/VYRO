@@ -170,7 +170,7 @@ GeneratedPlan generatePlan({
   required Map<String, String> equipmentOf,
   List<int>? weekdays,
   int sessionMinutes = 45,
-  String emphasis = 'balanced',
+  Set<String> priorities = const {},
 }) {
   final days = daysPerWeek.clamp(1, 7);
   final split = _split(days);
@@ -204,16 +204,35 @@ GeneratedPlan generatePlan({
       if (pick.isNotEmpty) keys.add(pick);
     }
 
-    // Session length decides how many exercises fit; the emphasis gets at
-    // least one dedicated slot, then generic accessories fill the rest.
+    // The day's template always comes first, so every session keeps its
+    // balance (legs, push, pull, core). Priorities only add volume: up to two
+    // extra exercises per session, rotating through the chosen areas across
+    // the week, then generic accessories fill any remaining time.
     final target = exercisesForMinutes(sessionMinutes);
-    final focus = _emphasisSlots[emphasis] ?? const <_Slot>[];
-    final mainSlots = focus.isEmpty ? target : target - 1;
+    final ordered = [
+      for (final p in PlanPreferencesOrder.areas)
+        if (priorities.contains(p)) p,
+    ];
+    // Extras use the session's spare room first; at least one priority
+    // exercise always fits, at most two.
+    final spare = target - template.slots.length;
+    final extras = ordered.isEmpty
+        ? 0
+        : spare.clamp(1, ordered.length >= 2 ? 2 : 1);
+    final baseCount = (target - extras).clamp(3, target);
     for (final slot in template.slots) {
-      if (keys.length >= mainSlots) break;
+      if (keys.length >= baseCount) break;
       take(slot);
     }
-    for (final slot in [...focus, ..._fillerSlots]) {
+    for (var e = 0; e < extras && ordered.isNotEmpty; e++) {
+      final area = ordered[(i * extras + e) % ordered.length];
+      for (final slot in _prioritySlots[area] ?? const <_Slot>[]) {
+        final before = keys.length;
+        take(slot);
+        if (keys.length > before) break;
+      }
+    }
+    for (final slot in [...template.slots, ..._fillerSlots]) {
       if (keys.length >= target) break;
       take(slot);
     }
@@ -272,9 +291,26 @@ int estimateMinutes(Iterable<PlannedSlot> slots) {
   return (seconds / 60).round();
 }
 
-const _emphasisSlots = <String, List<_Slot>>{
-  'legs': [_lunge, _glute, _calf],
-  'upper': [_lateral, _biceps, _triceps, _rearDelt],
+/// Order used when rotating priorities across the week.
+class PlanPreferencesOrder {
+  static const areas = [
+    'legs',
+    'glutes',
+    'chest',
+    'back',
+    'shoulders',
+    'arms',
+    'core',
+  ];
+}
+
+const _prioritySlots = <String, List<_Slot>>{
+  'legs': [_lunge, _squat, _calf],
+  'glutes': [_glute, _hinge],
+  'chest': [_pushAlt, _push],
+  'back': [_row, _vertical],
+  'shoulders': [_lateral, _overhead, _rearDelt],
+  'arms': [_biceps, _triceps],
   'core': [_core, _coreAlt, _coreSide],
 };
 

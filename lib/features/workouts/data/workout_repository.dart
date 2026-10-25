@@ -134,7 +134,7 @@ class WorkoutRepository {
     equipmentOf: await _equipmentOf(),
     weekdays: prefs.weekdays,
     sessionMinutes: prefs.sessionMinutes,
-    emphasis: prefs.emphasis,
+    priorities: prefs.priorities,
   );
 
   /// Exercises the user's equipment allows, for the AI prompt.

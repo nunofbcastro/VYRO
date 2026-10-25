@@ -9,7 +9,7 @@ class PlanPreferences {
     this.weekdays = const [1, 3, 5],
     this.sessionMinutes = 45,
     this.equipment = const {'bodyweight', 'dumbbells', 'cable'},
-    this.emphasis = 'balanced',
+    this.priorities = const {},
     this.limitations = '',
   });
 
@@ -21,8 +21,19 @@ class PlanPreferences {
   final int sessionMinutes;
   final Set<String> equipment;
 
-  /// balanced | legs | upper | core
-  final String emphasis;
+  /// Muscle areas that get extra volume on top of a full-body week:
+  /// legs, glutes, chest, back, shoulders, arms, core. Empty = balanced.
+  final Set<String> priorities;
+
+  static const allPriorities = [
+    'legs',
+    'glutes',
+    'chest',
+    'back',
+    'shoulders',
+    'arms',
+    'core',
+  ];
 
   /// Free text ("dor no joelho"), only used to tell the AI what to avoid.
   final String limitations;
@@ -35,7 +46,7 @@ class PlanPreferences {
     List<int>? weekdays,
     int? sessionMinutes,
     Set<String>? equipment,
-    String? emphasis,
+    Set<String>? priorities,
     String? limitations,
   }) => PlanPreferences(
     goal: goal ?? this.goal,
@@ -43,7 +54,7 @@ class PlanPreferences {
     weekdays: weekdays == null ? this.weekdays : ([...weekdays]..sort()),
     sessionMinutes: sessionMinutes ?? this.sessionMinutes,
     equipment: equipment ?? this.equipment,
-    emphasis: emphasis ?? this.emphasis,
+    priorities: priorities ?? this.priorities,
     limitations: limitations ?? this.limitations,
   );
 
@@ -53,7 +64,7 @@ class PlanPreferences {
     'weekdays': weekdays,
     'sessionMinutes': sessionMinutes,
     'equipment': equipment.toList(),
-    'emphasis': emphasis,
+    'priorities': priorities.toList(),
     'limitations': limitations,
   };
 
@@ -89,17 +100,29 @@ class PlanPreferences {
         weekdays: days.isEmpty ? base.weekdays : days.toSet().toList(),
         sessionMinutes: minutes.clamp(20, 120),
         equipment: equipment.isEmpty ? base.equipment : equipment,
-        emphasis: _oneOf(json['emphasis'], const {
-          'balanced',
-          'legs',
-          'upper',
-          'core',
-        }, base.emphasis),
+        priorities: _priorities(json),
         limitations: (json['limitations'] as String? ?? '').trim(),
       );
     } catch (_) {
       return base;
     }
+  }
+
+  static Set<String> _priorities(Map<String, dynamic> json) {
+    final raw = json['priorities'];
+    if (raw is List) {
+      return {
+        for (final p in raw)
+          if (p is String && allPriorities.contains(p)) p,
+      };
+    }
+    // Version 0.3.0 stored one "emphasis" value.
+    return switch (json['emphasis']) {
+      'legs' => {'legs', 'glutes'},
+      'upper' => {'chest', 'back', 'shoulders', 'arms'},
+      'core' => {'core'},
+      _ => <String>{},
+    };
   }
 
   static String _oneOf(Object? value, Set<String> allowed, String fallback) =>

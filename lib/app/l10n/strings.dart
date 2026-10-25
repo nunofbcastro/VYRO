@@ -566,7 +566,7 @@ class VyroStrings {
     'wizMinutes': 'min',
     'wizExercises': 'exercícios',
     'wizEquipmentQ': 'Que equipamento tens?',
-    'wizFocusQ': 'Alguma prioridade?',
+    'wizFocusQ': 'Queres dar mais atenção a alguma zona?',
     'wizFocusBalanced': 'Equilibrado',
     'wizFocusLegs': 'Pernas e glúteos',
     'wizFocusUpper': 'Parte superior',
@@ -616,6 +616,15 @@ class VyroStrings {
     'widgetManual': 'Manual',
     'widgetStart': 'Começar',
     'widgetTraining': 'Treino da semana',
+    'wizFocusHint':
+        'Podes escolher várias. O plano treina sempre o corpo todo; estas zonas só recebem exercícios extra.',
+    'area_legs': 'Pernas',
+    'area_glutes': 'Glúteos',
+    'area_chest': 'Peito',
+    'area_back': 'Costas',
+    'area_shoulders': 'Ombros',
+    'area_arms': 'Braços',
+    'area_core': 'Core',
   };
 
   static const _en = <String, String>{
@@ -1166,7 +1175,7 @@ class VyroStrings {
     'wizMinutes': 'min',
     'wizExercises': 'exercises',
     'wizEquipmentQ': 'What equipment do you have?',
-    'wizFocusQ': 'Any priority?',
+    'wizFocusQ': 'Want extra focus on any area?',
     'wizFocusBalanced': 'Balanced',
     'wizFocusLegs': 'Legs and glutes',
     'wizFocusUpper': 'Upper body',
@@ -1216,6 +1225,15 @@ class VyroStrings {
     'widgetManual': 'Manual',
     'widgetStart': 'Start',
     'widgetTraining': 'Training week',
+    'wizFocusHint':
+        'Pick as many as you like. The plan always trains the whole body; these areas just get extra exercises.',
+    'area_legs': 'Legs',
+    'area_glutes': 'Glutes',
+    'area_chest': 'Chest',
+    'area_back': 'Back',
+    'area_shoulders': 'Shoulders',
+    'area_arms': 'Arms',
+    'area_core': 'Core',
   };
 }
 
