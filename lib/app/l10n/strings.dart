@@ -12,6 +12,21 @@ class VyroStrings {
   String get(String key) => (isEnglish ? _en : _pt)[key] ?? key;
 
   static const _pt = <String, String>{
+    'secondViewOffline':
+        'O segundo ângulo foi analisado pelo classificador local. As hipóteses adicionais precisam de confirmação.',
+    'photoSourceFused': 'Duas fontes locais',
+    'photoTooSmall':
+        'Fotografia pequena: aproxima o prato ou escolhe uma imagem maior.',
+    'photoTooDark': 'Pouca luz: experimenta fotografar junto a uma janela.',
+    'photoTooBright': 'Muita luz: evita reflexos e luz direta.',
+    'photoTooBlurry': 'Pouco detalhe: segura o telemóvel e verifica a focagem.',
+    'fusedOffline':
+        'Outras hipóteses locais: adiciona apenas o que está no prato.',
+    'photoCorroborated': 'Sugerido pelas duas fontes; confirma',
+    'photoUncertain': 'Hipótese a confirmar',
+    'photoSuggestions': 'Outras hipóteses',
+    'localError': 'Não foi possível guardar. Tenta novamente.',
+
     'photoDetail': 'Detalhes da análise (técnico)',
     'photoHeroTitle': 'Fotografa o teu prato',
     'photoHeroBody':
@@ -25,6 +40,16 @@ class VyroStrings {
     'photoSourceRegions': 'Reconhecimento offline',
     'photoRegionsNote':
         'Este telemóvel não tem IA multimodal do sistema (Gemini Nano), por isso usámos o reconhecimento offline, que é aproximado. Confirma os alimentos e adiciona o que faltar.',
+    'photoConfirmExtra': 'Confirma os alimentos adicionais',
+    'photoExtraHint':
+        'Os alimentos já revistos são preservados. Troca a identidade ou porção na lista de revisão.',
+    'photoWhichFood': 'Qual destes alimentos é?',
+    'photoAnalyseArea': 'Analisar uma zona',
+    'photoSecondAngle': 'Segundo ângulo',
+    'photoRegionTitle': 'Seleciona a zona do alimento',
+    'photoRegionHint':
+        'Arrasta um retângulo. Os alimentos já revistos são preservados.',
+    'photoRegionAnalyse': 'Analisar esta zona',
     'photoSystemFailedNote':
         'A IA do telemóvel não conseguiu analisar a foto; usámos o reconhecimento offline aproximado.',
     'photoNothingFound':
@@ -714,6 +739,33 @@ class VyroStrings {
         'A câmara só liga quando iniciares. Imagens e vídeo nunca são guardados nem enviados; só os números ficam no dispositivo.',
     'maExperimental': 'Experimental (2D)',
     'maLimited': 'Análise limitada',
+    'vidOpenError':
+        'Não foi possível abrir este vídeo local. Tenta outro ficheiro.',
+    'vidCancelled': 'Análise cancelada. Nenhum resultado foi guardado.',
+    'vidFailed': 'A análise falhou. O vídeo não foi guardado pela VYRO.',
+    'vidMomentError': 'Não foi possível mostrar este momento.',
+    'vidInvalidCounts': 'Indica contagens entre 0 e 1000.',
+    'vidTitle': 'Analisar vídeo',
+    'vidIntro':
+        'Escolhe um vídeo e um excerto até dois minutos. A análise corre neste dispositivo. Só guardamos contagens e eventos quando confirmas.',
+    'vidUnsupported': 'A importação de vídeo está disponível no Android e iOS.',
+    'vidPick': 'Escolher vídeo da galeria',
+    'vidClip': 'Excerto selecionado: ',
+    'vidCancel': 'Cancelar análise',
+    'vidAnalyse': 'Analisar excerto no dispositivo',
+    'vidResult': 'Resultado para rever',
+    'vidObservable': 'das amostras observáveis',
+    'vidFrames': 'frames analisados',
+    'vidApproxNote':
+        'Os momentos são aproximados: o descodificador Android devolve o frame mais próximo da posição pedida.',
+    'vidFull': 'Repetições completas — confirma',
+    'vidPartial': 'Repetições parciais — confirma',
+    'vidHoldObserved': 'observados no intervalo configurado',
+    'vidSave': 'Confirmar e guardar números',
+    'vidSaved': 'Números guardados; vídeo não retido',
+    'vidExperimental':
+        'Experimental: a análise de vídeo local ainda não foi validada em todos os dispositivos.',
+    'vidEntry': 'Analisar vídeo da galeria (experimental)',
     'maCameraError': 'Não foi possível abrir a câmara.',
     'maNotSupported':
         'A análise por câmara está disponível na app Android e iOS.',
@@ -724,6 +776,19 @@ class VyroStrings {
   };
 
   static const _en = <String, String>{
+    'secondViewOffline':
+        'The second angle was analysed by the local classifier. Additional possibilities need confirmation.',
+    'photoSourceFused': 'Two local sources',
+    'photoTooSmall': 'Small photo: move closer or choose a larger image.',
+    'photoTooDark': 'Low light: try a photo near a window.',
+    'photoTooBright': 'Bright image: avoid reflections and direct light.',
+    'photoTooBlurry': 'Low detail: hold the phone steady and check focus.',
+    'fusedOffline': 'Other local possibilities: add only what is on the plate.',
+    'photoCorroborated': 'Suggested by both sources; confirm',
+    'photoUncertain': 'Please confirm this suggestion',
+    'photoSuggestions': 'Other possibilities',
+    'localError': 'Could not save. Please try again.',
+
     'photoDetail': 'Analysis details (technical)',
     'photoHeroTitle': 'Photograph your plate',
     'photoHeroBody':
@@ -737,6 +802,15 @@ class VyroStrings {
     'photoSourceRegions': 'Offline recognition',
     'photoRegionsNote':
         'This phone has no multimodal system AI (Gemini Nano), so the approximate offline recognition was used. Confirm the foods and add anything missing.',
+    'photoConfirmExtra': 'Confirm additional foods',
+    'photoExtraHint':
+        'Existing foods are preserved. Change their identity or portion in the review list.',
+    'photoWhichFood': 'Which food is it?',
+    'photoAnalyseArea': 'Analyse an area',
+    'photoSecondAngle': 'Second angle',
+    'photoRegionTitle': 'Select the food area',
+    'photoRegionHint': 'Drag a rectangle. Your reviewed foods stay unchanged.',
+    'photoRegionAnalyse': 'Analyse this area',
     'photoSystemFailedNote':
         'The phone AI could not analyse the photo; the approximate offline recognition was used.',
     'photoNothingFound':
@@ -1419,6 +1493,32 @@ class VyroStrings {
         'The camera only turns on when you start. Images and video are never stored or sent; only the numbers stay on the device.',
     'maExperimental': 'Experimental (2D)',
     'maLimited': 'Limited analysis',
+    'vidOpenError': 'Could not open this local video. Try another file.',
+    'vidCancelled': 'Analysis cancelled. No result was saved.',
+    'vidFailed': 'Analysis failed. VYRO did not save the video.',
+    'vidMomentError': 'Could not show this moment.',
+    'vidInvalidCounts': 'Enter counts from 0 to 1000.',
+    'vidTitle': 'Analyse video',
+    'vidIntro':
+        'Choose a video and a clip up to two minutes. Analysis runs on this device. Only counts and events are saved when you confirm.',
+    'vidUnsupported': 'Video import is available on Android and iOS.',
+    'vidPick': 'Choose video from gallery',
+    'vidClip': 'Selected clip: ',
+    'vidCancel': 'Cancel analysis',
+    'vidAnalyse': 'Analyse clip on device',
+    'vidResult': 'Result to review',
+    'vidObservable': 'of samples observable',
+    'vidFrames': 'frames analysed',
+    'vidApproxNote':
+        'Times are approximate: the Android decoder returns the nearest frame to the requested position.',
+    'vidFull': 'Complete reps — confirm',
+    'vidPartial': 'Partial reps — confirm',
+    'vidHoldObserved': 'observed within the configured range',
+    'vidSave': 'Confirm and save numbers',
+    'vidSaved': 'Numbers saved; video not retained',
+    'vidExperimental':
+        'Experimental: local video analysis has not yet been verified on all devices.',
+    'vidEntry': 'Analyse a gallery video (experimental)',
     'maCameraError': 'Could not open the camera.',
     'maNotSupported':
         'Camera analysis is available in the Android and iOS app.',

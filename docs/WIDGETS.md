@@ -25,7 +25,7 @@ Widgets update whenever the app is running and data changes. On iOS the timeline
 
 ## Android
 Ready to use, no extra setup:
-- Providers: `android/app/src/main/kotlin/com/example/vyro/widgets/VyroWidgets.kt`
+- Providers: `android/app/src/main/kotlin/com/nunofbcastro/vyro/widgets/VyroWidgets.kt`
 - Layouts: `res/layout/widget_today.xml`, `res/layout/widget_calories.xml` (RemoteViews; avoid plain `View`)
 - Metadata: `res/xml/widget_*_info.xml`; receivers are registered in `AndroidManifest.xml`.
 
@@ -35,7 +35,7 @@ The widget code is in `ios/VyroWidget/VyroWidget.swift`. It cannot be added to t
 1. Open `ios/Runner.xcworkspace` in Xcode.
 2. **File → New → Target → Widget Extension**. Name it `VyroWidget`, untick "Include Configuration Intent", and finish. Do not activate the scheme if Xcode asks.
 3. Delete the Swift file Xcode generated and add `ios/VyroWidget/VyroWidget.swift` to the `VyroWidget` target.
-4. Add the **App Groups** capability to both the `Runner` and `VyroWidget` targets, with the group `group.com.example.vyro`. If you change the bundle id, update `VyroHomeWidgets.appGroupId` and `appGroupId` in the Swift file to match.
+4. Add the **App Groups** capability to both the `Runner` and `VyroWidget` targets, with the group `group.com.nunofbcastro.vyro`. If you change the bundle id, update `VyroHomeWidgets.appGroupId` and `appGroupId` in the Swift file to match.
 5. Set the widget target's deployment target to iOS 16 or later, then build.
 
 The widget `kind` (`VyroWidget`) must match `_iosKind` in `home_widgets.dart`.

@@ -7,7 +7,7 @@
 import SwiftUI
 import WidgetKit
 
-private let appGroupId = "group.com.example.vyro"
+private let appGroupId = "group.com.nunofbcastro.vyro"
 
 struct VyroEntry: TimelineEntry {
     let date: Date

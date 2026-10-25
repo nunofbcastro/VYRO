@@ -110,6 +110,18 @@ class SetSummary {
   /// Only computed when every active check is validated by a professional;
   /// null otherwise (the default today).
   final double? techniqueScore;
+
+  SetSummary withUserCounts(int full, int partial) => SetSummary(
+    patternId: patternId,
+    duration: duration,
+    fullReps: full,
+    partialReps: partial,
+    events: events,
+    meanConfidence: meanConfidence,
+    observedRatio: observedRatio,
+    holdTime: holdTime,
+    status: status,
+  );
 }
 
 /// Combines biomechanics, a movement pattern, the rep counter and the
@@ -132,7 +144,7 @@ class ExerciseAnalysisEngine {
   final RepCounterEngine? counter;
 
   final _events = <TechniqueEvent>[];
-  final _streaks = <String, int>{};
+  final _violationsSince = <String, Duration>{};
   final _firedThisRep = <String>{};
   Duration? _start;
   Duration? _last;
@@ -157,12 +169,22 @@ class ExerciseAnalysisEngine {
   };
 
   AnalysisUpdate process(BodyPose? pose, Duration timestamp) {
+    if (_last != null && timestamp < _last!)
+      return _result(AnalysisStatus.inconclusive, null, const [], 0);
+    if (_last != null &&
+        timestamp - _last! > const Duration(milliseconds: 500)) {
+      _lastHoldTick = null;
+      _violationsSince.clear();
+      counter?.interrupt();
+    }
     _start ??= timestamp;
     _last = timestamp;
     _frames++;
     final feedback = <FeedbackCandidate>[];
 
     if (pose == null) {
+      _lastHoldTick = null;
+      _violationsSince.clear();
       feedback.add(const FeedbackCandidate('mfNoPerson', FeedbackLevel.setup));
       return _result(
         AnalysisStatus.notObservable,
@@ -208,9 +230,8 @@ class ExerciseAnalysisEngine {
     }
 
     if (!usable) {
-      for (final c in pattern.checks) {
-        _streaks[c.id] = 0;
-      }
+      _violationsSince.clear();
+      _lastHoldTick = null;
       return _result(
         missing.isEmpty
             ? AnalysisStatus.inconclusive
@@ -233,7 +254,7 @@ class ExerciseAnalysisEngine {
         final dt = timestamp - _lastHoldTick!;
         if (dt < const Duration(milliseconds: 500)) _hold += dt;
       }
-      _lastHoldTick = timestamp;
+      _lastHoldTick = inRange ? timestamp : null;
     } else {
       rep = counter?.update(sample.value, timestamp);
       final event = rep?.event;
@@ -286,14 +307,17 @@ class ExerciseAnalysisEngine {
               phase == RepPhase.returning,
       };
       if (value == null || value.confidence < check.minConfidence || !inPhase) {
-        _streaks[check.id] = 0;
+        _violationsSince.remove(check.id);
         continue;
       }
-      final streak = check.violatedBy(value.value)
-          ? (_streaks[check.id] ?? 0) + 1
-          : 0;
-      _streaks[check.id] = streak;
-      if (streak >= check.minFrames) {
+      if (!check.violatedBy(value.value)) {
+        _violationsSince.remove(check.id);
+        continue;
+      }
+      final since = _violationsSince.putIfAbsent(check.id, () => timestamp);
+      // Preserve legacy thresholds as elapsed time at their reference 15 fps.
+      if (timestamp - since >=
+          Duration(milliseconds: (check.minFrames - 1) * 66)) {
         _activeIssue = true;
         feedback.add(
           FeedbackCandidate(
@@ -389,5 +413,13 @@ class ExerciseAnalysisEngine {
       status: status,
       techniqueScore: score,
     );
+  }
+
+  void interrupt() {
+    counter?.interrupt();
+    biomechanics.reset();
+    _lastHoldTick = null;
+    _violationsSince.clear();
+    _firedThisRep.clear();
   }
 }

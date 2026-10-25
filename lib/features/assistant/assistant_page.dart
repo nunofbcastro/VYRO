@@ -10,6 +10,10 @@ import '../workouts/data/workout_repository.dart';
 import '../workouts/domain/plan_generator.dart';
 import '../workouts/domain/week_schedule.dart';
 import 'domain/meal_proposal.dart';
+import 'domain/local_assistant.dart';
+import '../nutrition/data/food_database.dart';
+import '../nutrition/meals.dart';
+import '../motion_engine/workout_analysis_history/motion_history_repository.dart';
 import 'meal_log_sheet.dart';
 import 'widgets/chat_message_bubble.dart';
 
@@ -35,6 +39,10 @@ class _AssistantPageState extends State<AssistantPage> {
   LlmStatus? _status;
   bool _busy = false;
   bool _preparing = false;
+  int _requestId = 0;
+  final _resolved = <int, ResolvedMeal>{};
+  final _rated = <int>{};
+  final _sources = <int, String>{};
 
   OnDeviceLlm get _llm => AppServicesScope.of(context).llm;
 
@@ -46,6 +54,7 @@ class _AssistantPageState extends State<AssistantPage> {
 
   @override
   void dispose() {
+    _requestId++;
     _input.dispose();
     _scroll.dispose();
     super.dispose();
@@ -92,6 +101,30 @@ class _AssistantPageState extends State<AssistantPage> {
     for (final day in plan.days) {
       if (day.day.id == next?.slot?.dayId) nextDay = day;
     }
+    final yesterday = await services.database
+        .watchEntriesForDay(
+          dayKey(DateTime.now().subtract(const Duration(days: 1))),
+        )
+        .first;
+    final analyses = await MotionHistoryRepository(
+      services.database,
+    ).watch(limit: 1).first;
+    String? lastSet;
+    if (analyses.isNotEmpty) {
+      final row = analyses.first;
+      final names = await services.database
+          .select(services.database.exerciseCatalog)
+          .get();
+      final matching = names.where((e) => e.exerciseKey == row.exerciseKey);
+      final name = matching.isEmpty
+          ? row.exerciseKey.replaceAll('_', ' ')
+          : (t.isEnglish ? matching.first.nameEn : matching.first.namePt);
+      lastSet = MotionHistoryRepository.describe(
+        row,
+        name: name,
+        english: t.isEnglish,
+      );
+    }
     return AssistantContext(
       goal: switch (profile?.goal) {
         'strength' => t.get('goalStrength'),
@@ -102,7 +135,28 @@ class _AssistantPageState extends State<AssistantPage> {
       proteinGoal: profile?.proteinGoal.round(),
       kcalToday: sum((e) => e.kcalPer100g).round(),
       proteinToday: sum((e) => e.proteinPer100g).round(),
-      foodsToday: [for (final e in entries) e.name],
+      carbsGoal: profile?.carbsGoal.round(),
+      fatGoal: profile?.fatGoal.round(),
+      carbsToday: sum((e) => e.carbsPer100g).round(),
+      fatToday: sum((e) => e.fatPer100g).round(),
+      dietaryChoice: profile?.dietaryChoice,
+      partialNutrition: entries.any(
+        (e) =>
+            e.kcalPer100g == null ||
+            e.proteinPer100g == null ||
+            e.carbsPer100g == null ||
+            e.fatPer100g == null,
+      ),
+      confirmedPreferences: (await services.localIntelligence.memories()).values
+          .toList(),
+      previousDinner: [
+        for (final e in yesterday.where((e) => e.mealType == 'dinner'))
+          '${e.name} — ${e.quantityGrams.round()} g',
+      ],
+      lastSet: lastSet,
+      foodsToday: [
+        for (final e in entries) '${e.name} (${e.quantityGrams.round()} g)',
+      ],
       planTitle: plan.plan.title,
       nextWorkout: next?.slot == null
           ? null
@@ -123,8 +177,11 @@ class _AssistantPageState extends State<AssistantPage> {
   Future<void> _send([String? preset]) async {
     final question = (preset ?? _input.text).trim();
     if (question.isEmpty || _busy) return;
+    final request = ++_requestId;
     final t = stringsOf(context);
+    final services = AppServicesScope.of(context);
     FocusManager.instance.primaryFocus?.unfocus();
+    final history = List<ChatTurn>.of(_turns);
     setState(() {
       _turns.add(ChatTurn(fromUser: true, text: question));
       _busy = true;
@@ -132,33 +189,93 @@ class _AssistantPageState extends State<AssistantPage> {
     });
     _scrollToEnd();
     try {
-      final prompt = buildAssistantPrompt(
-        question: question,
-        context: await _context(t),
-        history: _turns.sublist(0, _turns.length - 1),
+      final facts = await _context(t);
+      final db = await FoodDatabase.load();
+      if (!mounted || request != _requestId) return;
+      var answer = answerLocally(
+        question,
+        facts,
+        db,
         english: t.isEnglish,
+        meal: mealForTime(DateTime.now()),
       );
-      final answer = await _llm.generate(prompt);
-      final parsed = extractMealProposal(answer);
-      if (mounted) {
-        setState(() {
-          if (parsed.proposal != null) {
-            _proposals[_turns.length] = parsed.proposal!;
+      var source = t.isEnglish
+          ? 'Calculated from local data'
+          : 'Calculado a partir de dados locais';
+      if (answer == null && _status == LlmStatus.available) {
+        final prompt = buildAssistantPrompt(
+          question: question,
+          context: facts,
+          history: history,
+          english: t.isEnglish,
+        );
+        try {
+          final raw = await services.llm.generate(prompt);
+          final parsed = extractMealProposal(raw);
+          var proposal = parsed.proposal;
+          if (proposal != null &&
+              proposal.items.any((i) {
+                final f = db.match(i.name);
+                return f != null && !foodFitsDiet(f, facts.dietaryChoice);
+              })) {
+            answer = LocalAssistantAnswer(
+              t.isEnglish
+                  ? 'This suggestion did not respect your dietary profile. Please ask for another.'
+                  : 'Esta sugestão não respeitou a tua opção alimentar. Pede outra sugestão.',
+            );
+          } else {
+            answer = LocalAssistantAnswer(parsed.text, proposal: proposal);
           }
-          _turns.add(ChatTurn(fromUser: false, text: parsed.text));
-        });
+          source = t.isEnglish
+              ? 'Generated on device; meal values validated separately'
+              : 'Gerado no dispositivo; valores da refeição validados à parte';
+        } catch (_) {
+          answer = LocalAssistantAnswer(localAssistantHelp(t.isEnglish));
+        }
       }
+      answer ??= LocalAssistantAnswer(localAssistantHelp(t.isEnglish));
+      if (!mounted || request != _requestId) return;
+      final response = answer;
+      setState(() {
+        final index = _turns.length;
+        if (response.proposal != null) {
+          _proposals[index] = response.proposal!;
+          _resolved[index] = resolveMeal(
+            response.proposal!,
+            db,
+            diet: facts.dietaryChoice,
+          );
+        }
+        _sources[index] = source;
+        _turns.add(ChatTurn(fromUser: false, text: response.text));
+      });
     } catch (_) {
-      if (mounted) {
+      if (mounted && request == _requestId)
         setState(
           () => _turns.add(
             ChatTurn(fromUser: false, text: t.get('assistantError')),
           ),
         );
-      }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted && request == _requestId) setState(() => _busy = false);
       _scrollToEnd();
+    }
+  }
+
+  Future<void> _rate(int index, bool helpful) async {
+    if (_rated.contains(index)) return;
+    setState(() => _rated.add(index));
+    try {
+      await AppServicesScope.of(
+        context,
+      ).localIntelligence.recordAssistantFeedback(helpful);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _rated.remove(index));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(stringsOf(context).get('localError'))),
+        );
+      }
     }
   }
 
@@ -193,17 +310,27 @@ class _AssistantPageState extends State<AssistantPage> {
     return VyroSubpageScaffold(
       title: t.get('assistant'),
       actions: [
+        VyroRoundButton(
+          icon: Icons.psychology_outlined,
+          tooltip: t.isEnglish ? 'Your local data' : 'Os teus dados locais',
+          onPressed: () => Navigator.pushNamed(context, '/local-intelligence'),
+        ),
         if (_turns.isNotEmpty)
           VyroRoundButton(
             icon: Icons.delete_sweep_outlined,
             tooltip: t.get('assistantClear'),
             onPressed: () => setState(() {
+              _requestId++;
+              _busy = false;
+              _rated.clear();
+              _sources.clear();
+              _resolved.clear();
               _turns.clear();
               _proposals.clear();
             }),
           ),
       ],
-      footer: ready ? _composer(t) : null,
+      footer: _composer(t),
       body: status == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -218,8 +345,28 @@ class _AssistantPageState extends State<AssistantPage> {
                     preparing: _preparing,
                     onPrepare: _prepare,
                     onRetry: _checkStatus,
-                  )
-                else if (_turns.isEmpty) ...[
+                  ),
+                if (_turns.isEmpty) ...[
+                  _SuggestionChip(
+                    text: t.isEnglish
+                        ? 'What is left today?'
+                        : 'Quanto me falta hoje?',
+                    onTap: () => _send(
+                      t.isEnglish
+                          ? 'What is left today?'
+                          : 'Quanto me falta hoje?',
+                    ),
+                  ),
+                  _SuggestionChip(
+                    text: t.isEnglish
+                        ? 'What is my next workout?'
+                        : 'Qual é o próximo treino?',
+                    onTap: () => _send(
+                      t.isEnglish
+                          ? 'What is my next workout?'
+                          : 'Qual é o próximo treino?',
+                    ),
+                  ),
                   for (final key in const [
                     'assistantSuggestion1',
                     'assistantSuggestion2',
@@ -241,6 +388,43 @@ class _AssistantPageState extends State<AssistantPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         ChatMessageBubble(turn: _turns[i]),
+                        if (_sources[i] != null)
+                          Text(
+                            _sources[i]!,
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
+                        if (!_turns[i].fromUser)
+                          Row(
+                            children: [
+                              IconButton(
+                                tooltip: t.isEnglish ? 'Helpful' : 'Útil',
+                                onPressed: _rated.contains(i)
+                                    ? null
+                                    : () => _rate(i, true),
+                                icon: const Icon(
+                                  Icons.thumb_up_outlined,
+                                  size: 18,
+                                ),
+                              ),
+                              IconButton(
+                                tooltip: t.isEnglish
+                                    ? 'Needs improvement'
+                                    : 'A melhorar',
+                                onPressed: _rated.contains(i)
+                                    ? null
+                                    : () => _rate(i, false),
+                                icon: const Icon(
+                                  Icons.thumb_down_outlined,
+                                  size: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        if (_resolved[i] != null)
+                          Text(
+                            _resolved[i]!.label(t.isEnglish),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
                         if (_proposals[i] != null)
                           _ProposalCard(
                             proposal: _proposals[i]!,
@@ -277,8 +461,13 @@ class _AssistantPageState extends State<AssistantPage> {
       const SizedBox(width: 10),
       IconButton.filled(
         tooltip: t.get('add'),
-        onPressed: _busy ? null : _send,
-        icon: const Icon(Icons.arrow_upward_rounded),
+        onPressed: _busy
+            ? () => setState(() {
+                _requestId++;
+                _busy = false;
+              })
+            : _send,
+        icon: Icon(_busy ? Icons.stop_rounded : Icons.arrow_upward_rounded),
       ),
     ],
   );

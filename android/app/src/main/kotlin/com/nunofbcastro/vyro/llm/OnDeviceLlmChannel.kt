@@ -1,4 +1,4 @@
-package com.example.vyro.llm
+package com.nunofbcastro.vyro.llm
 
 import com.google.mlkit.genai.common.DownloadStatus
 import com.google.mlkit.genai.common.FeatureStatus
@@ -6,6 +6,7 @@ import com.google.mlkit.genai.prompt.GenerativeModel
 import com.google.mlkit.genai.prompt.Generation
 import com.google.mlkit.genai.prompt.ImagePart
 import com.google.mlkit.genai.prompt.TextPart
+import com.google.mlkit.genai.prompt.content
 import com.google.mlkit.genai.prompt.generateContentRequest
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
@@ -48,7 +49,7 @@ class OnDeviceLlmChannel(messenger: BinaryMessenger) {
                     if (image == null || prompt.isNullOrBlank()) {
                         result.error("bad_args", "Missing image or prompt", null)
                     } else {
-                        describeImage(image, prompt, result)
+                        describeImage(image, call.argument<ByteArray>("secondImage"), prompt, result)
                     }
                 }
                 else -> result.notImplemented()
@@ -102,10 +103,23 @@ class OnDeviceLlmChannel(messenger: BinaryMessenger) {
     }
 
     /** Multimodal prompt (photo + text). The JPEG stays in memory only. */
-    private fun describeImage(image: ByteArray, prompt: String, result: MethodChannel.Result) {
+    private fun describeImage(image: ByteArray, secondImage: ByteArray?, prompt: String, result: MethodChannel.Result) {
         scope.launch {
             try {
-                val request = generateContentRequest(ImagePart(image), TextPart(prompt)) {
+                // One Content holding every image part, then the text. The SDK's
+                // Content.Builder accepts several parts (addPart), unlike the
+                // ImagePart+TextPart overloads of generateContentRequest.
+                val request = generateContentRequest(
+                    content {
+                        addPart(ImagePart(image))
+                        if (secondImage != null) {
+                            addPart(ImagePart(secondImage))
+                            addPart(TextPart("The two images are two separate photos (different angles) of the same meal; do not count a food twice.\n$prompt"))
+                        } else {
+                            addPart(TextPart(prompt))
+                        }
+                    },
+                ) {
                     temperature = 0.1f
                     candidateCount = 1
                 }

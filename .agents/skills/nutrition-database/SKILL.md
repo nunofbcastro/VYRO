@@ -15,7 +15,13 @@ VYRO never invents calories. Every food in the app comes from
 
 1. A curated list, `tool/nutrition/foods_pt.tsv`, has one row per VYRO food:
    `key, name_pt, name_en, source, source_ref, region, category, portion_g,
-   portion_pt, portion_en, aliases, vision_labels` (lists separated by `|`).
+   portion_pt, portion_en, aliases, vision_labels, portion_units` (lists
+   separated by `|`). `portion_units` is optional (70 of 135 rows): the number
+   of pieces that `portion_g` represents (3 sardines = 120 g ⇒ `3`). Leave it
+   empty for foods that are not counted in pieces (rice, soups, sauces); the app
+   then ignores piece counts for that food. The build copies it to
+   `portionUnits` in `foods.json`; it is read by `estimatedGrams` in
+   `portion_estimate.dart`.
 2. For each row the script reads the values per 100 g from the chosen table:
    - `usda`: USDA FoodData Central SR Legacy 2018-04 (CC0). `source_ref` = the
      exact `description` in `food.csv`. Nutrients 1008 kcal, 1003 protein,
@@ -46,6 +52,8 @@ VYRO never invents calories. Every food in the app comes from
    redistribution (see docs).
 2. Add or edit the TSV row: unique snake_case `key`; PT-PT `name_pt`;
    realistic `portion_g` with a clear `portion_pt` ("1 bife", "1 concha");
+   `portion_units` only when the portion really is N pieces (check that
+   `portion_g ÷ portion_units` is one piece's weight);
    aliases people would type or an LLM would answer (PT and EN, no aliases
    that belong to another food: `alface` is not `salada`); `vision_labels`
    only with exact names from `assets/models/aiy_food_v1_labels.csv`.
@@ -64,6 +72,15 @@ VYRO never invents calories. Every food in the app comes from
    file name in `SOURCES`, delete the cached file in `build/`, rebuild, review
    the diff of `foods.json` value by value, and update the citation in
    `docs/NUTRITION_DATA.md`.
+
+## User recipes (not in the database)
+
+Recipes created in the app (`LocalRecipe`, `lib/core/ai/local_intelligence_repository.dart`)
+are stored in preferences (`recipes_v1`), never in `foods.json`. Nutrients per
+100 g = Σ(ingredient nutrient × ingredient grams) ÷ **final cooked weight**
+(`yieldGrams`). Ingredients snapshot the per-100 g values of the database food
+and must be entered in the state they were weighed in. `validateLocalData`
+checks imports; limits are 100 recipes and 100 ingredients each.
 
 ## Rules
 

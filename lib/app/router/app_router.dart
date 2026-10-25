@@ -4,6 +4,7 @@ import '../root_gate.dart';
 import '../splash_page.dart';
 import '../../features/dashboard/home_shell.dart';
 import '../../features/assistant/assistant_page.dart';
+import '../../features/assistant/local_intelligence_page.dart';
 import '../../features/barcode/barcode_scanner_page.dart';
 import '../../features/design_showcase/design_system_page.dart';
 import '../../features/demo/demo_page.dart';
@@ -11,7 +12,7 @@ import '../../features/nutrition/nutrition_diary_page.dart';
 import '../../features/nutrition/photo_food_page.dart';
 import '../../features/onboarding/onboarding_flow.dart';
 import '../../features/onboarding/setup_wizard_page.dart';
-import '../../features/pose/motion_page.dart';
+import '../../features/motion_engine/workout_camera/motion_coach_page.dart';
 import '../../features/profile/profile_settings_page.dart';
 import '../../features/profile/privacy_policy_page.dart';
 import '../../features/progress/progress_page.dart';
@@ -60,8 +61,21 @@ class VyroRouter {
         );
       case '/assistant':
         return MaterialPageRoute<void>(builder: (_) => const AssistantPage());
+      case '/local-intelligence':
+        return MaterialPageRoute<void>(
+          builder: (_) => LocalIntelligencePage(
+            day: settings.arguments is DateTime
+                ? settings.arguments as DateTime
+                : null,
+          ),
+        );
       case '/motion':
-        return MaterialPageRoute<void>(builder: (_) => const MotionPage());
+        return MaterialPageRoute<void>(
+          builder: (_) => const MotionCoachPage(
+            exerciseKey: 'goblet_squat',
+            exerciseName: 'Agachamento',
+          ),
+        );
       case '/training':
         return MaterialPageRoute<void>(builder: (_) => const TrainingPage());
       case '/progress':

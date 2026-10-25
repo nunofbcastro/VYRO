@@ -33,6 +33,15 @@ class _NutritionDiaryPageState extends State<NutritionDiaryPage> {
       eyebrow: dayLabel(t, selectedDay),
       actions: [
         VyroRoundButton(
+          icon: Icons.menu_book_outlined,
+          tooltip: t.isEnglish ? 'Your recipes' : 'Receitas habituais',
+          onPressed: () => Navigator.pushNamed(
+            context,
+            '/local-intelligence',
+            arguments: selectedDay,
+          ),
+        ),
+        VyroRoundButton(
           icon: Icons.barcode_reader,
           tooltip: t.get('scan'),
           onPressed: () => _openScanner(context),

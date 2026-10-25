@@ -131,4 +131,19 @@ void main() {
     );
     expect(calls, isEmpty);
   });
+
+  test('two angles belong to the same meal and never double counts', () async {
+    replies = [
+      '{"items":[{"name":"Café","count":1}]}',
+      '{"items":[{"name":"Café","count":1}]}',
+    ];
+    final result = await SystemFoodVision(
+      db,
+      channel: channel,
+    ).analyseViews(photo, photo);
+    expect(result.foods.single.count, 1);
+    expect(calls.first['secondImage'], isA<Uint8List>());
+    expect(calls.first['prompt'], contains('SAME meal'));
+    expect(result.foods.single.grams, 30);
+  });
 }

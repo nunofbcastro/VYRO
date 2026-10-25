@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../core/ai/on_device_llm.dart';
+import '../core/ai/local_intelligence_repository.dart';
 import '../core/database/app_database.dart';
 import '../features/nutrition/data/nutrition_repository.dart';
 import '../features/nutrition/data/open_food_facts_repository.dart';
@@ -19,6 +20,7 @@ class AppServices {
     this.productLookupRepository =
         productLookupRepository ?? OpenFoodFactsRepository(this.database);
     workoutRepository = WorkoutRepository(this.database);
+    localIntelligence = LocalIntelligenceRepository(this.database);
   }
 
   final AppDatabase database;
@@ -28,6 +30,7 @@ class AppServices {
   late final NutritionRepository nutritionRepository;
   late final ProductLookupRepository productLookupRepository;
   late final WorkoutRepository workoutRepository;
+  late final LocalIntelligenceRepository localIntelligence;
 }
 
 class AppServicesScope extends InheritedWidget {

@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import AVFoundation
 
 #if canImport(FoundationModels)
   import FoundationModels
@@ -8,6 +9,7 @@ import UIKit
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private var llmChannel: FlutterMethodChannel?
+  private var videoChannel: FlutterMethodChannel?
 
   override func application(
     _ application: UIApplication,
@@ -25,6 +27,66 @@ import UIKit
         OnDeviceLlm.handle(call, result: result)
       }
       llmChannel = channel
+    }
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "VyroLocalVideo") {
+      let channel = FlutterMethodChannel(name: "vyro/local_video", binaryMessenger: registrar.messenger())
+      channel.setMethodCallHandler { call, result in LocalVideoDecoder.handle(call, result: result) }
+      videoChannel = channel
+    }
+  }
+}
+
+/// Decodes only the user-selected local file. No frames are written to disk.
+enum LocalVideoDecoder {
+  private static var generator: AVAssetImageGenerator?
+  private static var session = 0
+  static func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    let args = call.arguments as? [String: Any] ?? [:]
+    switch call.method {
+    case "open":
+      guard let path = args["path"] as? String,
+        FileManager.default.fileExists(atPath: path)
+      else { result(FlutterError(code: "video_failed", message: "Missing local file", details: nil)); return }
+      generator?.cancelAllCGImageGeneration()
+      generator = nil
+      session += 1
+      let id = session
+      let asset = AVURLAsset(url: URL(fileURLWithPath: path))
+      Task {
+        do {
+          let duration = try await asset.load(.duration)
+          guard duration.seconds.isFinite, duration.seconds > 0 else { throw NSError(domain: "VYROVideo", code: 1) }
+          await MainActor.run {
+            guard id == session else { result(FlutterError(code: "video_closed", message: "Cancelled", details: nil)); return }
+            let decoder = AVAssetImageGenerator(asset: asset)
+            decoder.appliesPreferredTrackTransform = true
+            decoder.maximumSize = CGSize(width: 640, height: 640)
+            decoder.requestedTimeToleranceBefore = .zero
+            decoder.requestedTimeToleranceAfter = .zero
+            generator = decoder
+            result(["id": id, "durationMs": Int(duration.seconds * 1000)])
+          }
+        } catch { await MainActor.run { result(FlutterError(code: "video_failed", message: error.localizedDescription, details: nil)) } }
+      }
+    case "frame":
+      guard let id = args["id"] as? Int, id == session, let decoder = generator,
+        let milliseconds = args["timeMs"] as? NSNumber
+      else { result(FlutterError(code: "video_closed", message: "Closed session", details: nil)); return }
+      let time = CMTime(value: milliseconds.int64Value, timescale: 1000)
+      decoder.generateCGImagesAsynchronously(forTimes: [NSValue(time: time)]) { _, image, actualTime, state, error in
+        guard state == .succeeded, let image = image, let jpeg = UIImage(cgImage: image).jpegData(compressionQuality: 0.85) else {
+          DispatchQueue.main.async { result(FlutterError(code: "video_failed", message: error?.localizedDescription ?? "Cannot decode frame", details: nil)) }; return
+        }
+        DispatchQueue.main.async {
+          result(["jpeg": FlutterStandardTypedData(bytes: jpeg), "timeMs": Int(actualTime.seconds * 1000), "approximate": false])
+        }
+      }
+    case "close":
+      if let id = args["id"] as? Int, id == session {
+        generator?.cancelAllCGImageGeneration(); generator = nil; session += 1
+      }
+      result(nil)
+    default: result(FlutterMethodNotImplemented)
     }
   }
 }

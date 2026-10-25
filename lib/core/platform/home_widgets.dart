@@ -84,11 +84,11 @@ class VyroHomeWidgets {
   VyroHomeWidgets._();
 
   /// App Group shared with the iOS widget extension.
-  static const appGroupId = 'group.com.example.vyro';
+  static const appGroupId = 'group.com.nunofbcastro.vyro';
   static const _androidProviders = [
-    'com.example.vyro.widgets.VyroTodayWidgetProvider',
-    'com.example.vyro.widgets.VyroCaloriesWidgetProvider',
-    'com.example.vyro.widgets.VyroTrainingWidgetProvider',
+    'com.nunofbcastro.vyro.widgets.VyroTodayWidgetProvider',
+    'com.nunofbcastro.vyro.widgets.VyroCaloriesWidgetProvider',
+    'com.nunofbcastro.vyro.widgets.VyroTrainingWidgetProvider',
   ];
   static const _iosKind = 'VyroWidget';
 

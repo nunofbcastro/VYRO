@@ -16,6 +16,8 @@ import 'food_vision/region_food_vision.dart';
 import 'food_vision/system_food_vision.dart';
 import 'meals.dart';
 import 'widgets/food_picker_sheet.dart';
+import 'widgets/photo_region_sheet.dart';
+import 'food_vision/portion_estimate.dart';
 
 /// Photo → foods → grams → diary. Recognition runs on the device
 /// ([FoodVisionPipeline]); nutrients come from the offline database and
@@ -32,7 +34,8 @@ class PhotoFoodPage extends StatefulWidget {
 
 /// One editable line of the review list.
 class _Item {
-  _Item(this.detected) : grams = detected.grams;
+  _Item(this.detected) : original = detected, grams = detected.grams;
+  final DetectedFood original;
   DetectedFood detected;
   double grams;
 
@@ -82,6 +85,8 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
   late final _picker = widget.imagePicker ?? ImagePicker();
   FoodDatabase? _db;
   Uint8List? _photo;
+  Uint8List? _secondPhoto;
+  FoodVisionService? _service;
   List<_Item>? _items;
   FoodVisionResult? _result;
   late String _meal = mealForTime(DateTime.now());
@@ -89,6 +94,8 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
   bool _saving = false;
   String? _error;
   int _analysisId = 0;
+  final _reviewClock = Stopwatch();
+  int _removed = 0, _added = 0;
 
   @override
   void initState() {
@@ -102,6 +109,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
   void dispose() {
     _analysisId++;
     _photo = null; // the photo lives in memory only
+    _secondPhoto = null;
     super.dispose();
   }
 
@@ -129,6 +137,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
       if (!mounted || analysisId != _analysisId) return;
       setState(() {
         _photo = bytes;
+        _secondPhoto = null;
         _items = null;
         _result = null;
         _error = null;
@@ -153,7 +162,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
     final services = AppServicesScope.of(context);
     try {
       final db = _db ?? await FoodDatabase.load();
-      final pipeline =
+      final pipeline = _service ??=
           widget.vision ??
           FoodVisionPipeline(
             llm: services.llm,
@@ -166,6 +175,11 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
         _db = db;
         _result = result;
         _items = [for (final f in result.foods) _Item(f)];
+        _removed = 0;
+        _added = 0;
+        _reviewClock
+          ..reset()
+          ..start();
       });
     } on FormatException {
       if (mounted && analysisId == _analysisId) {
@@ -184,9 +198,14 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
   Future<void> _change(_Item item) async {
     final db = _db;
     if (db == null) return;
+    final suggestions = await AppServicesScope.of(
+      context,
+    ).localIntelligence.correctionSuggestions(item.original.label, db);
+    if (!mounted) return;
     final food = await showFoodPicker(
       context,
       db,
+      suggestions: suggestions,
       initialQuery: item.food == null ? item.detected.label : '',
     );
     if (food == null || !mounted) return;
@@ -209,6 +228,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
   }
 
   void _addFood(FoodRef food) {
+    _added++;
     setState(
       () => (_items ??= []).add(
         _Item(
@@ -223,31 +243,275 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
     );
   }
 
+  Future<void> _extraPhoto({required bool region}) async {
+    final photo = _photo;
+    if (photo == null || _busy || _saving) return;
+    Uint8List? bytes;
+    try {
+      if (region) {
+        bytes = await selectPhotoRegion(context, photo);
+      } else {
+        final file = await _picker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: 1600,
+          maxHeight: 1600,
+          imageQuality: 88,
+        );
+        if (file != null) {
+          try {
+            bytes = await file.readAsBytes();
+          } finally {
+            await deleteTemporaryImage(file.path);
+          }
+        }
+      }
+      if (bytes == null || !mounted) return;
+      final id = ++_analysisId;
+      setState(() {
+        _busy = true;
+        _error = null;
+        if (!region) _secondPhoto = bytes;
+      });
+      final service = _service ?? widget.vision;
+      if (service == null) return;
+      final result = !region && service is MultiPhotoFoodVisionService
+          ? await service.analyseViews(photo, bytes)
+          : await service.analyse(bytes);
+      if (!mounted || id != _analysisId) return;
+      setState(() => _busy = false);
+      final candidates = <String, DetectedFood>{};
+      for (final f in [...result.foods, ...result.suggestions]) {
+        if (f.food != null &&
+            !(_items ?? []).any((i) => i.food?.key == f.food!.key))
+          candidates[f.food!.key] = f;
+      }
+      final chosen = <DetectedFood>{};
+      final t = stringsOf(context);
+      final accepted = await showModalBottomSheet<bool>(
+        context: context,
+        useSafeArea: true,
+        isScrollControlled: true,
+        builder: (c) => StatefulBuilder(
+          builder: (c, update) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    t.get('photoConfirmExtra'),
+                    style: Theme.of(c).textTheme.titleLarge,
+                  ),
+                  Text(t.get('photoExtraHint')),
+                  if (candidates.isEmpty) Text(t.get('photoNothingFound')),
+                  Flexible(
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        for (final f in candidates.values)
+                          CheckboxListTile(
+                            title: Text(f.food!.name(t.isEnglish)),
+                            subtitle: Text(
+                              '${f.grams.round()} g · ${t.get('photoUncertain')}',
+                            ),
+                            value: chosen.contains(f),
+                            onChanged: (v) => update(() {
+                              if (v == true)
+                                chosen.add(f);
+                              else
+                                chosen.remove(f);
+                            }),
+                          ),
+                      ],
+                    ),
+                  ),
+                  FilledButton(
+                    onPressed: () => Navigator.pop(c, true),
+                    child: Text(t.get('add')),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      if (accepted == true && mounted) {
+        for (final f in chosen) {
+          _addFood(f.food!);
+          final added = _items!.last;
+          added.grams = f.grams;
+        }
+      }
+    } catch (_) {
+      if (mounted) setState(() => _error = 'photoModelError');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _clarify(_Item item) async {
+    final food = item.food;
+    if (food == null) return _change(item);
+    final t = stringsOf(context);
+    final alternatives = [
+      for (final f in _result?.suggestions ?? <DetectedFood>[])
+        if (f.food != null &&
+            f.food!.category == food.category &&
+            f.food!.key != food.key)
+          f.food!,
+    ];
+    if (alternatives.isNotEmpty) {
+      final selected = await showDialog<FoodRef>(
+        context: context,
+        builder: (c) => SimpleDialog(
+          title: Text(t.get('photoWhichFood')),
+          children: [
+            for (final candidate in [food, ...alternatives])
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(c, candidate),
+                child: Text(candidate.name(t.isEnglish)),
+              ),
+          ],
+        ),
+      );
+      if (selected != null && mounted)
+        setState(() {
+          item.detected = item.detected.copyWith(
+            food: selected,
+            source: VisionSource.user,
+          );
+          item.grams = selected.portionG;
+        });
+      return;
+    }
+    final units = food.portionUnits;
+    final amount = await showDialog<double>(
+      context: context,
+      builder: (c) => SimpleDialog(
+        title: Text(
+          units == null
+              ? (t.isEnglish
+                    ? 'How large is this serving?'
+                    : 'Qual é o tamanho desta porção?')
+              : (t.isEnglish
+                    ? 'How many pieces or containers?'
+                    : 'Quantas peças ou recipientes?'),
+        ),
+        children: [
+          if (units != null)
+            for (final count in [1, 2, 3, 4, 6])
+              SimpleDialogOption(
+                onPressed: () =>
+                    Navigator.pop(c, estimatedGrams(food: food, count: count)),
+                child: Text(
+                  '$count · ${estimatedGrams(food: food, count: count).round()} g',
+                ),
+              ),
+          if (units == null)
+            for (final size in PortionSize.values)
+              SimpleDialogOption(
+                onPressed: () =>
+                    Navigator.pop(c, estimatedGrams(food: food, size: size)),
+                child: Text(
+                  '${t.isEnglish ? size.name : switch (size) {
+                          PortionSize.small => "Pequena",
+                          PortionSize.medium => "Média",
+                          PortionSize.large => "Grande",
+                        }} · ${estimatedGrams(food: food, size: size).round()} g',
+                ),
+              ),
+        ],
+      ),
+    );
+    if (amount != null && mounted) setState(() => item.grams = amount);
+  }
+
+  Future<void> _pickRecipe() async {
+    final recipes = await AppServicesScope.of(
+      context,
+    ).localIntelligence.recipes();
+    if (!mounted) return;
+    final picked = await showModalBottomSheet<FoodRef>(
+      context: context,
+      useSafeArea: true,
+      builder: (c) => ListView(
+        shrinkWrap: true,
+        children: [
+          if (recipes.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(
+                stringsOf(c).isEnglish
+                    ? 'Create your recipes in Nutrition → Your recipes.'
+                    : 'Cria as tuas receitas em Nutrição → Receitas habituais.',
+              ),
+            ),
+          for (final recipe in recipes)
+            ListTile(
+              title: Text(recipe.name),
+              subtitle: Text('${recipe.asFood().kcal.round()} kcal/100 g'),
+              onTap: () => Navigator.pop(c, recipe.asFood()),
+            ),
+        ],
+      ),
+    );
+    if (picked != null && mounted) _addFood(picked);
+  }
+
   Future<void> _save() async {
     if (_saving || _busy) return;
     final items = _items ?? const <_Item>[];
     final ready = items.where((i) => i.food != null && i.grams > 0).toList();
     if (ready.isEmpty) return;
     final t = stringsOf(context);
-    final repository = AppServicesScope.of(context).nutritionRepository;
+    final services = AppServicesScope.of(context);
+    final repository = services.nutritionRepository;
     setState(() => _saving = true);
-    for (final item in ready) {
-      final food = item.food!;
-      await repository.addEntry(
-        FoodEntriesCompanion.insert(
-          day: dayKey(widget.day ?? DateTime.now()),
-          mealType: _meal,
-          name: food.name(t.isEnglish),
-          quantityGrams: item.grams,
-          kcalPer100g: Value(food.kcal),
-          proteinPer100g: Value(food.protein),
-          carbsPer100g: Value(food.carbs),
-          fatPer100g: Value(food.fat),
-          source: Value(food.sourceKey),
-          portionUnit: const Value('grams'),
-          portionCount: Value(item.grams),
-        ),
-      );
+    try {
+      await services.database.transaction(() async {
+        for (final item in ready) {
+          final food = item.food!;
+          await repository.addEntry(
+            FoodEntriesCompanion.insert(
+              day: dayKey(widget.day ?? DateTime.now()),
+              mealType: _meal,
+              name: food.name(t.isEnglish),
+              quantityGrams: item.grams,
+              kcalPer100g: Value(food.kcal),
+              proteinPer100g: Value(food.protein),
+              carbsPer100g: Value(food.carbs),
+              fatPer100g: Value(food.fat),
+              source: Value(food.sourceKey),
+              portionUnit: const Value('grams'),
+              portionCount: Value(item.grams),
+            ),
+          );
+        }
+        final local = services.localIntelligence;
+        var corrected = 0;
+        for (final item in ready) {
+          if (item.food?.key != item.original.food?.key ||
+              item.grams != item.original.grams)
+            corrected++;
+          if (item.food?.key != item.original.food?.key &&
+              item.original.source != VisionSource.user)
+            await local.recordCorrection(item.original.label, item.food!.key);
+        }
+        await local.recordPhotoReview(
+          corrected: corrected,
+          removed: _removed,
+          added: _added,
+          elapsed: _reviewClock.elapsed,
+        );
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(t.get('localError'))));
+      }
+      return;
     }
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -292,6 +556,32 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
                   ? null
                   : () => _choose(ImageSource.gallery),
             ),
+          if (_photo != null && _items != null) ...[
+            Wrap(
+              spacing: 8,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: _busy || _saving
+                      ? null
+                      : () => _extraPhoto(region: true),
+                  icon: const Icon(Icons.crop),
+                  label: Text(t.get('photoAnalyseArea')),
+                ),
+                OutlinedButton.icon(
+                  onPressed: _busy || _saving
+                      ? null
+                      : () => _extraPhoto(region: false),
+                  icon: const Icon(Icons.add_a_photo_outlined),
+                  label: Text(t.get('photoSecondAngle')),
+                ),
+              ],
+            ),
+            if (_secondPhoto != null)
+              SizedBox(
+                height: 72,
+                child: Image.memory(_secondPhoto!, fit: BoxFit.contain),
+              ),
+          ],
           if (_error != null) ...[
             const SizedBox(height: 14),
             _Notice(
@@ -301,6 +591,15 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
           ],
           if (items != null && !_busy) ...[
             const SizedBox(height: 18),
+            TextButton.icon(
+              icon: const Icon(Icons.menu_book_outlined),
+              label: Text(
+                t.isEnglish
+                    ? 'Choose a saved recipe'
+                    : 'Escolher uma receita habitual',
+              ),
+              onPressed: _pickRecipe,
+            ),
             _Totals(items: items),
             const SizedBox(height: 18),
             Wrap(
@@ -323,11 +622,29 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
               _Notice(
                 icon: Icons.auto_awesome_outlined,
                 text: t.get(
-                  _result?.note == 'systemFailed'
+                  (_result?.notes.contains('systemFailed') ?? false)
                       ? 'photoSystemFailedNote'
                       : 'photoRegionsNote',
                 ),
               ),
+            for (final note in _result?.notes ?? <String>{})
+              if (note != 'systemFailed')
+                _Notice(icon: Icons.info_outline_rounded, text: t.get(note)),
+            if (_result?.suggestions.isNotEmpty ?? false) ...[
+              Text(t.get('photoSuggestions')),
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (final suggestion in _result!.suggestions)
+                    if (suggestion.food != null &&
+                        !items.any((i) => i.food?.key == suggestion.food!.key))
+                      ActionChip(
+                        label: Text(suggestion.food!.name(t.isEnglish)),
+                        onPressed: () => _addFood(suggestion.food!),
+                      ),
+                ],
+              ),
+            ],
             if (items.isEmpty)
               _Notice(
                 icon: Icons.search_off_rounded,
@@ -341,7 +658,22 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
                   item: item,
                   onChange: () => _change(item),
                   onGrams: (g) => setState(() => item.grams = g),
-                  onRemove: () => setState(() => items.remove(item)),
+                  onRemove: () => setState(() {
+                    items.remove(item);
+                    _removed++;
+                  }),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: () => _clarify(item),
+                  icon: const Icon(Icons.help_outline, size: 18),
+                  label: Text(
+                    t.isEnglish
+                        ? 'Clarify food or portion'
+                        : 'Esclarecer alimento ou porção',
+                  ),
                 ),
               ),
             ],
@@ -539,6 +871,8 @@ class _PhotoHeader extends StatelessWidget {
                                 label: t.get(
                                   source == VisionSource.systemAi
                                       ? 'photoSourceSystem'
+                                      : source == VisionSource.fused
+                                      ? 'photoSourceFused'
                                       : 'photoSourceRegions',
                                 ),
                               ),
@@ -755,8 +1089,10 @@ class _FoodRowState extends State<_FoodRow> {
             foodSourceTag(food),
             if (detected.count != null && detected.count! > 1)
               '${detected.count} ${t.get('pieces')}',
-            if (detected.confidence != null)
-              '${(detected.confidence! * 100).round()}% ${t.get('photoConfidence')}',
+            if (detected.source != VisionSource.user)
+              t.get(
+                detected.corroborated ? 'photoCorroborated' : 'photoUncertain',
+              ),
           ].join(' · ');
     return VyroCard(
       radius: 20,

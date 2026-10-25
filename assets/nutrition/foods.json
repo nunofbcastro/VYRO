@@ -20,7 +20,7 @@
   }
  },
  "curatedList": "tool/nutrition/foods_pt.tsv",
- "curatedSha256": "0ad6bcb722b52b43449b78365638d6ec6e077215554f63f9b74cdf492e57cfbd",
+ "curatedSha256": "777bedc26f714ec8e4129be79207f25ce15bc23367061958a24d6c60bda37de9",
  "portionNote": "Typical portions are VYRO estimates for suggestions; users confirm grams.",
  "foods": [
   {
@@ -51,7 +51,8 @@
     "coffee with milk",
     "café au lait"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "espresso",
@@ -82,7 +83,8 @@
     "cafezinho",
     "chávena de café"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "beer",
@@ -107,7 +109,8 @@
     "fino",
     "beer"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "tea",
@@ -135,7 +138,8 @@
     "tisana",
     "tea"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "guarana_soda",
@@ -159,7 +163,8 @@
     "guarana",
     "refrigerante de guaraná"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "orange_juice",
@@ -184,7 +189,8 @@
     "orange juice",
     "juice"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "red_wine",
@@ -209,7 +215,8 @@
     "wine",
     "red wine"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "beef_sirloin_broiled",
@@ -248,7 +255,8 @@
     "Bife a cavalo",
     "Steak Diane",
     "Bulgogi"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "chorizo",
@@ -274,7 +282,8 @@
    ],
    "visionLabels": [
     "Chorizo"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "rabbit_cooked",
@@ -298,7 +307,8 @@
     "coelho guisado",
     "rabbit"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "chicken_thigh_roasted",
@@ -326,7 +336,8 @@
    "visionLabels": [
     "Fried chicken",
     "Crispy fried chicken"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "ham_cooked",
@@ -350,7 +361,8 @@
     "presunto cozido",
     "ham"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 2
   },
   {
    "key": "beef_ground_patty",
@@ -381,7 +393,8 @@
     "Meatball",
     "Kofta",
     "Qeema"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "linguica_grilled",
@@ -408,7 +421,8 @@
    "visionLabels": [
     "Sausage",
     "Bratwurst"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "pork_tenderloin_cooked",
@@ -433,7 +447,8 @@
     "febras",
     "pork tenderloin"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "pork_loin_broiled",
@@ -467,7 +482,8 @@
     "Souvlaki",
     "Tonkatsu",
     "Kushikatsu"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "chicken_breast_roasted",
@@ -515,7 +531,8 @@
     "Salisbury steak",
     "Chicken Maryland",
     "Yakitori"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "turkey_breast_roasted",
@@ -540,7 +557,8 @@
     "peito de peru",
     "turkey"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "rice_white_cooked",
@@ -584,7 +602,8 @@
     "Katsudon",
     "Arroz chaufa",
     "Hayashi rice"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "rice_brown_cooked",
@@ -607,7 +626,8 @@
     "arroz integral",
     "brown rice"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "couscous_cooked",
@@ -632,7 +652,8 @@
    ],
    "visionLabels": [
     "Couscous"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "cuscuz_milho",
@@ -656,7 +677,8 @@
     "cuscuz nordestino",
     "cuscuz"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "cassava_flour_toasted",
@@ -680,7 +702,8 @@
     "farinha de pau",
     "cassava flour"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "farofa",
@@ -702,7 +725,8 @@
    "aliases": [
     "farofa"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "oats_dry",
@@ -729,7 +753,8 @@
     "oatmeal",
     "porridge"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "pasta_cooked",
@@ -762,7 +787,8 @@
     "Spaghetti aglio e olio",
     "Pasta salad",
     "Spaghetti alle vongole"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "quinoa_cooked",
@@ -784,7 +810,8 @@
    "aliases": [
     "quinoa"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "avocado_raw",
@@ -809,7 +836,8 @@
    ],
    "visionLabels": [
     "Guacamole"
-   ]
+   ],
+   "portionUnits": 0.5
   },
   {
    "key": "plum_raw",
@@ -833,7 +861,8 @@
     "ameixas",
     "plum"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "pineapple_raw",
@@ -857,7 +886,8 @@
     "abacaxi",
     "pineapple"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "acai_pulp",
@@ -880,7 +910,8 @@
     "açaí",
     "acai"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "banana_raw",
@@ -902,7 +933,8 @@
    "aliases": [
     "banana"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "banana_prata",
@@ -925,7 +957,8 @@
     "banana prata",
     "banana-prata"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "cherries_raw",
@@ -949,7 +982,8 @@
     "cereja",
     "cherries"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "fig_raw",
@@ -973,7 +1007,8 @@
     "figos",
     "fig"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "guava_raw",
@@ -996,7 +1031,8 @@
     "goiaba",
     "guava"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "kiwi_raw",
@@ -1018,7 +1054,8 @@
    "aliases": [
     "kiwi"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "orange_raw",
@@ -1041,7 +1078,8 @@
     "laranja",
     "orange"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "papaya_raw",
@@ -1065,7 +1103,8 @@
     "papaia",
     "papaya"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 0.5
   },
   {
    "key": "mango_raw",
@@ -1088,7 +1127,8 @@
     "manga",
     "mango"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 0.5
   },
   {
    "key": "apple_raw",
@@ -1112,7 +1152,8 @@
     "maca",
     "apple"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "watermelon_raw",
@@ -1135,7 +1176,8 @@
     "melancia",
     "watermelon"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "melon_raw",
@@ -1160,7 +1202,8 @@
     "melon",
     "cantaloupe"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "strawberries_raw",
@@ -1183,7 +1226,8 @@
     "morangos",
     "strawberries"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "pear_raw",
@@ -1206,7 +1250,8 @@
     "pera",
     "pear"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "peach_raw",
@@ -1230,7 +1275,8 @@
     "pessego",
     "peach"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "tangerine_raw",
@@ -1255,7 +1301,8 @@
     "mandarina",
     "tangerine"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "grapes_raw",
@@ -1278,7 +1325,8 @@
     "uvas",
     "grapes"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "almonds",
@@ -1301,7 +1349,8 @@
     "amêndoas",
     "almonds"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "peanut_butter",
@@ -1326,7 +1375,8 @@
    ],
    "visionLabels": [
     "Peanut butter and jelly sandwich"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "walnuts",
@@ -1349,7 +1399,8 @@
     "nozes",
     "walnuts"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "olive_oil",
@@ -1372,7 +1423,8 @@
     "azeite",
     "olive oil"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "butter_salted",
@@ -1395,7 +1447,8 @@
     "manteiga",
     "butter"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "yogurt_greek_nonfat",
@@ -1419,7 +1472,8 @@
     "skyr",
     "greek yogurt"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "yogurt_plain_whole",
@@ -1445,7 +1499,8 @@
    ],
    "visionLabels": [
     "Frozen yogurt"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "milk_whole",
@@ -1470,7 +1525,8 @@
     "whole milk",
     "milk"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "milk_skim",
@@ -1493,7 +1549,8 @@
     "leite magro",
     "skim milk"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "milk_semi",
@@ -1517,7 +1574,8 @@
     "leite meio-gordo",
     "semi skimmed milk"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "cheese_mozzarella",
@@ -1540,7 +1598,8 @@
     "mozzarella",
     "queijo mozzarella"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "cheese_cottage",
@@ -1565,7 +1624,8 @@
     "queijo fresco",
     "cottage cheese"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "sheep_cheese",
@@ -1590,7 +1650,8 @@
     "queijo curado",
     "sheep cheese"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "cheese_gouda",
@@ -1615,7 +1676,8 @@
     "gouda",
     "cheese"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "minas_cheese",
@@ -1639,7 +1701,8 @@
     "minas frescal",
     "queijo fresco"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "requeijao_cremoso",
@@ -1662,7 +1725,8 @@
     "requeijão",
     "requeijao cremoso"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "lettuce_raw",
@@ -1693,7 +1757,8 @@
     "Wrap",
     "Coleslaw",
     "Seven-layer salad"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "broccoli_cooked",
@@ -1717,7 +1782,8 @@
     "brocolos",
     "broccoli"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "onion_raw",
@@ -1742,7 +1808,8 @@
    ],
    "visionLabels": [
     "Onion ring"
-   ]
+   ],
+   "portionUnits": 0.5
   },
   {
    "key": "carrot_raw",
@@ -1768,7 +1835,8 @@
    ],
    "visionLabels": [
     "Coleslaw"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "carrot_cooked",
@@ -1791,7 +1859,8 @@
     "cenoura cozida",
     "cooked carrot"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "mushrooms_raw",
@@ -1815,7 +1884,8 @@
     "champignons",
     "mushrooms"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "collards_sauteed",
@@ -1839,7 +1909,8 @@
     "couve à mineira",
     "collard greens"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "cauliflower_cooked",
@@ -1863,7 +1934,8 @@
     "couve flor",
     "cauliflower"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "cabbage_raw",
@@ -1889,7 +1961,8 @@
    ],
    "visionLabels": [
     "Coleslaw"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "zucchini_cooked",
@@ -1913,7 +1986,8 @@
     "courgette",
     "zucchini"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "spinach_cooked",
@@ -1936,7 +2010,8 @@
     "espinafres",
     "spinach"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "green_beans_cooked",
@@ -1960,7 +2035,8 @@
     "feijão-verde",
     "green beans"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "corn_canned",
@@ -1985,7 +2061,8 @@
     "corn",
     "sweet corn"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "cucumber_raw",
@@ -2011,7 +2088,8 @@
    "visionLabels": [
     "Greek salad",
     "Cucumber soup"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "pepper_red_raw",
@@ -2036,7 +2114,8 @@
     "red pepper",
     "bell pepper"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 0.5
   },
   {
    "key": "green_salad",
@@ -2070,7 +2149,8 @@
     "Michigan salad",
     "Seven-layer salad",
     "Sabich salad"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "tomato_raw",
@@ -2098,7 +2178,8 @@
     "Caprese salad",
     "BLT",
     "Greek salad"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "peas_cooked",
@@ -2121,7 +2202,8 @@
     "ervilhas",
     "peas"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "beans_white_cooked",
@@ -2145,7 +2227,8 @@
     "feijoada à transmontana",
     "white beans"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "beans_carioca_cooked",
@@ -2173,7 +2256,8 @@
     "Red beans and rice",
     "Frijoles charros",
     "Feijão de óleo de palma"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "beans_pinto_cooked",
@@ -2198,7 +2282,8 @@
     "feijão castanho",
     "pinto beans"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "beans_red_cooked",
@@ -2239,7 +2324,8 @@
     "Baked beans",
     "Feijão de óleo de palma",
     "Cowboy beans"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "beans_black_cooked",
@@ -2262,7 +2348,8 @@
     "feijão preto",
     "black beans"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "chickpeas_cooked",
@@ -2291,7 +2378,8 @@
     "Chana masala",
     "Hummus",
     "Falafel"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "lentils_cooked",
@@ -2317,7 +2405,8 @@
    "visionLabels": [
     "Dal makhani",
     "Dal"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "sugar",
@@ -2341,7 +2430,8 @@
     "acucar",
     "sugar"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "jam",
@@ -2370,7 +2460,8 @@
     "jam",
     "marmalade"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "honey",
@@ -2393,7 +2484,8 @@
     "mel",
     "honey"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "omelette",
@@ -2419,7 +2511,8 @@
    ],
    "visionLabels": [
     "Omelette"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "egg_boiled",
@@ -2447,7 +2540,8 @@
    "visionLabels": [
     "Deviled egg",
     "Tea egg"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "egg_fried",
@@ -2474,7 +2568,8 @@
    "visionLabels": [
     "Eggs Benedict",
     "Omelette"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "croissant",
@@ -2497,7 +2592,8 @@
     "croissant",
     "croissã"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "bread_roll",
@@ -2523,7 +2619,8 @@
     "bread roll",
     "roll"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "bread_white",
@@ -2551,7 +2648,8 @@
    ],
    "visionLabels": [
     "Rye bread"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "bread_country",
@@ -2577,7 +2675,8 @@
     "pão rústico",
     "country bread"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "pao_de_queijo",
@@ -2600,7 +2699,8 @@
     "pão de queijo",
     "cheese bread"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 3
   },
   {
    "key": "bread_french_br",
@@ -2624,7 +2724,8 @@
     "pão de sal",
     "cacetinho"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "bread_wholewheat",
@@ -2648,7 +2749,8 @@
     "pão de mistura",
     "whole wheat bread"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "bread_white_toasted",
@@ -2679,7 +2781,8 @@
     "Melt sandwich",
     "Cheese sandwich",
     "Milk toast"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "tapioca_butter",
@@ -2702,7 +2805,8 @@
     "tapioca",
     "beiju"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "tuna_olive_oil",
@@ -2726,7 +2830,8 @@
     "atum em óleo",
     "tuna in oil"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "tuna_canned_water",
@@ -2752,7 +2857,8 @@
    ],
    "visionLabels": [
     "Tuna fish sandwich"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "cod_salted_boiled",
@@ -2782,7 +2888,8 @@
     "Bacalhau",
     "Bacalhau com todos",
     "Bacalhau com natas"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "shrimp_cooked",
@@ -2810,7 +2917,8 @@
    "visionLabels": [
     "White boiled shrimp",
     "Garlic butter shrimp"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "sea_bream_baked",
@@ -2833,7 +2941,8 @@
     "dourada",
     "sea bream"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "squid_boiled",
@@ -2861,7 +2970,8 @@
    ],
    "visionLabels": [
     "Squid"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "squid_fried",
@@ -2885,7 +2995,8 @@
     "calamares fritos",
     "fried squid"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "hake_steamed",
@@ -2909,7 +3020,8 @@
     "pescada cozida",
     "hake"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "cod_cooked",
@@ -2936,7 +3048,8 @@
    ],
    "visionLabels": [
     "Fried fish"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "octopus_cooked",
@@ -2961,7 +3074,8 @@
     "polvo cozido",
     "octopus"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "sea_bass_baked",
@@ -2984,7 +3098,8 @@
     "robalo",
     "sea bass"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "salmon_cooked",
@@ -3007,7 +3122,8 @@
     "salmão",
     "salmon"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "sardine_grilled",
@@ -3033,7 +3149,8 @@
     "sardinhas assadas",
     "grilled sardines"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 3
   },
   {
    "key": "sardines_canned_oil",
@@ -3056,7 +3173,8 @@
     "sardinhas",
     "sardines"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "paella",
@@ -3084,7 +3202,8 @@
    "visionLabels": [
     "Portuguese seafood rice",
     "Paella"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "baiao_de_dois",
@@ -3107,7 +3226,8 @@
     "baião de dois",
     "baiao de dois"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "feijoada",
@@ -3130,7 +3250,8 @@
     "feijoada",
     "feijoada brasileira"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "lasagna_meat",
@@ -3153,7 +3274,8 @@
     "lasanha",
     "lasagna"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "pizza_cheese",
@@ -3180,7 +3302,8 @@
     "Neapolitan pizza",
     "Chicago-style pizza",
     "California-style pizza"
-   ]
+   ],
+   "portionUnits": 1
   },
   {
    "key": "quiche",
@@ -3203,7 +3326,8 @@
     "quiche",
     "tarte salgada"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "salpicao_frango",
@@ -3226,7 +3350,8 @@
     "salpicão",
     "salpicao"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "soup_vegetables",
@@ -3254,7 +3379,8 @@
    ],
    "visionLabels": [
     "Minestrone"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "coxinha",
@@ -3276,7 +3402,8 @@
    "aliases": [
     "coxinha"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "pastel_carne_frito",
@@ -3299,7 +3426,8 @@
     "pastel",
     "pastel de carne"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "acai_bowl",
@@ -3322,7 +3450,8 @@
     "açaí na tigela",
     "acai bowl"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "egg_flan",
@@ -3347,7 +3476,8 @@
     "flan",
     "leite-creme"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "potato_boiled",
@@ -3377,7 +3507,8 @@
     "Salt potatoes",
     "Mashed potato",
     "Potato salad"
-   ]
+   ],
+   "portionUnits": 2
   },
   {
    "key": "potato_fries_oven",
@@ -3407,7 +3538,8 @@
     "Cheese fries",
     "Home fries",
     "Potato wedges"
-   ]
+   ],
+   "portionUnits": null
   },
   {
    "key": "sweet_potato_baked",
@@ -3431,7 +3563,8 @@
     "batata-doce",
     "sweet potato"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": 1
   },
   {
    "key": "cassava_boiled",
@@ -3456,7 +3589,8 @@
     "macaxeira",
     "cassava"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   },
   {
    "key": "cassava_fried",
@@ -3480,7 +3614,8 @@
     "aipim frito",
     "fried cassava"
    ],
-   "visionLabels": []
+   "visionLabels": [],
+   "portionUnits": null
   }
  ]
 }

@@ -12,10 +12,13 @@ import '../exercise_analysis/exercise_analysis_engine.dart';
 import '../exercise_registry/exercise_analysis_registry.dart';
 import '../feedback_engine/feedback_engine.dart';
 import '../movement_patterns/movement_pattern.dart';
+import '../repetition_counter/rep_counter_engine.dart';
 import '../pose_detection/pose_detection_service.dart';
 import '../pose_detection/pose_models.dart';
 import '../workout_analysis_history/motion_history_repository.dart';
 import 'skeleton_painter.dart';
+import 'motion_sampling_policy.dart';
+import '../video/video_analysis_page.dart';
 
 enum _Stage { setup, running, paused, done }
 
@@ -46,7 +49,12 @@ class MotionCoachPage extends StatefulWidget {
 
 class _MotionCoachPageState extends State<MotionCoachPage>
     with WidgetsBindingObserver {
-  static const _frameInterval = Duration(milliseconds: 66);
+  final _sampling = MotionSamplingPolicy();
+  final _readiness = PoseReadinessGate();
+  int _runId = 0, _frames = 0, _skipped = 0;
+  double _totalInferenceMs = 0;
+  bool _finishing = false, _userCorrected = false;
+  int? _savedId;
 
   late final ExerciseAnalysisConfig _config =
       (widget.registry ?? ExerciseAnalysisRegistry()).configFor(
@@ -83,6 +91,7 @@ class _MotionCoachPageState extends State<MotionCoachPage>
 
   @override
   void dispose() {
+    _runId++;
     WidgetsBinding.instance.removeObserver(this);
     _ticker?.cancel();
     unawaited(_releaseCamera());
@@ -140,6 +149,14 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     if (pattern == null) return;
     setState(() {
       _error = null;
+      _runId++;
+      _readiness.reset();
+      _lastFrame = Duration.zero;
+      _frames = 0;
+      _skipped = 0;
+      _totalInferenceMs = 0;
+      _savedId = null;
+      _userCorrected = false;
       _engine = ExerciseAnalysisEngine(pattern: pattern);
       _feedback.reset();
       _summary = null;
@@ -166,6 +183,9 @@ class _MotionCoachPageState extends State<MotionCoachPage>
   void _pause() {
     if (_stage != _Stage.running) return;
     _clock.stop();
+    _runId++;
+    _engine?.interrupt();
+    _readiness.reset();
     setState(() => _stage = _Stage.paused);
   }
 
@@ -183,6 +203,9 @@ class _MotionCoachPageState extends State<MotionCoachPage>
   }
 
   Future<void> _flip() async {
+    _runId++;
+    _engine?.interrupt();
+    _readiness.reset();
     _lens = _lens == CameraLensDirection.front
         ? CameraLensDirection.back
         : CameraLensDirection.front;
@@ -195,24 +218,37 @@ class _MotionCoachPageState extends State<MotionCoachPage>
   }
 
   Future<void> _finish() async {
+    if (_finishing) return;
+    _finishing = true;
+    _runId++;
+    if (mounted) setState(() => _stage = _Stage.paused);
     _clock.stop();
     _ticker?.cancel();
     await _releaseCamera();
     final engine = _engine;
-    if (engine == null) return;
+    if (engine == null || !mounted) {
+      _finishing = false;
+      return;
+    }
     final summary = engine.summary();
     final services = AppServicesScope.of(context);
     final t = stringsOf(context);
     final messenger = ScaffoldMessenger.maybeOf(context);
     if (summary.fullReps + summary.partialReps > 0 ||
         summary.holdTime > Duration.zero) {
-      await MotionHistoryRepository(services.database).save(
+      _savedId = await MotionHistoryRepository(services.database).save(
         exerciseKey: widget.exerciseKey,
         startedAt: _startedAt ?? DateTime.now(),
         summary: summary,
       );
       messenger?.showSnackBar(SnackBar(content: Text(t.get('maSaved'))));
     }
+    await services.localIntelligence.recordMotionPerformance(
+      frames: _frames,
+      skipped: _skipped,
+      inferenceMs: _totalInferenceMs,
+    );
+    _finishing = false;
     if (mounted) {
       setState(() {
         _summary = summary;
@@ -224,9 +260,22 @@ class _MotionCoachPageState extends State<MotionCoachPage>
   /// Camera callback: drops frames while busy or within [_frameInterval].
   void _onFrame(CameraImage image, CameraDescription description) {
     final camera = _camera;
-    if (_busy || camera == null || _stage != _Stage.running) return;
+    if (camera == null || _stage != _Stage.running) return;
+    if (_busy) {
+      _skipped++;
+      return;
+    }
     final now = _clock.elapsed;
-    if (now - _lastFrame < _frameInterval) return;
+    final interval = _sampling.interval(
+      phase: _update?.phase ?? RepPhase.waitingForStart,
+      quality: _update?.detectionQuality ?? 0,
+      latencyMs: _latencyMs,
+    );
+    if (now - _lastFrame < interval) {
+      _skipped++;
+      return;
+    }
+    final run = _runId;
     _busy = true;
     _lastFrame = now;
     final watch = Stopwatch()..start();
@@ -234,10 +283,22 @@ class _MotionCoachPageState extends State<MotionCoachPage>
         .detect(image, description, camera.value.deviceOrientation, now)
         .then((pose) {
           watch.stop();
+          _frames++;
+          _totalInferenceMs += watch.elapsedMilliseconds;
           _latencyMs = _latencyMs == 0
               ? watch.elapsedMilliseconds.toDouble()
               : _latencyMs * 0.9 + watch.elapsedMilliseconds * 0.1;
-          if (!mounted || _stage != _Stage.running) return;
+          if (!mounted || _stage != _Stage.running || run != _runId) return;
+          if (!_readiness.accept(pose, _pattern!.requiredLandmarks, now)) {
+            final message = _feedback.offer(const [
+              FeedbackCandidate('mfAdjustCamera', FeedbackLevel.setup),
+            ], now);
+            setState(() {
+              _pose = pose;
+              if (message != null) _message = message;
+            });
+            return;
+          }
           final update = _engine!.process(pose, now);
           final message = _feedback.offer(update.feedback, now);
           if (message != null && _audio) {
@@ -323,6 +384,21 @@ class _MotionCoachPageState extends State<MotionCoachPage>
               style: TextStyle(color: theme.colorScheme.error),
             ),
           _InfoRow(Icons.lock_outline_rounded, t.get('maPrivacy')),
+          if (pattern != null && !kIsWeb)
+            OutlinedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (_) => VideoAnalysisPage(
+                    exerciseKey: widget.exerciseKey,
+                    exerciseName: widget.exerciseName,
+                    pattern: pattern,
+                  ),
+                ),
+              ),
+              icon: const Icon(Icons.video_library_outlined),
+              label: Text(t.get('vidEntry')),
+            ),
           const SizedBox(height: 8),
           _InfoRow(Icons.info_outline_rounded, t.get('maDisclaimer')),
           const SizedBox(height: 22),
@@ -543,6 +619,95 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     );
   }
 
+  Future<void> _correctCounts() async {
+    final original = _summary;
+    if (original == null) return;
+    final services = AppServicesScope.of(context);
+    final t = stringsOf(context);
+    final full = TextEditingController(text: '${original.fullReps}');
+    final partial = TextEditingController(text: '${original.partialReps}');
+    final value = await showDialog<(int, int)>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: Text(
+          t.isEnglish ? 'Confirm your count' : 'Confirma a tua contagem',
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: full,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: t.isEnglish
+                    ? 'Complete reps'
+                    : 'Repetições completas',
+              ),
+            ),
+            TextField(
+              controller: partial,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: t.isEnglish ? 'Partial reps' : 'Repetições parciais',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c),
+            child: Text(t.get('cancel')),
+          ),
+          FilledButton(
+            onPressed: () {
+              final f = int.tryParse(full.text);
+              final p = int.tryParse(partial.text);
+              if (f != null &&
+                  p != null &&
+                  f >= 0 &&
+                  p >= 0 &&
+                  f <= 1000 &&
+                  p <= 1000)
+                Navigator.pop(c, (f, p));
+            },
+            child: Text(t.get('save')),
+          ),
+        ],
+      ),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      full.dispose();
+      partial.dispose();
+    });
+    if (value == null || !mounted) return;
+    try {
+      final repository = MotionHistoryRepository(services.database);
+      final corrected = original.withUserCounts(value.$1, value.$2);
+      _savedId ??= await repository.save(
+        exerciseKey: widget.exerciseKey,
+        startedAt: _startedAt ?? DateTime.now(),
+        summary: original,
+      );
+      await repository.correctCounts(
+        _savedId!,
+        full: value.$1,
+        partial: value.$2,
+        originalFull: original.fullReps,
+        originalPartial: original.partialReps,
+      );
+      if (mounted)
+        setState(() {
+          _summary = corrected;
+          _userCorrected = true;
+        });
+    } catch (_) {
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(t.get('localError'))));
+    }
+  }
+
   static String _clockText(Duration d) =>
       '${d.inMinutes.toString().padLeft(2, '0')}:${(d.inSeconds % 60).toString().padLeft(2, '0')}';
 
@@ -590,6 +755,20 @@ class _MotionCoachPageState extends State<MotionCoachPage>
               ],
             ),
           ),
+          if (!hold)
+            TextButton.icon(
+              onPressed: _correctCounts,
+              icon: const Icon(Icons.edit_outlined),
+              label: Text(
+                t.isEnglish ? 'Correct repetitions' : 'Corrigir repetições',
+              ),
+            ),
+          if (_userCorrected)
+            Text(
+              t.isEnglish
+                  ? 'Counts confirmed by you; observation quality is unchanged.'
+                  : 'Contagens confirmadas por ti; a qualidade da observação mantém-se.',
+            ),
           const SizedBox(height: 14),
           VyroGroupedSection(
             children: [

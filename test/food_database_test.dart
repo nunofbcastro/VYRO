@@ -207,7 +207,7 @@ void main() {
         regions: regions,
       ).analyse(Uint8List(0));
       expect(result.source, VisionSource.regionClassifier);
-      expect(result.note, 'systemFailed');
+      expect(result.notes, contains('systemFailed'));
     });
 
     test('text-only system model falls back silently', () async {
@@ -220,7 +220,7 @@ void main() {
         regions: regions,
       ).analyse(Uint8List(0));
       expect(result.source, VisionSource.regionClassifier);
-      expect(result.note, isNull);
+      expect(result.notes, isNot(contains('systemFailed')));
     });
 
     test('uses regions when no system model exists', () async {

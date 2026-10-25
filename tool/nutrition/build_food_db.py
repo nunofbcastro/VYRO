@@ -227,6 +227,7 @@ def build():
             'fat': round(v['fat'], 2),
             'fiber': round(v.get('fiber') or 0.0, 2),
             'portionG': float(row['portion_g']),
+            'portionUnits': float(row['portion_units']) if row.get('portion_units') else None,
             'portionPt': row['portion_pt'],
             'portionEn': row['portion_en'],
             'aliases': split(row['aliases']),

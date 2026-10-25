@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.vyro"
+    namespace = "com.nunofbcastro.vyro"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.vyro"
+        applicationId = "com.nunofbcastro.vyro"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         // 26: required by ML Kit GenAI (on-device Gemini Nano assistant).

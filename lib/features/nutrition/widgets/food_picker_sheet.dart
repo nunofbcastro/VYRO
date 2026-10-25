@@ -13,13 +13,17 @@ Future<FoodRef?> showFoodPicker(
   BuildContext context,
   FoodDatabase database, {
   String initialQuery = '',
+  List<FoodRef> suggestions = const [],
 }) => showModalBottomSheet<FoodRef>(
   context: context,
   isScrollControlled: true,
   useSafeArea: true,
   showDragHandle: true,
-  builder: (_) =>
-      _FoodPickerSheet(database: database, initialQuery: initialQuery),
+  builder: (_) => _FoodPickerSheet(
+    database: database,
+    initialQuery: initialQuery,
+    suggestions: suggestions,
+  ),
 );
 
 /// Icon for a database category (`carne`, `peixe`, `legumes`…).
@@ -51,10 +55,15 @@ String foodSourceTag(FoodRef food) {
 }
 
 class _FoodPickerSheet extends StatefulWidget {
-  const _FoodPickerSheet({required this.database, required this.initialQuery});
+  const _FoodPickerSheet({
+    required this.database,
+    required this.initialQuery,
+    required this.suggestions,
+  });
 
   final FoodDatabase database;
   final String initialQuery;
+  final List<FoodRef> suggestions;
 
   @override
   State<_FoodPickerSheet> createState() => _FoodPickerSheetState();
@@ -93,6 +102,23 @@ class _FoodPickerSheetState extends State<_FoodPickerSheet> {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  if (widget.suggestions.isNotEmpty) ...[
+                    Text(
+                      t.isEnglish
+                          ? 'Previously chosen by you — confirm'
+                          : 'Já escolheste antes — confirma',
+                    ),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        for (final f in widget.suggestions)
+                          ActionChip(
+                            label: Text(f.name(t.isEnglish)),
+                            onPressed: () => Navigator.pop(context, f),
+                          ),
+                      ],
+                    ),
+                  ],
                   TextField(
                     controller: _query,
                     autofocus: widget.initialQuery.isEmpty,

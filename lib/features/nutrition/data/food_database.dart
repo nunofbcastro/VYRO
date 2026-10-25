@@ -24,6 +24,7 @@ class FoodRef {
     required this.portionG,
     required this.portionPt,
     required this.portionEn,
+    this.portionUnits,
     this.aliases = const [],
     this.visionLabels = const [],
   });
@@ -50,6 +51,9 @@ class FoodRef {
   final double portionG;
   final String portionPt;
   final String portionEn;
+
+  /// Number of countable pieces in the typical portion; null for bulk food.
+  final double? portionUnits;
   final List<String> aliases;
 
   /// Image-model labels that suggest this food.
@@ -63,6 +67,7 @@ class FoodRef {
     'usda' => 'USDA',
     'ciqual' => 'Ciqual',
     'taco' => 'TACO',
+    'recipe' => 'VYRO',
     _ => source,
   };
 
@@ -86,6 +91,7 @@ class FoodRef {
     portionG: (j['portionG'] as num).toDouble(),
     portionPt: j['portionPt'] as String,
     portionEn: j['portionEn'] as String,
+    portionUnits: (j['portionUnits'] as num?)?.toDouble(),
     aliases: [for (final a in j['aliases'] as List? ?? const []) '$a'],
     visionLabels: [
       for (final a in j['visionLabels'] as List? ?? const []) '$a',

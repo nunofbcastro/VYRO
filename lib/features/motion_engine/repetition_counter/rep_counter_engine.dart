@@ -195,7 +195,8 @@ class RepCounterEngine {
     _setEnded = false;
     final depth = _maxProgress;
     _maxProgress = 0;
-    if (duration < thresholds.minRep) return null;
+    if (duration < thresholds.minRep || duration > thresholds.maxRep)
+      return null;
     if (reachedPeak) {
       fullReps++;
       final toPeak = (_peakAt ?? t) - start;
@@ -250,6 +251,18 @@ class RepCounterEngine {
     _lostAt = null;
     _restSince = null;
     _setEnded = false;
+    _maxProgress = 0;
+    _progress = 0;
+  }
+
+  /// A pause or camera switch invalidates the in-flight rep, not prior reps.
+  void interrupt() {
+    _phase = RepPhase.waitingForStart;
+    _beforePause = RepPhase.waitingForStart;
+    _repStart = null;
+    _peakAt = null;
+    _lostAt = null;
+    _restSince = null;
     _maxProgress = 0;
     _progress = 0;
   }

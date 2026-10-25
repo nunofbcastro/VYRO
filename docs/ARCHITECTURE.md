@@ -19,6 +19,11 @@
 ## Local database entities
 UserProfile, UserGoals, FoodProduct, FoodEntry, Meal, DailyNutrition, Exercise, WorkoutPlan, WorkoutDay, WorkoutSession, ExerciseSet, BodyMeasurement, AiAnalysisResult, Settings.
 
+Key/value preferences (`vyro_preferences`) also hold the profile, assistant memory, learned food corrections, user recipes and local quality counters. Export, import and delete-all cover them (`AppDatabase.exportAllData` / `clearUserData`).
+
+## Application id
+Android `applicationId`/`namespace` and iOS `PRODUCT_BUNDLE_IDENTIFIER` are `com.nunofbcastro.vyro`. The widget App Group is `group.com.nunofbcastro.vyro`.
+
 ## Interfaces
 ```dart
 abstract interface class FoodRecognitionService {

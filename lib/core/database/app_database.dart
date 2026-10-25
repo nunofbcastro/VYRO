@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 import 'tables.dart';
+import '../ai/local_data_validation.dart';
 
 part 'app_database.g.dart';
 
@@ -227,6 +228,16 @@ class AppDatabase extends _$AppDatabase {
     final skips = await select(scheduleSkips).get();
     final analyses = await select(motionAnalyses).get();
     final profile = await getUserProfile();
+    final localIntelligence = <String, Object>{};
+    for (final key in const [
+      'assistant_memory_v1',
+      'food_corrections_v1',
+      'recipes_v1',
+      'quality_metrics_v1',
+    ]) {
+      final value = await getPreference(key);
+      if (value != null) localIntelligence[key] = jsonDecode(value) as Object;
+    }
     return {
       'format': 'vyro-local-export-v1',
       'exportedAt': DateTime.now().toUtc().toIso8601String(),
@@ -242,6 +253,7 @@ class AppDatabase extends _$AppDatabase {
       'scheduleSkips': skips.map((row) => row.toJson()).toList(),
       'motionAnalyses': analyses.map((row) => row.toJson()).toList(),
       if (profile != null) 'userProfile': profile.toJson(),
+      'localIntelligence': localIntelligence,
     };
   }
 
@@ -279,6 +291,27 @@ class AppDatabase extends _$AppDatabase {
         ? const <Map<String, dynamic>>[]
         : rows('scheduleSkips');
     final rawProfile = data['userProfile'];
+    final rawIntelligence = data['localIntelligence'];
+    if (rawIntelligence != null &&
+        (rawIntelligence is! Map ||
+            jsonEncode(rawIntelligence).length > 2000000)) {
+      throw const FormatException('Invalid local intelligence');
+    }
+    final intelligence = <String, String>{};
+    for (final key in const [
+      'assistant_memory_v1',
+      'food_corrections_v1',
+      'recipes_v1',
+      'quality_metrics_v1',
+    ]) {
+      final value = rawIntelligence is Map ? rawIntelligence[key] : null;
+      if (value != null) {
+        if (value is! Map<String, dynamic>)
+          throw const FormatException('Invalid local intelligence value');
+        validateLocalData(key, value);
+        intelligence[key] = jsonEncode(value);
+      }
+    }
     if (rawProfile != null && rawProfile is! Map<String, dynamic>) {
       throw const FormatException('Invalid user profile');
     }
@@ -355,6 +388,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (rawProfile != null) {
         await saveUserProfile(VyroProfile.fromJson(rawProfile));
+      }
+      for (final entry in intelligence.entries) {
+        await setPreference(entry.key, entry.value);
       }
     });
   }
