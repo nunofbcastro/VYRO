@@ -11,7 +11,7 @@ alimentos descarregadas legalmente.
 foods_pt.tsv (curado à mão: nomes PT/EN, fonte + referência, porção, unidades da porção, aliases, etiquetas de imagem)
         │
         ▼  build_food_db.py  (descarrega/usa build/usda, build/ciqual, build/taco)
-assets/nutrition/foods.json  (135 alimentos, valores por 100 g, fonte de cada um)
+assets/nutrition/foods.json  (160 alimentos, valores por 100 g, fonte de cada um)
         │
         ▼  FoodDatabase.load()  (lib/features/nutrition/data/food_database.dart)
 fotografia, assistente, diário  →  kcal = gramas × kcal/100 g ÷ 100
@@ -60,13 +60,36 @@ polvo, chouriço, queijo de ovelha, pão caseiro…).
   inválidas são rejeitadas, nunca adivinhadas.
 - Porções (`portion_g`, `portion_pt`) são **estimativas do VYRO** para sugerir
   quantidades. O utilizador confirma sempre as gramas.
-- `portion_units` (coluna opcional, última do TSV; preenchida em 70 dos 135
+- `portion_units` (coluna opcional, última do TSV; preenchida em 80 dos 160
   alimentos) indica quantas peças correspondem a `portion_g`: 3 sardinhas = 120 g
   ⇒ `portion_units = 3`. A app escala a contagem de peças por
   `portion_g × peças ÷ portion_units`. Sem valor, a contagem não multiplica a
   porção (ex.: arroz, sopas).
 - Valores variam com a variedade, a preparação e a amostra. Não são
   aconselhamento médico.
+
+## Equivalências aproximadas
+
+Alguns nomes usados em fotografias ou em conversa não existem como tal nas
+tabelas. Nesses casos o VYRO usa o alimento mais próximo, com a referência
+indicada no campo sourceLabel de cada alimento. O utilizador confirma sempre o
+alimento e as gramas.
+
+- Água das Pedras (com ou sem limão): água com gás (sem limão) ou limonada
+  (com limão, Ciqual «Limonade, sucrée»). A versão aromatizada pode ter
+  açúcar; a limonada é a estimativa conservadora.
+- Molho de cerveja: molho castanho de carne (USDA «Gravy, beef, canned»).
+- Sidra e Somersby: Ciqual «Cidre (aliment moyen)».
+- Refresco de laranja (Sumol): Ciqual «Jus d'orange, à base de concentré»
+  (não há refrigerante de laranja na Ciqual).
+- Pizza de pepperoni: Ciqual «Pizza au chorizo ou salami».
+- Molho de hambúrguer (Big Mac, molho especial): Ciqual «Sauce burger».
+- Natas para cozinha: USDA «Cream, fluid, light whipping» (creme de leite
+  no Brasil tem teor de gordura diferente; a estimativa é aproximada).
+- Croissant misto: Ciqual «Croissant au jambon fromage, fait maison».
+- Sandes mista: Ciqual «Sandwich pain polaire, jambon fromage».
+- Presunto: Ciqual «Jambon cru» (curado). O fiambre (cozido) mantém a sua linha.
+- Bife de vaca frito: Ciqual «Boeuf, steak ou bifteck grillé/poêlé».
 
 ## Receitas habituais (locais)
 

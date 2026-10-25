@@ -565,6 +565,8 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                     builder: (_) => MotionCoachPage(
                       exerciseKey: e.info.key,
                       exerciseName: english ? e.info.nameEn : e.info.namePt,
+                      // Holds are timed, so they have no rep target.
+                      targetReps: isHold ? null : plan.repTarget,
                     ),
                   ),
                 ),

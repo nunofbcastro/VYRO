@@ -81,6 +81,81 @@ void main() {
     });
   });
 
+  group('photo names from real-device tests', () {
+    /// Name → expected food key. Accents are optional (beirao = beirão).
+    const expected = {
+      'morangos': 'strawberries_raw',
+      'morango': 'strawberries_raw',
+      'atum': 'tuna_canned_water',
+      'couve roxa': 'cabbage_red_raw',
+      'cenoura ralada': 'carrot_raw',
+      'croissant misto': 'croissant_ham_cheese',
+      'croissant simples': 'croissant',
+      'sanduíche mista': 'sandwich_ham_cheese',
+      'água das pedras': 'sparkling_water',
+      'água com gás': 'sparkling_water',
+      'água das pedras limão': 'sparkling_water',
+      'água': 'still_water',
+      'água mineral': 'still_water',
+      'natas': 'cooking_cream',
+      'maionese': 'mayonnaise',
+      'molho big mac': 'burger_sauce',
+      'molho de hambúrguer': 'burger_sauce',
+      'molho especial': 'burger_sauce',
+      'molho de cerveja': 'brown_gravy',
+      'pão de hambúrguer': 'hamburger_bun',
+      'hambúrguer no pão': 'cheeseburger_whole',
+      'hambúrguer': 'beef_ground_patty',
+      'carne picada': 'beef_ground_raw',
+      'carne moída': 'beef_ground_raw',
+      'carne picada de porco': 'pork_ground_raw',
+      'bife': 'beef_sirloin_broiled',
+      'bife de vaca grelhado': 'beef_sirloin_broiled',
+      'bife de vaca frito': 'beef_steak_fried',
+      'ovo estrelado': 'egg_fried',
+      'nuggets': 'chicken_nuggets',
+      'nuggets de frango': 'chicken_nuggets',
+      'croquetes': 'croquete_meat_fried',
+      'doritos': 'tortilla_chips',
+      'nachos': 'tortilla_chips',
+      'somersby': 'cider',
+      'sidra': 'cider',
+      'super bock': 'beer',
+      'sagres': 'beer',
+      'beirao': 'liqueur',
+      'beirão': 'liqueur',
+      'coca-cola': 'cola_coca',
+      'sumol': 'orange_soft_drink',
+      'guaraná': 'guarana_soda',
+      'refrigerante de guaraná': 'guarana_soda',
+      'presunto': 'cured_ham',
+      'pizza pepperoni': 'pizza_pepperoni',
+      'pizza': 'pizza_cheese',
+      'massa com carne': 'pasta_bolognese',
+    };
+
+    test('the photo-model names resolve to the expected foods', () {
+      for (final entry in expected.entries) {
+        expect(
+          db.match(entry.key)?.key,
+          entry.value,
+          reason: '"${entry.key}" should match ${entry.value}',
+        );
+      }
+    });
+
+    test('a generic "refrigerante" does not match a specific soda', () {
+      expect(db.match('refrigerante'), isNull);
+    });
+
+    test('new rows keep their source references', () {
+      expect(db.byKey('cabbage_red_raw')!.sourceKey, 'usda_169977');
+      expect(db.byKey('beef_ground_raw')!.sourceKey, 'ciqual_6254');
+      expect(db.byKey('croquete_meat_fried')!.sourceKey, 'taco_388');
+      expect(db.byKey('sparkling_water')!.kcal, closeTo(0, 0.1));
+    });
+  });
+
   group('portion maths', () {
     test('kcal = grams × kcal/100 g ÷ 100', () {
       final rice = db.byKey('rice_white_cooked')!;

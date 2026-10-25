@@ -18,6 +18,39 @@ enum VisionSource {
   user,
 }
 
+/// Why the phone's model could not give a usable answer.
+enum VisionFailure {
+  /// The model is busy or over its quota; trying again later may work.
+  busy,
+
+  /// The model is not supported, turned off or still downloading.
+  unavailable,
+
+  /// Any other error.
+  other;
+
+  /// Maps a platform or model error text to a failure kind (pure).
+  static VisionFailure fromError(Object? error) {
+    final text = '$error'.toLowerCase();
+    if (text.contains('busy') ||
+        text.contains('quota') ||
+        text.contains('exhaust') ||
+        text.contains('too many') ||
+        text.contains('occupied')) {
+      return busy;
+    }
+    if (text.contains('unsupported') ||
+        text.contains('unavailable') ||
+        text.contains('not available') ||
+        text.contains('downloadable') ||
+        text.contains('downloading') ||
+        text.contains('not supported')) {
+      return unavailable;
+    }
+    return other;
+  }
+}
+
 /// One food found (or added) for the meal being reviewed.
 class DetectedFood {
   const DetectedFood({
@@ -28,6 +61,8 @@ class DetectedFood {
     this.confidence,
     this.count,
     this.size,
+    this.where,
+    this.needsChoice = false,
     this.corroborated = false,
   });
 
@@ -48,6 +83,13 @@ class DetectedFood {
 
   /// Relative portion size used to scale the typical grams.
   final PortionSize? size;
+
+  /// Where the model saw it in the photo ("cup top-left"), when given.
+  final String? where;
+
+  /// A generic name ("bebida", "sanduíche"): the user must name the food.
+  /// Such an item has no database match and contributes nothing to totals.
+  final bool needsChoice;
   final VisionSource source;
   final bool corroborated;
 
@@ -58,6 +100,8 @@ class DetectedFood {
     double? confidence,
     int? count,
     PortionSize? size,
+    String? where,
+    bool? needsChoice,
     bool? corroborated,
   }) => DetectedFood(
     label: food?.namePt ?? label,
@@ -67,6 +111,8 @@ class DetectedFood {
     confidence: confidence ?? this.confidence,
     count: count ?? this.count,
     size: size ?? this.size,
+    where: where ?? this.where,
+    needsChoice: needsChoice ?? (food == null ? this.needsChoice : false),
     corroborated: corroborated ?? this.corroborated,
   );
 
@@ -85,10 +131,14 @@ class FoodVisionResult {
     this.detail,
     this.confirmedEmpty = false,
     this.suggestions = const [],
+    this.failure,
   });
 
   final List<DetectedFood> foods;
   final VisionSource source;
+
+  /// Set when the phone's model failed, so the review can explain why.
+  final VisionFailure? failure;
 
   /// Whole-image dish name from the classifier, when available.
   final String? dishGuess;
@@ -106,7 +156,11 @@ class FoodVisionResult {
   Set<String> get notes =>
       (note ?? '').split(',').where((s) => s.isNotEmpty).toSet();
 
-  FoodVisionResult withNote(String? note, {String? detail}) => FoodVisionResult(
+  FoodVisionResult withNote(
+    String? note, {
+    String? detail,
+    VisionFailure? failure,
+  }) => FoodVisionResult(
     foods: foods,
     source: source,
     dishGuess: dishGuess,
@@ -114,6 +168,7 @@ class FoodVisionResult {
     detail: detail ?? this.detail,
     confirmedEmpty: confirmedEmpty,
     suggestions: suggestions,
+    failure: failure ?? this.failure,
   );
 }
 
@@ -164,6 +219,7 @@ FoodVisionResult fuseVisionResults(
     foods: foods.take(10).toList(),
     suggestions: suggestions,
     confirmedEmpty: system.confirmedEmpty,
+    failure: system.failure,
     source: source,
     dishGuess: regions.dishGuess ?? system.dishGuess,
     note: notes.isEmpty ? null : notes.join(','),

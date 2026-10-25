@@ -20,7 +20,7 @@
   }
  },
  "curatedList": "tool/nutrition/foods_pt.tsv",
- "curatedSha256": "777bedc26f714ec8e4129be79207f25ce15bc23367061958a24d6c60bda37de9",
+ "curatedSha256": "c929c6455317ebe57667df25bdac3114915fe4d9c1a8a4407865bc85d8795b9e",
  "portionNote": "Typical portions are VYRO estimates for suggestions; users confirm grams.",
  "foods": [
   {
@@ -38,6 +38,7 @@
    "fat": 0.76,
    "fiber": 0.0,
    "portionG": 200.0,
+   "portionUnits": 1.0,
    "portionPt": "1 chávena/copo",
    "portionEn": "1 cup",
    "aliases": [
@@ -51,8 +52,7 @@
     "coffee with milk",
     "café au lait"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "espresso",
@@ -69,6 +69,7 @@
    "fat": 0.2,
    "fiber": 0.25,
    "portionG": 30.0,
+   "portionUnits": 1.0,
    "portionPt": "1 café",
    "portionEn": "1 espresso",
    "aliases": [
@@ -83,8 +84,7 @@
     "cafezinho",
     "chávena de café"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "beer",
@@ -101,16 +101,19 @@
    "fat": 0.0,
    "fiber": 0.0,
    "portionG": 200.0,
+   "portionUnits": 1.0,
    "portionPt": "1 imperial (200 ml)",
    "portionEn": "1 small glass (200 ml)",
    "aliases": [
     "cerveja",
     "imperial",
     "fino",
-    "beer"
+    "beer",
+    "super bock",
+    "sagres",
+    "bock"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "tea",
@@ -127,6 +130,7 @@
    "fat": 0.0,
    "fiber": 0.0,
    "portionG": 250.0,
+   "portionUnits": 1.0,
    "portionPt": "1 chávena",
    "portionEn": "1 cup",
    "aliases": [
@@ -138,12 +142,38 @@
     "tisana",
     "tea"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
+  },
+  {
+   "key": "cola_coca",
+   "namePt": "Coca-cola",
+   "nameEn": "Cola",
+   "category": "bebidas",
+   "region": "pt",
+   "source": "ciqual",
+   "sourceRef": "18018",
+   "sourceLabel": "Cola, sucré",
+   "kcal": 40.1,
+   "protein": 0.0,
+   "carbs": 10.0,
+   "fat": 0.0,
+   "fiber": 0.0,
+   "portionG": 330.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 lata",
+   "portionEn": "1 can",
+   "aliases": [
+    "coca-cola",
+    "coca cola",
+    "coca",
+    "cola",
+    "coke"
+   ],
+   "visionLabels": []
   },
   {
    "key": "guarana_soda",
-   "namePt": "Refrigerante de guaraná",
+   "namePt": "Guaraná",
    "nameEn": "Guaraná soda",
    "category": "bebidas",
    "region": "br",
@@ -156,15 +186,121 @@
    "fat": 0.0,
    "fiber": 0.0,
    "portionG": 350.0,
+   "portionUnits": 1.0,
    "portionPt": "1 lata",
    "portionEn": "1 can",
    "aliases": [
     "guaraná",
     "guarana",
-    "refrigerante de guaraná"
+    "guaraná antárctica"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
+  },
+  {
+   "key": "liqueur",
+   "namePt": "Licor",
+   "nameEn": "Liqueur",
+   "category": "bebidas",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "1003",
+   "sourceLabel": "Liqueur",
+   "kcal": 225.0,
+   "protein": 0.1,
+   "carbs": 25.4,
+   "fat": 0.23,
+   "fiber": 0.0,
+   "portionG": 50.0,
+   "portionUnits": null,
+   "portionPt": "1 cálice (50 ml)",
+   "portionEn": "1 liqueur glass (50 ml)",
+   "aliases": [
+    "licor",
+    "licor beirão",
+    "licor beirao",
+    "beirão",
+    "beirao",
+    "liqueur"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "lemonade",
+   "namePt": "Limonada",
+   "nameEn": "Lemonade, sweetened",
+   "category": "bebidas",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "18010",
+   "sourceLabel": "Limonade, sucrée",
+   "kcal": 33.0,
+   "protein": 0.0,
+   "carbs": 8.24,
+   "fat": 0.0,
+   "fiber": 0.14,
+   "portionG": 250.0,
+   "portionUnits": null,
+   "portionPt": "1 copo",
+   "portionEn": "1 glass",
+   "aliases": [
+    "limonada",
+    "limonade"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "orange_soft_drink",
+   "namePt": "Refresco de laranja (tipo Sumol)",
+   "nameEn": "Orange soft drink",
+   "category": "bebidas",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "2012",
+   "sourceLabel": "Jus d'orange, à base de concentré",
+   "kcal": 45.6,
+   "protein": 0.63,
+   "carbs": 9.59,
+   "fat": 0.13,
+   "fiber": 0.25,
+   "portionG": 250.0,
+   "portionUnits": null,
+   "portionPt": "1 copo",
+   "portionEn": "1 glass",
+   "aliases": [
+    "sumol",
+    "laranjada",
+    "fanta",
+    "fanta laranja",
+    "orange soda"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "cider",
+   "namePt": "Sidra",
+   "nameEn": "Cider",
+   "category": "bebidas",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "5003",
+   "sourceLabel": "Cidre (aliment moyen)",
+   "kcal": 36.5,
+   "protein": 0.07,
+   "carbs": 3.67,
+   "fat": 0.09,
+   "fiber": 0.0,
+   "portionG": 250.0,
+   "portionUnits": null,
+   "portionPt": "1 copo",
+   "portionEn": "1 glass",
+   "aliases": [
+    "sidra",
+    "cidra",
+    "cidre",
+    "cider",
+    "somersby"
+   ],
+   "visionLabels": []
   },
   {
    "key": "orange_juice",
@@ -181,6 +317,7 @@
    "fat": 0.2,
    "fiber": 0.2,
    "portionG": 200.0,
+   "portionUnits": 1.0,
    "portionPt": "1 copo",
    "portionEn": "1 glass",
    "aliases": [
@@ -189,8 +326,7 @@
     "orange juice",
     "juice"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "red_wine",
@@ -207,6 +343,7 @@
    "fat": 0.25,
    "fiber": 0.5,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 copo",
    "portionEn": "1 glass",
    "aliases": [
@@ -215,8 +352,101 @@
     "wine",
     "red wine"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
+  },
+  {
+   "key": "sparkling_water",
+   "namePt": "Água com gás",
+   "nameEn": "Sparkling mineral water",
+   "category": "bebidas",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "18046",
+   "sourceLabel": "Eau minérale, embouteilée, gazeuse (aliment moyen)",
+   "kcal": 0.0,
+   "protein": 0.0,
+   "carbs": 0.0,
+   "fat": 0.0,
+   "fiber": 0.0,
+   "portionG": 250.0,
+   "portionUnits": null,
+   "portionPt": "1 copo",
+   "portionEn": "1 glass",
+   "aliases": [
+    "água com gás",
+    "agua com gas",
+    "água mineral com gás",
+    "agua mineral com gas",
+    "água gaseificada",
+    "agua gaseificada",
+    "água das pedras",
+    "agua das pedras",
+    "água das pedras limão",
+    "agua das pedras limao",
+    "água das pedras com limão",
+    "agua das pedras com limao",
+    "sparkling water"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "still_water",
+   "namePt": "Água mineral (plana)",
+   "nameEn": "Still mineral water",
+   "category": "bebidas",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "18045",
+   "sourceLabel": "Eau minérale, embouteilée, plate (aliment moyen)",
+   "kcal": 0.0,
+   "protein": 0.0,
+   "carbs": 0.01,
+   "fat": 0.0,
+   "fiber": 0.0,
+   "portionG": 250.0,
+   "portionUnits": null,
+   "portionPt": "1 copo",
+   "portionEn": "1 glass",
+   "aliases": [
+    "água",
+    "agua",
+    "água mineral",
+    "agua mineral",
+    "água natural",
+    "agua natural",
+    "água plana",
+    "still water",
+    "water"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "beef_steak_fried",
+   "namePt": "Bife de vaca frito",
+   "nameEn": "Pan-fried beef steak",
+   "category": "carne",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "6200",
+   "sourceLabel": "Boeuf, steak ou bifteck grillé/poêlé",
+   "kcal": 128.0,
+   "protein": 27.6,
+   "carbs": 0.0,
+   "fat": 1.95,
+   "fiber": 0.0,
+   "portionG": 150.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 bife",
+   "portionEn": "1 steak",
+   "aliases": [
+    "bife frito",
+    "bife de vaca frito",
+    "bife na frigideira",
+    "bife de vaca na frigideira",
+    "steak frito",
+    "fried steak"
+   ],
+   "visionLabels": []
   },
   {
    "key": "beef_sirloin_broiled",
@@ -233,6 +463,7 @@
    "fat": 5.84,
    "fiber": 0.0,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 bife",
    "portionEn": "1 steak",
    "aliases": [
@@ -255,8 +486,64 @@
     "Bife a cavalo",
     "Steak Diane",
     "Bulgogi"
+   ]
+  },
+  {
+   "key": "pork_ground_raw",
+   "namePt": "Carne picada de porco (crua)",
+   "nameEn": "Ground pork, raw",
+   "category": "carne",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "167902",
+   "sourceLabel": "Pork, fresh, ground, raw",
+   "kcal": 263.0,
+   "protein": 16.88,
+   "carbs": 0.0,
+   "fat": 21.19,
+   "fiber": 0.0,
+   "portionG": 100.0,
+   "portionUnits": null,
+   "portionPt": "1 porção",
+   "portionEn": "1 portion",
+   "aliases": [
+    "carne picada de porco",
+    "carne moída de porco",
+    "carne moida de porco",
+    "ground pork"
    ],
-   "portionUnits": 1
+   "visionLabels": []
+  },
+  {
+   "key": "beef_ground_raw",
+   "namePt": "Carne picada de vaca (crua)",
+   "nameEn": "Ground beef, raw (15% fat)",
+   "category": "carne",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "6254",
+   "sourceLabel": "Boeuf, steak haché 15% MG cru",
+   "kcal": 215.0,
+   "protein": 20.2,
+   "carbs": 0.47,
+   "fat": 14.8,
+   "fiber": 0.0,
+   "portionG": 100.0,
+   "portionUnits": null,
+   "portionPt": "1 porção",
+   "portionEn": "1 portion",
+   "aliases": [
+    "carne picada",
+    "carne picada de vaca",
+    "carne moída",
+    "carne moida",
+    "carne moída de vaca",
+    "carne moida de vaca",
+    "picada de vaca",
+    "ground beef",
+    "minced beef"
+   ],
+   "visionLabels": []
   },
   {
    "key": "chorizo",
@@ -273,6 +560,7 @@
    "fat": 36.1,
    "fiber": 0.93,
    "portionG": 30.0,
+   "portionUnits": null,
    "portionPt": "3–4 rodelas",
    "portionEn": "3–4 slices",
    "aliases": [
@@ -282,8 +570,7 @@
    ],
    "visionLabels": [
     "Chorizo"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "rabbit_cooked",
@@ -300,6 +587,7 @@
    "fat": 9.2,
    "fiber": 0.0,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -307,8 +595,7 @@
     "coelho guisado",
     "rabbit"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "chicken_thigh_roasted",
@@ -325,6 +612,7 @@
    "fat": 8.15,
    "fiber": 0.0,
    "portionG": 100.0,
+   "portionUnits": 1.0,
    "portionPt": "1 coxa (sem osso)",
    "portionEn": "1 thigh (boneless)",
    "aliases": [
@@ -336,8 +624,7 @@
    "visionLabels": [
     "Fried chicken",
     "Crispy fried chicken"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "ham_cooked",
@@ -354,6 +641,7 @@
    "fat": 2.83,
    "fiber": 0.1,
    "portionG": 30.0,
+   "portionUnits": 2.0,
    "portionPt": "2 fatias",
    "portionEn": "2 slices",
    "aliases": [
@@ -361,8 +649,7 @@
     "presunto cozido",
     "ham"
    ],
-   "visionLabels": [],
-   "portionUnits": 2
+   "visionLabels": []
   },
   {
    "key": "beef_ground_patty",
@@ -379,13 +666,13 @@
    "fat": 15.41,
    "fiber": 0.0,
    "portionG": 120.0,
+   "portionUnits": 1.0,
    "portionPt": "1 hambúrguer",
    "portionEn": "1 patty",
    "aliases": [
     "hambúrguer",
-    "carne picada",
     "burger",
-    "ground beef"
+    "hambúrguer de vaca"
    ],
    "visionLabels": [
     "Hamburger",
@@ -393,8 +680,7 @@
     "Meatball",
     "Kofta",
     "Qeema"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "linguica_grilled",
@@ -411,6 +697,7 @@
    "fat": 21.9,
    "fiber": 0.0,
    "portionG": 60.0,
+   "portionUnits": 1.0,
    "portionPt": "1 gomo",
    "portionEn": "1 link",
    "aliases": [
@@ -421,8 +708,7 @@
    "visionLabels": [
     "Sausage",
     "Bratwurst"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "pork_tenderloin_cooked",
@@ -439,6 +725,7 @@
    "fat": 7.1,
    "fiber": 0.0,
    "portionG": 130.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -447,8 +734,7 @@
     "febras",
     "pork tenderloin"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "pork_loin_broiled",
@@ -465,6 +751,7 @@
    "fat": 7.29,
    "fiber": 0.0,
    "portionG": 130.0,
+   "portionUnits": 1.0,
    "portionPt": "1 costeleta/bife",
    "portionEn": "1 chop",
    "aliases": [
@@ -482,8 +769,35 @@
     "Souvlaki",
     "Tonkatsu",
     "Kushikatsu"
+   ]
+  },
+  {
+   "key": "chicken_nuggets",
+   "namePt": "Nuggets de frango",
+   "nameEn": "Chicken nuggets",
+   "category": "carne",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "36027",
+   "sourceLabel": "Nuggets ou croquette panée de poulet, préemballé",
+   "kcal": 250.0,
+   "protein": 15.6,
+   "carbs": 19.4,
+   "fat": 11.6,
+   "fiber": 2.4,
+   "portionG": 90.0,
+   "portionUnits": 6.0,
+   "portionPt": "6 nuggets",
+   "portionEn": "6 nuggets",
+   "aliases": [
+    "nuggets",
+    "nugget",
+    "nuggets de frango",
+    "nuggets de galinha",
+    "nuggets de pollo",
+    "chicken nuggets"
    ],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "chicken_breast_roasted",
@@ -500,6 +814,7 @@
    "fat": 3.57,
    "fiber": 0.0,
    "portionG": 120.0,
+   "portionUnits": 1.0,
    "portionPt": "1 bife",
    "portionEn": "1 fillet",
    "aliases": [
@@ -531,8 +846,7 @@
     "Salisbury steak",
     "Chicken Maryland",
     "Yakitori"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "turkey_breast_roasted",
@@ -549,6 +863,7 @@
    "fat": 1.97,
    "fiber": 0.0,
    "portionG": 120.0,
+   "portionUnits": 1.0,
    "portionPt": "1 bife",
    "portionEn": "1 fillet",
    "aliases": [
@@ -557,8 +872,37 @@
     "peito de peru",
     "turkey"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
+  },
+  {
+   "key": "cured_ham",
+   "namePt": "Presunto (curado)",
+   "nameEn": "Cured ham",
+   "category": "carne",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "28800",
+   "sourceLabel": "Jambon cru",
+   "kcal": 239.0,
+   "protein": 25.9,
+   "carbs": 4.27,
+   "fat": 13.2,
+   "fiber": 0.0,
+   "portionG": 30.0,
+   "portionUnits": 2.0,
+   "portionPt": "2 fatias finas",
+   "portionEn": "2 thin slices",
+   "aliases": [
+    "presunto",
+    "presunto curado",
+    "presunto cru",
+    "jamón",
+    "jamon",
+    "jambon cru",
+    "jambon sec",
+    "jamon curado"
+   ],
+   "visionLabels": []
   },
   {
    "key": "rice_white_cooked",
@@ -575,6 +919,7 @@
    "fat": 0.28,
    "fiber": 0.4,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 dose (prato)",
    "portionEn": "1 serving",
    "aliases": [
@@ -602,8 +947,7 @@
     "Katsudon",
     "Arroz chaufa",
     "Hayashi rice"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "rice_brown_cooked",
@@ -620,14 +964,14 @@
    "fat": 0.97,
    "fiber": 1.6,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 dose (prato)",
    "portionEn": "1 serving",
    "aliases": [
     "arroz integral",
     "brown rice"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "couscous_cooked",
@@ -644,6 +988,7 @@
    "fat": 0.16,
    "fiber": 1.4,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -652,8 +997,7 @@
    ],
    "visionLabels": [
     "Couscous"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "cuscuz_milho",
@@ -670,6 +1014,7 @@
    "fat": 0.7,
    "fiber": 2.1,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -677,8 +1022,7 @@
     "cuscuz nordestino",
     "cuscuz"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "cassava_flour_toasted",
@@ -695,6 +1039,7 @@
    "fat": 0.3,
    "fiber": 6.5,
    "portionG": 20.0,
+   "portionUnits": null,
    "portionPt": "1 colher de sopa cheia",
    "portionEn": "1 heaped tablespoon",
    "aliases": [
@@ -702,8 +1047,7 @@
     "farinha de pau",
     "cassava flour"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "farofa",
@@ -720,13 +1064,13 @@
    "fat": 9.1,
    "fiber": 7.8,
    "portionG": 30.0,
+   "portionUnits": null,
    "portionPt": "2 colheres de sopa",
    "portionEn": "2 tablespoons",
    "aliases": [
     "farofa"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "oats_dry",
@@ -743,6 +1087,7 @@
    "fat": 6.52,
    "fiber": 10.1,
    "portionG": 40.0,
+   "portionUnits": null,
    "portionPt": "1 tigela (seco)",
    "portionEn": "1 bowl (dry)",
    "aliases": [
@@ -753,8 +1098,7 @@
     "oatmeal",
     "porridge"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "pasta_cooked",
@@ -771,6 +1115,7 @@
    "fat": 0.93,
    "fiber": 1.8,
    "portionG": 180.0,
+   "portionUnits": null,
    "portionPt": "1 dose (prato)",
    "portionEn": "1 serving",
    "aliases": [
@@ -787,8 +1132,38 @@
     "Spaghetti aglio e olio",
     "Pasta salad",
     "Spaghetti alle vongole"
+   ]
+  },
+  {
+   "key": "pasta_bolognese",
+   "namePt": "Massa à bolonhesa",
+   "nameEn": "Pasta bolognese",
+   "category": "cereais",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "25085",
+   "sourceLabel": "Pâtes à la bolognaise (spaghetti, tagliatelles…), préemballées",
+   "kcal": 116.0,
+   "protein": 5.32,
+   "carbs": 13.6,
+   "fat": 4.07,
+   "fiber": 1.9,
+   "portionG": 300.0,
+   "portionUnits": null,
+   "portionPt": "1 prato",
+   "portionEn": "1 plate",
+   "aliases": [
+    "massa com carne",
+    "massa à bolonhesa",
+    "massa a bolonhesa",
+    "massa bolonhesa",
+    "esparguete à bolonhesa",
+    "esparguete com carne",
+    "bolonhesa",
+    "bolognese",
+    "spaghetti bolognese"
    ],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "quinoa_cooked",
@@ -805,13 +1180,13 @@
    "fat": 1.92,
    "fiber": 2.8,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
     "quinoa"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "avocado_raw",
@@ -828,6 +1203,7 @@
    "fat": 14.66,
    "fiber": 6.7,
    "portionG": 70.0,
+   "portionUnits": 0.5,
    "portionPt": "1/2 abacate",
    "portionEn": "1/2 avocado",
    "aliases": [
@@ -836,8 +1212,7 @@
    ],
    "visionLabels": [
     "Guacamole"
-   ],
-   "portionUnits": 0.5
+   ]
   },
   {
    "key": "plum_raw",
@@ -854,6 +1229,7 @@
    "fat": 0.28,
    "fiber": 1.4,
    "portionG": 60.0,
+   "portionUnits": 1.0,
    "portionPt": "1 ameixa",
    "portionEn": "1 plum",
    "aliases": [
@@ -861,8 +1237,7 @@
     "ameixas",
     "plum"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "pineapple_raw",
@@ -879,6 +1254,7 @@
    "fat": 0.12,
    "fiber": 1.4,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia grossa",
    "portionEn": "1 thick slice",
    "aliases": [
@@ -886,8 +1262,7 @@
     "abacaxi",
     "pineapple"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "acai_pulp",
@@ -904,14 +1279,14 @@
    "fat": 3.9,
    "fiber": 2.6,
    "portionG": 100.0,
+   "portionUnits": null,
    "portionPt": "1 polpa",
    "portionEn": "1 pack",
    "aliases": [
     "açaí",
     "acai"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "banana_raw",
@@ -928,13 +1303,13 @@
    "fat": 0.33,
    "fiber": 2.6,
    "portionG": 118.0,
+   "portionUnits": 1.0,
    "portionPt": "1 banana média",
    "portionEn": "1 medium banana",
    "aliases": [
     "banana"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "banana_prata",
@@ -951,14 +1326,14 @@
    "fat": 0.1,
    "fiber": 2.0,
    "portionG": 70.0,
+   "portionUnits": 1.0,
    "portionPt": "1 banana",
    "portionEn": "1 banana",
    "aliases": [
     "banana prata",
     "banana-prata"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "cherries_raw",
@@ -975,6 +1350,7 @@
    "fat": 0.15,
    "fiber": 1.6,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 taça",
    "portionEn": "1 cup",
    "aliases": [
@@ -982,8 +1358,7 @@
     "cereja",
     "cherries"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "fig_raw",
@@ -1000,6 +1375,7 @@
    "fat": 0.25,
    "fiber": 4.1,
    "portionG": 50.0,
+   "portionUnits": 1.0,
    "portionPt": "1 figo",
    "portionEn": "1 fig",
    "aliases": [
@@ -1007,8 +1383,7 @@
     "figos",
     "fig"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "guava_raw",
@@ -1025,14 +1400,14 @@
    "fat": 0.4,
    "fiber": 6.2,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 goiaba",
    "portionEn": "1 guava",
    "aliases": [
     "goiaba",
     "guava"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "kiwi_raw",
@@ -1049,13 +1424,13 @@
    "fat": 0.52,
    "fiber": 3.0,
    "portionG": 75.0,
+   "portionUnits": 1.0,
    "portionPt": "1 kiwi",
    "portionEn": "1 kiwi",
    "aliases": [
     "kiwi"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "orange_raw",
@@ -1072,14 +1447,14 @@
    "fat": 0.12,
    "fiber": 2.4,
    "portionG": 140.0,
+   "portionUnits": 1.0,
    "portionPt": "1 laranja média",
    "portionEn": "1 medium orange",
    "aliases": [
     "laranja",
     "orange"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "papaya_raw",
@@ -1096,6 +1471,7 @@
    "fat": 0.1,
    "fiber": 1.0,
    "portionG": 150.0,
+   "portionUnits": 0.5,
    "portionPt": "1/2 mamão",
    "portionEn": "1/2 papaya",
    "aliases": [
@@ -1103,8 +1479,7 @@
     "papaia",
     "papaya"
    ],
-   "visionLabels": [],
-   "portionUnits": 0.5
+   "visionLabels": []
   },
   {
    "key": "mango_raw",
@@ -1121,14 +1496,14 @@
    "fat": 0.38,
    "fiber": 1.6,
    "portionG": 150.0,
+   "portionUnits": 0.5,
    "portionPt": "1/2 manga",
    "portionEn": "1/2 mango",
    "aliases": [
     "manga",
     "mango"
    ],
-   "visionLabels": [],
-   "portionUnits": 0.5
+   "visionLabels": []
   },
   {
    "key": "apple_raw",
@@ -1145,6 +1520,7 @@
    "fat": 0.17,
    "fiber": 2.4,
    "portionG": 180.0,
+   "portionUnits": 1.0,
    "portionPt": "1 maçã média",
    "portionEn": "1 medium apple",
    "aliases": [
@@ -1152,8 +1528,7 @@
     "maca",
     "apple"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "watermelon_raw",
@@ -1170,14 +1545,14 @@
    "fat": 0.15,
    "fiber": 0.4,
    "portionG": 250.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia",
    "portionEn": "1 slice",
    "aliases": [
     "melancia",
     "watermelon"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "melon_raw",
@@ -1194,6 +1569,7 @@
    "fat": 0.19,
    "fiber": 0.9,
    "portionG": 200.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia",
    "portionEn": "1 slice",
    "aliases": [
@@ -1202,8 +1578,7 @@
     "melon",
     "cantaloupe"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "strawberries_raw",
@@ -1220,14 +1595,16 @@
    "fat": 0.3,
    "fiber": 2.0,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 taça",
    "portionEn": "1 cup",
    "aliases": [
     "morangos",
-    "strawberries"
+    "morango",
+    "strawberries",
+    "strawberry"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "pear_raw",
@@ -1244,14 +1621,14 @@
    "fat": 0.14,
    "fiber": 3.1,
    "portionG": 170.0,
+   "portionUnits": 1.0,
    "portionPt": "1 pera média",
    "portionEn": "1 medium pear",
    "aliases": [
     "pera",
     "pear"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "peach_raw",
@@ -1268,6 +1645,7 @@
    "fat": 0.25,
    "fiber": 1.5,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 pêssego",
    "portionEn": "1 peach",
    "aliases": [
@@ -1275,8 +1653,7 @@
     "pessego",
     "peach"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "tangerine_raw",
@@ -1293,6 +1670,7 @@
    "fat": 0.25,
    "fiber": 1.7,
    "portionG": 70.0,
+   "portionUnits": 1.0,
    "portionPt": "1 tangerina",
    "portionEn": "1 tangerine",
    "aliases": [
@@ -1301,8 +1679,7 @@
     "mandarina",
     "tangerine"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "grapes_raw",
@@ -1319,14 +1696,14 @@
    "fat": 0.16,
    "fiber": 0.9,
    "portionG": 120.0,
+   "portionUnits": null,
    "portionPt": "1 cacho pequeno",
    "portionEn": "1 small bunch",
    "aliases": [
     "uvas",
     "grapes"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "almonds",
@@ -1343,14 +1720,14 @@
    "fat": 49.93,
    "fiber": 12.5,
    "portionG": 25.0,
+   "portionUnits": null,
    "portionPt": "1 mão-cheia",
    "portionEn": "1 handful",
    "aliases": [
     "amêndoas",
     "almonds"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "peanut_butter",
@@ -1367,6 +1744,7 @@
    "fat": 51.36,
    "fiber": 5.0,
    "portionG": 16.0,
+   "portionUnits": null,
    "portionPt": "1 colher de sopa",
    "portionEn": "1 tablespoon",
    "aliases": [
@@ -1375,8 +1753,7 @@
    ],
    "visionLabels": [
     "Peanut butter and jelly sandwich"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "walnuts",
@@ -1393,14 +1770,14 @@
    "fat": 65.21,
    "fiber": 6.7,
    "portionG": 25.0,
+   "portionUnits": null,
    "portionPt": "1 mão-cheia",
    "portionEn": "1 handful",
    "aliases": [
     "nozes",
     "walnuts"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "olive_oil",
@@ -1417,14 +1794,40 @@
    "fat": 100.0,
    "fiber": 0.0,
    "portionG": 10.0,
+   "portionUnits": null,
    "portionPt": "1 colher de sopa",
    "portionEn": "1 tablespoon",
    "aliases": [
     "azeite",
     "olive oil"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
+  },
+  {
+   "key": "mayonnaise",
+   "namePt": "Maionese",
+   "nameEn": "Mayonnaise",
+   "category": "gorduras",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "11054",
+   "sourceLabel": "Mayonnaise (70% MG min.), préemballée",
+   "kcal": 692.0,
+   "protein": 1.33,
+   "carbs": 3.41,
+   "fat": 74.5,
+   "fiber": 0.26,
+   "portionG": 10.0,
+   "portionUnits": null,
+   "portionPt": "1 colher de sobremesa",
+   "portionEn": "1 dessert spoon",
+   "aliases": [
+    "maionese",
+    "mayonese",
+    "mayonnaise",
+    "mayo"
+   ],
+   "visionLabels": []
   },
   {
    "key": "butter_salted",
@@ -1441,14 +1844,46 @@
    "fat": 81.11,
    "fiber": 0.0,
    "portionG": 10.0,
+   "portionUnits": null,
    "portionPt": "1 porção individual",
    "portionEn": "1 pat",
    "aliases": [
     "manteiga",
     "butter"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
+  },
+  {
+   "key": "burger_sauce",
+   "namePt": "Molho de hambúrguer (tipo Big Mac)",
+   "nameEn": "Burger sauce",
+   "category": "gorduras",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "11196",
+   "sourceLabel": "Sauce burger, préemballée",
+   "kcal": 427.0,
+   "protein": 1.28,
+   "carbs": 13.2,
+   "fat": 40.4,
+   "fiber": 0.58,
+   "portionG": 15.0,
+   "portionUnits": null,
+   "portionPt": "1 colher de sopa",
+   "portionEn": "1 tablespoon",
+   "aliases": [
+    "molho big mac",
+    "molho de hambúrguer",
+    "molho de hamburguer",
+    "molho especial",
+    "molho para hambúrguer",
+    "molho para hamburguer",
+    "molho burger",
+    "big mac sauce",
+    "burger sauce",
+    "special sauce"
+   ],
+   "visionLabels": []
   },
   {
    "key": "yogurt_greek_nonfat",
@@ -1465,6 +1900,7 @@
    "fat": 0.39,
    "fiber": 0.0,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 iogurte",
    "portionEn": "1 pot",
    "aliases": [
@@ -1472,8 +1908,7 @@
     "skyr",
     "greek yogurt"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "yogurt_plain_whole",
@@ -1490,6 +1925,7 @@
    "fat": 3.25,
    "fiber": 0.0,
    "portionG": 125.0,
+   "portionUnits": 1.0,
    "portionPt": "1 iogurte",
    "portionEn": "1 pot",
    "aliases": [
@@ -1499,8 +1935,7 @@
    ],
    "visionLabels": [
     "Frozen yogurt"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "milk_whole",
@@ -1517,6 +1952,7 @@
    "fat": 3.25,
    "fiber": 0.0,
    "portionG": 250.0,
+   "portionUnits": 1.0,
    "portionPt": "1 copo",
    "portionEn": "1 glass",
    "aliases": [
@@ -1525,8 +1961,7 @@
     "whole milk",
     "milk"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "milk_skim",
@@ -1543,14 +1978,14 @@
    "fat": 0.08,
    "fiber": 0.0,
    "portionG": 250.0,
+   "portionUnits": 1.0,
    "portionPt": "1 copo",
    "portionEn": "1 glass",
    "aliases": [
     "leite magro",
     "skim milk"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "milk_semi",
@@ -1567,6 +2002,7 @@
    "fat": 1.98,
    "fiber": 0.0,
    "portionG": 250.0,
+   "portionUnits": 1.0,
    "portionPt": "1 copo",
    "portionEn": "1 glass",
    "aliases": [
@@ -1574,8 +2010,7 @@
     "leite meio-gordo",
     "semi skimmed milk"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "cheese_mozzarella",
@@ -1592,14 +2027,43 @@
    "fat": 22.14,
    "fiber": 0.0,
    "portionG": 30.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
     "mozzarella",
     "queijo mozzarella"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
+  },
+  {
+   "key": "cooking_cream",
+   "namePt": "Natas (para cozinha)",
+   "nameEn": "Cooking cream",
+   "category": "laticínios",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "170858",
+   "sourceLabel": "Cream, fluid, light whipping",
+   "kcal": 292.0,
+   "protein": 2.17,
+   "carbs": 2.96,
+   "fat": 30.91,
+   "fiber": 0.0,
+   "portionG": 30.0,
+   "portionUnits": null,
+   "portionPt": "2 colheres de sopa",
+   "portionEn": "2 tablespoons",
+   "aliases": [
+    "natas",
+    "nata",
+    "natas para cozinhar",
+    "nata para cozinhar",
+    "creme de leite",
+    "cooking cream",
+    "whipping cream"
+   ],
+   "visionLabels": []
   },
   {
    "key": "cheese_cottage",
@@ -1616,6 +2080,7 @@
    "fat": 2.27,
    "fiber": 0.0,
    "portionG": 100.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -1624,8 +2089,7 @@
     "queijo fresco",
     "cottage cheese"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "sheep_cheese",
@@ -1642,6 +2106,7 @@
    "fat": 33.6,
    "fiber": 0.0,
    "portionG": 30.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia",
    "portionEn": "1 slice",
    "aliases": [
@@ -1650,8 +2115,7 @@
     "queijo curado",
     "sheep cheese"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "cheese_gouda",
@@ -1668,6 +2132,7 @@
    "fat": 27.44,
    "fiber": 0.0,
    "portionG": 20.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia",
    "portionEn": "1 slice",
    "aliases": [
@@ -1676,8 +2141,7 @@
     "gouda",
     "cheese"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "minas_cheese",
@@ -1694,6 +2158,7 @@
    "fat": 20.2,
    "fiber": 0.0,
    "portionG": 30.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia",
    "portionEn": "1 slice",
    "aliases": [
@@ -1701,8 +2166,7 @@
     "minas frescal",
     "queijo fresco"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "requeijao_cremoso",
@@ -1719,14 +2183,14 @@
    "fat": 23.4,
    "fiber": 0.0,
    "portionG": 20.0,
+   "portionUnits": null,
    "portionPt": "1 colher de sopa",
    "portionEn": "1 tablespoon",
    "aliases": [
     "requeijão",
     "requeijao cremoso"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "lettuce_raw",
@@ -1743,6 +2207,7 @@
    "fat": 0.15,
    "fiber": 1.3,
    "portionG": 50.0,
+   "portionUnits": null,
    "portionPt": "1 dose de salada",
    "portionEn": "1 salad serving",
    "aliases": [
@@ -1757,8 +2222,7 @@
     "Wrap",
     "Coleslaw",
     "Seven-layer salad"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "broccoli_cooked",
@@ -1775,6 +2239,7 @@
    "fat": 0.41,
    "fiber": 3.3,
    "portionG": 90.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -1782,8 +2247,7 @@
     "brocolos",
     "broccoli"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "onion_raw",
@@ -1800,6 +2264,7 @@
    "fat": 0.1,
    "fiber": 1.7,
    "portionG": 40.0,
+   "portionUnits": 0.5,
    "portionPt": "1/2 cebola",
    "portionEn": "1/2 onion",
    "aliases": [
@@ -1808,8 +2273,7 @@
    ],
    "visionLabels": [
     "Onion ring"
-   ],
-   "portionUnits": 0.5
+   ]
   },
   {
    "key": "carrot_raw",
@@ -1826,6 +2290,7 @@
    "fat": 0.24,
    "fiber": 2.8,
    "portionG": 60.0,
+   "portionUnits": 1.0,
    "portionPt": "1 cenoura",
    "portionEn": "1 carrot",
    "aliases": [
@@ -1835,8 +2300,7 @@
    ],
    "visionLabels": [
     "Coleslaw"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "carrot_cooked",
@@ -1853,14 +2317,14 @@
    "fat": 0.15,
    "fiber": 3.3,
    "portionG": 80.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
     "cenoura cozida",
     "cooked carrot"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "mushrooms_raw",
@@ -1877,6 +2341,7 @@
    "fat": 0.34,
    "fiber": 1.0,
    "portionG": 70.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -1884,8 +2349,7 @@
     "champignons",
     "mushrooms"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "collards_sauteed",
@@ -1902,6 +2366,7 @@
    "fat": 6.6,
    "fiber": 5.7,
    "portionG": 80.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -1909,8 +2374,33 @@
     "couve à mineira",
     "collard greens"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
+  },
+  {
+   "key": "cabbage_red_raw",
+   "namePt": "Couve roxa",
+   "nameEn": "Red cabbage, raw",
+   "category": "legumes",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "169977",
+   "sourceLabel": "Cabbage, red, raw",
+   "kcal": 31.0,
+   "protein": 1.43,
+   "carbs": 7.37,
+   "fat": 0.16,
+   "fiber": 2.1,
+   "portionG": 70.0,
+   "portionUnits": null,
+   "portionPt": "1 dose",
+   "portionEn": "1 serving",
+   "aliases": [
+    "couve roxa",
+    "couve roxo",
+    "repolho roxo",
+    "red cabbage"
+   ],
+   "visionLabels": []
   },
   {
    "key": "cauliflower_cooked",
@@ -1927,6 +2417,7 @@
    "fat": 0.46,
    "fiber": 2.0,
    "portionG": 90.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -1934,8 +2425,7 @@
     "couve flor",
     "cauliflower"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "cabbage_raw",
@@ -1952,6 +2442,7 @@
    "fat": 0.1,
    "fiber": 2.5,
    "portionG": 70.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -1961,8 +2452,7 @@
    ],
    "visionLabels": [
     "Coleslaw"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "zucchini_cooked",
@@ -1979,6 +2469,7 @@
    "fat": 0.36,
    "fiber": 1.0,
    "portionG": 90.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -1986,8 +2477,7 @@
     "courgette",
     "zucchini"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "spinach_cooked",
@@ -2004,14 +2494,14 @@
    "fat": 0.26,
    "fiber": 2.4,
    "portionG": 90.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
     "espinafres",
     "spinach"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "green_beans_cooked",
@@ -2028,6 +2518,7 @@
    "fat": 0.28,
    "fiber": 3.2,
    "portionG": 90.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2035,8 +2526,7 @@
     "feijão-verde",
     "green beans"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "corn_canned",
@@ -2053,6 +2543,7 @@
    "fat": 1.22,
    "fiber": 2.0,
    "portionG": 60.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2061,8 +2552,7 @@
     "corn",
     "sweet corn"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "cucumber_raw",
@@ -2079,6 +2569,7 @@
    "fat": 0.11,
    "fiber": 0.5,
    "portionG": 60.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2088,8 +2579,7 @@
    "visionLabels": [
     "Greek salad",
     "Cucumber soup"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "pepper_red_raw",
@@ -2106,6 +2596,7 @@
    "fat": 0.3,
    "fiber": 2.1,
    "portionG": 60.0,
+   "portionUnits": 0.5,
    "portionPt": "1/2 pimento",
    "portionEn": "1/2 pepper",
    "aliases": [
@@ -2114,8 +2605,7 @@
     "red pepper",
     "bell pepper"
    ],
-   "visionLabels": [],
-   "portionUnits": 0.5
+   "visionLabels": []
   },
   {
    "key": "green_salad",
@@ -2132,6 +2622,7 @@
    "fat": 0.1,
    "fiber": 1.3,
    "portionG": 80.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2149,8 +2640,7 @@
     "Michigan salad",
     "Seven-layer salad",
     "Sabich salad"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "tomato_raw",
@@ -2167,6 +2657,7 @@
    "fat": 0.2,
    "fiber": 1.2,
    "portionG": 100.0,
+   "portionUnits": 1.0,
    "portionPt": "1 tomate médio",
    "portionEn": "1 medium tomato",
    "aliases": [
@@ -2178,8 +2669,7 @@
     "Caprese salad",
     "BLT",
     "Greek salad"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "peas_cooked",
@@ -2196,14 +2686,14 @@
    "fat": 0.27,
    "fiber": 4.5,
    "portionG": 80.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
     "ervilhas",
     "peas"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "beans_white_cooked",
@@ -2220,6 +2710,7 @@
    "fat": 1.1,
    "fiber": 13.8,
    "portionG": 130.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2227,8 +2718,7 @@
     "feijoada à transmontana",
     "white beans"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "beans_carioca_cooked",
@@ -2245,6 +2735,7 @@
    "fat": 0.5,
    "fiber": 8.5,
    "portionG": 140.0,
+   "portionUnits": null,
    "portionPt": "1 concha",
    "portionEn": "1 ladle",
    "aliases": [
@@ -2256,8 +2747,7 @@
     "Red beans and rice",
     "Frijoles charros",
     "Feijão de óleo de palma"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "beans_pinto_cooked",
@@ -2274,6 +2764,7 @@
    "fat": 0.65,
    "fiber": 9.0,
    "portionG": 130.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2282,8 +2773,7 @@
     "feijão castanho",
     "pinto beans"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "beans_red_cooked",
@@ -2300,6 +2790,7 @@
    "fat": 0.5,
    "fiber": 7.4,
    "portionG": 130.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2324,8 +2815,7 @@
     "Baked beans",
     "Feijão de óleo de palma",
     "Cowboy beans"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "beans_black_cooked",
@@ -2342,14 +2832,14 @@
    "fat": 0.54,
    "fiber": 8.7,
    "portionG": 130.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
     "feijão preto",
     "black beans"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "chickpeas_cooked",
@@ -2366,6 +2856,7 @@
    "fat": 2.59,
    "fiber": 7.6,
    "portionG": 130.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2378,8 +2869,7 @@
     "Chana masala",
     "Hummus",
     "Falafel"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "lentils_cooked",
@@ -2396,6 +2886,7 @@
    "fat": 0.38,
    "fiber": 7.9,
    "portionG": 130.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2405,8 +2896,7 @@
    "visionLabels": [
     "Dal makhani",
     "Dal"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "sugar",
@@ -2423,6 +2913,7 @@
    "fat": 0.0,
    "fiber": 0.0,
    "portionG": 5.0,
+   "portionUnits": null,
    "portionPt": "1 pacote",
    "portionEn": "1 sachet",
    "aliases": [
@@ -2430,8 +2921,7 @@
     "acucar",
     "sugar"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "jam",
@@ -2448,6 +2938,7 @@
    "fat": 0.28,
    "fiber": 1.29,
    "portionG": 15.0,
+   "portionUnits": null,
    "portionPt": "1 colher de sobremesa",
    "portionEn": "1 tbsp",
    "aliases": [
@@ -2460,8 +2951,7 @@
     "jam",
     "marmalade"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "honey",
@@ -2478,14 +2968,73 @@
    "fat": 0.0,
    "fiber": 0.2,
    "portionG": 20.0,
+   "portionUnits": null,
    "portionPt": "1 colher de sopa",
    "portionEn": "1 tablespoon",
    "aliases": [
     "mel",
     "honey"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
+  },
+  {
+   "key": "brown_gravy",
+   "namePt": "Molho castanho (gravy)",
+   "nameEn": "Brown gravy (beef)",
+   "category": "outros",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "171564",
+   "sourceLabel": "Gravy, beef, canned, ready-to-serve",
+   "kcal": 53.0,
+   "protein": 3.75,
+   "carbs": 4.81,
+   "fat": 2.36,
+   "fiber": 0.4,
+   "portionG": 50.0,
+   "portionUnits": null,
+   "portionPt": "2 colheres de sopa",
+   "portionEn": "2 tablespoons",
+   "aliases": [
+    "molho de cerveja",
+    "molho castanho",
+    "molho de carne",
+    "gravy",
+    "brown gravy",
+    "beef gravy"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "tortilla_chips",
+   "namePt": "Tortilha de milho (nachos)",
+   "nameEn": "Tortilla chips, nacho cheese",
+   "category": "outros",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "167559",
+   "sourceLabel": "Snacks, tortilla chips, nacho cheese",
+   "kcal": 519.0,
+   "protein": 7.36,
+   "carbs": 60.81,
+   "fat": 27.42,
+   "fiber": 5.1,
+   "portionG": 30.0,
+   "portionUnits": null,
+   "portionPt": "1 mão-cheia",
+   "portionEn": "1 handful",
+   "aliases": [
+    "tortilha de milho",
+    "tortilhas de milho",
+    "tortilha",
+    "nachos",
+    "doritos",
+    "tortilla chips",
+    "chips de tortilha",
+    "nacho cheese",
+    "tortillas"
+   ],
+   "visionLabels": []
   },
   {
    "key": "omelette",
@@ -2502,6 +3051,7 @@
    "fat": 15.3,
    "fiber": 0.0,
    "portionG": 120.0,
+   "portionUnits": 1.0,
    "portionPt": "1 omelete (2 ovos)",
    "portionEn": "1 omelette (2 eggs)",
    "aliases": [
@@ -2511,8 +3061,7 @@
    ],
    "visionLabels": [
     "Omelette"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "egg_boiled",
@@ -2529,6 +3078,7 @@
    "fat": 10.61,
    "fiber": 0.0,
    "portionG": 50.0,
+   "portionUnits": 1.0,
    "portionPt": "1 ovo",
    "portionEn": "1 egg",
    "aliases": [
@@ -2540,8 +3090,7 @@
    "visionLabels": [
     "Deviled egg",
     "Tea egg"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "egg_fried",
@@ -2558,6 +3107,7 @@
    "fat": 14.84,
    "fiber": 0.0,
    "portionG": 46.0,
+   "portionUnits": 1.0,
    "portionPt": "1 ovo",
    "portionEn": "1 egg",
    "aliases": [
@@ -2568,8 +3118,7 @@
    "visionLabels": [
     "Eggs Benedict",
     "Omelette"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "croissant",
@@ -2586,14 +3135,44 @@
    "fat": 22.1,
    "fiber": 2.41,
    "portionG": 60.0,
+   "portionUnits": 1.0,
    "portionPt": "1 croissant",
    "portionEn": "1 croissant",
    "aliases": [
     "croissant",
-    "croissã"
+    "croissã",
+    "croissant simples",
+    "croissant normal"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
+  },
+  {
+   "key": "croissant_ham_cheese",
+   "namePt": "Croissant misto (fiambre e queijo)",
+   "nameEn": "Ham and cheese croissant",
+   "category": "padaria",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "25418",
+   "sourceLabel": "Croissant au jambon fromage, fait maison",
+   "kcal": 264.0,
+   "protein": 7.9,
+   "carbs": 24.8,
+   "fat": 14.6,
+   "fiber": 1.0,
+   "portionG": 110.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 croissant misto",
+   "portionEn": "1 ham and cheese croissant",
+   "aliases": [
+    "croissant misto",
+    "croissant de fiambre",
+    "croissant de fiambre e queijo",
+    "croissant de presunto e queijo",
+    "croissant com fiambre",
+    "ham and cheese croissant"
+   ],
+   "visionLabels": []
   },
   {
    "key": "bread_roll",
@@ -2610,6 +3189,7 @@
    "fat": 6.47,
    "fiber": 2.0,
    "portionG": 50.0,
+   "portionUnits": 1.0,
    "portionPt": "1 unidade",
    "portionEn": "1 roll",
    "aliases": [
@@ -2619,8 +3199,7 @@
     "bread roll",
     "roll"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "bread_white",
@@ -2637,6 +3216,7 @@
    "fat": 3.33,
    "fiber": 2.7,
    "portionG": 30.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia",
    "portionEn": "1 slice",
    "aliases": [
@@ -2648,8 +3228,7 @@
    ],
    "visionLabels": [
     "Rye bread"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "bread_country",
@@ -2666,6 +3245,7 @@
    "fat": 1.3,
    "fiber": 4.3,
    "portionG": 50.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia grossa",
    "portionEn": "1 thick slice",
    "aliases": [
@@ -2675,8 +3255,35 @@
     "pão rústico",
     "country bread"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
+  },
+  {
+   "key": "hamburger_bun",
+   "namePt": "Pão de hambúrguer",
+   "nameEn": "Hamburger bun",
+   "category": "padaria",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "7259",
+   "sourceLabel": "Pain pour burger ou hot dog (bun), préemballé",
+   "kcal": 283.0,
+   "protein": 8.21,
+   "carbs": 47.2,
+   "fat": 4.9,
+   "fiber": 3.5,
+   "portionG": 60.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 pão",
+   "portionEn": "1 bun",
+   "aliases": [
+    "pão de hambúrguer",
+    "pao de hamburguer",
+    "pão para hambúrguer",
+    "pão de hot dog",
+    "hamburger bun",
+    "burger bun"
+   ],
+   "visionLabels": []
   },
   {
    "key": "pao_de_queijo",
@@ -2693,14 +3300,14 @@
    "fat": 24.6,
    "fiber": 0.6,
    "portionG": 60.0,
+   "portionUnits": 3.0,
    "portionPt": "3 unidades pequenas",
    "portionEn": "3 small pieces",
    "aliases": [
     "pão de queijo",
     "cheese bread"
    ],
-   "visionLabels": [],
-   "portionUnits": 3
+   "visionLabels": []
   },
   {
    "key": "bread_french_br",
@@ -2717,6 +3324,7 @@
    "fat": 3.1,
    "fiber": 2.3,
    "portionG": 50.0,
+   "portionUnits": 1.0,
    "portionPt": "1 pão",
    "portionEn": "1 roll",
    "aliases": [
@@ -2724,8 +3332,7 @@
     "pão de sal",
     "cacetinho"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "bread_wholewheat",
@@ -2742,6 +3349,7 @@
    "fat": 3.5,
    "fiber": 6.0,
    "portionG": 30.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia",
    "portionEn": "1 slice",
    "aliases": [
@@ -2749,8 +3357,7 @@
     "pão de mistura",
     "whole wheat bread"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "bread_white_toasted",
@@ -2767,6 +3374,7 @@
    "fat": 4.0,
    "fiber": 2.9,
    "portionG": 30.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia",
    "portionEn": "1 slice",
    "aliases": [
@@ -2781,8 +3389,35 @@
     "Melt sandwich",
     "Cheese sandwich",
     "Milk toast"
+   ]
+  },
+  {
+   "key": "sandwich_ham_cheese",
+   "namePt": "Sandes mista (fiambre e queijo)",
+   "nameEn": "Ham and cheese sandwich",
+   "category": "padaria",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "25661",
+   "sourceLabel": "Sandwich pain polaire, jambon fromage, préemballé",
+   "kcal": 266.0,
+   "protein": 10.5,
+   "carbs": 27.2,
+   "fat": 12.3,
+   "fiber": 2.27,
+   "portionG": 120.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 sandes",
+   "portionEn": "1 sandwich",
+   "aliases": [
+    "sanduíche mista",
+    "sanduiche mista",
+    "sandes mista",
+    "sandwich mista",
+    "tosta mista",
+    "ham and cheese sandwich"
    ],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "tapioca_butter",
@@ -2799,14 +3434,14 @@
    "fat": 10.9,
    "fiber": 0.0,
    "portionG": 80.0,
+   "portionUnits": 1.0,
    "portionPt": "1 tapioca",
    "portionEn": "1 crepe",
    "aliases": [
     "tapioca",
     "beiju"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "tuna_olive_oil",
@@ -2823,6 +3458,7 @@
    "fat": 6.95,
    "fiber": 0.0,
    "portionG": 80.0,
+   "portionUnits": null,
    "portionPt": "1 lata escorrida",
    "portionEn": "1 can, drained",
    "aliases": [
@@ -2830,8 +3466,7 @@
     "atum em óleo",
     "tuna in oil"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "tuna_canned_water",
@@ -2848,17 +3483,19 @@
    "fat": 0.96,
    "fiber": 0.0,
    "portionG": 80.0,
+   "portionUnits": null,
    "portionPt": "1 lata escorrida",
    "portionEn": "1 can, drained",
    "aliases": [
     "atum",
     "atum em lata",
-    "tuna"
+    "tuna",
+    "atum natural",
+    "atum em conserva"
    ],
    "visionLabels": [
     "Tuna fish sandwich"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "cod_salted_boiled",
@@ -2875,6 +3512,7 @@
    "fat": 1.01,
    "fiber": 0.0,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 posta",
    "portionEn": "1 portion",
    "aliases": [
@@ -2888,8 +3526,7 @@
     "Bacalhau",
     "Bacalhau com todos",
     "Bacalhau com natas"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "shrimp_cooked",
@@ -2906,6 +3543,7 @@
    "fat": 0.28,
    "fiber": 0.0,
    "portionG": 100.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2917,8 +3555,7 @@
    "visionLabels": [
     "White boiled shrimp",
     "Garlic butter shrimp"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "sea_bream_baked",
@@ -2935,14 +3572,14 @@
    "fat": 5.9,
    "fiber": 0.0,
    "portionG": 170.0,
+   "portionUnits": 1.0,
    "portionPt": "1 dourada (porção)",
    "portionEn": "1 fish (portion)",
    "aliases": [
     "dourada",
     "sea bream"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "squid_boiled",
@@ -2959,6 +3596,7 @@
    "fat": 1.4,
    "fiber": 0.0,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2970,8 +3608,7 @@
    ],
    "visionLabels": [
     "Squid"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "squid_fried",
@@ -2988,6 +3625,7 @@
    "fat": 7.48,
    "fiber": 0.0,
    "portionG": 120.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -2995,8 +3633,7 @@
     "calamares fritos",
     "fried squid"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "hake_steamed",
@@ -3013,6 +3650,7 @@
    "fat": 3.0,
    "fiber": 0.0,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 posta",
    "portionEn": "1 portion",
    "aliases": [
@@ -3020,8 +3658,7 @@
     "pescada cozida",
     "hake"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "cod_cooked",
@@ -3038,6 +3675,7 @@
    "fat": 0.86,
    "fiber": 0.0,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 posta",
    "portionEn": "1 fillet",
    "aliases": [
@@ -3048,8 +3686,7 @@
    ],
    "visionLabels": [
     "Fried fish"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "octopus_cooked",
@@ -3066,6 +3703,7 @@
    "fat": 2.08,
    "fiber": 0.0,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -3074,8 +3712,7 @@
     "polvo cozido",
     "octopus"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "sea_bass_baked",
@@ -3092,14 +3729,14 @@
    "fat": 6.51,
    "fiber": 0.0,
    "portionG": 170.0,
+   "portionUnits": 1.0,
    "portionPt": "1 robalo (porção)",
    "portionEn": "1 fish (portion)",
    "aliases": [
     "robalo",
     "sea bass"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "salmon_cooked",
@@ -3116,14 +3753,14 @@
    "fat": 12.35,
    "fiber": 0.0,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 posta",
    "portionEn": "1 fillet",
    "aliases": [
     "salmão",
     "salmon"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "sardine_grilled",
@@ -3140,6 +3777,7 @@
    "fat": 10.4,
    "fiber": 0.0,
    "portionG": 120.0,
+   "portionUnits": 3.0,
    "portionPt": "3 sardinhas (parte comestível)",
    "portionEn": "3 sardines (edible part)",
    "aliases": [
@@ -3149,8 +3787,7 @@
     "sardinhas assadas",
     "grilled sardines"
    ],
-   "visionLabels": [],
-   "portionUnits": 3
+   "visionLabels": []
   },
   {
    "key": "sardines_canned_oil",
@@ -3167,14 +3804,14 @@
    "fat": 11.45,
    "fiber": 0.0,
    "portionG": 90.0,
+   "portionUnits": null,
    "portionPt": "1 lata escorrida",
    "portionEn": "1 can, drained",
    "aliases": [
     "sardinhas",
     "sardines"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "paella",
@@ -3191,6 +3828,7 @@
    "fat": 2.2,
    "fiber": 0.8,
    "portionG": 300.0,
+   "portionUnits": null,
    "portionPt": "1 prato",
    "portionEn": "1 plate",
    "aliases": [
@@ -3202,8 +3840,7 @@
    "visionLabels": [
     "Portuguese seafood rice",
     "Paella"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "baiao_de_dois",
@@ -3220,14 +3857,14 @@
    "fat": 3.2,
    "fiber": 5.1,
    "portionG": 250.0,
+   "portionUnits": null,
    "portionPt": "1 prato",
    "portionEn": "1 plate",
    "aliases": [
     "baião de dois",
     "baiao de dois"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "feijoada",
@@ -3244,14 +3881,44 @@
    "fat": 6.5,
    "fiber": 5.1,
    "portionG": 250.0,
+   "portionUnits": null,
    "portionPt": "1 prato fundo",
    "portionEn": "1 deep plate",
    "aliases": [
     "feijoada",
     "feijoada brasileira"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
+  },
+  {
+   "key": "cheeseburger_whole",
+   "namePt": "Hambúrguer no pão (cheeseburger)",
+   "nameEn": "Cheeseburger, with condiments",
+   "category": "pratos",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "170691",
+   "sourceLabel": "Fast foods, cheeseburger; single, regular patty, with condiments",
+   "kcal": 270.0,
+   "protein": 13.49,
+   "carbs": 25.46,
+   "fat": 12.9,
+   "fiber": 1.9,
+   "portionG": 150.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 hambúrguer completo",
+   "portionEn": "1 cheeseburger",
+   "aliases": [
+    "hambúrguer no pão",
+    "hamburguer no pao",
+    "hambúrguer completo",
+    "hamburguer completo",
+    "hambúrguer com queijo",
+    "hamburguer com queijo",
+    "cheeseburger",
+    "cheese burger"
+   ],
+   "visionLabels": []
   },
   {
    "key": "lasagna_meat",
@@ -3268,14 +3935,42 @@
    "fat": 5.72,
    "fiber": 1.91,
    "portionG": 300.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
     "lasanha",
     "lasagna"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
+  },
+  {
+   "key": "pizza_pepperoni",
+   "namePt": "Pizza de pepperoni",
+   "nameEn": "Pepperoni pizza",
+   "category": "pratos",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "25462",
+   "sourceLabel": "Pizza au chorizo ou salami, préemballée",
+   "kcal": 236.0,
+   "protein": 9.88,
+   "carbs": 24.7,
+   "fat": 10.4,
+   "fiber": 2.09,
+   "portionG": 110.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 fatia grande",
+   "portionEn": "1 large slice",
+   "aliases": [
+    "pizza de pepperoni",
+    "pizza pepperoni",
+    "pepperoni pizza",
+    "pepperoni",
+    "pizza de salame",
+    "pizza de salami"
+   ],
+   "visionLabels": []
   },
   {
    "key": "pizza_cheese",
@@ -3292,6 +3987,7 @@
    "fat": 12.28,
    "fiber": 2.2,
    "portionG": 110.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia grande",
    "portionEn": "1 large slice",
    "aliases": [
@@ -3302,8 +3998,7 @@
     "Neapolitan pizza",
     "Chicago-style pizza",
     "California-style pizza"
-   ],
-   "portionUnits": 1
+   ]
   },
   {
    "key": "quiche",
@@ -3320,14 +4015,14 @@
    "fat": 16.4,
    "fiber": 1.39,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 fatia",
    "portionEn": "1 slice",
    "aliases": [
     "quiche",
     "tarte salgada"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "salpicao_frango",
@@ -3344,14 +4039,14 @@
    "fat": 7.8,
    "fiber": 0.4,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
     "salpicão",
     "salpicao"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "soup_vegetables",
@@ -3368,6 +4063,7 @@
    "fat": 1.45,
    "fiber": 1.23,
    "portionG": 300.0,
+   "portionUnits": null,
    "portionPt": "1 prato de sopa",
    "portionEn": "1 bowl",
    "aliases": [
@@ -3379,8 +4075,7 @@
    ],
    "visionLabels": [
     "Minestrone"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "coxinha",
@@ -3397,13 +4092,41 @@
    "fat": 11.8,
    "fiber": 5.0,
    "portionG": 80.0,
+   "portionUnits": 1.0,
    "portionPt": "1 coxinha",
    "portionEn": "1 coxinha",
    "aliases": [
     "coxinha"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
+  },
+  {
+   "key": "croquete_meat_fried",
+   "namePt": "Croquete de carne (frito)",
+   "nameEn": "Fried meat croquette",
+   "category": "salgados",
+   "region": "br",
+   "source": "taco",
+   "sourceRef": "388",
+   "sourceLabel": "Croquete, de carne, frito",
+   "kcal": 347.0,
+   "protein": 16.9,
+   "carbs": 18.1,
+   "fat": 22.7,
+   "fiber": 3.1,
+   "portionG": 50.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 croquete",
+   "portionEn": "1 croquette",
+   "aliases": [
+    "croquete",
+    "croquetes",
+    "croquete de carne",
+    "croquete frito",
+    "croquete de carne frito",
+    "croquettes de carne"
+   ],
+   "visionLabels": []
   },
   {
    "key": "pastel_carne_frito",
@@ -3420,14 +4143,14 @@
    "fat": 20.1,
    "fiber": 1.0,
    "portionG": 80.0,
+   "portionUnits": 1.0,
    "portionPt": "1 pastel",
    "portionEn": "1 pastel",
    "aliases": [
     "pastel",
     "pastel de carne"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "acai_bowl",
@@ -3444,14 +4167,14 @@
    "fat": 3.7,
    "fiber": 1.7,
    "portionG": 200.0,
+   "portionUnits": null,
    "portionPt": "1 tigela",
    "portionEn": "1 bowl",
    "aliases": [
     "açaí na tigela",
     "acai bowl"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "egg_flan",
@@ -3468,6 +4191,7 @@
    "fat": 2.74,
    "fiber": 0.38,
    "portionG": 100.0,
+   "portionUnits": 1.0,
    "portionPt": "1 pudim",
    "portionEn": "1 flan",
    "aliases": [
@@ -3476,8 +4200,7 @@
     "flan",
     "leite-creme"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "potato_boiled",
@@ -3494,6 +4217,7 @@
    "fat": 0.1,
    "fiber": 1.8,
    "portionG": 150.0,
+   "portionUnits": 2.0,
    "portionPt": "1 dose (2 batatas)",
    "portionEn": "1 serving",
    "aliases": [
@@ -3507,8 +4231,7 @@
     "Salt potatoes",
     "Mashed potato",
     "Potato salad"
-   ],
-   "portionUnits": 2
+   ]
   },
   {
    "key": "potato_fries_oven",
@@ -3525,6 +4248,7 @@
    "fat": 5.22,
    "fiber": 2.6,
    "portionG": 120.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -3538,8 +4262,7 @@
     "Cheese fries",
     "Home fries",
     "Potato wedges"
-   ],
-   "portionUnits": null
+   ]
   },
   {
    "key": "sweet_potato_baked",
@@ -3556,6 +4279,7 @@
    "fat": 0.15,
    "fiber": 3.3,
    "portionG": 150.0,
+   "portionUnits": 1.0,
    "portionPt": "1 batata-doce",
    "portionEn": "1 sweet potato",
    "aliases": [
@@ -3563,8 +4287,7 @@
     "batata-doce",
     "sweet potato"
    ],
-   "visionLabels": [],
-   "portionUnits": 1
+   "visionLabels": []
   },
   {
    "key": "cassava_boiled",
@@ -3581,6 +4304,7 @@
    "fat": 0.3,
    "fiber": 1.6,
    "portionG": 150.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -3589,8 +4313,7 @@
     "macaxeira",
     "cassava"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   },
   {
    "key": "cassava_fried",
@@ -3607,6 +4330,7 @@
    "fat": 11.2,
    "fiber": 1.9,
    "portionG": 100.0,
+   "portionUnits": null,
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
@@ -3614,8 +4338,7 @@
     "aipim frito",
     "fried cassava"
    ],
-   "visionLabels": [],
-   "portionUnits": null
+   "visionLabels": []
   }
  ]
 }

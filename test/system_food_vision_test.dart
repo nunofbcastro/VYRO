@@ -9,12 +9,15 @@ import 'package:vyro/features/nutrition/food_vision/food_vision.dart';
 import 'package:vyro/features/nutrition/food_vision/system_food_vision.dart';
 
 /// Simulated model answer: one item row, as the photo prompt asks for.
-Map<String, Object> row(String name, {int count = 1}) => {
-  'name': name,
-  'where': 'plate',
-  'count': count,
-  'size': 'medium',
-};
+Map<String, Object> row(
+  String name, {
+  int count = 1,
+  String where = 'centre of plate',
+}) => {'name': name, 'where': where, 'count': count, 'size': 'medium'};
+
+/// A drink the model placed in a container, as the photo prompt asks.
+Map<String, Object> drink(String name, {int count = 1}) =>
+    row(name, count: count, where: 'cup top-left');
 
 String items(List<Map<String, Object>> rows) => jsonEncode({'items': rows});
 
@@ -59,7 +62,7 @@ void main() {
         row('Peito de frango grelhado'),
         row('Pão torrado'),
         row('Manteiga'),
-        row('Café expresso'),
+        drink('Café expresso'),
       ]);
       replies = [
         chicken,
@@ -97,7 +100,7 @@ void main() {
     'verification that rejects every item gives a confirmed empty meal',
     () async {
       replies = [
-        items([row('Café')]),
+        items([drink('Café')]),
         verdicts([false]),
       ];
       final result = await SystemFoodVision(
@@ -125,7 +128,7 @@ void main() {
 
   test('unparseable verification keeps the first list and says so', () async {
     replies = [
-      items([row('Café')]),
+      items([drink('Café')]),
       'not JSON',
     ];
     final result = await SystemFoodVision(db, channel: channel).analyse(photo);
@@ -135,25 +138,26 @@ void main() {
   });
 
   test(
-    'a verdict missing for one item is unparseable, not a rejection',
+    'a verdict missing for one item sends that item to suggestions',
     () async {
       replies = [
         items([row('Pão torrado'), row('Manteiga')]),
-        // Index 1 has no verdict and a string is not a boolean: keep both.
+        // Index 1 has no boolean verdict: not a rejection, not in totals.
         '{"checks":[{"i":0,"visible":true},{"i":1,"visible":"yes"}]}',
       ];
       final result = await SystemFoodVision(
         db,
         channel: channel,
       ).analyse(photo);
-      expect(result.foods, hasLength(2));
-      expect(result.detail, contains('verify: unparsed'));
+      expect(result.foods.map((f) => f.food?.key), ['bread_white_toasted']);
+      expect(result.suggestions.map((f) => f.food?.key), ['butter_salted']);
+      expect(result.detail, contains('verify: incomplete'));
     },
   );
 
   test('failed verification keeps the first usable result', () async {
     replies = [
-      items([row('Café')]),
+      items([drink('Café')]),
       PlatformException(code: 'bad_args'),
     ];
     final result = await SystemFoodVision(db, channel: channel).analyse(photo);
@@ -166,7 +170,7 @@ void main() {
     replies = [
       chicken,
       verdicts([true]),
-      items([row('Café')]),
+      items([drink('Café')]),
       verdicts([true]),
     ];
     final vision = SystemFoodVision(db, channel: channel);
@@ -190,7 +194,7 @@ void main() {
 
   test('two angles belong to the same meal and never double counts', () async {
     replies = [
-      items([row('Café')]),
+      items([drink('Café')]),
       verdicts([true]),
     ];
     final result = await SystemFoodVision(
@@ -210,8 +214,8 @@ void main() {
         items([
           row('Pão torrado', count: 2),
           row('Manteiga'),
-          row('Café expresso'),
-          row('Café com leite', count: 1),
+          drink('Café expresso'),
+          drink('Café com leite', count: 1),
           row('Feijão encarnado', count: 2),
           row('Alface', count: 3),
           row('Tomate', count: 3),
@@ -236,9 +240,9 @@ void main() {
 
   test('espresso and café com leite together keep one coffee', () async {
     replies = [
-      items([row('Café expresso'), row('Café com leite')]),
+      items([drink('Café expresso'), drink('Café com leite')]),
       verdicts([true, true]),
-      items([row('Café com leite'), row('Café expresso')]),
+      items([drink('Café com leite'), drink('Café expresso')]),
       verdicts([true, true]),
     ];
     final vision = SystemFoodVision(db, channel: channel);
@@ -267,14 +271,14 @@ void main() {
     expect(prompt, contains('"checks"'));
   });
 
-  test('verdicts must cover every index and be booleans', () {
+  test('verdicts are per index; omitted or non-boolean ones are null', () {
     expect(parseFoodVerifyAnswer(verdicts([true, false]), 2), [true, false]);
-    expect(parseFoodVerifyAnswer(verdicts([true]), 2), isNull);
+    expect(parseFoodVerifyAnswer(verdicts([true]), 2), [true, null]);
     expect(parseFoodVerifyAnswer('{"items":[]}', 1), isNull);
-    expect(
-      parseFoodVerifyAnswer('{"checks":[{"i":0,"visible":1}]}', 1),
-      isNull,
-    );
+    expect(parseFoodVerifyAnswer('not JSON', 1), isNull);
+    expect(parseFoodVerifyAnswer('{"checks":[{"i":0,"visible":1}]}', 1), [
+      null,
+    ]);
   });
 
   test('non-unit foods ignore the model count; unit foods keep it', () {
@@ -328,5 +332,114 @@ void main() {
       ),
       isNull,
     );
+  });
+
+  // ------------------------------------------------------------ trust rules
+
+  test(
+    'croissant case: towel and napkin dropped, generic names flagged',
+    () async {
+      replies = [
+        items([
+          row('Sanduíche', where: 'centre of plate'),
+          drink('Bebida'),
+          row('Toalha', where: 'under the plate'),
+          row('Guardanapo', where: 'left edge'),
+        ]),
+        verdicts([true, true]),
+      ];
+      final result = await SystemFoodVision(
+        db,
+        channel: channel,
+      ).analyse(photo);
+      expect(result.foods.map((f) => f.label), ['Sanduíche', 'Bebida']);
+      expect(result.foods.every((f) => f.needsChoice), isTrue);
+      expect(result.foods.every((f) => f.food == null), isTrue);
+      expect(result.suggestions, isEmpty);
+      expect(result.confirmedEmpty, isFalse);
+      expect(result.detail, contains('dropped non-food: Toalha, Guardanapo'));
+      expect(result.detail, contains('generic: Sanduíche, Bebida'));
+      // Non-food items never reach the verification prompt.
+      expect(calls[1]['prompt'], isNot(contains('Toalha')));
+      expect(calls[1]['prompt'], contains('0: Sanduíche'));
+    },
+  );
+
+  test(
+    'pasta case: beer without a container is a suggestion, not a food',
+    () async {
+      replies = [
+        items([
+          row('Massa cozida', where: 'centre of plate'),
+          row('Cerveja', where: 'top right'),
+          drink('Café expresso'),
+          row('Fiambre', where: 'beside the pasta'),
+        ]),
+        verdicts([true, true, true, true]),
+      ];
+      final result = await SystemFoodVision(
+        db,
+        channel: channel,
+      ).analyse(photo);
+      expect(result.foods.map((f) => f.label), isNot(contains('Cerveja')));
+      expect(result.suggestions.map((f) => f.label), ['Cerveja']);
+      // The model's own confirmation of the beer is not evidence of a container.
+      expect(result.foods.map((f) => f.food?.key), contains('espresso'));
+    },
+  );
+
+  test('a drink without container evidence goes to suggestions', () async {
+    replies = [
+      items([row('Sumo de laranja', where: 'on the table')]),
+      verdicts([true]),
+    ];
+    final result = await SystemFoodVision(db, channel: channel).analyse(photo);
+    expect(result.foods, isEmpty);
+    expect(result.suggestions.single.label, contains('Sumo'));
+    expect(result.confirmedEmpty, isFalse);
+  });
+
+  test('an item without a where goes to suggestions, not totals', () async {
+    replies = [
+      items([
+        row('Pão torrado', where: ''),
+        row('Manteiga', where: 'on the bread'),
+      ]),
+      verdicts([true, true]),
+    ];
+    final result = await SystemFoodVision(db, channel: channel).analyse(photo);
+    expect(result.foods.map((f) => f.food?.key), ['butter_salted']);
+    expect(result.suggestions.map((f) => f.food?.key), ['bread_white_toasted']);
+  });
+
+  test(
+    'unparsed verification still applies the drink container rule',
+    () async {
+      replies = [
+        items([
+          row('Pão torrado'),
+          drink('Café expresso', count: 1)..['where'] = 'counter',
+        ]),
+        'not JSON',
+      ];
+      final result = await SystemFoodVision(
+        db,
+        channel: channel,
+      ).analyse(photo);
+      expect(result.detail, contains('verify: unparsed'));
+      expect(result.foods.map((f) => f.food?.key), ['bread_white_toasted']);
+      expect(result.suggestions.map((f) => f.food?.key), ['espresso']);
+    },
+  );
+
+  test('only non-food items is not a confirmed empty meal', () async {
+    replies = [
+      items([row('Toalha'), row('Mesa', where: 'bottom')]),
+    ];
+    final result = await SystemFoodVision(db, channel: channel).analyse(photo);
+    expect(result.foods, isEmpty);
+    expect(result.confirmedEmpty, isFalse);
+    expect(calls, hasLength(1));
+    expect(result.detail, contains('dropped non-food: Toalha, Mesa'));
   });
 }

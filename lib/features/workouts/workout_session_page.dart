@@ -334,6 +334,14 @@ class _SessionExerciseCard extends StatelessWidget {
   final Future<void> Function(ExerciseSet, bool) onToggle;
   final Future<void> Function(ExerciseSet) onEdit;
 
+  /// Planned reps of the next set (the first not yet completed, else the
+  /// first). Holds are timed and have no rep target, so they return null.
+  int? get _plannedReps {
+    if (exerciseKey.contains('plank') || sets.isEmpty) return null;
+    final next = sets.firstWhere((s) => !s.completed, orElse: () => sets.first);
+    return next.targetReps;
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = stringsOf(context);
@@ -372,6 +380,7 @@ class _SessionExerciseCard extends StatelessWidget {
                       builder: (_) => MotionCoachPage(
                         exerciseKey: exerciseKey,
                         exerciseName: name,
+                        targetReps: _plannedReps,
                       ),
                     ),
                   ),

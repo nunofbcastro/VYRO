@@ -90,7 +90,7 @@ void main() {
     tester,
   ) async {
     final db = await pump(tester, 'goblet_squat');
-    expect(find.text('Iniciar série'), findsOneWidget);
+    expect(find.text('Preparar posição'), findsOneWidget);
     expect(find.textContaining('de lado'), findsOneWidget);
     expect(find.text('Ainda sem análises deste exercício.'), findsOneWidget);
     await dispose(tester, db);
@@ -100,7 +100,7 @@ void main() {
     tester,
   ) async {
     final db = await pump(tester, 'calf_raise');
-    expect(find.text('Iniciar série'), findsNothing);
+    expect(find.text('Preparar posição'), findsNothing);
     expect(
       find.text('Ainda não há análise por câmara para este exercício.'),
       findsOneWidget,

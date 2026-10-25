@@ -7,20 +7,34 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../../app/app_services.dart';
 import '../../../app/l10n/strings.dart';
+import '../../../core/ai/on_device_llm.dart';
 import '../../../core/ui/vyro_ui.dart';
 import '../exercise_analysis/exercise_analysis_engine.dart';
 import '../exercise_registry/exercise_analysis_registry.dart';
+import '../feedback_engine/coach_llm_phrases.dart';
+import '../feedback_engine/coach_voice_settings.dart';
+import '../feedback_engine/coach_voice_tts.dart';
 import '../feedback_engine/feedback_engine.dart';
+import '../feedback_engine/voice_coach.dart';
 import '../movement_patterns/movement_pattern.dart';
 import '../repetition_counter/rep_counter_engine.dart';
 import '../pose_detection/pose_detection_service.dart';
 import '../pose_detection/pose_models.dart';
 import '../workout_analysis_history/motion_history_repository.dart';
+import 'positioning_guide.dart';
+import 'positioning_overlay.dart';
+import 'coach_voice_sheet.dart';
+import 'preview_geometry.dart';
 import 'skeleton_painter.dart';
 import 'motion_sampling_policy.dart';
 import '../video/video_analysis_page.dart';
 
-enum _Stage { setup, running, paused, done }
+/// [positioning]: camera open, ghost guide and framing check, no counting.
+enum _Stage { setup, positioning, running, paused, done }
+
+/// Preference key for the spoken coach ("Modo PT"), stored in the local
+/// key/value table. Value `'on'` or `'off'`; absent means off.
+const kVoiceCoachPreferenceKey = 'motion_voice_coach_v1';
 
 /// Camera set with live rep counting and feedback for one exercise.
 ///
@@ -34,11 +48,17 @@ class MotionCoachPage extends StatefulWidget {
     required this.exerciseName,
     this.registry,
     this.detectorFactory,
+    this.targetReps,
   });
 
   final String exerciseKey;
   final String exerciseName;
   final ExerciseAnalysisRegistry? registry;
+
+  /// Planned reps for the set, used by the spoken coach for milestones
+  /// ("Metade feita!", "Última!"). Null or <= 0 means no target: the coach
+  /// then announces every five reps instead.
+  final int? targetReps;
 
   /// Override for tests or alternative detectors.
   final PoseDetectionService Function()? detectorFactory;
@@ -62,6 +82,12 @@ class _MotionCoachPageState extends State<MotionCoachPage>
       );
   late final MovementPattern? _pattern = _config.resolve();
 
+  /// The planned target, or null when absent or not positive.
+  int? get _plannedReps {
+    final target = widget.targetReps;
+    return target != null && target > 0 ? target : null;
+  }
+
   _Stage _stage = _Stage.setup;
   CameraController? _camera;
   List<CameraDescription> _cameras = const [];
@@ -71,7 +97,17 @@ class _MotionCoachPageState extends State<MotionCoachPage>
   final _feedback = FeedbackEngine();
   final _clock = Stopwatch();
   final _tts = FlutterTts();
-  bool _audio = false;
+  late final CoachVoiceTts _voiceTts = CoachVoiceTts(_tts);
+  // Spoken coach: `_coach` queues phrases; `_speaking` is true while one
+  // phrase is playing and the next one starts when it completes.
+  VoiceCoach? _coach;
+  bool _coachOn = false, _coachLoaded = false, _speaking = false;
+  // Voice, speed, pitch and the on-device phrase toggle (see coach_voice_settings).
+  CoachVoiceSettings _voiceSettings = const CoachVoiceSettings();
+  // Generated encouragement phrases for one exercise and target, reused across
+  // sets on this screen.
+  String? _phraseBankKey;
+  List<String>? _phraseBank;
   bool _busy = false;
   Duration _lastFrame = Duration.zero;
   BodyPose? _pose;
@@ -83,10 +119,60 @@ class _MotionCoachPageState extends State<MotionCoachPage>
   String? _error;
   Timer? _ticker;
 
+  // Positioning guide: framing checks run in positioning and while counting.
+  // `_setOffset` is the clock value when counting started, so the set timer
+  // starts at 0 while the clock (also used by the voice coach) keeps running.
+  FramingTracker? _framingTracker;
+  FramingAssessment? _framing;
+  bool _guideVisible = false;
+  bool? _tipsOpen;
+  Duration _setOffset = Duration.zero;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _tts.setCompletionHandler(_onSpeechEnded);
+    _tts.setCancelHandler(_onSpeechEnded);
+    _tts.setErrorHandler((_) => _onSpeechEnded());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_coachLoaded) return;
+    _coachLoaded = true;
+    unawaited(_loadCoachPreference());
+  }
+
+  Future<void> _loadCoachPreference() async {
+    final database = AppServicesScope.of(context).database;
+    try {
+      final stored = await database.getPreference(kVoiceCoachPreferenceKey);
+      if (mounted && stored == 'on') setState(() => _coachOn = true);
+    } catch (_) {
+      // Preference unavailable: keep the default (off).
+    }
+    final settings = await coachVoicePreferencesFor(database).load();
+    if (mounted) _voiceSettings = settings;
+  }
+
+  /// Applies the saved voice, speed and pitch to the set's engine.
+  Future<void> _applyVoice(VyroStrings t) => _voiceTts.apply(
+    _voiceSettings,
+    t.isEnglish ? VoiceLanguage.english : VoiceLanguage.portuguese,
+  );
+
+  /// "Voz do treinador" sheet. Settings are reloaded when it closes.
+  Future<void> _openVoiceSheet() async {
+    _silence(clearQueue: true);
+    await showCoachVoiceSheet(context);
+    if (!mounted) return;
+    final database = AppServicesScope.of(context).database;
+    _voiceSettings = await coachVoicePreferencesFor(database).load();
+    if (mounted) {
+      await _applyVoice(stringsOf(context));
+    }
   }
 
   @override
@@ -102,6 +188,13 @@ class _MotionCoachPageState extends State<MotionCoachPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_stage == _Stage.positioning) {
+      if (state == AppLifecycleState.inactive ||
+          state == AppLifecycleState.paused) {
+        unawaited(_cancelPositioning());
+      }
+      return;
+    }
     if (_stage != _Stage.running && _stage != _Stage.paused) return;
     if (state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused) {
@@ -136,7 +229,8 @@ class _MotionCoachPageState extends State<MotionCoachPage>
       imageFormatGroup: detector.imageFormat,
     );
     await controller.initialize();
-    if (!mounted) {
+    // Also stop when the user left positioning while the camera was starting.
+    if (!mounted || _stage == _Stage.setup || _stage == _Stage.done) {
       await controller.dispose();
       return;
     }
@@ -144,9 +238,126 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     setState(() => _camera = controller);
   }
 
-  Future<void> _start() async {
+  /// Opens the camera before the set. The ghost guide and the framing check
+  /// run on the live preview; nothing is counted until [_start].
+  Future<void> _openPositioning() async {
     final pattern = _pattern;
     if (pattern == null) return;
+    final t = stringsOf(context);
+    setState(() {
+      _error = null;
+      _stage = _Stage.positioning;
+      _framingTracker = FramingTracker(pattern);
+      _framing = null;
+      _guideVisible = true;
+      _tipsOpen = null;
+      _setOffset = Duration.zero;
+    });
+    final coach = VoiceCoach(
+      language: t.isEnglish ? VoiceLanguage.english : VoiceLanguage.portuguese,
+      enabled: _coachOn,
+      cueText: t.get,
+    )..startSet(targetReps: _plannedReps);
+    _coach = coach;
+    _silence(clearQueue: true);
+    _clock
+      ..reset()
+      ..start();
+    final llm = AppServicesScope.of(context).llm;
+    try {
+      await _applyVoice(t);
+      await _openCamera();
+    } catch (_) {
+      await _releaseCamera();
+      _clock
+        ..stop()
+        ..reset();
+      if (mounted) {
+        setState(() {
+          _stage = _Stage.setup;
+          _error = 'maCameraError';
+        });
+      }
+    }
+    // Background request: the set does not wait for it, and the fixed
+    // milestone phrases are used until (and unless) the bank arrives.
+    if (_coachOn && _voiceSettings.llmPhrases != false) {
+      unawaited(_loadPhraseBank(coach, t, llm));
+    }
+  }
+
+  /// Asks the on-device model for encouragement phrases. Ignored when the
+  /// screen has moved on, when the coach is off, or when the model fails.
+  Future<void> _loadPhraseBank(
+    VoiceCoach coach,
+    VyroStrings t,
+    OnDeviceLlm llm,
+  ) async {
+    final target = _plannedReps;
+    final language = t.isEnglish
+        ? VoiceLanguage.english
+        : VoiceLanguage.portuguese;
+    final key = '${widget.exerciseKey}|$target|${language.name}';
+    final cached = _phraseBank;
+    if (_phraseBankKey == key && cached != null) {
+      coach.setEncouragementBank(cached);
+      return;
+    }
+    final bank = await CoachLlmPhrases(llm).generatePhraseBank(
+      exerciseName: widget.exerciseName,
+      targetReps: target,
+      language: language,
+    );
+    if (!mounted || !identical(_coach, coach) || bank.isEmpty) return;
+    _phraseBankKey = key;
+    _phraseBank = bank;
+    coach.setEncouragementBank(bank);
+  }
+
+  /// Back to setup without counting; releases the camera.
+  Future<void> _cancelPositioning() async {
+    if (_stage != _Stage.positioning) return;
+    _runId++;
+    _silence(clearQueue: true);
+    _clock
+      ..stop()
+      ..reset();
+    _framingTracker = null;
+    if (mounted) {
+      setState(() {
+        _stage = _Stage.setup;
+        _framing = null;
+      });
+    }
+    await _releaseCamera();
+  }
+
+  /// Starts counting. The camera is already open from [_openPositioning].
+  Future<void> _start() async {
+    final pattern = _pattern;
+    if (pattern == null || _stage != _Stage.positioning) return;
+    _silence(clearQueue: true);
+    if (_camera == null) {
+      try {
+        await _openCamera();
+      } catch (_) {
+        await _releaseCamera();
+        if (mounted) {
+          setState(() {
+            _stage = _Stage.setup;
+            _error = 'maCameraError';
+          });
+        }
+        return;
+      }
+    }
+    _coach?.setTarget(_plannedReps);
+    _setOffset = _clock.elapsed;
+    _clock.start();
+    _ticker?.cancel();
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted && _stage == _Stage.running) setState(() {});
+    });
     setState(() {
       _error = null;
       _runId++;
@@ -163,20 +374,95 @@ class _MotionCoachPageState extends State<MotionCoachPage>
       _message = null;
       _update = null;
       _startedAt = DateTime.now();
+      _guideVisible = false;
+      _stage = _Stage.running;
     });
+  }
+
+  void _toggleGuide() => setState(() => _guideVisible = !_guideVisible);
+
+  /// Framing check on one pose. Updates the status line and the ghost, hides
+  /// the ghost once the body is ready and stable, and (before a set only)
+  /// speaks the top framing issue or the start cue.
+  void _checkFraming(BodyPose? pose, Duration now) {
+    final tracker = _framingTracker;
+    if (tracker == null) return;
+    final assessment = tracker.update(pose);
+    final wasReady = _framing?.status == FramingStatus.ready;
+    final ready = assessment.status == FramingStatus.ready;
+    setState(() {
+      _pose = pose;
+      _framing = assessment;
+      if (ready && !wasReady) _guideVisible = false;
+    });
+    if (_stage != _Stage.positioning) return;
+    if (ready) {
+      _voice(VoiceObservation(at: now, ready: true));
+    } else {
+      final top = assessment.top;
+      if (top != null) {
+        _voice(
+          VoiceObservation(
+            at: now,
+            framingKey: framingMessageKey(
+              top,
+              PositioningGuide.forPattern(_pattern!),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  // ------------------------------------------------------------ voice coach
+
+  void _onSpeechEnded() {
+    if (!_speaking) return;
+    _speaking = false;
+    _speakNext();
+  }
+
+  /// Plays the next queued phrase if nothing is being said.
+  void _speakNext() {
+    final coach = _coach;
+    if (coach == null || !_coachOn || _speaking || !mounted) return;
+    final phrase = coach.next(_clock.elapsed);
+    if (phrase == null) return;
+    _speaking = true;
+    unawaited(
+      _tts.speak(phrase.text).catchError((_) {
+        _onSpeechEnded();
+        return 0;
+      }),
+    );
+  }
+
+  /// Stops the current phrase at once; [clearQueue] also drops queued ones.
+  /// The set itself keeps running.
+  void _silence({required bool clearQueue}) {
+    if (clearQueue) _coach?.clear();
+    _speaking = false;
+    unawaited(_tts.stop().catchError((_) => 0));
+  }
+
+  void _voice(VoiceObservation observation) {
+    final coach = _coach;
+    if (coach == null || !_coachOn) return;
+    coach.observe(observation);
+    _speakNext();
+  }
+
+  Future<void> _setCoachOn(bool on) async {
+    _coachOn = on;
+    _coach?.setEnabled(on);
+    if (!on) _silence(clearQueue: true);
+    if (mounted) setState(() {});
     try {
-      await _tts.setLanguage(stringsOf(context).isEnglish ? 'en-US' : 'pt-PT');
-      await _openCamera();
-      _clock
-        ..reset()
-        ..start();
-      _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
-        if (mounted && _stage == _Stage.running) setState(() {});
-      });
-      setState(() => _stage = _Stage.running);
+      await AppServicesScope.of(
+        context,
+      ).database.setPreference(kVoiceCoachPreferenceKey, on ? 'on' : 'off');
     } catch (_) {
-      await _releaseCamera();
-      if (mounted) setState(() => _error = 'maCameraError');
+      // The toggle still works for this session.
     }
   }
 
@@ -206,6 +492,7 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     _runId++;
     _engine?.interrupt();
     _readiness.reset();
+    _framingTracker?.reset();
     _lens = _lens == CameraLensDirection.front
         ? CameraLensDirection.back
         : CameraLensDirection.front;
@@ -254,13 +541,53 @@ class _MotionCoachPageState extends State<MotionCoachPage>
         _summary = summary;
         _stage = _Stage.done;
       });
+      _voice(VoiceObservation(at: _clock.elapsed, summary: summary));
+      if (_coachOn && _voiceSettings.llmPhrases != false) {
+        _requestCommentary(summary, t, services.llm);
+      }
     }
+  }
+
+  /// Asks the on-device model for a short comment on the finished set. The
+  /// factual summary is already spoken; the comment is queued after it only
+  /// if it arrives in time and the coach is still on.
+  void _requestCommentary(SetSummary summary, VyroStrings t, OnDeviceLlm llm) {
+    final coach = _coach;
+    if (coach == null) return;
+    final facts = CoachSetFacts.fromSummary(
+      summary,
+      exerciseName: widget.exerciseName,
+      targetReps: _plannedReps,
+      observations: {
+        for (final event in summary.events) t.get(event.messageKey),
+      }.toList(),
+    );
+    final language = t.isEnglish
+        ? VoiceLanguage.english
+        : VoiceLanguage.portuguese;
+    unawaited(() async {
+      final text = await CoachLlmPhrases(
+        llm,
+      ).generateCommentary(facts: facts, language: language);
+      if (text == null ||
+          !mounted ||
+          _stage != _Stage.done ||
+          !_coachOn ||
+          !identical(_coach, coach)) {
+        return;
+      }
+      coach.addCommentary(text, _clock.elapsed);
+      _speakNext();
+    }());
   }
 
   /// Camera callback: drops frames while busy or within [_frameInterval].
   void _onFrame(CameraImage image, CameraDescription description) {
     final camera = _camera;
-    if (camera == null || _stage != _Stage.running) return;
+    if (camera == null ||
+        (_stage != _Stage.running && _stage != _Stage.positioning)) {
+      return;
+    }
     if (_busy) {
       _skipped++;
       return;
@@ -288,7 +615,13 @@ class _MotionCoachPageState extends State<MotionCoachPage>
           _latencyMs = _latencyMs == 0
               ? watch.elapsedMilliseconds.toDouble()
               : _latencyMs * 0.9 + watch.elapsedMilliseconds * 0.1;
-          if (!mounted || _stage != _Stage.running || run != _runId) return;
+          if (!mounted || run != _runId) return;
+          if (_stage == _Stage.positioning) {
+            _checkFraming(pose, now);
+            return;
+          }
+          if (_stage != _Stage.running) return;
+          _checkFraming(pose, now);
           if (!_readiness.accept(pose, _pattern!.requiredLandmarks, now)) {
             final message = _feedback.offer(const [
               FeedbackCandidate('mfAdjustCamera', FeedbackLevel.setup),
@@ -297,18 +630,26 @@ class _MotionCoachPageState extends State<MotionCoachPage>
               _pose = pose;
               if (message != null) _message = message;
             });
+            _voice(VoiceObservation(at: now, feedback: message));
             return;
           }
           final update = _engine!.process(pose, now);
           final message = _feedback.offer(update.feedback, now);
-          if (message != null && _audio) {
-            unawaited(_tts.speak(stringsOf(context).get(message.key)));
-          }
           setState(() {
             _pose = pose;
             _update = update;
             if (message != null) _message = message;
           });
+          _voice(
+            VoiceObservation(
+              at: now,
+              ready: true,
+              repEvent: update.repEvent?.type,
+              fullReps: update.fullReps,
+              partialReps: update.partialReps,
+              feedback: message,
+            ),
+          );
           if (update.setEnded) unawaited(_finish());
         })
         .catchError((_) {})
@@ -333,9 +674,9 @@ class _MotionCoachPageState extends State<MotionCoachPage>
       footer: pattern == null || kIsWeb
           ? null
           : VyroPrimaryButton(
-              label: t.get('maStart'),
+              label: t.get('maPrepare'),
               icon: Icons.videocam_rounded,
-              onPressed: _start,
+              onPressed: _openPositioning,
             ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
@@ -411,82 +752,146 @@ class _MotionCoachPageState extends State<MotionCoachPage>
 
   // --------------------------------------------------------------- camera
 
+  static const _sidePanelWidth = 280.0;
+
   Widget _cameraView(BuildContext context) {
     final t = stringsOf(context);
     final camera = _camera;
     final update = _update;
     final pattern = _pattern!;
-    final elapsed = _clock.elapsed;
+    final elapsed = _clock.elapsed - _setOffset;
     final hold = pattern.mode == PatternMode.hold;
+    final landscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
+    final positioning = _stage == _Stage.positioning;
+    final guide = PositioningGuide.forPattern(pattern);
+    final framing = _framing;
+    final framingTop = framing?.top;
+    final framingReady = framing?.status == FramingStatus.ready;
+    final framingText = framing == null
+        ? t.get('frWaiting')
+        : framingReady
+        ? t.get('frReady')
+        : framingTop == null
+        ? t.get('frHold')
+        : t.get(framingMessageKey(framingTop, guide));
+    final showPill = positioning || _guideVisible;
+    // Landscape: the controls move to a side panel so the preview keeps the
+    // full height. The preview, top bar and banner stop at the panel edge.
+    final sideInset = landscape ? _sidePanelWidth : 0.0;
+    final topInset = MediaQuery.paddingOf(context).top;
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
-        fit: StackFit.expand,
         children: [
-          if (camera != null && camera.value.isInitialized)
-            _Preview(
-              camera: camera,
-              pose: _pose,
-              mirror:
-                  camera.description.lensDirection == CameraLensDirection.front,
-            )
-          else
-            const Center(child: CircularProgressIndicator()),
+          Positioned.fill(
+            right: sideInset,
+            child: camera != null && camera.value.isInitialized
+                ? _Preview(
+                    camera: camera,
+                    pose: _pose,
+                    mirror:
+                        camera.description.lensDirection ==
+                        CameraLensDirection.front,
+                    guide: _guideVisible ? guide : null,
+                    guideAligned: framing?.issues.isEmpty ?? false,
+                  )
+                : const Center(child: CircularProgressIndicator()),
+          ),
           // Top bar.
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-              child: Row(
-                children: [
-                  _GlassIcon(
-                    icon: Icons.close_rounded,
-                    tooltip: t.get('maFinish'),
-                    onTap: _finish,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.exerciseName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                          ),
-                        ),
-                        _QualityPill(
-                          quality: update?.detectionQuality ?? 0,
-                          latencyMs: _latencyMs,
-                        ),
-                      ],
+          Positioned(
+            left: 0,
+            top: 0,
+            right: sideInset,
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                child: Row(
+                  children: [
+                    _GlassIcon(
+                      icon: Icons.close_rounded,
+                      tooltip: t.get(positioning ? 'frBack' : 'maFinish'),
+                      onTap: positioning ? _cancelPositioning : _finish,
                     ),
-                  ),
-                  _GlassIcon(
-                    icon: _audio
-                        ? Icons.volume_up_rounded
-                        : Icons.volume_off_rounded,
-                    tooltip: t.get('maAudio'),
-                    onTap: () => setState(() => _audio = !_audio),
-                  ),
-                  const SizedBox(width: 8),
-                  _GlassIcon(
-                    icon: Icons.cameraswitch_rounded,
-                    tooltip: t.get('maFlip'),
-                    onTap: _flip,
-                  ),
-                ],
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.exerciseName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 16,
+                            ),
+                          ),
+                          if (!positioning)
+                            _QualityPill(
+                              quality: update?.detectionQuality ?? 0,
+                              latencyMs: _latencyMs,
+                            ),
+                        ],
+                      ),
+                    ),
+                    if (_coachOn) ...[
+                      _GlassIcon(
+                        icon: Icons.speaker_notes_off_rounded,
+                        tooltip: t.isEnglish ? 'Silence' : 'Silenciar',
+                        onTap: () => _silence(clearQueue: true),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    _GlassIcon(
+                      icon: _coachOn
+                          ? Icons.record_voice_over_rounded
+                          : Icons.voice_over_off_rounded,
+                      tooltip: t.isEnglish ? 'Trainer voice' : 'Modo PT (voz)',
+                      onTap: () => _setCoachOn(!_coachOn),
+                    ),
+                    const SizedBox(width: 8),
+                    if (_coachOn) ...[
+                      _GlassIcon(
+                        icon: Icons.tune_rounded,
+                        tooltip: t.get('coachVoiceTitle'),
+                        onTap: _openVoiceSheet,
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    _GlassIcon(
+                      icon: Icons.accessibility_new_rounded,
+                      tooltip: t.get(
+                        _guideVisible ? 'maHideGuide' : 'maShowGuide',
+                      ),
+                      onTap: _toggleGuide,
+                    ),
+                    const SizedBox(width: 8),
+                    _GlassIcon(
+                      icon: Icons.cameraswitch_rounded,
+                      tooltip: t.get('maFlip'),
+                      onTap: _flip,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
+          // Framing status line: before a set, and while the guide is shown.
+          if (showPill)
+            Positioned(
+              left: 16,
+              right: 16 + sideInset,
+              top: topInset + 76,
+              child: FramingStatusPill(text: framingText, ready: framingReady),
+            ),
           // Feedback banner.
           Positioned(
             left: 16,
-            right: 16,
-            top: MediaQuery.paddingOf(context).top + 76,
+            right: 16 + sideInset,
+            top: topInset + 76 + (showPill ? 60 : 0),
             child: AnimatedSwitcher(
               duration: VyroMotion.normal,
               child:
@@ -499,123 +904,255 @@ class _MotionCoachPageState extends State<MotionCoachPage>
                     ),
             ),
           ),
-          // Bottom panel.
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: VyroGlass(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(28),
+          // Controls: bottom panel (portrait) or side panel (landscape).
+          if (landscape)
+            Positioned(
+              top: 0,
+              bottom: 0,
+              right: 0,
+              width: _sidePanelWidth,
+              child: VyroGlass(
+                borderRadius: BorderRadius.zero,
+                child: SafeArea(
+                  left: false,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                    child: positioning
+                        ? _positioningPanel(
+                            context,
+                            t: t,
+                            guide: guide,
+                            landscape: true,
+                          )
+                        : _controlsPanel(
+                            context,
+                            t: t,
+                            hold: hold,
+                            elapsed: elapsed,
+                            update: update,
+                            landscape: true,
+                          ),
+                  ),
+                ),
               ),
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                VyroAnimatedNumber(
-                                  value: hold
-                                      ? (update?.holdTime.inMilliseconds ?? 0) /
-                                            1000
-                                      : (update?.fullReps ?? 0).toDouble(),
-                                  suffix: hold ? ' s' : '',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displaySmall
-                                      ?.copyWith(
-                                        fontSize: 54,
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                ),
-                                Text(
-                                  hold
-                                      ? t.get('maHold')
-                                      : '${t.get('maReps')} · ${update?.partialReps ?? 0} ${t.get('maPartial')}',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
+            )
+          else
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: VyroGlass(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 16),
+                    child: positioning
+                        ? _positioningPanel(
+                            context,
+                            t: t,
+                            guide: guide,
+                            landscape: false,
+                          )
+                        : _controlsPanel(
+                            context,
+                            t: t,
+                            hold: hold,
+                            elapsed: elapsed,
+                            update: update,
+                            landscape: false,
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                _clockText(elapsed),
-                                style: Theme.of(context).textTheme.headlineSmall
-                                    ?.copyWith(
-                                      fontFeatures: const [
-                                        FontFeature.tabularFigures(),
-                                      ],
-                                    ),
-                              ),
-                              const SizedBox(height: 6),
-                              _StatusChip(
-                                status:
-                                    update?.status ?? AnalysisStatus.waiting,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      if (!hold) ...[
-                        const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(99),
-                          child: LinearProgressIndicator(
-                            value: (update?.progress ?? 0).clamp(0.0, 1.0),
-                            minHeight: 6,
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: _stage == _Stage.running
-                                  ? _pause
-                                  : _resume,
-                              icon: Icon(
-                                _stage == _Stage.running
-                                    ? Icons.pause_rounded
-                                    : Icons.play_arrow_rounded,
-                              ),
-                              label: Text(
-                                t.get(
-                                  _stage == _Stage.running
-                                      ? 'maPause'
-                                      : 'maResume',
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: FilledButton.icon(
-                              onPressed: _finish,
-                              icon: const Icon(Icons.stop_rounded),
-                              label: Text(t.get('maFinish')),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
+    );
+  }
+
+  /// Before a set: a collapsible tips card, the framing note, and the start and
+  /// back buttons. Collapsed by default in portrait so the ghost stays visible.
+  Widget _positioningPanel(
+    BuildContext context, {
+    required VyroStrings t,
+    required PositioningGuide guide,
+    required bool landscape,
+  }) {
+    final theme = Theme.of(context);
+    final open = _tipsOpen ?? landscape;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => setState(() => _tipsOpen = !open),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    t.get('maSetupTitle'),
+                    style: theme.textTheme.titleSmall,
+                  ),
+                ),
+                Icon(
+                  open ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (open) ...[
+          const SizedBox(height: 4),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.3,
+            ),
+            child: SingleChildScrollView(
+              child: PositioningTipsCard(
+                rows: [
+                  for (final tip in guide.tips)
+                    (guideTipIcon(tip), t.get(guideTipKey(tip))),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(t.get('frGuideNote'), style: theme.textTheme.bodySmall),
+        ],
+        const SizedBox(height: 12),
+        FilledButton.icon(
+          onPressed: _start,
+          icon: const Icon(Icons.play_arrow_rounded),
+          label: Text(t.get('frStart')),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: _cancelPositioning,
+          icon: const Icon(Icons.arrow_back_rounded),
+          label: Text(t.get('frBack')),
+        ),
+      ],
+    );
+  }
+
+  /// Count, clock, status and buttons. Shared by the portrait bottom panel and
+  /// the landscape side panel.
+  Widget _controlsPanel(
+    BuildContext context, {
+    required VyroStrings t,
+    required bool hold,
+    required Duration elapsed,
+    required AnalysisUpdate? update,
+    required bool landscape,
+  }) {
+    final theme = Theme.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  VyroAnimatedNumber(
+                    value: hold
+                        ? (update?.holdTime.inMilliseconds ?? 0) / 1000
+                        : (update?.fullReps ?? 0).toDouble(),
+                    suffix: hold ? ' s' : '',
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      fontSize: landscape ? 40 : 54,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  Text(
+                    hold
+                        ? t.get('maHold')
+                        : '${t.get('maReps')} · ${update?.partialReps ?? 0} ${t.get('maPartial')}',
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  _clockText(elapsed),
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                _StatusChip(status: update?.status ?? AnalysisStatus.waiting),
+              ],
+            ),
+          ],
+        ),
+        if (!hold) ...[
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(99),
+            child: LinearProgressIndicator(
+              value: (update?.progress ?? 0).clamp(0.0, 1.0),
+              minHeight: 6,
+            ),
+          ),
+        ],
+        const SizedBox(height: 16),
+        if (landscape) ...[
+          OutlinedButton.icon(
+            onPressed: _stage == _Stage.running ? _pause : _resume,
+            icon: Icon(
+              _stage == _Stage.running
+                  ? Icons.pause_rounded
+                  : Icons.play_arrow_rounded,
+            ),
+            label: Text(
+              t.get(_stage == _Stage.running ? 'maPause' : 'maResume'),
+            ),
+          ),
+          const SizedBox(height: 10),
+          FilledButton.icon(
+            onPressed: _finish,
+            icon: const Icon(Icons.stop_rounded),
+            label: Text(t.get('maFinish')),
+          ),
+        ] else
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _stage == _Stage.running ? _pause : _resume,
+                  icon: Icon(
+                    _stage == _Stage.running
+                        ? Icons.pause_rounded
+                        : Icons.play_arrow_rounded,
+                  ),
+                  label: Text(
+                    t.get(_stage == _Stage.running ? 'maPause' : 'maResume'),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _finish,
+                  icon: const Icon(Icons.stop_rounded),
+                  label: Text(t.get('maFinish')),
+                ),
+              ),
+            ],
+          ),
+      ],
     );
   }
 
@@ -727,7 +1264,7 @@ class _MotionCoachPageState extends State<MotionCoachPage>
       footer: VyroPrimaryButton(
         label: t.get('maStart'),
         icon: Icons.replay_rounded,
-        onPressed: _start,
+        onPressed: _openPositioning,
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
@@ -825,26 +1362,51 @@ class _Preview extends StatelessWidget {
     required this.camera,
     required this.pose,
     required this.mirror,
+    this.guide,
+    this.guideAligned = false,
   });
   final CameraController camera;
   final BodyPose? pose;
   final bool mirror;
 
+  /// Ghost positioning guide, drawn in the same box as the image.
+  final PositioningGuide? guide;
+  final bool guideAligned;
+
   @override
   Widget build(BuildContext context) {
-    final size = camera.value.previewSize!;
-    // Portrait: the preview is rotated, so width/height swap.
-    final w = size.height, h = size.width;
+    final value = camera.value;
+    // Same orientation source as CameraPreview, so both pick the same ratio.
+    final orientation =
+        value.previewPauseOrientation ??
+        value.lockedCaptureOrientation ??
+        value.deviceOrientation;
+    final box = uprightPreviewSize(
+      value.previewSize ?? const Size(640, 480),
+      landscape: isLandscapePreview(orientation),
+    );
     return ClipRect(
       child: FittedBox(
         fit: BoxFit.cover,
         child: SizedBox(
-          width: w,
-          height: h,
+          width: box.width,
+          height: box.height,
           child: Stack(
             fit: StackFit.expand,
             children: [
               CameraPreview(camera),
+              if (guide case final positioning?)
+                IgnorePointer(
+                  child: CustomPaint(
+                    painter: PositioningOverlayPainter(
+                      guide: positioning,
+                      aligned: guideAligned,
+                      accent: Theme.of(context).colorScheme.primary,
+                      neutral: Colors.white,
+                      mirror: mirror,
+                    ),
+                  ),
+                ),
               CustomPaint(
                 painter: SkeletonPainter(
                   pose: pose,

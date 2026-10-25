@@ -6,6 +6,7 @@ import 'package:image/image.dart' as img;
 
 import '../../../core/ai/on_device_llm.dart';
 import '../data/food_database.dart';
+import 'food_screening.dart';
 import 'food_vision.dart';
 import 'photo_quality.dart';
 import 'portion_estimate.dart';
@@ -58,41 +59,66 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
         confirmedEmpty: true,
       );
     }
-    // Verification only removes draft items; it never adds foods. If its
-    // answer is missing or incomplete, the draft is kept unchanged.
-    var foods = draft;
+    // Non-food objects (towel, napkin, plate...) never reach verification.
+    final split = dropNonFood(draft);
+    final kept = split.kept;
+    if (kept.isEmpty) {
+      return FoodVisionResult(
+        foods: const [],
+        source: VisionSource.systemAi,
+        detail: _joinDetail([first, _droppedLine(split.dropped)]),
+      );
+    }
+    // Verification only removes items; it never adds foods. An omitted
+    // verdict sends that item to suggestions; an unparseable answer keeps the
+    // first list (the where/container rules still apply).
+    List<bool?>? verdicts;
     var detail = first;
     try {
       final verify = await _ask(
         jpeg,
-        buildFoodVerifyPrompt(draft),
+        buildFoodVerifyPrompt(kept),
         secondPhoto: secondPhoto,
       );
-      final verdicts = parseFoodVerifyAnswer(verify, draft.length);
-      if (verdicts == null) {
-        detail = '$first\n---\nverify: unparsed\n$verify';
-      } else {
-        foods = [
-          for (var i = 0; i < draft.length; i++)
-            if (verdicts[i]) draft[i],
-        ];
-        detail = '$first\n---\n$verify';
+      verdicts = parseFoodVerifyAnswer(verify, kept.length);
+      detail = verdicts == null
+          ? '$first\n---\nverify: unparsed\n$verify'
+          : '$first\n---\n$verify';
+      if (verdicts != null && verdicts.contains(null)) {
+        detail = '$detail\nverify: incomplete, omitted items to suggestions';
       }
     } catch (error) {
       detail = '$first\n---\nverify: failed ($error)';
     }
-    final sane = applyDrinkSanity(foods);
-    if (sane.length != foods.length) {
+    final decision = decideDraft(kept, verdicts: verdicts);
+    final sane = applyDrinkSanity(decision.foods);
+    if (sane.length != decision.foods.length) {
       detail = '$detail\nsanity: one coffee kept';
     }
-    foods = sane;
+    final generic = [
+      for (final f in kept)
+        if (f.needsChoice) f.label,
+    ];
     return FoodVisionResult(
-      foods: foods,
+      foods: sane,
+      suggestions: decision.suggestions,
       source: VisionSource.systemAi,
-      detail: detail,
-      confirmedEmpty: foods.isEmpty,
+      confirmedEmpty: decision.confirmedEmpty && sane.isEmpty,
+      detail: _joinDetail([
+        detail,
+        _droppedLine(split.dropped),
+        if (generic.isNotEmpty) 'generic: ${generic.join(', ')}',
+        if (decision.suggestions.isNotEmpty)
+          'suggestions: ${decision.suggestions.map((f) => f.label).join(', ')}',
+      ]),
     );
   }
+
+  static String? _droppedLine(List<String> dropped) =>
+      dropped.isEmpty ? null : 'dropped non-food: ${dropped.join(', ')}';
+
+  static String _joinDetail(List<String?> lines) =>
+      lines.whereType<String>().join('\n');
 
   /// One multimodal request, retried once (AICore can be briefly busy).
   Future<String> _ask(
@@ -186,9 +212,10 @@ List<dynamic>? _photoItems(String raw) {
   return items is List ? items : null;
 }
 
-/// One verdict per draft index, or null unless every index has a boolean
-/// verdict. A partial answer is treated as unparseable, so the draft stays.
-List<bool>? parseFoodVerifyAnswer(String raw, int draftCount) {
+/// One verdict per draft index: `true`/`false` as answered, `null` when the
+/// index is missing or its verdict is not a boolean. Null overall (unparseable)
+/// only when the answer has no "checks" list at all.
+List<bool?>? parseFoodVerifyAnswer(String raw, int draftCount) {
   final checks = _jsonObject(raw)?['checks'];
   if (checks is! List) return null;
   final verdicts = List<bool?>.filled(draftCount, null);
@@ -200,8 +227,7 @@ List<bool>? parseFoodVerifyAnswer(String raw, int draftCount) {
     if (i < 0 || i >= draftCount) continue;
     verdicts[i] = visible;
   }
-  if (verdicts.any((v) => v == null)) return null;
-  return [for (final v in verdicts) v!];
+  return verdicts;
 }
 
 enum CoffeeKind { espresso, withMilk }
@@ -269,7 +295,16 @@ List<DetectedFood> parseFoodPhotoAnswer(String raw, FoodDatabase db) {
         ? rawCount.round().clamp(1, 20)
         : null;
     final size = PortionSize.parse(item['size']);
-    final food = db.match(name);
+    final whereRaw = item['where'] is String
+        ? (item['where'] as String).trim()
+        : '';
+    final where = whereRaw.isEmpty
+        ? null
+        : (whereRaw.length > 80 ? whereRaw.substring(0, 80) : whereRaw);
+    // A generic name ("bebida") has no sensible database match: the user
+    // must name the food, so it gets no nutrients from a random match.
+    final needsChoice = genericKindOf(name) != null;
+    final food = needsChoice ? null : db.match(name);
     // Only foods with a per-unit portion can be counted. For beans, lettuce,
     // rice or sauces a "2 unid." from the model must not double anything.
     final count = food != null && food.portionUnits == null ? 1 : modelCount;
@@ -298,6 +333,8 @@ List<DetectedFood> parseFoodPhotoAnswer(String raw, FoodDatabase db) {
             ? prev.count
             : count,
         size: (prev.size?.factor ?? 1) >= size.factor ? prev.size : size,
+        where: prev.where ?? where,
+        needsChoice: prev.needsChoice,
         source: VisionSource.systemAi,
       );
       continue;
@@ -309,6 +346,8 @@ List<DetectedFood> parseFoodPhotoAnswer(String raw, FoodDatabase db) {
         grams: grams,
         count: count,
         size: size,
+        where: where,
+        needsChoice: needsChoice,
         source: VisionSource.systemAi,
       ),
     );
@@ -389,12 +428,14 @@ class FoodVisionPipeline implements MultiPhotoFoodVisionService {
       }
       if (secondary.value != null) {
         final result = secondary.value!;
+        final missing = primary.error is MissingPluginException;
         return _withQuality(
           result.withNote(
-            primary.error is MissingPluginException
-                ? result.note
-                : 'systemFailed',
+            missing ? result.note : 'systemFailed',
             detail: '${primary.error}',
+            failure: missing
+                ? VisionFailure.unavailable
+                : VisionFailure.fromError(primary.error),
           ),
           quality,
         );
@@ -402,9 +443,17 @@ class FoodVisionPipeline implements MultiPhotoFoodVisionService {
       throw LlmException('vision_failed: ${primary.error}; ${secondary.error}');
     }
     final secondary = await offline;
-    if (secondary.value == null)
+    if (secondary.value == null) {
       throw LlmException('vision_failed: ${secondary.error}');
-    return _withQuality(secondary.value!, quality);
+    }
+    // Downloading the model counts as busy; unsupported or off as unavailable.
+    final failure = status == LlmStatus.downloading
+        ? VisionFailure.busy
+        : VisionFailure.unavailable;
+    return _withQuality(
+      secondary.value!.withNote(null, failure: failure),
+      quality,
+    );
   }
 }
 

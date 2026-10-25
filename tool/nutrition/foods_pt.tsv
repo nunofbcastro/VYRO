@@ -20,11 +20,11 @@ chicken_breast_roasted	Peito de frango grelhado	Chicken breast, grilled	usda	Chi
 chicken_thigh_roasted	Coxa de frango assada	Chicken thigh, roasted	usda	Chicken, broilers or fryers, thigh, meat only, cooked, roasted	int	carne	100	1 coxa (sem osso)	1 thigh (boneless)	coxa de frango|frango assado|chicken thigh|roast chicken	Fried chicken|Crispy fried chicken	1
 turkey_breast_roasted	Peito de peru grelhado	Turkey breast, grilled	usda	Turkey, retail parts, breast, meat only, cooked, roasted	int	carne	120	1 bife	1 fillet	peru|bife de peru|peito de peru|turkey		1
 beef_sirloin_broiled	Bife de vaca grelhado	Beef steak, grilled	usda	"Beef, top sirloin, steak, separable lean only, trimmed to 1/8"" fat, all grades, cooked, broiled"	int	carne	150	1 bife	1 steak	bife|bife de vaca|vaca|novilho|carne de vaca|steak|beef	Carne asada|Bistek|Shashlik|Churrasco|Steak de Burgo|Delmonico steak|Roast beef|Bife a cavalo|Steak Diane|Bulgogi	1
-beef_ground_patty	Hambúrguer de vaca	Beef burger patty	usda	Beef, ground, 85% lean meat / 15% fat, patty, cooked, broiled	int	carne	120	1 hambúrguer	1 patty	hambúrguer|carne picada|burger|ground beef	Hamburger|Cheeseburger|Meatball|Kofta|Qeema	1
+beef_ground_patty	Hambúrguer de vaca	Beef burger patty	usda	Beef, ground, 85% lean meat / 15% fat, patty, cooked, broiled	int	carne	120	1 hambúrguer	1 patty	hambúrguer|burger|hambúrguer de vaca	Hamburger|Cheeseburger|Meatball|Kofta|Qeema	1
 pork_loin_broiled	Lombo de porco grelhado	Pork loin, grilled	usda	Pork, fresh, loin, center loin (chops), bone-in, separable lean only, cooked, broiled	int	carne	130	1 costeleta/bife	1 chop	porco|lombo|bifana|costeleta|febras|pork|pork chop	Pork tenderloin sandwich|Gyro|Souvlaki|Tonkatsu|Kushikatsu	1
 salmon_cooked	Salmão grelhado	Salmon, grilled	usda	Fish, salmon, Atlantic, farmed, cooked, dry heat	int	peixe	150	1 posta	1 fillet	salmão|salmon		1
 cod_cooked	Pescada/peixe branco cozido	Cod, cooked	usda	Fish, cod, Atlantic, cooked, dry heat	int	peixe	150	1 posta	1 fillet	peixe branco|peixe cozido|cod|white fish	Fried fish	1
-tuna_canned_water	Atum em água (lata)	Tuna in water, canned	usda	Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)	int	peixe	80	1 lata escorrida	1 can, drained	atum|atum em lata|tuna	Tuna fish sandwich	
+tuna_canned_water	Atum em água (lata)	Tuna in water, canned	usda	Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)	int	peixe	80	1 lata escorrida	1 can, drained	atum|atum em lata|tuna|atum natural|atum em conserva	Tuna fish sandwich	
 sardines_canned_oil	Sardinhas em óleo (lata)	Sardines in oil, canned	usda	Fish, sardine, Atlantic, canned in oil, drained solids with bone	int	peixe	90	1 lata escorrida	1 can, drained	sardinhas|sardines		
 shrimp_cooked	Camarão cozido	Shrimp, cooked	usda	Crustaceans, shrimp, cooked	int	peixe	100	1 dose	1 serving	camarão|gambas|shrimp|prawns	White boiled shrimp|Garlic butter shrimp	
 egg_boiled	Ovo cozido	Boiled egg	usda	Egg, whole, cooked, hard-boiled	int	ovos	50	1 ovo	1 egg	ovo|ovo cozido|egg|boiled egg	Deviled egg|Tea egg	1
@@ -59,7 +59,7 @@ apple_raw	Maçã	Apple	usda	Apples, raw, with skin (Includes foods for USDA's Fo
 banana_raw	Banana	Banana	usda	Bananas, raw	int	fruta	118	1 banana média	1 medium banana	banana		1
 orange_raw	Laranja	Orange	usda	Oranges, raw, all commercial varieties	int	fruta	140	1 laranja média	1 medium orange	laranja|orange		1
 pear_raw	Pera	Pear	usda	Pears, raw	int	fruta	170	1 pera média	1 medium pear	pera|pear		1
-strawberries_raw	Morangos	Strawberries	usda	Strawberries, raw	int	fruta	150	1 taça	1 cup	morangos|strawberries		
+strawberries_raw	Morangos	Strawberries	usda	Strawberries, raw	int	fruta	150	1 taça	1 cup	morangos|morango|strawberries|strawberry		
 grapes_raw	Uvas	Grapes	usda	Grapes, red or green (European type, such as Thompson seedless), raw	int	fruta	120	1 cacho pequeno	1 small bunch	uvas|grapes		
 kiwi_raw	Kiwi	Kiwi	usda	Kiwifruit, green, raw	int	fruta	75	1 kiwi	1 kiwi	kiwi		1
 watermelon_raw	Melancia	Watermelon	usda	Watermelon, raw	int	fruta	250	1 fatia	1 slice	melancia|watermelon		1
@@ -89,7 +89,7 @@ pork_tenderloin_cooked	Lombinho de porco	Pork tenderloin, cooked	ciqual	28203	eu
 rabbit_cooked	Coelho	Rabbit, cooked	ciqual	34002	pt	carne	150	1 dose	1 serving	coelho|coelho guisado|rabbit		
 beans_white_cooked	Feijão branco cozido	White beans, cooked	ciqual	20502	pt	leguminosas	130	1 dose	1 serving	feijão branco|feijoada à transmontana|white beans		
 bread_country	Pão caseiro/de mistura	Country bread	ciqual	7100	pt	padaria	50	1 fatia grossa	1 thick slice	pão caseiro|pão de mistura|pão alentejano|pão rústico|country bread		1
-croissant	Croissant	Croissant	ciqual	7603	eu	padaria	60	1 croissant	1 croissant	croissant|croissã		1
+croissant	Croissant	Croissant	ciqual	7603	eu	padaria	60	1 croissant	1 croissant	croissant|croissã|croissant simples|croissant normal		1
 omelette	Omelete simples	Plain omelette	ciqual	22500	eu	ovos	120	1 omelete (2 ovos)	1 omelette (2 eggs)	omelete|omeleta|omelette	Omelette	1
 paella	Arroz de marisco/paella	Seafood rice / paella	ciqual	25242	pt	pratos	300	1 prato	1 plate	arroz de marisco|arroz de mariscos|paella|seafood rice	Portuguese seafood rice|Paella	
 soup_vegetables	Sopa de legumes	Vegetable soup	ciqual	25903	pt	pratos	300	1 prato de sopa	1 bowl	sopa|sopa de legumes|creme de legumes|caldo verde|vegetable soup	Minestrone	
@@ -105,7 +105,7 @@ tangerine_raw	Tangerina/clementina	Tangerine	ciqual	13024	pt	fruta	70	1 tangerin
 plum_raw	Ameixa	Plum	ciqual	13100	pt	fruta	60	1 ameixa	1 plum	ameixa|ameixas|plum		1
 sheep_cheese	Queijo de ovelha curado	Cured sheep cheese	ciqual	12747	pt	laticínios	30	1 fatia	1 slice	queijo de ovelha|queijo da serra|queijo curado|sheep cheese		1
 red_wine	Vinho tinto	Red wine	ciqual	5214	pt	bebidas	150	1 copo	1 glass	vinho|vinho tinto|wine|red wine		1
-beer	Cerveja	Beer	ciqual	5001	pt	bebidas	200	1 imperial (200 ml)	1 small glass (200 ml)	cerveja|imperial|fino|beer		1
+beer	Cerveja	Beer	ciqual	5001	pt	bebidas	200	1 imperial (200 ml)	1 small glass (200 ml)	cerveja|imperial|fino|beer|super bock|sagres|bock		1
 beans_carioca_cooked	Feijão carioca cozido	Carioca beans, cooked	taco	561	br	leguminosas	140	1 concha	1 ladle	feijão carioca|carioca beans	Feijoada|Red beans and rice|Frijoles charros|Feijão de óleo de palma	
 feijoada	Feijoada	Feijoada	taco	540	br	pratos	250	1 prato fundo	1 deep plate	feijoada|feijoada brasileira		
 farofa	Farofa temperada	Seasoned farofa	taco	131	br	cereais	30	2 colheres de sopa	2 tablespoons	farofa		
@@ -129,8 +129,33 @@ requeijao_cremoso	Requeijão cremoso	Requeijão (creamy cheese)	taco	468	br	lati
 baiao_de_dois	Baião de dois	Baião de dois	taco	527	br	pratos	250	1 prato	1 plate	baião de dois|baiao de dois		
 salpicao_frango	Salpicão de frango	Chicken salpicão	taco	547	br	pratos	150	1 dose	1 serving	salpicão|salpicao		
 collards_sauteed	Couve refogada	Sautéed collard greens	taco	116	br	legumes	80	1 dose	1 serving	couve refogada|couve à mineira|collard greens		
-guarana_soda	Refrigerante de guaraná	Guaraná soda	taco	481	br	bebidas	350	1 lata	1 can	guaraná|guarana|refrigerante de guaraná		1
+guarana_soda	Guaraná	Guaraná soda	taco	481	br	bebidas	350	1 lata	1 can	guaraná|guarana|guaraná antárctica		1
 espresso	Café expresso (bica)	Espresso coffee	ciqual	18071	pt	bebidas	30	1 café	1 espresso	café|cafe|café expresso|bica|cimbalino|expresso|espresso|coffee|cafezinho|chávena de café		1
 coffee_with_milk	Café com leite (galão, meia de leite)	Coffee with milk	ciqual	18151	pt	bebidas	200	1 chávena/copo	1 cup	café com leite|galão|meia de leite|meia-de-leite|cappuccino|latte|café com leite e espuma|coffee with milk|café au lait		1
 tea	Chá (sem açúcar)	Tea (unsweetened)	ciqual	18020	eu	bebidas	250	1 chávena	1 cup	chá|cha|chá preto|chá verde|infusão|tisana|tea		1
 jam	Doce/compota de fruta	Fruit jam	ciqual	31006	eu	outros	15	1 colher de sobremesa	1 tbsp	doce|compota|doce de fruta|marmelada|geleia|doce de morango|jam|marmalade		
+cabbage_red_raw	Couve roxa	Red cabbage, raw	usda	Cabbage, red, raw	int	legumes	70	1 dose	1 serving	couve roxa|couve roxo|repolho roxo|red cabbage		
+croissant_ham_cheese	Croissant misto (fiambre e queijo)	Ham and cheese croissant	ciqual	25418	eu	padaria	110	1 croissant misto	1 ham and cheese croissant	croissant misto|croissant de fiambre|croissant de fiambre e queijo|croissant de presunto e queijo|croissant com fiambre|ham and cheese croissant		1
+sandwich_ham_cheese	Sandes mista (fiambre e queijo)	Ham and cheese sandwich	ciqual	25661	eu	padaria	120	1 sandes	1 sandwich	sanduíche mista|sanduiche mista|sandes mista|sandwich mista|tosta mista|ham and cheese sandwich		1
+hamburger_bun	Pão de hambúrguer	Hamburger bun	ciqual	7259	eu	padaria	60	1 pão	1 bun	pão de hambúrguer|pao de hamburguer|pão para hambúrguer|pão de hot dog|hamburger bun|burger bun		1
+cheeseburger_whole	Hambúrguer no pão (cheeseburger)	Cheeseburger, with condiments	usda	Fast foods, cheeseburger; single, regular patty, with condiments	int	pratos	150	1 hambúrguer completo	1 cheeseburger	hambúrguer no pão|hamburguer no pao|hambúrguer completo|hamburguer completo|hambúrguer com queijo|hamburguer com queijo|cheeseburger|cheese burger		1
+beef_ground_raw	Carne picada de vaca (crua)	Ground beef, raw (15% fat)	ciqual	6254	eu	carne	100	1 porção	1 portion	carne picada|carne picada de vaca|carne moída|carne moida|carne moída de vaca|carne moida de vaca|picada de vaca|ground beef|minced beef		
+pork_ground_raw	Carne picada de porco (crua)	Ground pork, raw	usda	Pork, fresh, ground, raw	int	carne	100	1 porção	1 portion	carne picada de porco|carne moída de porco|carne moida de porco|ground pork		
+beef_steak_fried	Bife de vaca frito	Pan-fried beef steak	ciqual	6200	eu	carne	150	1 bife	1 steak	bife frito|bife de vaca frito|bife na frigideira|bife de vaca na frigideira|steak frito|fried steak		1
+chicken_nuggets	Nuggets de frango	Chicken nuggets	ciqual	36027	eu	carne	90	6 nuggets	6 nuggets	nuggets|nugget|nuggets de frango|nuggets de galinha|nuggets de pollo|chicken nuggets		6
+croquete_meat_fried	Croquete de carne (frito)	Fried meat croquette	taco	388	br	salgados	50	1 croquete	1 croquette	croquete|croquetes|croquete de carne|croquete frito|croquete de carne frito|croquettes de carne		1
+pizza_pepperoni	Pizza de pepperoni	Pepperoni pizza	ciqual	25462	eu	pratos	110	1 fatia grande	1 large slice	pizza de pepperoni|pizza pepperoni|pepperoni pizza|pepperoni|pizza de salame|pizza de salami		1
+cured_ham	Presunto (curado)	Cured ham	ciqual	28800	eu	carne	30	2 fatias finas	2 thin slices	presunto|presunto curado|presunto cru|jamón|jamon|jambon cru|jambon sec|jamon curado		2
+mayonnaise	Maionese	Mayonnaise	ciqual	11054	eu	gorduras	10	1 colher de sobremesa	1 dessert spoon	maionese|mayonese|mayonnaise|mayo		
+cooking_cream	Natas (para cozinha)	Cooking cream	usda	Cream, fluid, light whipping	int	laticínios	30	2 colheres de sopa	2 tablespoons	natas|nata|natas para cozinhar|nata para cozinhar|creme de leite|cooking cream|whipping cream		
+burger_sauce	Molho de hambúrguer (tipo Big Mac)	Burger sauce	ciqual	11196	eu	gorduras	15	1 colher de sopa	1 tablespoon	molho big mac|molho de hambúrguer|molho de hamburguer|molho especial|molho para hambúrguer|molho para hamburguer|molho burger|big mac sauce|burger sauce|special sauce		
+brown_gravy	Molho castanho (gravy)	Brown gravy (beef)	usda	Gravy, beef, canned, ready-to-serve	int	outros	50	2 colheres de sopa	2 tablespoons	molho de cerveja|molho castanho|molho de carne|gravy|brown gravy|beef gravy		
+sparkling_water	Água com gás	Sparkling mineral water	ciqual	18046	eu	bebidas	250	1 copo	1 glass	água com gás|agua com gas|água mineral com gás|agua mineral com gas|água gaseificada|agua gaseificada|água das pedras|agua das pedras|água das pedras limão|agua das pedras limao|água das pedras com limão|agua das pedras com limao|sparkling water		
+still_water	Água mineral (plana)	Still mineral water	ciqual	18045	eu	bebidas	250	1 copo	1 glass	água|agua|água mineral|agua mineral|água natural|agua natural|água plana|still water|water		
+lemonade	Limonada	Lemonade, sweetened	ciqual	18010	eu	bebidas	250	1 copo	1 glass	limonada|limonade		
+cider	Sidra	Cider	ciqual	5003	eu	bebidas	250	1 copo	1 glass	sidra|cidra|cidre|cider|somersby		
+liqueur	Licor	Liqueur	ciqual	1003	eu	bebidas	50	1 cálice (50 ml)	1 liqueur glass (50 ml)	licor|licor beirão|licor beirao|beirão|beirao|liqueur		
+cola_coca	Coca-cola	Cola	ciqual	18018	pt	bebidas	330	1 lata	1 can	coca-cola|coca cola|coca|cola|coke		1
+orange_soft_drink	Refresco de laranja (tipo Sumol)	Orange soft drink	ciqual	2012	eu	bebidas	250	1 copo	1 glass	sumol|laranjada|fanta|fanta laranja|orange soda		
+tortilla_chips	Tortilha de milho (nachos)	Tortilla chips, nacho cheese	usda	Snacks, tortilla chips, nacho cheese	int	outros	30	1 mão-cheia	1 handful	tortilha de milho|tortilhas de milho|tortilha|nachos|doritos|tortilla chips|chips de tortilha|nacho cheese|tortillas		
+pasta_bolognese	Massa à bolonhesa	Pasta bolognese	ciqual	25085	eu	cereais	300	1 prato	1 plate	massa com carne|massa à bolonhesa|massa a bolonhesa|massa bolonhesa|esparguete à bolonhesa|esparguete com carne|bolonhesa|bolognese|spaghetti bolognese		

@@ -14,15 +14,20 @@ cloud, no paid API, the photo stays in memory. Full details:
 
 - `lib/features/nutrition/food_vision/food_vision.dart`: `FoodVisionService`
   and `MultiPhotoFoodVisionService` interfaces; `DetectedFood` (label, food,
-  grams, count, size, `VisionSource`, `corroborated`, `confidence` kept in the
-  model but not shown); `FoodVisionResult` (foods, suggestions, typed
-  `confirmedEmpty`, `notes` set, `detail` for diagnostics); `fuseVisionResults`.
-- `portion_estimate.dart`: `PortionSize` (small 0.6, medium 1, large 1.5) and
-  `estimatedGrams`, the only place where grams are computed from a food.
+  grams, count, size, `where`, `needsChoice`, `VisionSource`, `corroborated`,
+  `confidence` kept in the model but not shown); `FoodVisionResult` (foods,
+  suggestions, typed `confirmedEmpty`, `failure` (`VisionFailure`: busy,
+  unavailable, other), `notes` set, `detail` for diagnostics); `fuseVisionResults`.
+- `food_screening.dart`: pure trust rules: `dropNonFood`, `isNonFoodName`,
+  `genericKindOf`, `mentionsContainer`, `isDrinkItem`, `decideDraft` (verdicts,
+  missing where, drinks without container → suggestions), `normaliseFoodName`.
+- `portion_estimate.dart`: `PortionSize` (small 0.6, medium 1, large 1.5),
+  `estimatedGrams`, the only place where grams are computed from a food;
+  `isWholeDish` (pizza, burger, francesinha, `pratos`) never shrinks below 1.
 - `system_food_vision.dart`: `SystemFoodVision` (Gemini Nano via
   `vyro/on_device_llm` → `describeImage`), `buildFoodPhotoPrompt`,
-  `buildFoodVerifyPrompt`, `parseFoodVerifyAnswer`, `parseFoodPhotoAnswer`,
-  `applyDrinkSanity`, and `FoodVisionPipeline`.
+  `buildFoodVerifyPrompt`, `parseFoodVerifyAnswer` (per-index, null when
+  omitted), `parseFoodPhotoAnswer`, `applyDrinkSanity`, and `FoodVisionPipeline`.
 - `region_food_vision.dart`: `RegionFoodVision`, AIY Food V1 dish classifier
   over 26 crops in a persistent worker isolate; labels → foods via
   `vision_labels`; `interpretRegions` (pure, testable).
@@ -79,11 +84,27 @@ cloud, no paid API, the photo stays in memory. Full details:
   *suggestions* (outside the totals) until the user accepts them. A confirmed
   empty review never brings offline foods back.
 - Verification, not review: after the first answer the same photo is checked
-  once with `buildFoodVerifyPrompt`, which lists the draft items by index and
-  asks for `{"checks":[{"i":0,"visible":true}]}`. It never adds or renames
-  foods. Only `visible: true` items are kept. An answer that is not valid JSON
-  or lacks a verdict for any index keeps the first list ("verify: unparsed").
-  All items rejected is a confirmed empty meal.
+  once with `buildFoodVerifyPrompt`, which lists the kept draft items by index
+  and asks for `{"checks":[{"i":0,"visible":true}]}`. It never adds or renames
+  foods. `visible: false` drops an item; an omitted index or non-boolean verdict
+  sends it to suggestions ("verify: incomplete"). An answer that is not valid
+  JSON or has no `checks` list keeps the first list ("verify: unparsed").
+  All items explicitly rejected is a confirmed empty meal.
+- Trust rules (`food_screening.dart`, pure, see `docs/FOOD_VISION.md`), in order:
+  1. Non-food names (towel, napkin, plate alone, cup alone, table, menu...) are
+     dropped before verification and listed as `dropped non-food:` in detail.
+  2. Generic names (bebida, comida, sanduíche, molho, carne, drink, food...) stay
+     in the review with `needsChoice`, no database match, no nutrients. The
+     card asks "Que bebida?" and opens the picker pre-filled with the name.
+  3. A drink (category `bebidas` or drink words) stays only when its `where`
+     names a container (copo, chávena, caneca, garrafa, lata, taça, jarro, cup,
+     glass, mug, bottle, can); otherwise it goes to suggestions.
+  4. An item with no `where` goes to suggestions (generic names excepted).
+  Rules 1, 2, 3 and 4 also apply when verification is unparsed.
+- Failure UX: `VisionFailure.fromError` maps busy/quota to `busy` and
+  unsupported/unavailable/downloadable to `unavailable`. An empty review that is
+  not a confirmed empty meal shows a card with the reason and "Tentar de novo"
+  (re-runs the same photo). A "only non-food items" answer is not confirmed empty.
 - Sanity rules after verification (`applyDrinkSanity`, pure Dart): one cup is
   one drink. If an espresso-type and a coffee-with-milk-type are both listed,
   only the first one listed is kept. Count only applies to foods with
@@ -124,8 +145,11 @@ percentages.
 
 - `test/vision_resilience_test.dart`: piece counts, confirmed empty review,
   independent failures, offline-only suggestions, region coordinates, quality.
-- `test/food_database_test.dart`, `test/system_food_vision_test.dart`,
-  `test/region_food_vision_test.dart`, `test/photo_food_page_test.dart`.
+- `test/food_screening_test.dart`: non-food list, generic names, container
+  rule, verdict rules, whole-dish portions, failure mapping, pipeline failure.
+- `test/food_database_test.dart`, `test/system_food_vision_test.dart` (croissant
+  and pasta cases), `test/region_food_vision_test.dart`,
+  `test/photo_food_page_test.dart` (generic prompt, failure card, retry).
 - `test/food_model_probe_test.dart` runs the real model on a host image when
   `VYRO_FOOD_IMAGE` is set.
 - Tests use simulated model answers and fakes. They do not measure accuracy on

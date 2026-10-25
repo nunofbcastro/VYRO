@@ -12,7 +12,7 @@ The app connects to Open Food Facts only when the user starts a barcode lookup a
 
 ## Camera and photo processing
 
-Barcode scanning and optional movement analysis access the camera only after the user starts those screens. Food-photo classification runs on-device. Classification hypotheses are uncertain and do not determine ingredients, serving mass, calories, allergens, technique, or safety. Selected food photos, a second photo or a region you select are held temporarily in memory for review; the app does not retain or upload them. Camera frames for movement analysis are processed in memory and are not saved.
+Barcode scanning and optional movement analysis access the camera only after the user starts those screens. Food-photo classification runs on-device. Classification hypotheses are uncertain and do not determine ingredients, serving mass, calories, allergens, technique, or safety. Selected food photos, a second photo or a region you select are held temporarily in memory for review; the app does not retain or upload them. Camera frames for movement analysis are processed in memory and are not saved. The spoken trainer ("Modo PT") uses only text-to-speech voices installed on the phone; voices that need the internet are not used. Its generated encouragement phrases and comments are written by the phone's own on-device model from the exercise name and the set counts; the text is not sent anywhere and is not stored.
 
 Analysing a video from your gallery is optional. The app copies the chosen video to a temporary file, reads frames from it on the device, and deletes the temporary copy when the analysis ends or the screen is closed. The original video is not changed, and no frames or videos are stored or uploaded.
 

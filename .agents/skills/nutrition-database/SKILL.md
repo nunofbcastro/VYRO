@@ -16,7 +16,7 @@ VYRO never invents calories. Every food in the app comes from
 1. A curated list, `tool/nutrition/foods_pt.tsv`, has one row per VYRO food:
    `key, name_pt, name_en, source, source_ref, region, category, portion_g,
    portion_pt, portion_en, aliases, vision_labels, portion_units` (lists
-   separated by `|`). `portion_units` is optional (70 of 135 rows): the number
+   separated by `|`). `portion_units` is optional (80 of 160 rows): the number
    of pieces that `portion_g` represents (3 sardines = 120 g ⇒ `3`). Leave it
    empty for foods that are not counted in pieces (rice, soups, sauces); the app
    then ignores piece counts for that food. The build copies it to

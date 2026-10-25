@@ -11,6 +11,7 @@ import '../../core/platform/image_temp_file.dart';
 import '../../core/ui/vyro_ui.dart';
 import 'data/food_database.dart';
 import 'domain/food_product.dart' show dayKey;
+import 'food_vision/food_screening.dart';
 import 'food_vision/food_vision.dart';
 import 'food_vision/region_food_vision.dart';
 import 'food_vision/system_food_vision.dart';
@@ -96,6 +97,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
   int _analysisId = 0;
   final _reviewClock = Stopwatch();
   int _removed = 0, _added = 0;
+  VisionFailure? _failure;
 
   @override
   void initState() {
@@ -141,6 +143,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
         _items = null;
         _result = null;
         _error = null;
+        _failure = null;
         _busy = true;
       });
       await _analyse(bytes, analysisId);
@@ -174,6 +177,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
       setState(() {
         _db = db;
         _result = result;
+        _failure = result.failure;
         _items = [for (final f in result.foods) _Item(f)];
         _removed = 0;
         _added = 0;
@@ -185,14 +189,31 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
       if (mounted && analysisId == _analysisId) {
         setState(() => _error = 'photoInvalidImage');
       }
-    } catch (_) {
+    } catch (error) {
       if (mounted && analysisId == _analysisId) {
         setState(() {
-          _error = 'photoModelError';
+          _failure = VisionFailure.fromError(error);
+          _result = null;
           _items = [];
         });
       }
     }
+  }
+
+  /// Runs the analysis again on the same photo (no new capture).
+  Future<void> _retry() async {
+    final photo = _photo;
+    if (photo == null || _busy || _saving) return;
+    final id = ++_analysisId;
+    setState(() {
+      _busy = true;
+      _error = null;
+      _failure = null;
+      _result = null;
+      _items = null;
+    });
+    await _analyse(photo, id);
+    if (mounted && id == _analysisId) setState(() => _busy = false);
   }
 
   Future<void> _change(_Item item) async {
@@ -645,7 +666,19 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
                 ],
               ),
             ],
-            if (items.isEmpty)
+            if (items.isEmpty && !(_result?.confirmedEmpty ?? false))
+              _FailureCard(
+                reason: t.get(switch (_failure) {
+                  VisionFailure.busy => 'photoFailBusy',
+                  VisionFailure.unavailable => 'photoFailUnavailable',
+                  VisionFailure.other => 'photoFailOther',
+                  null => 'photoNothingFound',
+                }),
+                hint: t.get('photoFailHint'),
+                retryLabel: t.get('photoRetry'),
+                onRetry: _busy || _saving || _photo == null ? null : _retry,
+              )
+            else if (items.isEmpty)
               _Notice(
                 icon: Icons.search_off_rounded,
                 text: t.get('photoNothingFound'),
@@ -705,6 +738,70 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
             ],
           ],
         ],
+      ),
+    );
+  }
+}
+
+String _askKey(GenericKind? kind) => switch (kind) {
+  GenericKind.drink => 'photoAskDrink',
+  GenericKind.sandwich => 'photoAskSandwich',
+  GenericKind.sauce => 'photoAskSauce',
+  GenericKind.meat => 'photoAskMeat',
+  GenericKind.fish => 'photoAskFish',
+  GenericKind.fruit => 'photoAskFruit',
+  GenericKind.dessert => 'photoAskDessert',
+  GenericKind.food || null => 'photoAskFood',
+};
+
+/// Shown when the review is empty and the photo was not a confirmed empty
+/// meal: says why (phone AI busy, unavailable, failed) and offers a retry on
+/// the same photo. Manual adding stays available below.
+class _FailureCard extends StatelessWidget {
+  const _FailureCard({
+    required this.reason,
+    required this.hint,
+    required this.retryLabel,
+    required this.onRetry,
+  });
+  final String reason;
+  final String hint;
+  final String retryLabel;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: VyroCard(
+        radius: 18,
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 18,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 10),
+                Expanded(child: Text(reason, style: theme.textTheme.bodySmall)),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(hint, style: theme.textTheme.bodySmall),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh_rounded),
+              label: Text(retryLabel),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1082,18 +1179,25 @@ class _FoodRowState extends State<_FoodRow> {
     final food = item.food;
     final detected = item.detected;
     final accent = food == null ? scheme.tertiary : scheme.primary;
-    final details = food == null
-        ? t.get('photoNoMatchRow')
-        : [
-            '${food.kcal.round()} kcal/100 g',
-            foodSourceTag(food),
-            if (detected.count != null && detected.count! > 1)
-              '${detected.count} ${t.get('pieces')}',
-            if (detected.source != VisionSource.user)
-              t.get(
-                detected.corroborated ? 'photoCorroborated' : 'photoUncertain',
-              ),
-          ].join(' · ');
+    final details = [
+      if (detected.where != null) detected.where!,
+      if (food == null)
+        t.get(detected.needsChoice ? 'photoGenericHint' : 'photoNoMatchRow')
+      else ...[
+        '${food.kcal.round()} kcal/100 g',
+        foodSourceTag(food),
+        if (detected.count != null && detected.count! > 1)
+          '${detected.count} ${t.get('pieces')}',
+        if (detected.source != VisionSource.user)
+          t.get(detected.corroborated ? 'photoCorroborated' : 'photoUncertain'),
+      ],
+    ].join(' · ');
+    // A generic name ("bebida") is shown as a question, not as a failed match.
+    final title =
+        food?.name(t.isEnglish) ??
+        (detected.needsChoice
+            ? t.get(_askKey(genericKindOf(detected.label)))
+            : detected.label);
     return VyroCard(
       radius: 20,
       padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
@@ -1124,7 +1228,7 @@ class _FoodRowState extends State<_FoodRow> {
                         children: [
                           Flexible(
                             child: Text(
-                              food?.name(t.isEnglish) ?? detected.label,
+                              title,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.titleSmall?.copyWith(

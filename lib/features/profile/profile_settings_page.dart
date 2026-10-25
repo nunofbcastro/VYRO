@@ -9,6 +9,7 @@ import '../../app/l10n/strings.dart';
 import '../../app/theme/appearance_sheet.dart';
 import '../../core/database/app_database.dart';
 import '../../core/ui/vyro_ui.dart';
+import '../motion_engine/workout_camera/coach_voice_sheet.dart';
 import '../workouts/plan_wizard_page.dart';
 
 class ProfileSettingsPage extends StatefulWidget {
@@ -97,6 +98,13 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                   title: t.get('language'),
                   value: settings.locale.languageCode == 'en' ? 'EN' : 'PT',
                   onTap: () => showAppearanceSheet(context),
+                ),
+                VyroListRow(
+                  icon: Icons.record_voice_over_outlined,
+                  iconColor: Theme.of(context).colorScheme.secondary,
+                  title: t.get('coachVoiceTitle'),
+                  subtitle: t.get('coachVoiceSubtitle'),
+                  onTap: () => showCoachVoiceSheet(context),
                 ),
               ],
             ),

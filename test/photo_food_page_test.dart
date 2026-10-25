@@ -12,6 +12,7 @@ import 'package:vyro/app/app_services.dart';
 import 'package:vyro/app/l10n/strings.dart';
 import 'package:vyro/app/theme/vyro_chrome.dart';
 import 'package:vyro/app/theme/vyro_theme.dart';
+import 'package:vyro/core/ai/on_device_llm.dart';
 import 'package:vyro/core/database/app_database.dart';
 import 'package:vyro/features/nutrition/data/food_database.dart';
 import 'package:vyro/features/nutrition/food_vision/food_vision.dart';
@@ -211,6 +212,86 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('open'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a generic name asks which food it is, with no database match', (
+    tester,
+  ) async {
+    vision.result = Future.value(
+      const FoodVisionResult(
+        source: VisionSource.systemAi,
+        foods: const [
+          DetectedFood(
+            label: 'Bebida',
+            grams: 100,
+            source: VisionSource.systemAi,
+            where: 'cup top-left',
+            needsChoice: true,
+          ),
+        ],
+      ),
+    );
+    await open(tester);
+    await choose(tester, first: true);
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Que bebida?'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Que bebida?'), findsOneWidget);
+    expect(find.textContaining('Nome demasiado geral'), findsOneWidget);
+    expect(find.textContaining('cup top-left'), findsOneWidget);
+    expect(find.textContaining('Sem correspondência'), findsNothing);
+    expect(find.text('Adicionar 1 ao diário'), findsNothing);
+  });
+
+  testWidgets('a busy phone AI explains itself and retries the same photo', (
+    tester,
+  ) async {
+    final pending = Completer<FoodVisionResult>();
+    vision.result = pending.future;
+    await open(tester);
+    await choose(tester, first: true);
+    pending.completeError(
+      const LlmException('generation_failed: quota exceeded'),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.text('A IA do telemóvel está ocupada. Tenta de novo daqui a pouco.'),
+      findsOneWidget,
+    );
+    await tester.scrollUntilVisible(
+      find.text('Adicionar alimento'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Adicionar alimento'), findsOneWidget);
+
+    vision.result = Future.value(meal(['espresso']));
+    await tester.ensureVisible(find.text('Tentar de novo'));
+    await tester.tap(find.text('Tentar de novo'));
+    await tester.pumpAndSettle();
+    expect(vision.calls, 2);
+    expect(find.text('Adicionar 1 ao diário'), findsOneWidget);
+    expect(find.text('Tentar de novo'), findsNothing);
+  });
+
+  testWidgets('a confirmed empty photo is not a failure: no retry offered', (
+    tester,
+  ) async {
+    vision.result = Future.value(
+      const FoodVisionResult(
+        source: VisionSource.systemAi,
+        foods: [],
+        confirmedEmpty: true,
+      ),
+    );
+    await open(tester);
+    await choose(tester, first: true);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Não identificámos'), findsOneWidget);
+    expect(find.text('Tentar de novo'), findsNothing);
   });
 }
 
