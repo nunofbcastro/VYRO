@@ -246,16 +246,45 @@ void main() {
       );
       expect(decision.decisions[2].action, ItemAction.dropped);
       expect(decision.decisions[2].reason, 'verify=false');
-      expect(decision.confirmedEmpty, isFalse);
     });
 
-    test('every item explicitly rejected is a confirmed empty meal', () {
+    // (b) One false among several: only that item is dropped.
+    test('one false among several drops only that item', () {
       final decision = decideDraft(
-        [item('Pão', where: 'plate')],
-        verdicts: [false],
+        [item('Bife'), item('Ovo'), item('Batata')],
+        verdicts: [true, false, true],
       );
-      expect(decision.foods, isEmpty);
-      expect(decision.confirmedEmpty, isTrue);
+      expect(decision.foods.map((f) => f.label), ['Bife', 'Batata']);
+      expect(decision.decisions[1].action, ItemAction.dropped);
+      expect(decision.decisions[1].reason, 'verify=false');
+    });
+
+    // (a) Regression (v0.6.4 real device: a steak in a pan showed an empty
+    // review). Verification that rejects every item no longer empties a
+    // non-empty draft: all items stay as uncertain.
+    test('every item rejected by verification is kept as uncertain', () {
+      final decision = decideDraft(
+        [item('Bife', where: 'pan centre'), item('Ovo')],
+        verdicts: [false, false],
+      );
+      expect(decision.foods.map((f) => f.label), ['Bife', 'Ovo']);
+      expect(
+        decision.decisions.map((d) => d.action),
+        everyElement(ItemAction.kept),
+      );
+      expect(
+        decision.decisions.map((d) => d.reason),
+        everyElement(contains('verify rejected all — kept as uncertain')),
+      );
+    });
+
+    test('a single rejected item is also kept as uncertain', () {
+      final decision = decideDraft([item('Café')], verdicts: [false]);
+      expect(decision.foods, hasLength(1));
+      expect(
+        decision.decisions.single.reason,
+        contains('verify rejected all — kept as uncertain'),
+      );
     });
 
     test('unparsed verification keeps the whole first list', () {
@@ -265,7 +294,17 @@ void main() {
       ]);
       expect(decision.foods, hasLength(2));
       expect(decision.decisions.first.reason, contains('verify unparsed'));
-      expect(decision.confirmedEmpty, isFalse);
+    });
+
+    // (e) The non-food filter looks at the item NAME only. A steak whose
+    // location says "na frigideira" (in the pan) is food.
+    test('a food named bife with a pan in where is not a non-food', () {
+      final steak = item('Bife', where: 'na frigideira, centro');
+      expect(isNonFoodName('Bife'), isFalse);
+      expect(isNonFoodName('Bife de vaca na frigideira'), isFalse);
+      final split = dropNonFood([steak, item('Frigideira')]);
+      expect(split.kept.map((f) => f.label), ['Bife']);
+      expect(split.dropped, ['Frigideira']);
     });
 
     test(

@@ -86,8 +86,15 @@ cloud, no paid API, the photo stays in memory. Full details:
   the other result (note `systemFailed`). Both failing shows
   `photoModelError`. iOS `MissingPluginException` is not shown as a failure.
 - Conflicts and hypotheses: offline foods the system did not name are
-  *suggestions* (outside the totals) until the user accepts them. A confirmed
-  empty review never brings offline foods back.
+  *suggestions* (outside the totals) until the user accepts them. Even a
+  confirmed empty review shows them as "Outras hipóteses"; they never enter
+  the main list.
+- Empty first answer: `{"items":[]}` is not yet a confirmed empty photo. The
+  same photo gets one second chance with `buildFoodSecondChancePrompt()` (food
+  may be in a pan, pot, tray, box, packaging or partly eaten; name the main
+  foods and drinks). Only an empty second answer is `confirmedEmpty`; an
+  invalid second answer throws `invalid_foods` (system branch fails, offline
+  kept). `detail` records "first: empty → second chance: ...".
 - Verification, not review: after the first answer the same photo is checked
   once with `buildFoodVerifyPrompt`, which lists the kept draft items by index
   and asks for `{"checks":[{"i":0,"visible":true}]}`. It never adds or renames
@@ -95,7 +102,11 @@ cloud, no paid API, the photo stays in memory. Full details:
   non-boolean verdict keeps the item in the main list as uncertain ("verify
   omitted, uncertain"; the review shows "Hipótese a confirmar"). An answer that
   is not valid JSON or has no `checks` list keeps the whole first list ("verify
-  unparsed"). All items explicitly rejected is a confirmed empty meal.
+  unparsed"). If verification rejects EVERY item, all stay as uncertain
+  ("verify rejected all — kept as uncertain"): a rejected whole draft is more
+  likely a model error than an empty plate. Verification never produces a
+  confirmed empty meal. Only an explicit `false` drops an item, and only while
+  at least one item survives.
 - Trust rules (`food_screening.dart`, pure, see `docs/FOOD_VISION.md`):
   1. Non-food names (towel, napkin, plate alone, cup alone, table, menu...) are
      dropped before verification: `dropped non-food:` plus a per-item line.
@@ -116,9 +127,12 @@ cloud, no paid API, the photo stays in memory. Full details:
 - Diagnostics: "Detalhes da análise" has one line per item:
   `name → kept|dropped|suggestion (reason)`. Users can paste it for triage.
 - Failure UX: `VisionFailure.fromError` maps busy/quota to `busy` and
-  unsupported/unavailable/downloadable to `unavailable`. An empty review that is
-  not a confirmed empty meal shows a card with the reason and "Tentar de novo"
-  (re-runs the same photo). A "only non-food items" answer is not confirmed empty.
+  unsupported/unavailable/downloadable to `unavailable`. Any empty review shows
+  the card with "Tentar de novo" (re-runs the same photo). A confirmed empty
+  photo (both looks empty) uses `photoEmptyConfirmed` ("A IA do telemóvel não
+  encontrou comida nesta foto. Tenta outra vez, analisa uma zona ou adiciona
+  manualmente."); other empty reviews use `photoNothingFound`. A "only non-food
+  items" answer is not confirmed empty.
 - Sanity rules after verification (`applyDrinkSanity`, pure Dart): one cup is
   one drink. If an espresso-type and a coffee-with-milk-type are both listed,
   only the first one listed is kept. Count only applies to foods with
@@ -157,10 +171,18 @@ percentages.
 
 ## Testing
 
-- `test/vision_resilience_test.dart`: piece counts, confirmed empty review,
-  independent failures, offline-only suggestions, region coordinates, quality.
+- `test/vision_resilience_test.dart`: piece counts, confirmed empty review
+  (keeps offline suggestions), independent failures, offline-only suggestions,
+  region coordinates, quality.
 - `test/food_screening_test.dart`: non-food list, generic names, where as
-  evidence, verdict rules, whole-dish portions, failure mapping, pipeline failure.
+  evidence, verdict rules (one false drops only that item; all false kept as
+  uncertain), `bife` + "na frigideira" not non-food, whole-dish portions,
+  failure mapping, pipeline failure.
+- v0.6.5 pan/second-chance regressions in `test/system_food_vision_test.dart`:
+  all-false kept as uncertain; empty first answer + second chance with bife and
+  ovo; both empty = confirmed empty; invalid second answer is not confirmed.
+  `test/photo_food_page_test.dart`: confirmed empty shows the retry card and
+  "Outras hipóteses", and "Tentar de novo" re-runs the photo.
 - Regression tests (v0.6.4 recall fix) in `test/system_food_vision_test.dart`:
   burger + beer with no `where` both kept; prose `where` kept; omitted verdict
   kept as uncertain; explicit `visible:false` dropped; prompts never contain

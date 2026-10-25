@@ -47,17 +47,32 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
       buildFoodPhotoPrompt(),
       secondPhoto: secondPhoto,
     );
-    final draft = parseFoodPhotoAnswer(first, database);
+    var history = first;
+    var draft = parseFoodPhotoAnswer(first, database);
     if (draft.isEmpty) {
       if (_photoItems(first)?.isEmpty != true) {
         throw LlmException('invalid_foods: ${_clip(first)}');
       }
-      return FoodVisionResult(
-        foods: const [],
-        source: VisionSource.systemAi,
-        detail: first,
-        confirmedEmpty: true,
+      // An empty first look is not yet a confirmed empty photo: food can sit
+      // in a pan, pot, tray or box. One more look with a fallback prompt.
+      final second = await _ask(
+        jpeg,
+        buildFoodSecondChancePrompt(),
+        secondPhoto: secondPhoto,
       );
+      history = '$first\n---\nfirst: empty → second chance: $second';
+      draft = parseFoodPhotoAnswer(second, database);
+      if (draft.isEmpty) {
+        if (_photoItems(second)?.isEmpty != true) {
+          throw LlmException('invalid_foods: ${_clip(second)}');
+        }
+        return FoodVisionResult(
+          foods: const [],
+          source: VisionSource.systemAi,
+          detail: history,
+          confirmedEmpty: true,
+        );
+      }
     }
     // Non-food objects (towel, napkin, plate...) never reach verification.
     final split = dropNonFood(draft);
@@ -71,7 +86,7 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
         foods: const [],
         source: VisionSource.systemAi,
         detail: _joinDetail([
-          first,
+          history,
           _droppedLine(split.dropped),
           ...nonFoodLines,
         ]),
@@ -79,9 +94,10 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
     }
     // Verification only removes items (explicit visible:false); it never adds
     // foods. An omitted verdict keeps the item as uncertain; an unparseable
-    // answer keeps the whole first list.
+    // answer keeps the whole list; a rejection of every item keeps them all
+    // as uncertain (see decideDraft).
     List<bool?>? verdicts;
-    var detail = first;
+    var detail = history;
     try {
       final verify = await _ask(
         jpeg,
@@ -90,13 +106,13 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
       );
       verdicts = parseFoodVerifyAnswer(verify, kept.length);
       detail = verdicts == null
-          ? '$first\n---\nverify: unparsed\n$verify'
-          : '$first\n---\n$verify';
+          ? '$history\n---\nverify: unparsed\n$verify'
+          : '$history\n---\n$verify';
       if (verdicts != null && verdicts.contains(null)) {
         detail = '$detail\nverify: incomplete, omitted items kept as uncertain';
       }
     } catch (error) {
-      detail = '$first\n---\nverify: failed ($error)';
+      detail = '$history\n---\nverify: failed ($error)';
     }
     final decision = decideDraft(kept, verdicts: verdicts);
     // One cup, one drink: a duplicate coffee is a suggestion, not a total.
@@ -117,7 +133,6 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
       foods: sanity.kept,
       suggestions: duplicates,
       source: VisionSource.systemAi,
-      confirmedEmpty: decision.confirmedEmpty && sanity.kept.isEmpty,
       detail: _joinDetail([
         detail,
         _droppedLine(split.dropped),
@@ -187,7 +202,7 @@ const _jsonFormat =
 /// to weigh food. No category checklist: it made the model fill every slot.
 String buildFoodPhotoPrompt() => '''
 Analyse ONLY the image attached to THIS request. It is a new, independent meal. Never reuse foods from earlier images, messages or meals.
-List only the foods and drinks that are actually in this photo. Include every drink in a glass, cup, bottle or can, and every food on a plate, board or packaging. Never add side dishes, salads, vegetables, legumes, spreads or garnishes that are not clearly visible. Do not infer hidden ingredients, oil, sugar or milk. Do not list non-food objects such as the table, napkins, towels or cutlery.
+List only the foods and drinks that are actually in this photo. Include every drink in a glass, cup, bottle or can, and every food on a plate, board or packaging. Food can also be served or photographed in a pan, pot, tray, box, packaging or hand: still list the food, not the container. Never add side dishes, salads, vegetables, legumes, spreads or garnishes that are not clearly visible. Do not infer hidden ingredients, oil, sugar or milk. Do not list non-food objects such as the table, napkins, towels or cutlery.
 One row per food type, with its TOTAL count. A single cup or glass is ONE drink, even with a saucer, handle or shadow. Never list the same coffee twice.
 For each item give:
 - "name": short food name in European Portuguese.
@@ -195,6 +210,15 @@ For each item give:
 - "count": number of clearly separate pieces or containers, else 1.
 - "size": small, medium or large compared with a typical single serving. Do not output grams.
 If no food or drink is visible reply {"items":[]}.
+Reply with JSON only, no markdown: $_jsonFormat''';
+
+/// Second look, only after a first answer with no items. Food is often in a
+/// pan, pot, tray, box or packaging, or partly eaten, so the prompt names
+/// those places and asks for the main foods and drinks by name.
+String buildFoodSecondChancePrompt() => '''
+Look again ONLY at the image attached to THIS request. It is a new, independent meal, and a first look found no food. Meal photos are often hard to read: food can be in a pan, pot, tray, box, packaging or on a board, or only partly eaten.
+Name the main food(s) and drink(s) you can see, even if you are not sure of the exact dish. Name the food itself, not the pan, box or packaging around it. Do not list non-food objects such as the table, napkins, towels or cutlery. If you truly see no food or drink, reply {"items":[]}.
+For each item give "name" (short food name in European Portuguese), "where" (short location, or "" if unsure), "count" (1 if unsure) and "size" (small, medium or large). Do not output grams.
 Reply with JSON only, no markdown: $_jsonFormat''';
 
 /// Verification: yes/no per draft item. It must not add or rename foods.
@@ -444,7 +468,9 @@ class FoodVisionPipeline implements MultiPhotoFoodVisionService {
       final secondary = await offline;
       if (primary.value != null) {
         final result = primary.value!;
-        if (result.confirmedEmpty || secondary.value == null) {
+        // A confirmed empty review still shows offline hypotheses (as
+        // suggestions only); fuseVisionResults keeps confirmedEmpty.
+        if (secondary.value == null) {
           return _withQuality(result, quality);
         }
         return fuseVisionResults(

@@ -666,22 +666,22 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
                 ],
               ),
             ],
-            if (items.isEmpty && !(_result?.confirmedEmpty ?? false))
+            // An empty review always offers a retry (same photo, or analyse an
+            // area or add by hand). A confirmed empty photo says so explicitly.
+            if (items.isEmpty)
               _FailureCard(
                 reason: t.get(switch (_failure) {
                   VisionFailure.busy => 'photoFailBusy',
                   VisionFailure.unavailable => 'photoFailUnavailable',
                   VisionFailure.other => 'photoFailOther',
-                  null => 'photoNothingFound',
+                  null =>
+                    (_result?.confirmedEmpty ?? false)
+                        ? 'photoEmptyConfirmed'
+                        : 'photoNothingFound',
                 }),
                 hint: t.get('photoFailHint'),
                 retryLabel: t.get('photoRetry'),
                 onRetry: _busy || _saving || _photo == null ? null : _retry,
-              )
-            else if (items.isEmpty)
-              _Notice(
-                icon: Icons.search_off_rounded,
-                text: t.get('photoNothingFound'),
               ),
             for (final item in items) ...[
               const SizedBox(height: 10),

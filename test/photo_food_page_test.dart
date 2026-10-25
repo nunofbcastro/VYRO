@@ -277,21 +277,53 @@ void main() {
     expect(find.text('Tentar de novo'), findsNothing);
   });
 
-  testWidgets('a confirmed empty photo is not a failure: no retry offered', (
+  // Changed in v0.6.5 (real device: a steak in a pan showed a plain notice
+  // with no retry). A confirmed empty photo now shows the retry card with
+  // its own explanation, and the offline hypotheses as "Outras hipóteses".
+  testWidgets('a confirmed empty photo shows the retry card and suggestions', (
     tester,
   ) async {
     vision.result = Future.value(
-      const FoodVisionResult(
+      FoodVisionResult(
         source: VisionSource.systemAi,
-        foods: [],
+        foods: const [],
         confirmedEmpty: true,
+        suggestions: [
+          DetectedFood(
+            food: db.byKey('espresso'),
+            label: 'Café expresso',
+            grams: 30,
+            source: VisionSource.regionClassifier,
+          ),
+        ],
       ),
     );
     await open(tester);
     await choose(tester, first: true);
     await tester.pumpAndSettle();
-    expect(find.textContaining('Não identificámos'), findsOneWidget);
-    expect(find.text('Tentar de novo'), findsNothing);
+    expect(
+      find.text(
+        'A IA do telemóvel não encontrou comida nesta foto. Tenta outra vez, analisa uma zona ou adiciona manualmente.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Tentar de novo'), findsOneWidget);
+    expect(find.text('Outras hipóteses'), findsOneWidget);
+    expect(find.text(db.byKey('espresso')!.namePt), findsOneWidget);
+    expect(find.textContaining('Não identificámos'), findsNothing);
+    expect(find.text('Adicionar 1 ao diário'), findsNothing);
+
+    vision.result = Future.value(meal(['espresso']));
+    await tester.scrollUntilVisible(
+      find.text('Adicionar alimento'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(find.text('Tentar de novo'));
+    await tester.tap(find.text('Tentar de novo'));
+    await tester.pumpAndSettle();
+    expect(vision.calls, 2);
+    expect(find.text('Adicionar 1 ao diário'), findsOneWidget);
   });
 }
 

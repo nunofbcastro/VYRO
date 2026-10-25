@@ -269,21 +269,14 @@ String decisionLine(String label, ItemAction action, String reason) =>
 
 /// Result of the verification step for the non-food-filtered items.
 class DraftDecision {
-  const DraftDecision({
-    required this.foods,
-    required this.decisions,
-    required this.confirmedEmpty,
-  });
+  const DraftDecision({required this.foods, required this.decisions});
 
   /// Items that stay in the review (and in totals once matched). Includes
-  /// items whose verdict was omitted: they are uncertain, not removed.
+  /// items whose verdict was omitted or rejected-all: they are uncertain.
   final List<DetectedFood> foods;
 
   /// One entry per item that was checked, with the reason.
   final List<ItemDecision> decisions;
-
-  /// Every item was explicitly rejected by the verification step.
-  final bool confirmedEmpty;
 }
 
 /// One checked item and its outcome.
@@ -300,7 +293,10 @@ class ItemDecision {
 }
 
 /// Applies the verification verdicts. Only an explicit `false` removes an
-/// item. The `where` text and drink words are evidence written into the
+/// item, and only while at least one item survives: if verification rejects
+/// every item, all of them are kept as uncertain ("verify rejected all"),
+/// because a model that rejects its whole draft is more likely wrong than
+/// right. The `where` text and drink words are evidence written into the
 /// reason, never a gate: a small model often omits `where`.
 ///
 /// [verdicts] is null when verification was unparsed or failed: every item
@@ -308,16 +304,19 @@ class ItemDecision {
 /// (null is uncertain: the review already shows "Hipótese a confirmar"),
 /// `false` drops it.
 DraftDecision decideDraft(List<DetectedFood> kept, {List<bool?>? verdicts}) {
-  final foods = <DetectedFood>[];
-  final decisions = <ItemDecision>[];
+  bool? verdictAt(int i) =>
+      verdicts == null ? null : (i < verdicts.length ? verdicts[i] : null);
   var rejected = 0;
   for (var i = 0; i < kept.length; i++) {
+    if (verdictAt(i) == false) rejected++;
+  }
+  final rejectedAll = kept.isNotEmpty && rejected == kept.length;
+  final foods = <DetectedFood>[];
+  final decisions = <ItemDecision>[];
+  for (var i = 0; i < kept.length; i++) {
     final item = kept[i];
-    final verdict = verdicts == null
-        ? null
-        : (i < verdicts.length ? verdicts[i] : null);
-    if (verdict == false) {
-      rejected++;
+    final verdict = verdictAt(i);
+    if (verdict == false && !rejectedAll) {
       decisions.add(
         ItemDecision(
           item: item,
@@ -329,7 +328,9 @@ DraftDecision decideDraft(List<DetectedFood> kept, {List<bool?>? verdicts}) {
     }
     final where = item.where;
     final evidence = [
-      if (verdicts == null)
+      if (rejectedAll)
+        'verify rejected all — kept as uncertain'
+      else if (verdicts == null)
         'verify unparsed'
       else if (verdict == null)
         'verify omitted, uncertain'
@@ -351,9 +352,5 @@ DraftDecision decideDraft(List<DetectedFood> kept, {List<bool?>? verdicts}) {
       ),
     );
   }
-  return DraftDecision(
-    foods: foods,
-    decisions: decisions,
-    confirmedEmpty: kept.isNotEmpty && rejected == kept.length,
-  );
+  return DraftDecision(foods: foods, decisions: decisions);
 }

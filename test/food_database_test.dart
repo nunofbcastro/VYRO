@@ -210,6 +210,7 @@ void main() {
       final prompt = buildFoodPhotoPrompt();
       expect(prompt, contains('"items"'));
       expect(prompt, contains('"where"'));
+      expect(prompt, contains('pan, pot, tray, box, packaging or hand'));
       expect(prompt, isNot(contains('Fewer items')));
       expect(prompt, isNot(contains('1 to 4')));
       expect(prompt, isNot(contains('Check protein')));

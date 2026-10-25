@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
+import 'package:vyro/core/ai/on_device_llm.dart';
 import 'package:vyro/features/nutrition/data/food_database.dart';
 import 'package:vyro/features/nutrition/food_vision/food_vision.dart';
 import 'package:vyro/features/nutrition/food_vision/system_food_vision.dart';
@@ -96,35 +97,146 @@ void main() {
     },
   );
 
+  // (a) Regression (v0.6.4): verification used to empty a draft when it
+  // rejected every item, and the review then showed a plain "nothing found"
+  // notice. Now every item stays as uncertain and the foods are kept.
   test(
-    'verification that rejects every item gives a confirmed empty meal',
+    'verification that rejects every item keeps them all as uncertain',
     () async {
       replies = [
-        items([drink('Café')]),
-        verdicts([false]),
+        items([
+          row('Bife de vaca frito', where: 'pan centre'),
+          row('Ovo estrelado', where: 'pan'),
+        ]),
+        verdicts([false, false]),
       ];
       final result = await SystemFoodVision(
         db,
         channel: channel,
       ).analyse(photo);
-      expect(result.foods, isEmpty);
-      expect(result.confirmedEmpty, isTrue);
+      expect(result.foods.map((f) => f.food?.key), [
+        'beef_steak_fried',
+        'egg_fried',
+      ]);
+      expect(result.confirmedEmpty, isFalse);
+      expect(
+        result.detail,
+        allOf(
+          contains('→ kept (verify rejected all — kept as uncertain'),
+          isNot(contains('→ dropped')),
+        ),
+      );
     },
   );
 
+  // (b) One false among several: only that item is removed.
+  test('one false among several drops only that item', () async {
+    replies = [
+      items([
+        row('Bife de vaca frito'),
+        row('Ovo estrelado'),
+        row('Pão torrado'),
+      ]),
+      verdicts([true, false, true]),
+    ];
+    final result = await SystemFoodVision(db, channel: channel).analyse(photo);
+    expect(result.foods.map((f) => f.food?.key), [
+      'beef_steak_fried',
+      'bread_white_toasted',
+    ]);
+    expect(result.detail, contains('→ dropped (verify=false)'));
+    expect(result.detail, isNot(contains('verify rejected all')));
+  });
+
+  // (c) Empty first answer, second chance finds the steak and the egg.
   test(
-    'an explicit no-food answer is valid and needs no second pass',
+    'an empty first answer gets a second chance that names the foods',
     () async {
-      replies = ['{"items":[]}'];
+      replies = [
+        '{"items":[]}',
+        items([row('Bife de vaca frito'), row('Ovo estrelado')]),
+        verdicts([true, true]),
+      ];
       final result = await SystemFoodVision(
         db,
         channel: channel,
       ).analyse(photo);
-      expect(result.foods, isEmpty);
-      expect(result.confirmedEmpty, isTrue);
-      expect(calls, hasLength(1));
+      expect(calls, hasLength(3));
+      expect(calls[1]['prompt'], buildFoodSecondChancePrompt());
+      expect(calls[1]['prompt'], contains('pan, pot, tray, box'));
+      expect(result.foods.map((f) => f.food?.key), [
+        'beef_steak_fried',
+        'egg_fried',
+      ]);
+      expect(result.confirmedEmpty, isFalse);
+      expect(result.detail, contains('first: empty → second chance: {"items"'));
     },
   );
+
+  // (d) Both answers empty: only now is the photo a confirmed empty review.
+  test('an empty first answer and an empty second chance confirm it', () async {
+    replies = ['{"items":[]}', '{"items":[]}'];
+    final result = await SystemFoodVision(db, channel: channel).analyse(photo);
+    expect(result.foods, isEmpty);
+    expect(result.confirmedEmpty, isTrue);
+    expect(calls, hasLength(2));
+    expect(
+      result.detail,
+      contains('first: empty → second chance: {"items":[]}'),
+    );
+  });
+
+  test(
+    'a second chance that is not valid JSON is not a confirmed empty',
+    () async {
+      replies = ['{"items":[]}', 'não sei'];
+      await expectLater(
+        SystemFoodVision(db, channel: channel).analyse(photo),
+        throwsA(isA<LlmException>()),
+      );
+    },
+  );
+
+  test(
+    'second chance prompt keeps the format and the regression lines out',
+    () {
+      final prompt = buildFoodSecondChancePrompt();
+      expect(prompt, contains('"items"'));
+      expect(prompt, contains('pan, pot, tray'));
+      expect(prompt, contains('Do not output grams'));
+      expect(prompt, isNot(contains('Fewer items')));
+      expect(prompt, isNot(contains('1 to 4')));
+    },
+  );
+
+  // (e) The non-food filter reads the item name, not the where text: a steak
+  // "na frigideira" (in the pan) is food and reaches verification.
+  test(
+    'a steak whose where is in the pan is not dropped as non-food',
+    () async {
+      replies = [
+        items([row('Bife de vaca frito', where: 'na frigideira, centro')]),
+        verdicts([true]),
+      ];
+      final result = await SystemFoodVision(
+        db,
+        channel: channel,
+      ).analyse(photo);
+      expect(result.foods.single.food?.key, 'beef_steak_fried');
+      expect(result.detail, isNot(contains('dropped non-food')));
+      expect(calls[1]['prompt'], contains('0: Bife de vaca frito'));
+    },
+  );
+
+  test('a non-empty first answer never triggers the second chance', () async {
+    replies = [
+      items([row('Bife')]),
+      verdicts([true]),
+    ];
+    await SystemFoodVision(db, channel: channel).analyse(photo);
+    expect(calls, hasLength(2));
+    expect(calls[1]['prompt'], isNot(buildFoodSecondChancePrompt()));
+  });
 
   test('unparseable verification keeps the first list and says so', () async {
     replies = [
@@ -327,6 +439,8 @@ void main() {
     expect(prompt, contains('ONE drink'));
     expect(prompt, contains('every drink in a glass, cup, bottle or can'));
     expect(prompt, contains('Never list the same coffee twice'));
+    expect(prompt, contains('pan, pot, tray, box, packaging or hand'));
+    expect(prompt, contains('still list the food, not the container'));
     // Regression: these lines made the small model drop true positives.
     expect(prompt, isNot(contains('Fewer items')));
     expect(prompt, isNot(contains('1 to 4')));

@@ -29,7 +29,13 @@ foto (câmara/galeria, ficheiro temporário apagado logo após leitura)
   │         a lista e devolve {checks:[{i,visible}]}. Só remove itens (visible=false);
   │         nunca acrescenta nem renomeia. Resposta inválida ou incompleta →
   │         mantém a lista da 1.ª passagem ("verify: unparsed" em detalhes).
-  │         Todos rejeitados → refeição vazia confirmada
+  │         Todos rejeitados → mantêm-se TODOS como incertos ("verify rejected
+  │         all — kept as uncertain"); a verificação nunca esvazia uma lista não vazia
+  │       1.ª passagem vazia ({"items":[]}) → 2.ª tentativa (`buildFoodSecondChancePrompt`):
+  │         comida pode estar na frigideira, panela, tabuleiro, caixa ou embalagem,
+  │         ou parcialmente comida; nomeia os alimentos e bebidas visíveis.
+  │         Só se também vier vazia é "refeição vazia confirmada" (`confirmedEmpty`).
+  │         Detalhes: "first: empty → second chance: ..."
   │       cada pedido repete-se 1× se o AICore estiver ocupado; o erro e a
   │       resposta crua ficam em "Detalhes da análise"
   │
@@ -38,8 +44,9 @@ foto (câmara/galeria, ficheiro temporário apagado logo após leitura)
   │
   ▼ fuseVisionResults: alimentos do sistema primeiro; alimentos do offline que
     coincidem ficam "corroborados"; os restantes são SUGESTÕES fora dos totais
-    até o utilizador os aceitar. Uma revisão vazia do sistema não ressuscita
-    alimentos do offline.
+    até o utilizador os aceitar ("Outras hipóteses"). Mesmo com refeição vazia
+    confirmada, as sugestões do offline continuam visíveis; a lista principal
+    nunca recebe alimentos do offline.
   │
   ▼ PhotoFoodPage: lista editável (trocar alimento, porção, remover, adicionar,
     sugestões rápidas), totais kcal/P/H/G, refeição, "Adicionar N ao diário"
@@ -168,9 +175,18 @@ nunca portões.
      unparsed"); as regras 1, 2 e 3 continuam a aplicar-se.
    - Um café duplicado (regra "uma chávena = uma bebida") é a única coisa que
      vai para as sugestões ("duplicate coffee").
-   - Refeição **confirmada vazia** só quando a verificação rejeita explicitamente
-     todos os itens. Uma resposta só com objetos não alimentares não é confirmada
-     vazia: aparece o cartão de falha com "Tentar de novo".
+   - Verificação que rejeita **todos** os itens não esvazia a lista: todos ficam
+     como incertos ("verify rejected all — kept as uncertain"). Com pelo menos um
+     item sobrevivente, só os `visible: false` saem. (Antes, rejeitar tudo dava
+     refeição vazia confirmada; isso escondia um bife numa frigideira na v0.6.4.)
+   - Refeição **confirmada vazia** só quando a 1.ª passagem vem vazia **e** a 2.ª
+     tentativa (`buildFoodSecondChancePrompt`) também vem vazia. Uma resposta só com
+     objetos não alimentares, ou uma 2.ª resposta inválida, não é confirmada vazia.
+     Mesmo assim, as sugestões offline aparecem em "Outras hipóteses" e o ecrã mostra
+     o cartão com "Tentar de novo" e a explicação "A IA do telemóvel não encontrou
+     comida nesta foto. Tenta outra vez, analisa uma zona ou adiciona manualmente."
+   - O filtro de não-alimentos olha **só para o nome** do item. "Bife" com
+     `where` "na frigideira" não é removido; "Frigideira" sozinha é.
 5. **Falhas explicadas.** `FoodVisionResult.failure` (`VisionFailure`) indica
    `busy` (IA ocupada ou em quota), `unavailable` (não suportada, desligada ou a
    descarregar) ou `other`. A página mostra o motivo em português/inglês e um botão
@@ -243,7 +259,7 @@ flutter test test/food_database_test.dart        # parsing, matching, pipeline (
 flutter test test/vision_resilience_test.dart    # porções por peça, falhas independentes, avisos
 flutter test test/system_food_vision_test.dart test/region_food_vision_test.dart
 flutter test test/food_screening_test.dart       # não-alimentos, genéricos, bebidas, verificação, falhas, pizza
-flutter test test/photo_food_page_test.dart      # cartão de falha, "Tentar de novo", genéricos, refeição vazia confirmada
+flutter test test/photo_food_page_test.dart      # cartão de falha, "Tentar de novo", genéricos, refeição vazia confirmada com cartão e sugestões
 VYRO_FOOD_IMAGE=C:\fotos\prato.png flutter test test/food_model_probe_test.dart
 ```
 

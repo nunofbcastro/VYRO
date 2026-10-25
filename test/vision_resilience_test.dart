@@ -69,22 +69,29 @@ void main() {
     );
     expect(rice.single.grams, db.byKey('rice_white_cooked')!.portionG);
   });
-  test('a confirmed empty review cannot resurrect offline foods', () async {
-    final result = await FoodVisionPipeline(
-      llm: _Llm(),
-      system: _Vision(
-        const FoodVisionResult(
-          foods: [],
-          source: VisionSource.systemAi,
-          confirmedEmpty: true,
-          detail: 'draft\n---\nreview',
+  // Changed in v0.6.5: a confirmed empty photo still shows offline hypotheses,
+  // but only as suggestions ("Outras hipóteses"), never in the main list.
+  test(
+    'a confirmed empty review keeps offline hypotheses as suggestions',
+    () async {
+      final result = await FoodVisionPipeline(
+        llm: _Llm(),
+        system: _Vision(
+          const FoodVisionResult(
+            foods: [],
+            source: VisionSource.systemAi,
+            confirmedEmpty: true,
+            detail: 'draft\n---\nreview',
+          ),
         ),
-      ),
-      regions: _Vision(regions),
-    ).analyse(photo);
-    expect(result.foods, isEmpty);
-    expect(result.suggestions, isEmpty);
-  });
+        regions: _Vision(regions),
+      ).analyse(photo);
+      expect(result.foods, isEmpty);
+      expect(result.confirmedEmpty, isTrue);
+      expect(result.suggestions.single, coffee);
+      expect(result.notes, contains('fusedOffline'));
+    },
+  );
   test(
     'fast offline failure preserves a valid system answer without unhandled errors',
     () async {

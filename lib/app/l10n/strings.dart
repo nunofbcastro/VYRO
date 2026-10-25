@@ -54,6 +54,8 @@ class VyroStrings {
         'A IA do telemóvel não conseguiu analisar a foto; usámos o reconhecimento offline aproximado.',
     'photoNothingFound':
         'Não identificámos alimentos com confiança suficiente. Adiciona-os abaixo.',
+    'photoEmptyConfirmed':
+        'A IA do telemóvel não encontrou comida nesta foto. Tenta outra vez, analisa uma zona ou adiciona manualmente.',
     'photoAskDrink': 'Que bebida?',
     'photoAskSandwich': 'Que sandes?',
     'photoAskSauce': 'Que molho?',
@@ -874,6 +876,8 @@ class VyroStrings {
         'The phone AI could not analyse the photo; the approximate offline recognition was used.',
     'photoNothingFound':
         'No foods identified with enough confidence. Add them below.',
+    'photoEmptyConfirmed':
+        'The phone AI found no food in this photo. Try again, analyse an area, or add foods manually.',
     'photoAskDrink': 'Which drink?',
     'photoAskSandwich': 'Which sandwich?',
     'photoAskSauce': 'Which sauce?',

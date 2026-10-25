@@ -207,10 +207,10 @@ FoodVisionResult fuseVisionResults(
       foods[i] = prev.copyWith(corroborated: true);
       continue;
     }
-    if (!system.confirmedEmpty) {
-      suggestions.add(extra);
-      offlineSuggestions++;
-    }
+    // Offline foods are hypotheses even when the system confirmed an empty
+    // photo: they stay outside the totals until the user adds them.
+    suggestions.add(extra);
+    offlineSuggestions++;
   }
   final usedSystem = system.foods.isNotEmpty;
   final usedRegions = regions.foods.isNotEmpty;
