@@ -10,3 +10,7 @@ android/key.properties
 ios/Pods/
 ios/.symlinks/
 ios/Flutter/ephemeral/
+
+# Kotlin compiler daemon state
+android/.kotlin/
+.claude/launch.json
