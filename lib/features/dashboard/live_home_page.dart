@@ -64,6 +64,11 @@ class _LiveHomePageState extends State<LiveHomePage> {
                   : '${t.get('helloPrefix')}, $name',
               actions: [
                 VyroRoundButton(
+                  icon: Icons.auto_awesome_outlined,
+                  tooltip: t.get('assistant'),
+                  onPressed: () => Navigator.pushNamed(context, '/assistant'),
+                ),
+                VyroRoundButton(
                   icon: Icons.person_outline_rounded,
                   tooltip: t.get('profile'),
                   onPressed: () => _openTab(context, 4, '/profile'),

@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../core/ai/on_device_llm.dart';
 import '../core/database/app_database.dart';
 import '../features/nutrition/data/nutrition_repository.dart';
 import '../features/nutrition/data/open_food_facts_repository.dart';
@@ -10,7 +11,9 @@ class AppServices {
     AppDatabase? database,
     NutritionRepository? nutritionRepository,
     ProductLookupRepository? productLookupRepository,
-  }) : database = database ?? AppDatabase() {
+    OnDeviceLlm? llm,
+  }) : database = database ?? AppDatabase(),
+       llm = llm ?? const PlatformOnDeviceLlm() {
     this.nutritionRepository =
         nutritionRepository ?? DriftNutritionRepository(this.database);
     this.productLookupRepository =
@@ -19,6 +22,9 @@ class AppServices {
   }
 
   final AppDatabase database;
+
+  /// OS-provided language model (Apple Intelligence / Gemini Nano).
+  final OnDeviceLlm llm;
   late final NutritionRepository nutritionRepository;
   late final ProductLookupRepository productLookupRepository;
   late final WorkoutRepository workoutRepository;

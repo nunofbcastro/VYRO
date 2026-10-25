@@ -521,6 +521,31 @@ class VyroStrings {
     'confirm': 'Confirmar',
     'weekOver': 'Esta semana terminou.',
     'widgetOver': 'acima do objetivo',
+    'assistant': 'Assistente',
+    'assistantTagline': 'IA do sistema, no teu telemóvel',
+    'assistantPlaceholder': 'Pergunta sobre nutrição ou treino…',
+    'assistantThinking': 'A pensar no dispositivo…',
+    'assistantUnavailableTitle': 'Assistente indisponível neste dispositivo',
+    'assistantUnavailableBody':
+        'Usa o modelo de linguagem do sistema, sem enviar dados: iPhone com Apple Intelligence (iOS 26 ou superior, ativado nas Definições) ou Android compatível com Gemini Nano (AICore). Neste dispositivo não está disponível.',
+    'assistantDownloadable':
+        'O Android pode transferir o modelo Gemini Nano do sistema. A transferência é gerida pelo Android e pode demorar alguns minutos.',
+    'assistantDownload': 'Preparar modelo do sistema',
+    'assistantDownloading':
+        'O sistema está a preparar o modelo. Volta a tentar daqui a pouco.',
+    'assistantRetryStatus': 'Verificar outra vez',
+    'assistantPrivacy':
+        'Tudo é processado no dispositivo pelo modelo do sistema. A conversa não é guardada nem enviada.',
+    'assistantDisclaimer':
+        'Respostas geradas automaticamente podem estar erradas. Não substituem um profissional de saúde.',
+    'assistantError':
+        'Não foi possível gerar uma resposta. Tenta reformular a pergunta.',
+    'assistantClear': 'Limpar conversa',
+    'assistantSuggestion1':
+        'O que posso jantar para chegar à minha meta de proteína?',
+    'assistantSuggestion2': 'Explica-me o meu próximo treino.',
+    'assistantSuggestion3': 'Ideias de lanches com menos de 200 kcal.',
+    'assistantExperimental': 'EXPERIMENTAL',
   };
 
   static const _en = <String, String>{
@@ -1026,6 +1051,31 @@ class VyroStrings {
     'confirm': 'Confirm',
     'weekOver': 'This week is over.',
     'widgetOver': 'over goal',
+    'assistant': 'Assistant',
+    'assistantTagline': 'System AI, on your phone',
+    'assistantPlaceholder': 'Ask about nutrition or training…',
+    'assistantThinking': 'Thinking on device…',
+    'assistantUnavailableTitle': 'Assistant unavailable on this device',
+    'assistantUnavailableBody':
+        'It uses the system language model without sending data: an iPhone with Apple Intelligence (iOS 26 or later, turned on in Settings) or an Android phone that supports Gemini Nano (AICore). It isn\'t available on this device.',
+    'assistantDownloadable':
+        'Android can download the system Gemini Nano model. Android manages the download and it may take a few minutes.',
+    'assistantDownload': 'Prepare system model',
+    'assistantDownloading':
+        'The system is preparing the model. Try again shortly.',
+    'assistantRetryStatus': 'Check again',
+    'assistantPrivacy':
+        'Everything is processed on device by the system model. The conversation is not stored or sent.',
+    'assistantDisclaimer':
+        'Generated answers can be wrong. They do not replace a health professional.',
+    'assistantError':
+        'Could not generate an answer. Try rephrasing the question.',
+    'assistantClear': 'Clear conversation',
+    'assistantSuggestion1':
+        'What can I have for dinner to reach my protein target?',
+    'assistantSuggestion2': 'Explain my next workout.',
+    'assistantSuggestion3': 'Snack ideas under 200 kcal.',
+    'assistantExperimental': 'EXPERIMENTAL',
   };
 }
 

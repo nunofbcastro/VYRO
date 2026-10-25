@@ -62,6 +62,12 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                   onTap: () => _editProfile(context, services, profile),
                 ),
                 VyroListRow(
+                  icon: Icons.chat_bubble_outline_rounded,
+                  title: t.get('assistant'),
+                  subtitle: t.get('assistantTagline'),
+                  onTap: () => Navigator.pushNamed(context, '/assistant'),
+                ),
+                VyroListRow(
                   icon: Icons.auto_awesome_outlined,
                   title: t.get('generatePlan'),
                   subtitle: t.get('generatePlanSubtitle'),

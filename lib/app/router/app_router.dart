@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../root_gate.dart';
 import '../splash_page.dart';
 import '../../features/dashboard/home_shell.dart';
+import '../../features/assistant/assistant_page.dart';
 import '../../features/barcode/barcode_scanner_page.dart';
 import '../../features/design_showcase/design_system_page.dart';
 import '../../features/demo/demo_page.dart';
@@ -57,6 +58,8 @@ class VyroRouter {
                 : DateTime.now(),
           ),
         );
+      case '/assistant':
+        return MaterialPageRoute<void>(builder: (_) => const AssistantPage());
       case '/motion':
         return MaterialPageRoute<void>(builder: (_) => const MotionPage());
       case '/training':
