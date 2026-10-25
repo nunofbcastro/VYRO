@@ -118,8 +118,8 @@ void main() {
       expect(foods, hasLength(4));
       final chicken = foods.first;
       expect(chicken.food?.key, 'chicken_breast_roasted');
-      expect(chicken.grams, 230);
-      expect(chicken.count, 2);
+      expect(chicken.grams, 120);
+      expect(chicken.count, 1);
       expect(foods[1].food?.key, 'rice_white_cooked');
       expect(foods[2].food?.key, 'green_salad');
       expect(foods[3].food, isNull);
@@ -134,7 +134,7 @@ void main() {
     test('prompts ask for JSON with a checklist and a second look', () {
       final prompt = buildFoodPhotoPrompt();
       expect(prompt, contains('"items"'));
-      expect(prompt, contains('beans'));
+      expect(prompt, contains('legumes'));
       expect(prompt, contains('drinks'));
       final rice = db.byKey('rice_white_cooked')!;
       final found = [
@@ -145,25 +145,39 @@ void main() {
           source: VisionSource.systemAi,
         ),
       ];
-      expect(buildMissingFoodsPrompt(found), contains(rice.namePt));
+      expect(buildFoodReviewPrompt(found), contains(rice.namePt));
     });
 
-    test('second look only adds new foods', () {
-      final first = parseFoodPhotoAnswer(
-        '{"items":[{"name":"Arroz branco cozido","grams":150}]}',
+    test('a repeated coffee row does not double its cup or nutrients', () {
+      final foods = parseFoodPhotoAnswer(
+        '{"items":[{"name":"Café expresso","count":1,"grams":30},'
+        '{"name":"Café","count":1,"grams":30}]}',
         db,
       );
-      final extra = parseFoodPhotoAnswer(
-        '{"items":[{"name":"Arroz","grams":90},{"name":"Feijão cozido","grams":120},{"name":"Alface","grams":30}]}',
+      expect(foods, hasLength(1));
+      expect(foods.single.food?.key, 'espresso');
+      expect(foods.single.count, 1);
+      expect(foods.single.grams, 30);
+    });
+
+    test('two explicit pieces use total grams without multiplying again', () {
+      final foods = parseFoodPhotoAnswer(
+        '{"items":[{"name":"Peito de frango grelhado","count":2,"grams":240}]}',
         db,
       );
-      final merged = mergeDetectedFoods(first, extra);
-      expect(merged.map((f) => f.food?.key), [
-        'rice_white_cooked',
-        'beans_red_cooked',
-        'lettuce_raw',
-      ]);
-      expect(merged.first.grams, 150);
+      expect(foods.single.count, 2);
+      expect(foods.single.grams, 240);
+    });
+
+    test('wrong field types do not discard otherwise usable foods', () {
+      final foods = parseFoodPhotoAnswer(
+        '{"items":[{"name":42},{"name":"Café","count":"2","grams":{}},'
+        '{"name":"Manteiga","grams":5}]}',
+        db,
+      );
+      expect(foods, hasLength(2));
+      expect(foods.first.grams, db.byKey('espresso')!.portionG);
+      expect(foods.first.count, isNull);
     });
 
     test('breakfast names match the new drinks and spreads', () {

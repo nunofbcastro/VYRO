@@ -591,7 +591,7 @@ class VyroSubpageScaffold extends StatelessWidget {
   }
 }
 
-/// Compact brand lockup (V mark + "VYRO") shown at the top-left of tab pages.
+/// Compact V monogram shown at the top-left of tab pages.
 class VyroWordmark extends StatelessWidget {
   const VyroWordmark({super.key, this.height = 20});
 
@@ -602,24 +602,9 @@ class VyroWordmark extends StatelessWidget {
     return Semantics(
       label: 'VYRO',
       child: ExcludeSemantics(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox.square(
-              dimension: height,
-              child: CustomPaint(painter: VyroMarkPainter.of(context)),
-            ),
-            SizedBox(width: height * 0.4),
-            Text(
-              'VYRO',
-              style: TextStyle(
-                fontSize: height * 0.78,
-                fontWeight: FontWeight.w900,
-                letterSpacing: height * 0.22,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-          ],
+        child: SizedBox.square(
+          dimension: height,
+          child: CustomPaint(painter: VyroMarkPainter.of(context)),
         ),
       ),
     );

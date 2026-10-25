@@ -13,7 +13,7 @@ import '../features/onboarding/onboarding_flow.dart';
 /// 2. tutorial + base data when onboarding is not complete;
 /// 3. the five-tab shell afterwards.
 ///
-/// Switching between these cross-fades with a slight zoom.
+/// Switching between these uses a short fade without scaling the screens.
 class VyroRoot extends StatefulWidget {
   const VyroRoot({super.key});
 
@@ -63,16 +63,13 @@ class _VyroRootState extends State<VyroRoot> {
       child = const HomeShell(key: ValueKey('home'));
     }
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 520),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 240),
       switchInCurve: Curves.easeOutCubic,
       switchOutCurve: Curves.easeInCubic,
-      transitionBuilder: (child, animation) => FadeTransition(
-        opacity: animation,
-        child: ScaleTransition(
-          scale: Tween(begin: 1.04, end: 1.0).animate(animation),
-          child: child,
-        ),
-      ),
+      transitionBuilder: (child, animation) =>
+          FadeTransition(opacity: animation, child: child),
       child: child,
     );
   }

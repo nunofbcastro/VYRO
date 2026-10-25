@@ -93,7 +93,7 @@ class OnDeviceLlmChannel(messenger: BinaryMessenger) {
         scope.launch {
             try {
                 val response = client().generateContent(prompt)
-                val text = response.candidates.joinToString("") { it.text.orEmpty() }
+                val text = response.candidates.firstOrNull()?.text.orEmpty()
                 result.success(text)
             } catch (e: Exception) {
                 result.error("generation_failed", e.message, null)
@@ -107,9 +107,11 @@ class OnDeviceLlmChannel(messenger: BinaryMessenger) {
             try {
                 val request = generateContentRequest(ImagePart(image), TextPart(prompt)) {
                     temperature = 0.1f
+                    candidateCount = 1
                 }
                 val response = client().generateContent(request)
-                result.success(response.candidates.joinToString("") { it.text.orEmpty() })
+                // Candidates are alternative answers, never parts of one JSON.
+                result.success(response.candidates.firstOrNull()?.text.orEmpty())
             } catch (e: Exception) {
                 // Class name helps tell quota/busy/unsupported-input apart.
                 result.error("generation_failed", "${e.javaClass.simpleName}: ${e.message}", null)

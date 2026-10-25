@@ -21,8 +21,10 @@ import 'widgets/food_picker_sheet.dart';
 /// ([FoodVisionPipeline]); nutrients come from the offline database and
 /// every food and amount is confirmed by the user before saving.
 class PhotoFoodPage extends StatefulWidget {
-  const PhotoFoodPage({super.key, this.day});
+  const PhotoFoodPage({super.key, this.day, this.imagePicker, this.vision});
   final DateTime? day;
+  final ImagePicker? imagePicker;
+  final FoodVisionService? vision;
 
   @override
   State<PhotoFoodPage> createState() => _PhotoFoodPageState();
@@ -77,7 +79,7 @@ List<String> _quickKeysFor(String meal, List<_Item> items) {
 }
 
 class _PhotoFoodPageState extends State<PhotoFoodPage> {
-  final _picker = ImagePicker();
+  late final _picker = widget.imagePicker ?? ImagePicker();
   FoodDatabase? _db;
   Uint8List? _photo;
   List<_Item>? _items;
@@ -86,6 +88,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
   bool _busy = false;
   bool _saving = false;
   String? _error;
+  int _analysisId = 0;
 
   @override
   void initState() {
@@ -97,6 +100,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
 
   @override
   void dispose() {
+    _analysisId++;
     _photo = null; // the photo lives in memory only
     super.dispose();
   }
@@ -104,6 +108,9 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
   // ------------------------------------------------------------ actions
 
   Future<void> _choose(ImageSource source) async {
+    if (_busy || _saving) return;
+    final analysisId = ++_analysisId;
+    setState(() => _busy = true);
     try {
       final file = await _picker.pickImage(
         source: source,
@@ -112,10 +119,14 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
         imageQuality: 88,
       );
       if (file == null) return;
-      final bytes = await file.readAsBytes();
-      // The picker's temporary file is deleted as soon as bytes are read.
-      await deleteTemporaryImage(file.path);
-      if (!mounted) return;
+      late final Uint8List bytes;
+      try {
+        bytes = await file.readAsBytes();
+      } finally {
+        // Also delete the temporary file if reading fails.
+        await deleteTemporaryImage(file.path);
+      }
+      if (!mounted || analysisId != _analysisId) return;
       setState(() {
         _photo = bytes;
         _items = null;
@@ -123,44 +134,50 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
         _error = null;
         _busy = true;
       });
-      await _analyse(bytes);
+      await _analyse(bytes, analysisId);
     } catch (_) {
-      if (mounted) {
+      if (mounted && analysisId == _analysisId) {
         setState(() {
           _error = 'cameraError';
           _busy = false;
         });
       }
+    } finally {
+      if (mounted && analysisId == _analysisId) {
+        setState(() => _busy = false);
+      }
     }
   }
 
-  Future<void> _analyse(Uint8List bytes) async {
+  Future<void> _analyse(Uint8List bytes, int analysisId) async {
     final services = AppServicesScope.of(context);
     try {
       final db = _db ?? await FoodDatabase.load();
-      final pipeline = FoodVisionPipeline(
-        llm: services.llm,
-        system: SystemFoodVision(db),
-        regions: RegionFoodVision(db),
-      );
+      final pipeline =
+          widget.vision ??
+          FoodVisionPipeline(
+            llm: services.llm,
+            system: SystemFoodVision(db),
+            regions: RegionFoodVision(db),
+          );
       final result = await pipeline.analyse(bytes);
-      if (!mounted) return;
+      if (!mounted || analysisId != _analysisId) return;
       setState(() {
         _db = db;
         _result = result;
         _items = [for (final f in result.foods) _Item(f)];
       });
     } on FormatException {
-      if (mounted) setState(() => _error = 'photoInvalidImage');
+      if (mounted && analysisId == _analysisId) {
+        setState(() => _error = 'photoInvalidImage');
+      }
     } catch (_) {
-      if (mounted) {
+      if (mounted && analysisId == _analysisId) {
         setState(() {
           _error = 'photoModelError';
           _items = [];
         });
       }
-    } finally {
-      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -173,13 +190,14 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
       initialQuery: item.food == null ? item.detected.label : '',
     );
     if (food == null || !mounted) return;
+    final wasUnmatched = item.food == null;
     setState(() {
       item.detected = item.detected.copyWith(
         food: food,
         source: VisionSource.user,
       );
       // An unmatched line had no sensible amount yet: use the food's portion.
-      if (item.food == null) item.grams = food.portionG;
+      if (wasUnmatched) item.grams = food.portionG;
     });
   }
 
@@ -206,6 +224,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
   }
 
   Future<void> _save() async {
+    if (_saving || _busy) return;
     final items = _items ?? const <_Item>[];
     final ready = items.where((i) => i.food != null && i.grams > 0).toList();
     if (ready.isEmpty) return;
@@ -254,7 +273,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
               label: t.get('photoSaveN').replaceAll('{n}', '${ready.length}'),
               icon: Icons.check_rounded,
               loading: _saving,
-              onPressed: ready.isEmpty || _saving ? null : _save,
+              onPressed: ready.isEmpty || _saving || _busy ? null : _save,
             ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
@@ -266,8 +285,12 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
               photo: _photo!,
               busy: _busy,
               source: _result?.source,
-              onRetake: _busy ? null : () => _choose(ImageSource.camera),
-              onGallery: _busy ? null : () => _choose(ImageSource.gallery),
+              onRetake: _busy || _saving
+                  ? null
+                  : () => _choose(ImageSource.camera),
+              onGallery: _busy || _saving
+                  ? null
+                  : () => _choose(ImageSource.gallery),
             ),
           if (_error != null) ...[
             const SizedBox(height: 14),
@@ -802,40 +825,50 @@ class _FoodRowState extends State<_FoodRow> {
             ),
           ),
           const SizedBox(height: 8),
-          Row(
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 12,
+            runSpacing: 10,
             children: [
-              const SizedBox(width: 54),
-              _StepButton(icon: Icons.remove_rounded, onTap: () => _step(-1)),
-              SizedBox(
-                width: 78,
-                child: TextField(
-                  controller: _grams,
-                  focusNode: _focus,
-                  textAlign: TextAlign.center,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _StepButton(
+                    icon: Icons.remove_rounded,
+                    onTap: () => _step(-1),
                   ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-                  ],
-                  onChanged: (text) => widget.onGrams(
-                    double.tryParse(text.replaceAll(',', '.')) ?? 0,
-                  ),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    suffixText: 'g',
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 10,
+                  SizedBox(
+                    width: 78,
+                    child: TextField(
+                      controller: _grams,
+                      focusNode: _focus,
+                      textAlign: TextAlign.center,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                      ],
+                      onChanged: (text) => widget.onGrams(
+                        double.tryParse(text.replaceAll(',', '.')) ?? 0,
+                      ),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        suffixText: 'g',
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 10,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  _StepButton(icon: Icons.add_rounded, onTap: () => _step(1)),
+                ],
               ),
-              _StepButton(icon: Icons.add_rounded, onTap: () => _step(1)),
-              const Spacer(),
               Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: Text(

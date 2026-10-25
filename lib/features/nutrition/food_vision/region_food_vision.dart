@@ -30,7 +30,7 @@ class RegionFoodVision implements FoodVisionService {
   /// A food is kept when its best region reached this probability…
   static const minFoodPeak = 0.14;
 
-  /// …and it appeared in at least this many regions (or the full image).
+  /// …and it appeared in at least this many distinct regions.
   static const minRegions = 2;
 
   /// Categories where a plate usually has a single food (one main protein,
@@ -43,6 +43,16 @@ class RegionFoodVision implements FoodVisionService {
     final labels = await _labels();
     // Decoding, cropping and 26 inferences run off the UI isolate.
     final perCrop = await Isolate.run(() => classifyRegions(model, imageBytes));
+    return interpretRegions(database, perCrop, labels);
+  }
+
+  /// Multiple labels for one food in the same crop are one observation,
+  /// not independent evidence of its presence.
+  static FoodVisionResult interpretRegions(
+    FoodDatabase database,
+    List<List<(int, double)>> perCrop,
+    Map<int, String> labels,
+  ) {
     final peak = <String, double>{};
     final regions = <String, int>{};
     final score = <String, double>{};
@@ -50,14 +60,20 @@ class RegionFoodVision implements FoodVisionService {
     for (var i = 0; i < perCrop.length; i++) {
       final ranked = perCrop[i];
       if (i == 0 && ranked.isNotEmpty) dish = labels[ranked.first.$1];
+      final cropPeak = <String, double>{};
       for (final (k, p) in ranked) {
         final label = labels[k];
         if (label == null) continue;
         for (final food in database.forVisionLabel(label)) {
-          score[food.key] = (score[food.key] ?? 0) + p;
-          if (p > (peak[food.key] ?? 0)) peak[food.key] = p;
-          regions[food.key] = (regions[food.key] ?? 0) + 1;
+          if (p > (cropPeak[food.key] ?? 0)) cropPeak[food.key] = p;
         }
+      }
+      for (final entry in cropPeak.entries) {
+        final key = entry.key;
+        final p = entry.value;
+        score[key] = (score[key] ?? 0) + p;
+        if (p > (peak[key] ?? 0)) peak[key] = p;
+        regions[key] = (regions[key] ?? 0) + 1;
       }
     }
     final keys =

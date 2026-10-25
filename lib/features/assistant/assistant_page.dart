@@ -11,6 +11,7 @@ import '../workouts/domain/plan_generator.dart';
 import '../workouts/domain/week_schedule.dart';
 import 'domain/meal_proposal.dart';
 import 'meal_log_sheet.dart';
+import 'widgets/chat_message_bubble.dart';
 
 /// Q&A with the operating system's on-device model (Apple Intelligence on
 /// iOS 26+, Gemini Nano on supported Android phones).
@@ -239,7 +240,7 @@ class _AssistantPageState extends State<AssistantPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _Bubble(turn: _turns[i]),
+                        ChatMessageBubble(turn: _turns[i]),
                         if (_proposals[i] != null)
                           _ProposalCard(
                             proposal: _proposals[i]!,
@@ -450,50 +451,6 @@ class _SuggestionChip extends StatelessWidget {
       ),
     ),
   );
-}
-
-class _Bubble extends StatelessWidget {
-  const _Bubble({required this.turn});
-  final ChatTurn turn;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final dark = theme.brightness == Brightness.dark;
-    final user = turn.fromUser;
-    return Align(
-      alignment: user ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 520),
-        margin: EdgeInsets.only(
-          bottom: 10,
-          left: user ? 48 : 0,
-          right: user ? 0 : 48,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-        decoration: BoxDecoration(
-          color: user
-              ? scheme.primary
-              : (dark ? const Color(0xFF181B21) : Colors.white),
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(18),
-            topRight: const Radius.circular(18),
-            bottomLeft: Radius.circular(user ? 18 : 6),
-            bottomRight: Radius.circular(user ? 6 : 18),
-          ),
-          border: user ? null : Border.all(color: scheme.outline, width: 0.8),
-        ),
-        child: SelectableText(
-          turn.text,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: user ? scheme.onPrimary : scheme.onSurface,
-            height: 1.45,
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _ThinkingBubble extends StatelessWidget {
