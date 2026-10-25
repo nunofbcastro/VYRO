@@ -194,7 +194,9 @@ FoodVisionResult fuseVisionResults(
   final seen = <String>{
     for (final f in foods) (f.food?.key ?? f.label.toLowerCase()),
   };
-  final suggestions = <DetectedFood>[];
+  // System suggestions (duplicate coffees) come first; never in totals.
+  final suggestions = <DetectedFood>[...system.suggestions];
+  var offlineSuggestions = 0;
   for (final extra in regions.foods) {
     final key = extra.food?.key ?? extra.label.toLowerCase();
     if (!seen.add(key)) {
@@ -205,14 +207,17 @@ FoodVisionResult fuseVisionResults(
       foods[i] = prev.copyWith(corroborated: true);
       continue;
     }
-    if (!system.confirmedEmpty) suggestions.add(extra);
+    if (!system.confirmedEmpty) {
+      suggestions.add(extra);
+      offlineSuggestions++;
+    }
   }
   final usedSystem = system.foods.isNotEmpty;
   final usedRegions = regions.foods.isNotEmpty;
   final source = usedSystem && usedRegions ? VisionSource.fused : system.source;
   final notes = [
     if (qualityNote != null) qualityNote,
-    if (suggestions.isNotEmpty) 'fusedOffline',
+    if (offlineSuggestions > 0) 'fusedOffline',
     if (system.note != null) system.note!,
   ];
   return FoodVisionResult(
@@ -226,7 +231,7 @@ FoodVisionResult fuseVisionResults(
     detail: [
       if (system.detail != null) system.detail!,
       if (regions.dishGuess != null) 'offlineDish=${regions.dishGuess}',
-      if (suggestions.isNotEmpty) 'offlineSuggestions=${suggestions.length}',
+      if (offlineSuggestions > 0) 'offlineSuggestions=$offlineSuggestions',
     ].join('\n'),
   );
 }

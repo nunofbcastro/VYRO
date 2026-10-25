@@ -591,9 +591,9 @@ class VyroSubpageScaffold extends StatelessWidget {
   }
 }
 
-/// Compact V monogram shown at the top-left of tab pages.
+/// Full VYRO lettering shown at the top-left of tab pages.
 class VyroWordmark extends StatelessWidget {
-  const VyroWordmark({super.key, this.height = 20});
+  const VyroWordmark({super.key, this.height = 22});
 
   final double height;
 
@@ -602,9 +602,10 @@ class VyroWordmark extends StatelessWidget {
     return Semantics(
       label: 'VYRO',
       child: ExcludeSemantics(
-        child: SizedBox.square(
-          dimension: height,
-          child: CustomPaint(painter: VyroMarkPainter.of(context)),
+        child: SizedBox(
+          width: height * VyroWordmarkPainter.aspectRatio,
+          height: height,
+          child: CustomPaint(painter: VyroWordmarkPainter.of(context)),
         ),
       ),
     );

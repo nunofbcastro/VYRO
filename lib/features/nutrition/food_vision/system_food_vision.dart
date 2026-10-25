@@ -62,16 +62,24 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
     // Non-food objects (towel, napkin, plate...) never reach verification.
     final split = dropNonFood(draft);
     final kept = split.kept;
+    final nonFoodLines = [
+      for (final label in split.dropped)
+        decisionLine(label, ItemAction.dropped, 'non-food'),
+    ];
     if (kept.isEmpty) {
       return FoodVisionResult(
         foods: const [],
         source: VisionSource.systemAi,
-        detail: _joinDetail([first, _droppedLine(split.dropped)]),
+        detail: _joinDetail([
+          first,
+          _droppedLine(split.dropped),
+          ...nonFoodLines,
+        ]),
       );
     }
-    // Verification only removes items; it never adds foods. An omitted
-    // verdict sends that item to suggestions; an unparseable answer keeps the
-    // first list (the where/container rules still apply).
+    // Verification only removes items (explicit visible:false); it never adds
+    // foods. An omitted verdict keeps the item as uncertain; an unparseable
+    // answer keeps the whole first list.
     List<bool?>? verdicts;
     var detail = first;
     try {
@@ -85,31 +93,37 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
           ? '$first\n---\nverify: unparsed\n$verify'
           : '$first\n---\n$verify';
       if (verdicts != null && verdicts.contains(null)) {
-        detail = '$detail\nverify: incomplete, omitted items to suggestions';
+        detail = '$detail\nverify: incomplete, omitted items kept as uncertain';
       }
     } catch (error) {
       detail = '$first\n---\nverify: failed ($error)';
     }
     final decision = decideDraft(kept, verdicts: verdicts);
-    final sane = applyDrinkSanity(decision.foods);
-    if (sane.length != decision.foods.length) {
-      detail = '$detail\nsanity: one coffee kept';
-    }
+    // One cup, one drink: a duplicate coffee is a suggestion, not a total.
+    final sanity = applyDrinkSanity(decision.foods);
+    final duplicates = sanity.duplicates;
     final generic = [
       for (final f in kept)
         if (f.needsChoice) f.label,
     ];
+    final decisionLines = [
+      for (final d in decision.decisions)
+        if (duplicates.any((f) => identical(f, d.item)))
+          decisionLine(d.item.label, ItemAction.suggestion, 'duplicate coffee')
+        else
+          decisionLine(d.item.label, d.action, d.reason),
+    ];
     return FoodVisionResult(
-      foods: sane,
-      suggestions: decision.suggestions,
+      foods: sanity.kept,
+      suggestions: duplicates,
       source: VisionSource.systemAi,
-      confirmedEmpty: decision.confirmedEmpty && sane.isEmpty,
+      confirmedEmpty: decision.confirmedEmpty && sanity.kept.isEmpty,
       detail: _joinDetail([
         detail,
         _droppedLine(split.dropped),
         if (generic.isNotEmpty) 'generic: ${generic.join(', ')}',
-        if (decision.suggestions.isNotEmpty)
-          'suggestions: ${decision.suggestions.map((f) => f.label).join(', ')}',
+        ...nonFoodLines,
+        ...decisionLines,
       ]),
     );
   }
@@ -173,24 +187,28 @@ const _jsonFormat =
 /// to weigh food. No category checklist: it made the model fill every slot.
 String buildFoodPhotoPrompt() => '''
 Analyse ONLY the image attached to THIS request. It is a new, independent meal. Never reuse foods from earlier images, messages or meals.
-List only the foods and drinks you can point to in this photo. Fewer items is better than guessing. A typical photo has 1 to 4 items. Never add side dishes, salads, vegetables, legumes, spreads or garnishes that are not clearly visible. Do not infer hidden ingredients, oil, sugar or milk.
+List only the foods and drinks that are actually in this photo. Include every drink in a glass, cup, bottle or can, and every food on a plate, board or packaging. Never add side dishes, salads, vegetables, legumes, spreads or garnishes that are not clearly visible. Do not infer hidden ingredients, oil, sugar or milk. Do not list non-food objects such as the table, napkins, towels or cutlery.
 One row per food type, with its TOTAL count. A single cup or glass is ONE drink, even with a saucer, handle or shadow. Never list the same coffee twice.
 For each item give:
 - "name": short food name in European Portuguese.
-- "where": short location in the photo, required, e.g. "centre of plate" or "cup top-left".
+- "where": short location in the photo, e.g. "centre of plate" or "cup top-left". It helps us check the item; leave it as "" if you cannot tell.
 - "count": number of clearly separate pieces or containers, else 1.
 - "size": small, medium or large compared with a typical single serving. Do not output grams.
 If no food or drink is visible reply {"items":[]}.
 Reply with JSON only, no markdown: $_jsonFormat''';
 
 /// Verification: yes/no per draft item. It must not add or rename foods.
+/// Partly visible or small items count as visible; only a confident "not in
+/// the photo" is false.
 String buildFoodVerifyPrompt(List<DetectedFood> draft) {
   final items = [
     for (var i = 0; i < draft.length; i++) '$i: ${draft[i].label}',
   ].join('\n');
   return '''
-Look ONLY at the attached photo (any attached view of it). Check each numbered item below and answer whether that food or drink is clearly visible in THIS photo.
-Use "visible": false when you cannot clearly see it, when it is only a guess, or when it is not in the photo. Use "visible": true only for what you can clearly see. Do not name any other food and do not rename items.
+Look ONLY at the attached photo (any attached view of it). Check each numbered item below.
+Answer "visible": true if that food or drink can be seen in THIS photo, even partly, small or at the edge of the frame.
+Answer "visible": false only if you are confident it is NOT in the photo. If unsure, answer true.
+Do not name any other food and do not rename items.
 $items
 Reply with JSON only, no markdown, one entry per item: {"checks":[{"i":0,"visible":true}]}''';
 }
@@ -261,21 +279,30 @@ CoffeeKind? coffeeKindOf(DetectedFood food) {
 }
 
 /// One cup, one drink: when an espresso-type and a milk-type coffee are both
-/// listed, only the first coffee listed by the model is kept. Pure function.
-List<DetectedFood> applyDrinkSanity(List<DetectedFood> foods) {
+/// listed, only the first coffee listed by the model is kept; the others are
+/// returned as duplicates (suggestions, never totals). Pure function.
+({List<DetectedFood> kept, List<DetectedFood> duplicates}) applyDrinkSanity(
+  List<DetectedFood> foods,
+) {
   final coffees = [
     for (final f in foods)
       if (coffeeKindOf(f) != null) f,
   ];
-  if (coffees.length < 2) return foods;
+  if (coffees.length < 2) return (kept: foods, duplicates: const []);
   final firstKind = coffeeKindOf(coffees.first);
   final mixed = coffees.any((f) => coffeeKindOf(f) != firstKind);
-  if (!mixed) return foods;
+  if (!mixed) return (kept: foods, duplicates: const []);
   final keep = coffees.first;
-  return [
-    for (final f in foods)
-      if (coffeeKindOf(f) == null || identical(f, keep)) f,
-  ];
+  return (
+    kept: [
+      for (final f in foods)
+        if (coffeeKindOf(f) == null || identical(f, keep)) f,
+    ],
+    duplicates: [
+      for (final f in coffees)
+        if (!identical(f, keep)) f,
+    ],
+  );
 }
 
 /// Matches foods without summing repeated rows. Grams come from typical

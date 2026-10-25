@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- VYRO mark (same geometry as brand/logos), for widgets. -->
+<!-- VYRO V monogram (brand/logos/vyro-mark-dark.svg, viewBox 2.5 0 110 110),
+     translated so its origin is at 0,0. Body #FFFFFF, logo cap #A3E635. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="100"
-    android:viewportHeight="100">
-    <path android:fillColor="#F5F7F8" android:pathData="M4,14 L33,14 L50,60 L67,14 L96,14 L63,88 L37,88 Z" />
-    <path android:fillColor="#12151A" android:pathData="M67,14 L96,14 L89.04,29.6 L61.23,29.6 Z" />
-    <path android:fillColor="#B8F36B" android:pathData="M67,14 L96,14 L90.2,27 L62.2,27 Z" />
+    android:viewportWidth="110"
+    android:viewportHeight="110">
+    <path android:fillColor="#FFFFFF" android:pathData="M7.5,24 L37.5,24 L65.5,100 L35.5,100 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M37.5,100 L67.5,100 L92.5,34 L62.5,34 Z" />
+    <path android:fillColor="#A3E635" android:pathData="M64.5,28 L94.5,28 L102.5,10 L72.5,10 Z" />
 </vector>

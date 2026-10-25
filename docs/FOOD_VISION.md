@@ -21,8 +21,10 @@ foto (câmara/galeria, ficheiro temporário apagado logo após leitura)
   │     SystemFoodVision: Gemini Nano multimodal (Android, ML Kit GenAI Prompt API)
   │       1.ª passagem (`buildFoodPhotoPrompt`): só a imagem atual, sem lista
   │         de categorias → {items:[{name,where,count,size}]}, nomes em português;
-  │         só alimentos que o modelo consegue apontar; "fewer is better"
-  │       regras determinísticas (`applyDrinkSanity`): uma chávena = uma bebida
+  │         só alimentos e bebidas da foto; todas as bebidas em copo/chávena/garrafa/lata
+  │         e todos os alimentos em pratos/tábuas/embalagens; "where" pedido mas opcional
+  │       regras determinísticas (`applyDrinkSanity`): uma chávena = uma bebida;
+  │         o café duplicado vai para sugestões (fora dos totais)
   │       2.ª passagem (`buildFoodVerifyPrompt`): verificação, não revisão. Recebe
   │         a lista e devolve {checks:[{i,visible}]}. Só remove itens (visible=false);
   │         nunca acrescenta nem renomeia. Resposta inválida ou incompleta →
@@ -100,13 +102,20 @@ fechadas são ignorados.
   leguminosas, saladas...): essa lista fazia o modelo preencher todas as
   categorias. Uma chávena, asa, pires ou reflexo não são recipientes separados.
   Linhas repetidas do mesmo alimento conservam o maior total, sem somar duplicados.
-- Verificação sem acrescentos: o modelo só responde se cada item da lista é
-  claramente visível. Um índice omitido ou sem verdicto booleano vai para as
-  sugestões (não é apagado nem conta nos totais). Uma resposta sem lista
-  `checks` mantém a primeira lista (ver "Regras de confiança" acima).
+- Verificação sem acrescentos e só com prova de ausência: o modelo responde
+  `visible: false` apenas quando tem a certeza de que o item não está na foto.
+  Visível, mesmo parcialmente, pequeno ou no canto da imagem, é `true`. Um índice
+  omitido ou sem verdicto booleano **mantém o item na lista principal** como
+  incerto ("Hipótese a confirmar"). Uma resposta sem lista `checks` mantém a
+  primeira lista inteira (ver "Regras de confiança" abaixo).
+- Diagnóstico: "Detalhes da análise" tem uma linha por item, por exemplo
+  `cerveja → kept (verify=true, where "top right", drink, no container in where)`,
+  `toalha → dropped (non-food)`, `Café com leite → suggestion (duplicate coffee)`,
+  `Queijo → dropped (verify=false)`. É o texto a enviar para revisão.
 - Regras determinísticas depois da verificação (`system_food_vision.dart`):
   - Um café por chávena: se aparecerem um café tipo expresso e um tipo café com
-    leite, fica só o primeiro listado pelo modelo. A categoria vem da chave da
+    leite, fica só o primeiro listado pelo modelo; o outro vai para sugestões
+    (fora dos totais). A categoria vem da chave da
     base (`espresso`, `coffee_with_milk`) ou, se não houver match, do nome
     (café com leite/galão/meia de leite; café/expresso/bica).
   - Contagem só para alimentos com porção por unidade (`portion_units` no TSV).
@@ -128,32 +137,37 @@ fechadas são ignorados.
 
 O mesmo modelo pequeno escreve a lista e depois a confirma, por isso a confirmação
 não basta. Estas regras são funções puras, testadas em `test/food_screening_test.dart`
-e ligadas em `SystemFoodVision` (ordem: não-alimentos → verificação → localização
-→ bebidas → coerência de café):
+e ligadas em `SystemFoodVision` (ordem: não-alimentos → verificação → coerência de
+café). Localização (`where`) e recipiente são **evidência** escrita no diagnóstico,
+nunca portões.
 
 1. **Objetos não alimentares são removidos** antes da verificação. Um nome cujas
    palavras (sem artigos) são todas da lista (toalha, guardanapo, copo sozinho,
    chávena sozinha, garrafa, lata, prato, talheres, mesa, papel, menu, recibo,
    tabuleiro, panela, e os equivalentes em inglês) é descartado. "Copo de água"
-   fica. Os nomes descartados aparecem em "Detalhes da análise"
-   (`dropped non-food: ...`).
+   fica. Cada nome descartado aparece em "Detalhes da análise" como
+   `toalha → dropped (non-food)`.
 2. **Nomes genéricos** ("bebida", "comida", "refeição", "sanduíche", "sandes",
    "molho", "carne", "peixe", "fruta", "sobremesa", "drink", "food"...) ficam na
    lista, marcados como `needsChoice`, sem correspondência na base e sem valores
    nutricionais. O cartão pergunta "Que bebida?" (ou equivalente) e abre o seletor
    com esse nome já escrito. "Prato" sozinho é tratado como objeto (ponto 1).
-3. **Bebidas precisam de recipiente.** Uma bebida (categoria `bebidas` ou palavras
-   como água, sumo, cerveja, café) fica na lista só se o campo `where` mencionar
-   um recipiente (copo, chávena, caneca, garrafa, lata, taça, jarro; ou em inglês
-   cup, glass, mug, bottle, can). Caso contrário vai para **"Outras hipóteses"**,
-   fora dos totais.
-4. **Confiança na verificação:**
-   - (a) Se a verificação omitir um índice, esse item vai para as sugestões (não é
-     apagado nem entra nos totais). Só `visible: false` apaga.
-   - (b) Um item da primeira resposta sem `where` vai para as sugestões. Os nomes
-     genéricos são exceção (são pedidos ao utilizador, não hipóteses).
-   - Verificação inválida ou ausente mantém a primeira lista, mas as regras 1, 2,
-     3 e 4b continuam a aplicar-se.
+3. **Bebidas tratam-se como alimentos.** Uma bebida (categoria `bebidas` ou palavras
+   como água, sumo, cerveja, café) fica na lista principal se a verificação não a
+   rejeitar explicitamente. Se o `where` mencionar um recipiente (copo, chávena,
+   caneca, garrafa, lata, taça, jarro; ou cup, glass, mug, bottle, can), o
+   diagnóstico regista "container in where"; se não, regista "no container in
+   where". Não move nada para as sugestões.
+4. **Verificação só remove com prova de ausência:**
+   - (a) Só `visible: false` apaga um item. Um índice omitido, ou com verdicto não
+     booleano, **fica na lista principal como incerto** ("verify omitted, uncertain"),
+     com a etiqueta "Hipótese a confirmar" e conta nos totais como os restantes.
+   - (b) Um item sem `where` **fica na lista principal** ("no where"). O `where`
+     é evidência para o utilizador, não um requisito.
+   - Verificação inválida ou ausente mantém a primeira lista inteira ("verify
+     unparsed"); as regras 1, 2 e 3 continuam a aplicar-se.
+   - Um café duplicado (regra "uma chávena = uma bebida") é a única coisa que
+     vai para as sugestões ("duplicate coffee").
    - Refeição **confirmada vazia** só quando a verificação rejeita explicitamente
      todos os itens. Uma resposta só com objetos não alimentares não é confirmada
      vazia: aparece o cartão de falha com "Tentar de novo".
@@ -162,6 +176,16 @@ e ligadas em `SystemFoodVision` (ordem: não-alimentos → verificação → loc
    descarregar) ou `other`. A página mostra o motivo em português/inglês e um botão
    "Tentar de novo" que repete a análise da mesma foto. O botão de adicionar
    alimento continua disponível.
+
+**Compromisso desta revisão (recall sobre precisão).** A versão 0.6.3 removia para
+sugestões os itens sem `where`, as bebidas sem palavra de recipiente e os itens sem
+verdicto. No telemóvel, o modelo pequeno omite com frequência o campo `where` e
+escreve locais como "on the table, right"; essas regras apagavam verdadeiros
+positivos (cerveja, hambúrguer). Foram retiradas. A precisão passa a depender de:
+verificação explícita (`visible: false`), lista de não-alimentos, nomes genéricos
+e a regra de um café por chávena. O custo é mais recall e mais falsos positivos
+possíveis; o utilizador remove-os na revisão. O diagnóstico em "Detalhes da análise"
+mostra a decisão e o motivo de cada item para se poder analisar uma foto concreta.
 
 ## Revisão no ecrã — `photo_food_page.dart`
 
@@ -234,3 +258,8 @@ alimentos, gramas e kcal sugeridos. Os restantes testes usam respostas simuladas
   alimentos ou sugerir outros.
 - A segunda passagem do modelo do sistema corre sempre que a primeira devolve
   alimentos; ainda não é condicionada por ambiguidade ou desacordo.
+- Recall sobre precisão: a versão atual mantém quase tudo o que o modelo lista.
+  Falsos positivos (ex.: uma cerveja que não existe) passam para a revisão e
+  têm de ser removidos pelo utilizador. Não há medição com fotos reais; o
+  objetivo seguinte é medir os dois erros em um conjunto de fotos, com o
+  diagnóstico de cada item.

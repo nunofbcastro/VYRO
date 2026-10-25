@@ -14,7 +14,9 @@ void main() {
     ),
   );
 
-  testWidgets('header keeps only the first V monogram', (tester) async {
+  testWidgets('header draws the full VYRO lettering as one painter', (
+    tester,
+  ) async {
     await tester.pumpWidget(app(const Scaffold(body: VyroWordmark())));
     expect(find.text('VYRO'), findsNothing);
     expect(
@@ -24,6 +26,9 @@ void main() {
       ),
       findsOneWidget,
     );
+    final box = tester.getSize(find.byType(VyroWordmark));
+    expect(box.height, 22);
+    expect(box.width, closeTo(22 * 472 / 92, 0.01));
     final semantics = tester.ensureSemantics();
     expect(find.bySemanticsLabel('VYRO'), findsOneWidget);
     semantics.dispose();

@@ -27,7 +27,10 @@ Inter (or system sans fallback), tight bold headlines, clear tabular numbers, re
 8 px spacing grid, 16/20/24 px radii, 44–48 px minimum tap targets, 4–5 navigation tabs, strong numerical hierarchy, no more than one primary CTA per section.
 
 ## Logo
-Wordmark and V monogram (SVG in `logos/`) are initial vector concepts, not registered trademarks. Keep clear space equivalent to the width of the V's inner notch. Do not place small lime text on white; use dark accent for light backgrounds.
+The logo is the V Y R O lettering with a separate accent cap on the V (SVG in `logos/`, geometry and files in `logos/README.md`). It is an initial vector concept, not a registered trademark. Keep clear space equivalent to the width of the V's inner notch.
+- Dark backgrounds: white body, logo cap `#A3E635`. Light backgrounds: ink body `#18191C`, logo cap `#4D7C0F`.
+- The logo cap is a logo colour, separate from the UI accent: UI lime `#B8F36B` is unchanged, and small lime text is not placed on white.
+- The V monogram alone is the app icon: V at 60% of the canvas on `#0B0D10`.
 
 ## Accessibility
 Use semantic labels, support font scaling, ensure appropriate contrast, supply non-colour feedback and dark/light variants.

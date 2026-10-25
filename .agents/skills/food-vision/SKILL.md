@@ -19,8 +19,10 @@ cloud, no paid API, the photo stays in memory. Full details:
   suggestions, typed `confirmedEmpty`, `failure` (`VisionFailure`: busy,
   unavailable, other), `notes` set, `detail` for diagnostics); `fuseVisionResults`.
 - `food_screening.dart`: pure trust rules: `dropNonFood`, `isNonFoodName`,
-  `genericKindOf`, `mentionsContainer`, `isDrinkItem`, `decideDraft` (verdicts,
-  missing where, drinks without container → suggestions), `normaliseFoodName`.
+  `genericKindOf`, `mentionsContainer`, `isDrinkItem`, `decideDraft` (only
+  `visible:false` drops; omitted verdict stays uncertain; `where` and drink
+  words are reason text, never a gate), `decisionLine` (one diagnostic line per
+  item), `normaliseFoodName`.
 - `portion_estimate.dart`: `PortionSize` (small 0.6, medium 1, large 1.5),
   `estimatedGrams`, the only place where grams are computed from a food;
   `isWholeDish` (pizza, burger, francesinha, `pratos`) never shrinks below 1.
@@ -62,8 +64,11 @@ cloud, no paid API, the photo stays in memory. Full details:
 4. System model answers badly: open "Detalhes da análise" on the review
    screen to read the raw answers (or the error). Adjust `buildFoodPhotoPrompt`
    (no category checklist: it makes the small model fill every slot; keep
-   Portuguese names, JSON only) or `buildFoodVerifyPrompt` (yes/no per item,
-   never add foods), and add missing aliases in the TSV so free names match. Do not paste the whole
+   Portuguese names, JSON only; do NOT restore "fewer items is better" or
+   "1 to 4 items": that cut true positives on device) or
+   `buildFoodVerifyPrompt` (yes/no per item, never add foods; visible if
+   partly visible, false only when confident it is absent), and add missing
+   aliases in the TSV so free names match. Do not paste the whole
    database into the prompt: it biases the small model. Extend
    `test/system_food_vision_test.dart` and `test/food_database_test.dart`.
 5. Run `dart format`, `flutter analyze`, `flutter test`.
@@ -86,21 +91,30 @@ cloud, no paid API, the photo stays in memory. Full details:
 - Verification, not review: after the first answer the same photo is checked
   once with `buildFoodVerifyPrompt`, which lists the kept draft items by index
   and asks for `{"checks":[{"i":0,"visible":true}]}`. It never adds or renames
-  foods. `visible: false` drops an item; an omitted index or non-boolean verdict
-  sends it to suggestions ("verify: incomplete"). An answer that is not valid
-  JSON or has no `checks` list keeps the first list ("verify: unparsed").
-  All items explicitly rejected is a confirmed empty meal.
-- Trust rules (`food_screening.dart`, pure, see `docs/FOOD_VISION.md`), in order:
+  foods. Only an explicit `visible: false` drops an item. An omitted index or
+  non-boolean verdict keeps the item in the main list as uncertain ("verify
+  omitted, uncertain"; the review shows "Hipótese a confirmar"). An answer that
+  is not valid JSON or has no `checks` list keeps the whole first list ("verify
+  unparsed"). All items explicitly rejected is a confirmed empty meal.
+- Trust rules (`food_screening.dart`, pure, see `docs/FOOD_VISION.md`):
   1. Non-food names (towel, napkin, plate alone, cup alone, table, menu...) are
-     dropped before verification and listed as `dropped non-food:` in detail.
+     dropped before verification: `dropped non-food:` plus a per-item line.
   2. Generic names (bebida, comida, sanduíche, molho, carne, drink, food...) stay
      in the review with `needsChoice`, no database match, no nutrients. The
      card asks "Que bebida?" and opens the picker pre-filled with the name.
-  3. A drink (category `bebidas` or drink words) stays only when its `where`
-     names a container (copo, chávena, caneca, garrafa, lata, taça, jarro, cup,
-     glass, mug, bottle, can); otherwise it goes to suggestions.
-  4. An item with no `where` goes to suggestions (generic names excepted).
-  Rules 1, 2, 3 and 4 also apply when verification is unparsed.
+  3. Drinks are treated like food. `where` and container words are evidence in
+     the reason line ("container in where" / "no container in where"), never a
+     gate. Items without `where` stay in the main list ("no where").
+  4. Only the one-cup-one-drink rule sends an item to suggestions: a second
+     coffee of the other kind is `duplicate coffee`, outside totals.
+  Rules 1, 2 and 4 also apply when verification is unparsed.
+- Trade-off (recall over precision): v0.6.3 sent items without `where`, drinks
+  without container words and unverified items to suggestions. On device the
+  small model often omits `where`, so those gates removed true positives (beer,
+  burger). They were removed. Precision now rests on explicit `visible: false`,
+  the non-food list and the one-cup rule. Expect more false positives in review.
+- Diagnostics: "Detalhes da análise" has one line per item:
+  `name → kept|dropped|suggestion (reason)`. Users can paste it for triage.
 - Failure UX: `VisionFailure.fromError` maps busy/quota to `busy` and
   unsupported/unavailable/downloadable to `unavailable`. An empty review that is
   not a confirmed empty meal shows a card with the reason and "Tentar de novo"
@@ -145,8 +159,12 @@ percentages.
 
 - `test/vision_resilience_test.dart`: piece counts, confirmed empty review,
   independent failures, offline-only suggestions, region coordinates, quality.
-- `test/food_screening_test.dart`: non-food list, generic names, container
-  rule, verdict rules, whole-dish portions, failure mapping, pipeline failure.
+- `test/food_screening_test.dart`: non-food list, generic names, where as
+  evidence, verdict rules, whole-dish portions, failure mapping, pipeline failure.
+- Regression tests (v0.6.4 recall fix) in `test/system_food_vision_test.dart`:
+  burger + beer with no `where` both kept; prose `where` kept; omitted verdict
+  kept as uncertain; explicit `visible:false` dropped; prompts never contain
+  "Fewer items" or "1 to 4".
 - `test/food_database_test.dart`, `test/system_food_vision_test.dart` (croissant
   and pasta cases), `test/region_food_vision_test.dart`,
   `test/photo_food_page_test.dart` (generic prompt, failure card, retry).

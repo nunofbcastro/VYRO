@@ -141,11 +141,11 @@ void main() {
     test('a generic name is kept in the review even without a where', () {
       final decision = decideDraft([item('Bebida')], verdicts: [true]);
       expect(decision.foods.single.needsChoice, isTrue);
-      expect(decision.suggestions, isEmpty);
+      expect(decision.decisions.single.action, ItemAction.kept);
     });
   });
 
-  group('drinks need container evidence', () {
+  group('drinks: container words are evidence in the reason, not a gate', () {
     test('container words in the where text', () {
       for (final where in [
         'cup top-left',
@@ -171,15 +171,22 @@ void main() {
       expect(mentionsContainer('cantina'), isFalse);
     });
 
-    test('a beer without a container is a suggestion, with one it stays', () {
+    // Regression (v0.6.3 removed true positives): a beer without container
+    // words used to go to suggestions. Drinks are now kept like food; the
+    // reason line says whether the location names a container.
+    test('a beer stays in the main list with or without a container', () {
       final beerNoContainer = item('Cerveja', where: 'top right');
       final beerInGlass = item('Cerveja', where: 'glass, centre');
       final decision = decideDraft([beerNoContainer, beerInGlass]);
-      expect(decision.foods.single.where, 'glass, centre');
-      expect(decision.suggestions.single.where, 'top right');
+      expect(decision.foods.map((f) => f.where), [
+        'top right',
+        'glass, centre',
+      ]);
+      expect(decision.decisions[0].reason, contains('drink, no container'));
+      expect(decision.decisions[1].reason, contains('drink, container'));
     });
 
-    test('the drink rule also uses the database category', () {
+    test('a drink by database category is kept with no container', () {
       final juice =
           db.byKey('orange_juice') ??
           db.foods.firstWhere((f) => f.category == 'bebidas');
@@ -191,12 +198,39 @@ void main() {
         where: 'on the table',
       );
       expect(isDrinkItem(drinkByCategory), isTrue);
-      expect(decideDraft([drinkByCategory]).suggestions, hasLength(1));
+      final decision = decideDraft([drinkByCategory]);
+      expect(decision.foods, hasLength(1));
+      expect(decision.decisions.single.action, ItemAction.kept);
+    });
+  });
+
+  group('where is evidence, never a gate', () {
+    test('items without where stay in the main list', () {
+      final decision = decideDraft(
+        [item('Hambúrguer'), item('Cerveja'), item('Pão', where: '')],
+        verdicts: [true, true, true],
+      );
+      expect(decision.foods, hasLength(3));
+      expect(
+        decision.decisions.map((d) => d.reason),
+        everyElement(contains('no where')),
+      );
+    });
+
+    test('a location written as prose does not remove a food', () {
+      final decision = decideDraft(
+        [item('Cerveja', where: 'on the table, right')],
+        verdicts: [true],
+      );
+      expect(decision.foods.single.label, 'Cerveja');
+      expect(decision.decisions.single.reason, contains('verify=true'));
     });
   });
 
   group('verification trust', () {
-    test('an omitted verdict goes to suggestions; a false one is dropped', () {
+    // Regression: an omitted verdict used to send the item to suggestions.
+    // It now stays in the main list as uncertain ("Hipótese a confirmar").
+    test('an omitted verdict keeps the item as uncertain; false drops it', () {
       final decision = decideDraft(
         [
           item('Pão', where: 'plate'),
@@ -205,8 +239,13 @@ void main() {
         ],
         verdicts: [true, null, false],
       );
-      expect(decision.foods.map((f) => f.label), ['Pão']);
-      expect(decision.suggestions.map((f) => f.label), ['Queijo']);
+      expect(decision.foods.map((f) => f.label), ['Pão', 'Queijo']);
+      expect(
+        decision.decisions[1].reason,
+        contains('verify omitted, uncertain'),
+      );
+      expect(decision.decisions[2].action, ItemAction.dropped);
+      expect(decision.decisions[2].reason, 'verify=false');
       expect(decision.confirmedEmpty, isFalse);
     });
 
@@ -216,14 +255,46 @@ void main() {
         verdicts: [false],
       );
       expect(decision.foods, isEmpty);
-      expect(decision.suggestions, isEmpty);
       expect(decision.confirmedEmpty, isTrue);
     });
 
-    test('unparsed verification keeps the first list', () {
-      final decision = decideDraft([item('Pão', where: 'plate')]);
-      expect(decision.foods, hasLength(1));
+    test('unparsed verification keeps the whole first list', () {
+      final decision = decideDraft([
+        item('Pão', where: 'plate'),
+        item('Cerveja'),
+      ]);
+      expect(decision.foods, hasLength(2));
+      expect(decision.decisions.first.reason, contains('verify unparsed'));
       expect(decision.confirmedEmpty, isFalse);
+    });
+
+    test(
+      'a verdict list shorter than the items treats the rest as omitted',
+      () {
+        final decision = decideDraft(
+          [item('Pão'), item('Manteiga')],
+          verdicts: [true],
+        );
+        expect(decision.foods, hasLength(2));
+        expect(decision.decisions[1].reason, contains('verify omitted'));
+      },
+    );
+  });
+
+  group('diagnostic lines', () {
+    test('decisionLine names the item, the action and the reason', () {
+      expect(
+        decisionLine('cerveja', ItemAction.kept, 'verify=true'),
+        'cerveja → kept (verify=true)',
+      );
+      expect(
+        decisionLine('toalha', ItemAction.dropped, 'non-food'),
+        'toalha → dropped (non-food)',
+      );
+      expect(
+        decisionLine('café', ItemAction.suggestion, 'duplicate coffee'),
+        'café → suggestion (duplicate coffee)',
+      );
     });
   });
 

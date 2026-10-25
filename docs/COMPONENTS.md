@@ -81,7 +81,7 @@ All motion lives in `components/vyro_motion.dart`. Every animation runs once, la
 
 ## Brand
 - `VyroBrandTile(size)`: the monogram tile used in the splash, onboarding and brand row.
-- `VyroMarkPainter(primary, secondary)`: draws the "folded ribbon" V. The geometry matches `brand/logos/*.svg` and the launcher icons.
+- `VyroMarkPainter(body, accent, progress)`: draws the V monogram (two body strokes plus the accent cap). The geometry matches `brand/logos/vyro-mark-*.svg` and the launcher icons.
 
 ## Feature-level shared widgets
 These belong to a feature but are reused across screens:

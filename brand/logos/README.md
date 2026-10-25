@@ -1,28 +1,45 @@
 # VYRO logo and app icon
 
-The mark is a solid geometric V in off-white (ink on light backgrounds). Its right arm ends in a lime "progress" cap, separated by a thin cut. Lime is used only as a signal, never for the whole mark, and there is no glow or gradient, so it stays sober at any size.
+The logo is a heavy geometric lettering, V Y R O, with a separate accent "progress" cap on the V's right arm. The V monogram on its own is the app icon, the splash tile and the widget mark. The cap is a thin cut away from the body, and there is no glow or gradient, so it stays sober at any size.
 
 | File | Use |
 | --- | --- |
-| `vyro-mark-dark.svg` | Monogram on near-black (primary, app icon master). |
-| `vyro-mark-lime.svg` | Monogram on light background (ink V, dark-green cap). |
-| `vyro-wordmark.svg` | Full logo (monogram + "VYRO") on dark. |
-| `vyro-wordmark-light.svg` | Full logo on light. |
-| `vyro-app-icon-1024.png` | Rendered master icon. |
+| `vyro-wordmark.svg` | Full lettering (V Y R O) for dark backgrounds: white body, cap `#A3E635`. Copied from `source/vyro-letterieng-white.svg`. |
+| `vyro-wordmark-light.svg` | Full lettering for light backgrounds: ink body `#18191C`, cap `#4D7C0F`. Copied from `source/vyro-letterieng-dark.svg`. |
+| `vyro-mark-dark.svg` | V monogram alone on `#0B0D10` (viewBox `2.5 0 110 110`). App icon source. |
+| `vyro-mark-lime.svg` | V monogram alone on no background, for light surfaces (ink body, `#4D7C0F` cap). |
+| `vyro-app-icon-1024.png` | Rendered app icon master (opaque). |
+| `source/` | The supplied lettering files, unchanged (`vyro-letterieng-dark.svg`, `vyro-letterieng-white.svg`). |
 
-The wordmark text is set in Inter/SF/Arial; convert it to outlines before final print or store use.
+All logo files are outlined paths, so they need no fonts.
 
-In the app:
-- `VyroBrandTile`: the monogram tile (splash, onboarding).
-- `VyroWordmark`: the compact full logo at the top-left of every tab page.
-- `VyroMarkPainter`: draws the mark, with optional animated drawing for the splash.
+Geometry (lettering viewBox `0 0 500 120`, tight box `(10,10)`–`(482,102)`):
+- V body strokes: `(10,24) (40,24) (68,100) (38,100)` and `(40,100) (70,100) (95,34) (65,34)`.
+- V cap: `(67,28) (97,28) (105,10) (75,10)`. It sits above the right arm with a gap of 6 units.
+- Y, R and O are the paths in the files. R and O have counters (holes).
 
-Geometry in a unit box:
-- V body: (0.04,0.14) (0.33,0.14) (0.50,0.60) (0.67,0.14) (0.96,0.14) (0.63,0.88) (0.37,0.88).
-- Lime cap: the right arm above y = 0.27, with a cut down to y = 0.296.
+Colours:
+- Dark backgrounds: body `#FFFFFF`, logo cap `#A3E635`, icon background `#0B0D10`.
+- Light backgrounds: body `#18191C`, logo cap `#4D7C0F`.
+- The logo cap is not the UI accent. The UI lime `#B8F36B` (dark) and `#4A741A` (light) in `brand/tokens/tokens.json` are unchanged.
 
-Colours: body `#F5F7F8` (dark) or `#171A20` (light); cap `#B8F36B` (dark) or `#4A741A` (light); background `#0B0D10`.
+In the app (`lib/app/theme/vyro_chrome.dart`, `vyro_shell.dart`):
+- `VyroWordmarkPainter` paints the full lettering from the path data above. `VyroWordmark` (header, height 22 px) uses it.
+- `VyroMarkPainter` paints the V monogram, with the animated `progress` used by the splash (body strokes draw top-down, then the cap slides in).
+- `VyroBrandTile` is the monogram tile (splash, onboarding).
+- `android/app/src/main/res/drawable/vyro_mark.xml` is the same V for the home-screen widgets.
 
-Launcher icons (`android/.../mipmap-*`, including the adaptive foreground, `ios/.../AppIcon.appiconset` and `web/icons`) are rendered from the same geometry.
+Launcher and web icons are rendered from `vyro-mark-dark.svg`. Regenerate them with:
+
+```
+py tool/brand/render_icons.py                 # all icons (needs Pillow)
+py tool/brand/render_icons.py --previews DIR  # also SVG reference previews
+VYRO_RENDER_ICONS=1 VYRO_PREVIEW_DIR=DIR flutter test tool/brand/render_previews_test.dart
+```
+
+- Android legacy (`mipmap-*/ic_launcher.png`, 48–192 px): V at 60% of the width, full bleed on `#0B0D10`.
+- Android adaptive (`mipmap-*/ic_launcher_foreground.png`, 108 dp layer): V at 50% of the width, transparent, inside the 66 dp safe zone. Background colour is `@color/vyro_ink` (`#0B0D10`). The monochrome layer reuses this foreground.
+- iOS (`ios/Runner/Assets.xcassets/AppIcon.appiconset`): every size in `Contents.json`, opaque, V at 60%.
+- Web (`web/favicon.png`, `web/icons/Icon-*.png`): standard and maskable icons, V at 60%.
 
 These are original provisional concepts; check trademark availability before release.

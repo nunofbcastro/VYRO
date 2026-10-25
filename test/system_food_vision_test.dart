@@ -137,23 +137,84 @@ void main() {
     expect(result.detail, contains('verify: unparsed'));
   });
 
+  // Regression: an omitted or non-boolean verdict used to send the item to
+  // suggestions (v0.6.3), which removed true positives. Now it stays in the
+  // main list, marked uncertain ("Hipótese a confirmar" in the review).
+  test('a verdict missing for one item keeps that item as uncertain', () async {
+    replies = [
+      items([row('Pão torrado'), row('Manteiga')]),
+      // Index 1 has no boolean verdict: kept, uncertain, counted.
+      '{"checks":[{"i":0,"visible":true},{"i":1,"visible":"yes"}]}',
+    ];
+    final result = await SystemFoodVision(db, channel: channel).analyse(photo);
+    expect(result.foods.map((f) => f.food?.key), [
+      'bread_white_toasted',
+      'butter_salted',
+    ]);
+    expect(result.suggestions, isEmpty);
+    expect(result.detail, contains('verify: incomplete'));
+    expect(
+      result.detail,
+      contains('Manteiga → kept (verify omitted, uncertain'),
+    );
+  });
+
+  test('an explicit visible:false still drops the item', () async {
+    replies = [
+      items([row('Pão torrado'), row('Queijo da serra')]),
+      verdicts([true, false]),
+    ];
+    final result = await SystemFoodVision(db, channel: channel).analyse(photo);
+    expect(result.foods.map((f) => f.food?.key), ['bread_white_toasted']);
+    expect(result.detail, contains('→ dropped (verify=false)'));
+  });
+
   test(
-    'a verdict missing for one item sends that item to suggestions',
+    'a burger and a beer with no where fields both stay in the list',
     () async {
       replies = [
-        items([row('Pão torrado'), row('Manteiga')]),
-        // Index 1 has no boolean verdict: not a rejection, not in totals.
-        '{"checks":[{"i":0,"visible":true},{"i":1,"visible":"yes"}]}',
+        '{"items":['
+            '{"name":"Hambúrguer","count":1,"size":"medium"},'
+            '{"name":"Cerveja","count":1,"size":"medium"}'
+            ']}',
+        verdicts([true, true]),
       ];
       final result = await SystemFoodVision(
         db,
         channel: channel,
       ).analyse(photo);
-      expect(result.foods.map((f) => f.food?.key), ['bread_white_toasted']);
-      expect(result.suggestions.map((f) => f.food?.key), ['butter_salted']);
-      expect(result.detail, contains('verify: incomplete'));
+      expect(result.foods, hasLength(2));
+      expect(result.suggestions, isEmpty);
+      expect(result.foods.map((f) => f.food?.key), contains('beer'));
+      expect(result.detail, contains('Cerveja → kept (verify=true, no where'));
     },
   );
+
+  test(
+    'a beer whose where is prose ("on the table, right") stays in the list',
+    () async {
+      replies = [
+        items([row('Cerveja', where: 'on the table, right')]),
+        verdicts([true]),
+      ];
+      final result = await SystemFoodVision(
+        db,
+        channel: channel,
+      ).analyse(photo);
+      expect(result.foods.single.food?.key, 'beer');
+      expect(result.suggestions, isEmpty);
+    },
+  );
+
+  test('a beer with an empty verdict list is kept as uncertain', () async {
+    replies = [
+      items([row('Cerveja', where: 'on the table, right')]),
+      '{"checks":[]}',
+    ];
+    final result = await SystemFoodVision(db, channel: channel).analyse(photo);
+    expect(result.foods.single.food?.key, 'beer');
+    expect(result.detail, contains('verify: incomplete'));
+  });
 
   test('failed verification keeps the first usable result', () async {
     replies = [
@@ -250,6 +311,11 @@ void main() {
     final milkFirst = await vision.analyse(photo);
     expect(espressoFirst.foods.map((f) => f.food?.key), ['espresso']);
     expect(milkFirst.foods.map((f) => f.food?.key), ['coffee_with_milk']);
+    // The other coffee is a suggestion (outside totals), never silently lost.
+    expect(espressoFirst.suggestions.map((f) => f.food?.key), [
+      'coffee_with_milk',
+    ]);
+    expect(espressoFirst.detail, contains('→ suggestion (duplicate coffee)'));
   });
 
   test('photo prompt has no category checklist and asks for a location', () {
@@ -259,7 +325,24 @@ void main() {
     expect(prompt, isNot(contains('starches')));
     expect(prompt, contains('"where"'));
     expect(prompt, contains('ONE drink'));
-    expect(prompt, contains('Fewer items is better than guessing'));
+    expect(prompt, contains('every drink in a glass, cup, bottle or can'));
+    expect(prompt, contains('Never list the same coffee twice'));
+    // Regression: these lines made the small model drop true positives.
+    expect(prompt, isNot(contains('Fewer items')));
+    expect(prompt, isNot(contains('1 to 4')));
+    expect(
+      prompt,
+      isNot(contains('"where": short location in the photo, required')),
+    );
+  });
+
+  test('verify prompt treats partly visible items as visible', () {
+    final prompt = buildFoodVerifyPrompt(
+      parseFoodPhotoAnswer(items([row('Cerveja')]), db),
+    );
+    expect(prompt, contains('even partly, small or at the edge'));
+    expect(prompt, contains('only if you are confident it is NOT'));
+    expect(prompt, isNot(contains('when you cannot clearly see it')));
   });
 
   test('verify prompt never asks to add foods and omits the photo prompt', () {
@@ -365,72 +448,87 @@ void main() {
     },
   );
 
-  test(
-    'pasta case: beer without a container is a suggestion, not a food',
-    () async {
-      replies = [
-        items([
-          row('Massa cozida', where: 'centre of plate'),
-          row('Cerveja', where: 'top right'),
-          drink('Café expresso'),
-          row('Fiambre', where: 'beside the pasta'),
-        ]),
-        verdicts([true, true, true, true]),
-      ];
-      final result = await SystemFoodVision(
-        db,
-        channel: channel,
-      ).analyse(photo);
-      expect(result.foods.map((f) => f.label), isNot(contains('Cerveja')));
-      expect(result.suggestions.map((f) => f.label), ['Cerveja']);
-      // The model's own confirmation of the beer is not evidence of a container.
-      expect(result.foods.map((f) => f.food?.key), contains('espresso'));
-    },
-  );
+  // Regression (v0.6.3): a beer whose "where" did not name a container, or
+  // was missing, went to suggestions. Drinks are now treated like food.
+  test('pasta case: a beer in the top right stays in the main list', () async {
+    replies = [
+      items([
+        row('Massa cozida', where: 'centre of plate'),
+        row('Cerveja', where: 'top right'),
+        drink('Café expresso'),
+        row('Fiambre', where: 'beside the pasta'),
+      ]),
+      verdicts([true, true, true, true]),
+    ];
+    final result = await SystemFoodVision(db, channel: channel).analyse(photo);
+    expect(result.foods.map((f) => f.label), contains('Cerveja'));
+    expect(result.suggestions, isEmpty);
+    expect(result.foods.map((f) => f.food?.key), contains('espresso'));
+    expect(
+      result.detail,
+      contains(
+        'Cerveja → kept (verify=true, where "top right", drink, no container in where)',
+      ),
+    );
+  });
 
-  test('a drink without container evidence goes to suggestions', () async {
+  test('a drink without container words stays in the main list', () async {
     replies = [
       items([row('Sumo de laranja', where: 'on the table')]),
       verdicts([true]),
     ];
     final result = await SystemFoodVision(db, channel: channel).analyse(photo);
-    expect(result.foods, isEmpty);
-    expect(result.suggestions.single.label, contains('Sumo'));
+    expect(result.foods.single.label, contains('Sumo'));
+    expect(result.suggestions, isEmpty);
     expect(result.confirmedEmpty, isFalse);
   });
 
-  test('an item without a where goes to suggestions, not totals', () async {
-    replies = [
-      items([
-        row('Pão torrado', where: ''),
-        row('Manteiga', where: 'on the bread'),
-      ]),
-      verdicts([true, true]),
-    ];
-    final result = await SystemFoodVision(db, channel: channel).analyse(photo);
-    expect(result.foods.map((f) => f.food?.key), ['butter_salted']);
-    expect(result.suggestions.map((f) => f.food?.key), ['bread_white_toasted']);
-  });
-
   test(
-    'unparsed verification still applies the drink container rule',
+    'an item without a where stays in the main list, not suggestions',
     () async {
       replies = [
         items([
-          row('Pão torrado'),
-          drink('Café expresso', count: 1)..['where'] = 'counter',
+          row('Pão torrado', where: ''),
+          row('Manteiga', where: 'on the bread'),
         ]),
-        'not JSON',
+        verdicts([true, true]),
       ];
       final result = await SystemFoodVision(
         db,
         channel: channel,
       ).analyse(photo);
-      expect(result.detail, contains('verify: unparsed'));
-      expect(result.foods.map((f) => f.food?.key), ['bread_white_toasted']);
-      expect(result.suggestions.map((f) => f.food?.key), ['espresso']);
+      expect(result.foods.map((f) => f.food?.key), [
+        'bread_white_toasted',
+        'butter_salted',
+      ]);
+      expect(result.suggestions, isEmpty);
+      expect(
+        result.detail,
+        contains('Pão torrado → kept (verify=true, no where'),
+      );
     },
   );
+
+  test('unparsed verification keeps every item, drinks included', () async {
+    replies = [
+      items([
+        row('Pão torrado'),
+        drink('Café expresso', count: 1)..['where'] = 'counter',
+      ]),
+      'not JSON',
+    ];
+    final result = await SystemFoodVision(db, channel: channel).analyse(photo);
+    expect(result.detail, contains('verify: unparsed'));
+    expect(result.foods.map((f) => f.food?.key), [
+      'bread_white_toasted',
+      'espresso',
+    ]);
+    expect(result.suggestions, isEmpty);
+    expect(
+      result.detail,
+      contains('Café expresso (bica) → kept (verify unparsed'),
+    );
+  });
 
   test('only non-food items is not a confirmed empty meal', () async {
     replies = [

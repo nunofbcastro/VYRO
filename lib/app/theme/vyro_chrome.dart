@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import 'vyro_theme.dart';
@@ -293,10 +295,18 @@ class VyroBrandTile extends StatelessWidget {
   }
 }
 
-/// The VYRO mark: a solid geometric V in off-white (ink in light mode) whose
-/// right arm ends in a lime "progress" cap. Lime is the signal, never the
-/// whole mark. Geometry is in a unit box and matches the launcher icons and
-/// `brand/logos/*.svg`.
+/// Logo colours from `brand/logos/*.svg`. The logo cap is deliberately not the
+/// UI lime (`VyroTheme.lime`): it is `#A3E635` on dark and `#4D7C0F` on light.
+abstract final class VyroLogo {
+  static const bodyDark = Color(0xFFFFFFFF);
+  static const bodyLight = Color(0xFF18191C);
+  static const capDark = Color(0xFFA3E635);
+  static const capLight = Color(0xFF4D7C0F);
+}
+
+/// The VYRO V monogram: two solid body strokes plus a separate accent cap on
+/// the right arm. Geometry is the `brand/logos/vyro-mark-*.svg` artwork, drawn
+/// in its square viewBox `2.5 0 110 110` and scaled to the paint size.
 class VyroMarkPainter extends CustomPainter {
   const VyroMarkPainter({
     required this.body,
@@ -304,12 +314,12 @@ class VyroMarkPainter extends CustomPainter {
     this.progress = 1,
   });
 
-  /// Theme-aware colours: off-white + lime on dark, ink + green on light.
+  /// Theme-aware logo colours (see [VyroLogo]).
   factory VyroMarkPainter.of(BuildContext context, {double progress = 1}) {
     final dark = _isDark(context);
     return VyroMarkPainter(
-      body: dark ? VyroTheme.textDark : const Color(0xFF171A20),
-      accent: dark ? VyroTheme.lime : VyroTheme.green,
+      body: dark ? VyroLogo.bodyDark : VyroLogo.bodyLight,
+      accent: dark ? VyroLogo.capDark : VyroLogo.capLight,
       progress: progress,
     );
   }
@@ -317,36 +327,34 @@ class VyroMarkPainter extends CustomPainter {
   final Color body;
   final Color accent;
 
-  /// 0–0.75 draws the V top-down; 0.7–1 slides the lime cap in.
+  /// 0–0.75 draws the V top-down; 0.7–1 slides the accent cap in.
   final double progress;
 
-  static const _body = [
-    Offset(0.04, 0.14),
-    Offset(0.33, 0.14),
-    Offset(0.50, 0.60),
-    Offset(0.67, 0.14),
-    Offset(0.96, 0.14),
-    Offset(0.63, 0.88),
-    Offset(0.37, 0.88),
-  ];
-  static const _capBottom = 0.27;
-  static const _gapBottom = 0.296;
+  static const _viewOriginX = 2.5;
+  static const _viewSide = 110.0;
 
-  static double _lerpX(Offset a, Offset b, double y) =>
-      a.dx + (b.dx - a.dx) * (y - a.dy) / (b.dy - a.dy);
+  // The two body strokes overlap at the base and have opposite windings, so
+  // they are filled separately (a single nonZero path would cancel the overlap).
+  static final _leftStroke = _polygon(const [
+    Offset(10, 24),
+    Offset(40, 24),
+    Offset(68, 100),
+    Offset(38, 100),
+  ]);
+  static final _rightStroke = _polygon(const [
+    Offset(40, 100),
+    Offset(70, 100),
+    Offset(95, 34),
+    Offset(65, 34),
+  ]);
+  static final _cap = _polygon(const [
+    Offset(67, 28),
+    Offset(97, 28),
+    Offset(105, 10),
+    Offset(75, 10),
+  ]);
 
-  /// Right-arm band between the top cut and [bottom].
-  static List<Offset> _band(double bottom) => [
-    _body[3],
-    _body[4],
-    Offset(_lerpX(_body[4], _body[5], bottom), bottom),
-    Offset(_lerpX(_body[2], _body[3], bottom), bottom),
-  ];
-
-  Path _path(List<Offset> points, Size size) => Path()
-    ..addPolygon([
-      for (final p in points) Offset(p.dx * size.width, p.dy * size.height),
-    ], true);
+  static Path _polygon(List<Offset> points) => Path()..addPolygon(points, true);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -356,25 +364,28 @@ class VyroMarkPainter extends CustomPainter {
     final capP = Curves.easeOutCubic.transform(
       ((p - 0.7) / 0.3).clamp(0.0, 1.0),
     );
-    canvas.saveLayer(Offset.zero & size, Paint());
-    canvas.save();
-    canvas.clipRect(
-      Rect.fromLTRB(0, 0, size.width, size.height * (0.14 + 0.74 * bodyP)),
-    );
-    canvas.drawPath(_path(_body, size), Paint()..color = body);
-    canvas.restore();
+    canvas
+      ..save()
+      ..scale(size.width / _viewSide, size.height / _viewSide)
+      ..translate(-_viewOriginX, 0);
+    // Body reveal: the clip grows from the top of the V (y 24) down to y 100.
+    canvas
+      ..save()
+      ..clipRect(Rect.fromLTRB(-10, -10, 120, 14 + 90 * bodyP));
+    final bodyPaint = Paint()..color = body;
+    canvas
+      ..drawPath(_leftStroke, bodyPaint)
+      ..drawPath(_rightStroke, bodyPaint)
+      ..restore();
     if (capP > 0) {
-      canvas.drawPath(
-        _path(_band(_gapBottom), size),
-        Paint()..blendMode = BlendMode.clear,
-      );
-      canvas.save();
-      canvas.translate(size.width * 0.06 * (1 - capP), 0);
-      canvas.drawPath(
-        _path(_band(_capBottom), size),
-        Paint()..color = accent.withValues(alpha: accent.a * capP),
-      );
-      canvas.restore();
+      canvas
+        ..save()
+        ..translate(6 * (1 - capP), 0)
+        ..drawPath(
+          _cap,
+          Paint()..color = accent.withValues(alpha: accent.a * capP),
+        )
+        ..restore();
     }
     canvas.restore();
   }
@@ -384,6 +395,139 @@ class VyroMarkPainter extends CustomPainter {
       oldDelegate.body != body ||
       oldDelegate.accent != accent ||
       oldDelegate.progress != progress;
+}
+
+/// Full VYRO lettering (V + Y + R + O) from `brand/logos/vyro-wordmark*.svg`,
+/// painted from the SVG path data. The drawn area is the tight box
+/// (10,10)–(482,102) of the 500 × 120 artwork, scaled to fit the paint size.
+class VyroWordmarkPainter extends CustomPainter {
+  const VyroWordmarkPainter({required this.body, required this.accent});
+
+  /// Body is white on dark and ink on light; the cap follows [VyroLogo].
+  factory VyroWordmarkPainter.of(BuildContext context) {
+    final dark = _isDark(context);
+    return VyroWordmarkPainter(
+      body: dark ? VyroLogo.bodyDark : VyroLogo.bodyLight,
+      accent: dark ? VyroLogo.capDark : VyroLogo.capLight,
+    );
+  }
+
+  /// Width / height of the tight lettering box (472 × 92).
+  static const double aspectRatio = 472 / 92;
+
+  final Color body;
+  final Color accent;
+
+  static const _tight = Rect.fromLTRB(10, 10, 482, 102);
+
+  static final _vLeft = _polygon(const [
+    Offset(10, 24),
+    Offset(40, 24),
+    Offset(68, 100),
+    Offset(38, 100),
+  ]);
+  static final _vRight = _polygon(const [
+    Offset(40, 100),
+    Offset(70, 100),
+    Offset(95, 34),
+    Offset(65, 34),
+  ]);
+  static final _vCap = _polygon(const [
+    Offset(67, 28),
+    Offset(97, 28),
+    Offset(105, 10),
+    Offset(75, 10),
+  ]);
+  static final _y = _polygon(const [
+    Offset(120, 24),
+    Offset(150, 24),
+    Offset(175, 60),
+    Offset(200, 24),
+    Offset(230, 24),
+    Offset(191, 72),
+    Offset(191, 100),
+    Offset(159, 100),
+    Offset(159, 72),
+  ]);
+  static final _r = _svgPath(
+    'M 245,24 L 298,24 C 322,24 338,35 338,52 C 338,66 326,76 308,79 '
+    'L 340,100 L 304,100 L 276,79 L 275,79 L 275,100 L 245,100 Z '
+    'M 275,41 L 275,62 L 297,62 C 307,62 311,58 311,51 C 311,44 307,41 297,41 Z',
+  );
+  static final _o = _svgPath(
+    'M 420,22 C 456,22 482,39 482,62 C 482,85 456,102 420,102 '
+    'C 384,102 358,85 358,62 C 358,39 384,22 420,22 Z '
+    'M 420,42 C 400,42 388,51 388,62 C 388,73 400,82 420,82 '
+    'C 440,82 452,73 452,62 C 452,51 440,42 420,42 Z',
+  );
+
+  static Path _polygon(List<Offset> points) => Path()..addPolygon(points, true);
+
+  /// Parser for the absolute `M`, `L`, `C` and `Z` commands used by the logo
+  /// paths (implicit `L` repeats after `M` included), copied from the SVG.
+  static Path _svgPath(String d) {
+    final tokens = RegExp(
+      r'[MLCZ]|-?\d+(?:\.\d+)?',
+    ).allMatches(d).map((m) => m.group(0)!).toList();
+    final path = Path();
+    var i = 0;
+    var command = '';
+    double next() => double.parse(tokens[i++]);
+    while (i < tokens.length) {
+      final token = tokens[i];
+      if (const {'M', 'L', 'C', 'Z'}.contains(token)) {
+        command = token;
+        i++;
+        if (command == 'Z') {
+          path.close();
+          continue;
+        }
+      }
+      switch (command) {
+        case 'M':
+          path.moveTo(next(), next());
+          command = 'L';
+        case 'L':
+          path.lineTo(next(), next());
+        case 'C':
+          final x1 = next();
+          final y1 = next();
+          final x2 = next();
+          final y2 = next();
+          path.cubicTo(x1, y1, x2, y2, next(), next());
+        default:
+          throw FormatException('Unsupported logo path command', d);
+      }
+    }
+    return path;
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final scale = math.min(
+      size.width / _tight.width,
+      size.height / _tight.height,
+    );
+    final dx = (size.width - _tight.width * scale) / 2;
+    final dy = (size.height - _tight.height * scale) / 2;
+    final bodyPaint = Paint()..color = body;
+    canvas
+      ..save()
+      ..translate(dx, dy)
+      ..scale(scale)
+      ..translate(-_tight.left, -_tight.top)
+      ..drawPath(_vLeft, bodyPaint)
+      ..drawPath(_vRight, bodyPaint)
+      ..drawPath(_y, bodyPaint)
+      ..drawPath(_r, bodyPaint)
+      ..drawPath(_o, bodyPaint)
+      ..drawPath(_vCap, Paint()..color = accent)
+      ..restore();
+  }
+
+  @override
+  bool shouldRepaint(VyroWordmarkPainter oldDelegate) =>
+      oldDelegate.body != body || oldDelegate.accent != accent;
 }
 
 /// Primary pill call to action with the brand lime gradient.

@@ -260,65 +260,100 @@ GenericKind? genericKindOf(String name) {
   return (kept: kept, dropped: dropped);
 }
 
-/// Outcome of the verification and the where/container rules.
+/// What happened to one item of the first answer, for "Detalhes da análise".
+enum ItemAction { kept, dropped, suggestion }
+
+/// One diagnostic line: `cerveja → kept (verify=true, drink, where "top right")`.
+String decisionLine(String label, ItemAction action, String reason) =>
+    '$label → ${action.name} ($reason)';
+
+/// Result of the verification step for the non-food-filtered items.
 class DraftDecision {
   const DraftDecision({
     required this.foods,
-    required this.suggestions,
+    required this.decisions,
     required this.confirmedEmpty,
   });
 
-  /// Items that count in the review (and in totals once matched).
+  /// Items that stay in the review (and in totals once matched). Includes
+  /// items whose verdict was omitted: they are uncertain, not removed.
   final List<DetectedFood> foods;
 
-  /// Hypotheses shown separately, never in totals until the user accepts.
-  final List<DetectedFood> suggestions;
+  /// One entry per item that was checked, with the reason.
+  final List<ItemDecision> decisions;
 
   /// Every item was explicitly rejected by the verification step.
   final bool confirmedEmpty;
 }
 
-/// Applies verification verdicts and the trust rules to the kept items.
+/// One checked item and its outcome.
+class ItemDecision {
+  const ItemDecision({
+    required this.item,
+    required this.action,
+    required this.reason,
+  });
+
+  final DetectedFood item;
+  final ItemAction action;
+  final String reason;
+}
+
+/// Applies the verification verdicts. Only an explicit `false` removes an
+/// item. The `where` text and drink words are evidence written into the
+/// reason, never a gate: a small model often omits `where`.
 ///
-/// [verdicts] is null when verification was unparsed or failed; then the
-/// first answer stands, except for the where/container rules. Otherwise there
-/// is one entry per item: `true` keeps it, `false` rejects it (explicitly not
-/// visible), `null` (omitted by the model) sends it to suggestions.
+/// [verdicts] is null when verification was unparsed or failed: every item
+/// stays. Otherwise there is one entry per item: `true` or `null` keep it
+/// (null is uncertain: the review already shows "Hipótese a confirmar"),
+/// `false` drops it.
 DraftDecision decideDraft(List<DetectedFood> kept, {List<bool?>? verdicts}) {
   final foods = <DetectedFood>[];
-  final suggestions = <DetectedFood>[];
+  final decisions = <ItemDecision>[];
   var rejected = 0;
   for (var i = 0; i < kept.length; i++) {
     final item = kept[i];
-    final verdict = verdicts == null ? true : verdicts[i];
+    final verdict = verdicts == null
+        ? null
+        : (i < verdicts.length ? verdicts[i] : null);
     if (verdict == false) {
       rejected++;
+      decisions.add(
+        ItemDecision(
+          item: item,
+          action: ItemAction.dropped,
+          reason: 'verify=false',
+        ),
+      );
       continue;
     }
-    if (verdict == null) {
-      suggestions.add(item);
-      continue;
-    }
-    // Generic names are prompts for the user, not hypotheses about a dish.
-    if (item.needsChoice) {
-      foods.add(item);
-      continue;
-    }
-    // The first answer did not place this food in the photo: a hypothesis.
-    if (item.where == null || item.where!.isEmpty) {
-      suggestions.add(item);
-      continue;
-    }
-    // A drink needs container evidence ("cup top-left"), else it is a guess.
-    if (isDrinkItem(item) && !mentionsContainer(item.where)) {
-      suggestions.add(item);
-      continue;
-    }
+    final where = item.where;
+    final evidence = [
+      if (verdicts == null)
+        'verify unparsed'
+      else if (verdict == null)
+        'verify omitted, uncertain'
+      else
+        'verify=true',
+      if (item.needsChoice) 'generic name, needs choice',
+      if (where == null || where.isEmpty) 'no where' else 'where "$where"',
+      if (isDrinkItem(item))
+        mentionsContainer(where)
+            ? 'drink, container in where'
+            : 'drink, no container in where',
+    ];
     foods.add(item);
+    decisions.add(
+      ItemDecision(
+        item: item,
+        action: ItemAction.kept,
+        reason: evidence.join(', '),
+      ),
+    );
   }
   return DraftDecision(
     foods: foods,
-    suggestions: suggestions,
+    decisions: decisions,
     confirmedEmpty: kept.isNotEmpty && rejected == kept.length,
   );
 }
