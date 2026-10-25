@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 11 and lower: Auto Backup rules.
+  Only the structured user data is included: the Drift SQLite database
+  (getApplicationDocumentsDirectory() = app_flutter/vyro.sqlite) and the
+  app's SharedPreferences (settings, home-widget snapshot).
+  Everything else (cache, temp photos/videos, code_cache, photos, videos) is
+  excluded because only the listed paths are included.
+-->
+<full-backup-content>
+    <include domain="root" path="app_flutter/vyro.sqlite" />
+    <include domain="sharedpref" path="." />
+</full-backup-content>

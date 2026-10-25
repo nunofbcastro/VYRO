@@ -21,11 +21,16 @@ Analysing a video from your gallery is optional. The app copies the chosen video
 - Export prepares a JSON copy of local records, including assistant preferences, recipes, correction history and local counters, for the user to copy and store.
 - Import replaces current VYRO records with a valid export file pasted by the user; each block of assistant and local data is validated before it is written.
 - Delete all data clears VYRO profile, goals, product cache, nutrition records, recipes, assistant preferences, correction history, local counters, workout records, movement analyses and measurements on this installation.
-- These controls cannot erase copies stored outside VYRO, including an export saved by the user.
+- These controls cannot erase copies stored outside VYRO, including an export saved by the user or an operating-system backup.
 
 ## Operating system backups
 
-Android app backup is disabled in the application manifest. On iOS, operating system and Apple account backup behavior is controlled by the device settings; users should review their iCloud/device backup choices.
+VYRO does not run its own cloud backup and does not read, decrypt or manage operating-system backups. Data stays on the device. The only data the operating system may back up is the local SQLite database (`vyro.sqlite`) and the app settings; the cache, temporary files, photos and videos are never included.
+
+- Android: if Google device backup (Auto Backup) is enabled, Android may include VYRO's local database and settings in your encrypted Google backup and restore them when you reinstall the app or set up a new device. Android makes these cloud backups only when the device is protected by a lock screen.
+- iOS: if iCloud device backup is enabled, iOS may include VYRO's local database and settings in your iCloud device backup.
+
+To stop these copies, turn off backup in the system settings (on Android, usually Settings > System > Backup or Settings > Google > Backup, depending on the manufacturer; on iOS, Settings > [your name] > iCloud > iCloud Backup). Turning off device backup does not delete data stored on the device; use "Delete all data" in the app to do that.
 
 ## Data sources
 

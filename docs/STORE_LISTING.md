@@ -36,5 +36,5 @@ As sugestões de fotografia e a contagem de agachamentos são estimativas experi
 
 - Replace the draft publisher contact in `PRIVACY_POLICY.md` with the responsible legal entity and support address.
 - Capture screenshots from the final Android/iOS release builds in both locales and both themes.
-- Confirm store declarations for camera use, offline models, Open Food Facts attribution and OS backups.
+- Confirm store declarations for camera use, offline models, Open Food Facts attribution and OS device backup rules (Android Auto Backup data-extraction rules; iOS device backup).
 - Review all disclaimer text and the supported-device list after physical-device validation.

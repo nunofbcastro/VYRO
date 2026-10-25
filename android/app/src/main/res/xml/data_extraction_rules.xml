@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12 and higher: Auto Backup (cloud) and device-to-device transfer.
+  Only the structured user data is included: the Drift SQLite database
+  (app_flutter/vyro.sqlite) and SharedPreferences. Cache, temp media and
+  photos/videos are never included.
+  disableIfNoEncryption: cloud backups are made only when the device
+  end-to-end encrypts them (lock screen set up).
+-->
+<data-extraction-rules>
+    <cloud-backup disableIfNoEncryption="true">
+        <include domain="root" path="app_flutter/vyro.sqlite" />
+        <include domain="sharedpref" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="root" path="app_flutter/vyro.sqlite" />
+        <include domain="sharedpref" path="." />
+    </device-transfer>
+</data-extraction-rules>

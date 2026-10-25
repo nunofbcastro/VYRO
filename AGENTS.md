@@ -13,7 +13,7 @@ Create a privacy-first mobile experience: meal logging, barcode lookup via Open 
 - Barcode **does not encode calories**; the EAN/UPC identifies a product looked up in the database.
 - Workout plans begin as deterministic, editable rules, not unvalidated LLM prescriptions. Pose analysis starts with one exercise, tracks landmarks/repetitions, and does not certify safety.
 - Keep demo/mock features clearly labelled; do not claim a feature works when it is a stub.
-- Follow privacy by default: local storage, limited permissions, no photos retained without opt-in; allow local data export and deletion.
+- Follow privacy by default: local storage, limited permissions, no photos retained without opt-in; allow local data export and deletion. OS-level device backup (Android Auto Backup / iCloud device backup) of the local database and settings is allowed, restricted by backup rules that never include photos or videos, and the app itself still makes no network calls besides Open Food Facts.
 - Build each phase fully before starting another; run formatting, analysis and tests when toolchain is available.
 
 ## Visual direction
