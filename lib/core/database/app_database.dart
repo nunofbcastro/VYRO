@@ -85,6 +85,13 @@ class AppDatabase extends _$AppDatabase {
             ..orderBy([(entry) => OrderingTerm.asc(entry.day)]))
           .watch();
 
+  /// Most recent diary entries across all days (newest first).
+  Future<List<FoodEntryRecord>> recentFoodEntries({int limit = 200}) =>
+      (select(foodEntries)
+            ..orderBy([(entry) => OrderingTerm.desc(entry.createdAt)])
+            ..limit(limit))
+          .get();
+
   Future<int> addFoodEntry(FoodEntriesCompanion entry) =>
       into(foodEntries).insert(entry);
 

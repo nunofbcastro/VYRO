@@ -601,6 +601,15 @@ class VyroStrings {
     'mistakeLabel': 'Evita',
     'holdLabel': 'segurar',
     'restLabel': 'descanso',
+    'logMealTitle': 'Adicionar ao diário',
+    'logMealNote':
+        'Confirma alimentos e gramas. Os nutrientes vêm da referência local, do teu histórico ou do Open Food Facts, nunca da IA.',
+    'logMealMissing': 'sem dados',
+    'logMealAdded': 'alimentos adicionados ao diário',
+    'logMealProposal': 'Refeição sugerida',
+    'originLocal': 'Referência local (USDA)',
+    'originHistory': 'Do teu histórico',
+    'originNone': 'Sem dados nutricionais',
   };
 
   static const _en = <String, String>{
@@ -1186,6 +1195,15 @@ class VyroStrings {
     'mistakeLabel': 'Avoid',
     'holdLabel': 'hold',
     'restLabel': 'rest',
+    'logMealTitle': 'Add to diary',
+    'logMealNote':
+        'Confirm foods and grams. Nutrients come from the local reference, your history or Open Food Facts, never from the AI.',
+    'logMealMissing': 'without data',
+    'logMealAdded': 'foods added to the diary',
+    'logMealProposal': 'Suggested meal',
+    'originLocal': 'Local reference (USDA)',
+    'originHistory': 'From your history',
+    'originNone': 'No nutrition data',
   };
 }
 

@@ -16,6 +16,13 @@ abstract interface class ProductLookupRepository {
   /// Products already looked up on this device, newest first. Served from
   /// the local cache only, so it works offline.
   Future<List<FoodProduct>> recentProducts({int limit = 6});
+
+  /// Text search on Open Food Facts (only the query leaves the device).
+  /// Results without energy values are dropped.
+  Future<List<FoodProduct>> searchByName(
+    String query, {
+    String languageCode = 'pt',
+  });
 }
 
 class OpenFoodFactsRepository implements ProductLookupRepository {
@@ -122,6 +129,64 @@ class OpenFoodFactsRepository implements ProductLookupRepository {
       (await database.recentCachedProducts(
         limit: limit,
       )).map(_fromCache).toList();
+
+  @override
+  Future<List<FoodProduct>> searchByName(
+    String query, {
+    String languageCode = 'pt',
+  }) async {
+    final terms = query.trim();
+    if (terms.length < 2) return const [];
+    await _waitForRateLimit();
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        'https://world.openfoodfacts.org/cgi/search.pl',
+        queryParameters: {
+          'search_terms': terms,
+          'search_simple': 1,
+          'action': 'process',
+          'json': 1,
+          'page_size': 10,
+          'lc': languageCode,
+          'fields': 'code,product_name,brands,nutriments',
+        },
+      );
+      final products = response.data?['products'];
+      if (products is! List) return const [];
+      final results = <FoodProduct>[];
+      for (final raw in products) {
+        if (raw is! Map) continue;
+        final data = Map<String, dynamic>.from(raw);
+        final name = _nonEmpty(data['product_name']);
+        final nutrients = data['nutriments'] is Map
+            ? Map<String, dynamic>.from(data['nutriments'] as Map)
+            : const <String, dynamic>{};
+        final energyKj = _number(nutrients['energy_100g']);
+        final kcal =
+            _number(nutrients['energy-kcal_100g']) ??
+            (energyKj == null ? null : energyKj / 4.184);
+        if (name == null || kcal == null) continue;
+        results.add(
+          FoodProduct(
+            barcode: _nonEmpty(data['code']) ?? '',
+            name: name,
+            brand: _nonEmpty(data['brands']),
+            kcalPer100g: kcal,
+            proteinPer100g: _number(nutrients['proteins_100g']),
+            carbsPer100g: _number(nutrients['carbohydrates_100g']),
+            fatPer100g: _number(nutrients['fat_100g']),
+          ),
+        );
+      }
+      return results;
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 429 ||
+          error.response?.statusCode == 503) {
+        throw const ProductLookupException.rateLimited();
+      }
+      throw const ProductLookupException.offline();
+    }
+  }
 
   Future<void> _waitForRateLimit() async {
     final last = _lastRequestAt;

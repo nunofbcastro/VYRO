@@ -9,6 +9,8 @@ import '../nutrition/domain/food_product.dart';
 import '../workouts/data/workout_repository.dart';
 import '../workouts/domain/plan_generator.dart';
 import '../workouts/domain/week_schedule.dart';
+import 'domain/meal_proposal.dart';
+import 'meal_log_sheet.dart';
 
 /// Q&A with the operating system's on-device model (Apple Intelligence on
 /// iOS 26+, Gemini Nano on supported Android phones).
@@ -26,6 +28,9 @@ class _AssistantPageState extends State<AssistantPage> {
   final _input = TextEditingController();
   final _scroll = ScrollController();
   final _turns = <ChatTurn>[];
+
+  /// Meal proposals parsed from assistant answers, by turn index.
+  final _proposals = <int, MealProposal>{};
   LlmStatus? _status;
   bool _busy = false;
   bool _preparing = false;
@@ -133,8 +138,14 @@ class _AssistantPageState extends State<AssistantPage> {
         english: t.isEnglish,
       );
       final answer = await _llm.generate(prompt);
+      final parsed = extractMealProposal(answer);
       if (mounted) {
-        setState(() => _turns.add(ChatTurn(fromUser: false, text: answer)));
+        setState(() {
+          if (parsed.proposal != null) {
+            _proposals[_turns.length] = parsed.proposal!;
+          }
+          _turns.add(ChatTurn(fromUser: false, text: parsed.text));
+        });
       }
     } catch (_) {
       if (mounted) {
@@ -147,6 +158,17 @@ class _AssistantPageState extends State<AssistantPage> {
     } finally {
       if (mounted) setState(() => _busy = false);
       _scrollToEnd();
+    }
+  }
+
+  Future<void> _logMeal(MealProposal proposal) async {
+    final t = stringsOf(context);
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final added = await showMealLogSheet(context, proposal);
+    if (added != null && added > 0) {
+      messenger?.showSnackBar(
+        SnackBar(content: Text('$added ${t.get('logMealAdded')}')),
+      );
     }
   }
 
@@ -174,7 +196,10 @@ class _AssistantPageState extends State<AssistantPage> {
           VyroRoundButton(
             icon: Icons.delete_sweep_outlined,
             tooltip: t.get('assistantClear'),
-            onPressed: () => setState(_turns.clear),
+            onPressed: () => setState(() {
+              _turns.clear();
+              _proposals.clear();
+            }),
           ),
       ],
       footer: ready ? _composer(t) : null,
@@ -208,8 +233,21 @@ class _AssistantPageState extends State<AssistantPage> {
                     const SizedBox(height: 8),
                   ],
                 ],
-                for (final turn in _turns)
-                  VyroFadeSlideIn(offset: 10, child: _Bubble(turn: turn)),
+                for (var i = 0; i < _turns.length; i++)
+                  VyroFadeSlideIn(
+                    offset: 10,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _Bubble(turn: _turns[i]),
+                        if (_proposals[i] != null)
+                          _ProposalCard(
+                            proposal: _proposals[i]!,
+                            onAdd: () => _logMeal(_proposals[i]!),
+                          ),
+                      ],
+                    ),
+                  ),
                 if (_busy) const _ThinkingBubble(),
                 const SizedBox(height: 12),
                 Text(
@@ -483,4 +521,72 @@ class _ThinkingBubble extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// Foods the assistant proposed, with a button to review and log them.
+class _ProposalCard extends StatelessWidget {
+  const _ProposalCard({required this.proposal, required this.onAdd});
+  final MealProposal proposal;
+  final VoidCallback onAdd;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = stringsOf(context);
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(right: 48, bottom: 12),
+      child: VyroCard(
+        radius: 18,
+        tint: scheme.primary.withValues(alpha: 0.08),
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.restaurant_menu_rounded,
+                  size: 18,
+                  color: VyroTheme.accentTextOf(context),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  t.get('logMealProposal'),
+                  style: theme.textTheme.titleSmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            for (final item in proposal.items)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 64,
+                      child: Text(
+                        '${item.grams.round()} g',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(item.name, style: theme.textTheme.bodyMedium),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 10),
+            FilledButton.icon(
+              onPressed: onAdd,
+              icon: const Icon(Icons.add_rounded),
+              label: Text(t.get('addToDiary')),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

@@ -516,6 +516,8 @@ class _EntryRow extends StatelessWidget {
         ? Icons.barcode_reader
         : entry.source == 'photo_suggestion'
         ? Icons.photo_camera_outlined
+        : entry.source == 'assistant'
+        ? Icons.auto_awesome_outlined
         : entry.source.startsWith('local_reference_')
         ? Icons.menu_book_outlined
         : Icons.edit_outlined;
