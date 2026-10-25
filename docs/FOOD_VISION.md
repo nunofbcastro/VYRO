@@ -19,10 +19,15 @@ foto (câmara/galeria, ficheiro temporário apagado logo após leitura)
   │
   ├─ ramo do sistema (só se OnDeviceLlm.status() == available)
   │     SystemFoodVision: Gemini Nano multimodal (Android, ML Kit GenAI Prompt API)
-  │       1.ª passagem: só a imagem atual, sem exemplos de pratos →
-  │         {items:[{name,count,size}]} com nomes em português
-  │       2.ª passagem: a mesma foto revista do zero; a lista corrigida
-  │         COMPLETA substitui a anterior se for válida (lista vazia = nada visível)
+  │       1.ª passagem (`buildFoodPhotoPrompt`): só a imagem atual, sem lista
+  │         de categorias → {items:[{name,where,count,size}]}, nomes em português;
+  │         só alimentos que o modelo consegue apontar; "fewer is better"
+  │       regras determinísticas (`applyDrinkSanity`): uma chávena = uma bebida
+  │       2.ª passagem (`buildFoodVerifyPrompt`): verificação, não revisão. Recebe
+  │         a lista e devolve {checks:[{i,visible}]}. Só remove itens (visible=false);
+  │         nunca acrescenta nem renomeia. Resposta inválida ou incompleta →
+  │         mantém a lista da 1.ª passagem ("verify: unparsed" em detalhes).
+  │         Todos rejeitados → refeição vazia confirmada
   │       cada pedido repete-se 1× se o AICore estiver ocupado; o erro e a
   │       resposta crua ficam em "Detalhes da análise"
   │
@@ -83,15 +88,31 @@ fechadas são ignorados.
   a 768 px e fica só em memória.
 - Para a 2.ª foto, o pedido envia as duas imagens e instrui o modelo a reconciliar
   identidades sem somar contagens entre vistas.
-- O prompt pede contagens e tamanho relativo (pequeno/médio/grande), não gramas.
-  Uma chávena, asa, pires ou reflexo não são tratados como recipientes separados.
+- O prompt pede o local de cada item ("where"), contagens e tamanho relativo
+  (pequeno/médio/grande), não gramas. Não há lista de categorias (proteína,
+  leguminosas, saladas...): essa lista fazia o modelo preencher todas as
+  categorias. Uma chávena, asa, pires ou reflexo não são recipientes separados.
   Linhas repetidas do mesmo alimento conservam o maior total, sem somar duplicados.
+- Verificação sem acrescentos: o modelo só responde se cada item da lista é
+  claramente visível. Itens sem resposta válida não são rejeitados (a lista
+  inteira fica como estava), para não perder alimentos por uma resposta parcial.
+- Regras determinísticas depois da verificação (`system_food_vision.dart`):
+  - Um café por chávena: se aparecerem um café tipo expresso e um tipo café com
+    leite, fica só o primeiro listado pelo modelo. A categoria vem da chave da
+    base (`espresso`, `coffee_with_milk`) ou, se não houver match, do nome
+    (café com leite/galão/meia de leite; café/expresso/bica).
+  - Contagem só para alimentos com porção por unidade (`portion_units` no TSV).
+    Feijão, alface, arroz e molhos contam como 1, para que "2 unid." não duplique
+    a porção. `estimatedGrams` já ignorava a contagem sem `portion_units`.
 - Iterações anteriores, testadas num telemóvel real, deram frango ×2, arroz e
-  tomate, mas falharam feijão e alface e inventaram laranja. A revisão atual
-  pode remover essas sugestões; o prompt não inclui exemplos concretos de
-  refeições para reduzir enviesamento. O match faz-se depois, com aliases.
-  Estas correções têm testes com respostas simuladas; a precisão da versão
-  atual **ainda não foi medida com fotos reais no dispositivo**.
+  tomate, mas falharam feijão e alface e inventaram laranja. Num telemóvel real,
+  uma foto com duas fatias de pão torrado e um café expresso devolveu 7 alimentos
+  (incluindo café com leite, feijão, alface e tomate): a lista de categorias e a
+  revisão que repetia o prompt inteiro foram a causa. Por isso a versão atual
+  não tem checklist e a segunda passagem só verifica. O prompt não inclui
+  exemplos concretos de refeições para reduzir enviesamento. O match faz-se
+  depois, com aliases. Estas correções têm testes com respostas simuladas; a
+  precisão da versão atual **ainda não foi medida com fotos reais no dispositivo**.
 - iOS: o bridge atual não implementa `describeImage` (só texto via
   `generate`). Nas fotos, o iOS usa sempre o classificador offline.
 

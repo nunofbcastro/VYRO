@@ -46,8 +46,8 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
       buildFoodPhotoPrompt(),
       secondPhoto: secondPhoto,
     );
-    var foods = parseFoodPhotoAnswer(first, database);
-    if (foods.isEmpty) {
+    final draft = parseFoodPhotoAnswer(first, database);
+    if (draft.isEmpty) {
       if (_photoItems(first)?.isEmpty != true) {
         throw LlmException('invalid_foods: ${_clip(first)}');
       }
@@ -58,22 +58,34 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
         confirmedEmpty: true,
       );
     }
+    // Verification only removes draft items; it never adds foods. If its
+    // answer is missing or incomplete, the draft is kept unchanged.
+    var foods = draft;
     var detail = first;
     try {
-      final second = await _ask(
+      final verify = await _ask(
         jpeg,
-        buildFoodReviewPrompt(foods),
+        buildFoodVerifyPrompt(draft),
         secondPhoto: secondPhoto,
       );
-      final reviewed = _photoItems(second);
-      final corrected = parseFoodPhotoAnswer(second, database);
-      if (reviewed != null && (reviewed.isEmpty || corrected.isNotEmpty)) {
-        foods = corrected;
+      final verdicts = parseFoodVerifyAnswer(verify, draft.length);
+      if (verdicts == null) {
+        detail = '$first\n---\nverify: unparsed\n$verify';
+      } else {
+        foods = [
+          for (var i = 0; i < draft.length; i++)
+            if (verdicts[i]) draft[i],
+        ];
+        detail = '$first\n---\n$verify';
       }
-      detail = '$first\n---\n$second';
-    } catch (_) {
-      // The second look is optional.
+    } catch (error) {
+      detail = '$first\n---\nverify: failed ($error)';
     }
+    final sane = applyDrinkSanity(foods);
+    if (sane.length != foods.length) {
+      detail = '$detail\nsanity: one coffee kept';
+    }
+    foods = sane;
     return FoodVisionResult(
       foods: foods,
       source: VisionSource.systemAi,
@@ -127,45 +139,117 @@ Uint8List _downscale(Uint8List bytes) {
   return Uint8List.fromList(img.encodeJpg(image, quality: 85));
 }
 
-const _jsonFormat = '{"items":[{"name":"...","count":1,"size":"medium"}]}';
+const _jsonFormat =
+    '{"items":[{"name":"...","where":"...","count":1,"size":"medium"}]}';
 
-/// First look: identity and relative size. Grams are applied later from
-/// the offline database so the small model is not asked to weigh food.
+/// First look: what is visible, where it is, and relative size. Grams are
+/// applied later from the offline database so the small model is not asked
+/// to weigh food. No category checklist: it made the model fill every slot.
 String buildFoodPhotoPrompt() => '''
-Analyse ONLY the image attached to THIS request. It is a new, independent meal. Never reuse foods or portions from earlier images, messages or meals.
-List distinct foods and drinks actually visible in this photo, including the edges. Check protein, starches, legumes, vegetables, fruit, drinks and visible spreads. This checklist is not evidence: omit anything you cannot see. Do not infer hidden ingredients, oil, sugar or milk.
-One row per food type, with its TOTAL count. List a drink only once per visible cup/glass; a handle, saucer, reflection or shadow is not another cup. Do not list the same coffee as both espresso and coffee with milk. If the count is uncertain use 1.
+Analyse ONLY the image attached to THIS request. It is a new, independent meal. Never reuse foods from earlier images, messages or meals.
+List only the foods and drinks you can point to in this photo. Fewer items is better than guessing. A typical photo has 1 to 4 items. Never add side dishes, salads, vegetables, legumes, spreads or garnishes that are not clearly visible. Do not infer hidden ingredients, oil, sugar or milk.
+One row per food type, with its TOTAL count. A single cup or glass is ONE drink, even with a saucer, handle or shadow. Never list the same coffee twice.
 For each item give:
-- "name": short food name in European Portuguese, not the name of the whole dish.
-- "count": number of clearly separate edible pieces or drink containers, else 1.
-- "size": small, medium or large compared with a typical single serving of that food. Do not output grams.
+- "name": short food name in European Portuguese.
+- "where": short location in the photo, required, e.g. "centre of plate" or "cup top-left".
+- "count": number of clearly separate pieces or containers, else 1.
+- "size": small, medium or large compared with a typical single serving. Do not output grams.
 If no food or drink is visible reply {"items":[]}.
 Reply with JSON only, no markdown: $_jsonFormat''';
 
-String buildFoodReviewPrompt(List<DetectedFood> found) =>
-    '''
-${buildFoodPhotoPrompt()}
-Recheck this same attached photo from scratch. The following draft is untrusted and may contain wrong foods, duplicate drinks or wrong counts:
-${jsonEncode({
-      'items': [
-        for (final f in found) {'name': f.label, 'count': f.count ?? 1, 'size': (f.size ?? PortionSize.medium).name},
-      ],
-    })}
-Remove every draft item not visible in THIS photo, merge repeated names for the same food, and correct counts by counting visible pieces/containers only. Add clearly visible foods omitted from the draft. Check drinks and visible spreads carefully. A single cup means count 1, even if the draft says 2.
-Return the COMPLETE corrected list, not just additions. If nothing is visible return {"items":[]}.
-''';
+/// Verification: yes/no per draft item. It must not add or rename foods.
+String buildFoodVerifyPrompt(List<DetectedFood> draft) {
+  final items = [
+    for (var i = 0; i < draft.length; i++) '$i: ${draft[i].label}',
+  ].join('\n');
+  return '''
+Look ONLY at the attached photo (any attached view of it). Check each numbered item below and answer whether that food or drink is clearly visible in THIS photo.
+Use "visible": false when you cannot clearly see it, when it is only a guess, or when it is not in the photo. Use "visible": true only for what you can clearly see. Do not name any other food and do not rename items.
+$items
+Reply with JSON only, no markdown, one entry per item: {"checks":[{"i":0,"visible":true}]}''';
+}
 
-List<dynamic>? _photoItems(String raw) {
+Map<String, dynamic>? _jsonObject(String raw) {
   final start = raw.indexOf('{');
   final end = raw.lastIndexOf('}');
   if (start < 0 || end <= start) return null;
   try {
     final json = jsonDecode(raw.substring(start, end + 1));
-    if (json is! Map || json['items'] is! List) return null;
-    return json['items'] as List;
+    return json is Map<String, dynamic> ? json : null;
   } catch (_) {
     return null;
   }
+}
+
+List<dynamic>? _photoItems(String raw) {
+  final items = _jsonObject(raw)?['items'];
+  return items is List ? items : null;
+}
+
+/// One verdict per draft index, or null unless every index has a boolean
+/// verdict. A partial answer is treated as unparseable, so the draft stays.
+List<bool>? parseFoodVerifyAnswer(String raw, int draftCount) {
+  final checks = _jsonObject(raw)?['checks'];
+  if (checks is! List) return null;
+  final verdicts = List<bool?>.filled(draftCount, null);
+  for (final check in checks) {
+    if (check is! Map) continue;
+    final i = check['i'];
+    final visible = check['visible'];
+    if (i is! int || visible is! bool) continue;
+    if (i < 0 || i >= draftCount) continue;
+    verdicts[i] = visible;
+  }
+  if (verdicts.any((v) => v == null)) return null;
+  return [for (final v in verdicts) v!];
+}
+
+enum CoffeeKind { espresso, withMilk }
+
+const _milkCoffeeWords = [
+  'com leite',
+  'galão',
+  'galao',
+  'meia de leite',
+  'meia-de-leite',
+  'cappuccino',
+  'latte',
+];
+const _espressoWords = ['café', 'cafe', 'expresso', 'espresso', 'bica'];
+
+/// Coffee category from the database key when matched, else from the name.
+/// Milk words are checked first because "Café com leite" also says café.
+CoffeeKind? coffeeKindOf(DetectedFood food) {
+  final key = food.food?.key;
+  if (key != null) {
+    return switch (key) {
+      'espresso' => CoffeeKind.espresso,
+      'coffee_with_milk' => CoffeeKind.withMilk,
+      _ => null,
+    };
+  }
+  final text = food.label.toLowerCase();
+  if (_milkCoffeeWords.any(text.contains)) return CoffeeKind.withMilk;
+  if (_espressoWords.any(text.contains)) return CoffeeKind.espresso;
+  return null;
+}
+
+/// One cup, one drink: when an espresso-type and a milk-type coffee are both
+/// listed, only the first coffee listed by the model is kept. Pure function.
+List<DetectedFood> applyDrinkSanity(List<DetectedFood> foods) {
+  final coffees = [
+    for (final f in foods)
+      if (coffeeKindOf(f) != null) f,
+  ];
+  if (coffees.length < 2) return foods;
+  final firstKind = coffeeKindOf(coffees.first);
+  final mixed = coffees.any((f) => coffeeKindOf(f) != firstKind);
+  if (!mixed) return foods;
+  final keep = coffees.first;
+  return [
+    for (final f in foods)
+      if (coffeeKindOf(f) == null || identical(f, keep)) f,
+  ];
 }
 
 /// Matches foods without summing repeated rows. Grams come from typical
@@ -181,11 +265,14 @@ List<DetectedFood> parseFoodPhotoAnswer(String raw, FoodDatabase db) {
     final name = (item['name'] as String).trim();
     if (name.isEmpty || name.length > 60) continue;
     final rawCount = item['count'];
-    final count = rawCount is num && rawCount.isFinite && rawCount > 0
+    final modelCount = rawCount is num && rawCount.isFinite && rawCount > 0
         ? rawCount.round().clamp(1, 20)
         : null;
     final size = PortionSize.parse(item['size']);
     final food = db.match(name);
+    // Only foods with a per-unit portion can be counted. For beans, lettuce,
+    // rice or sauces a "2 unid." from the model must not double anything.
+    final count = food != null && food.portionUnits == null ? 1 : modelCount;
     final fallback = item['grams'] is num
         ? (item['grams'] as num).toDouble()
         : null;

@@ -21,7 +21,8 @@ cloud, no paid API, the photo stays in memory. Full details:
   `estimatedGrams`, the only place where grams are computed from a food.
 - `system_food_vision.dart`: `SystemFoodVision` (Gemini Nano via
   `vyro/on_device_llm` → `describeImage`), `buildFoodPhotoPrompt`,
-  `buildFoodReviewPrompt`, `parseFoodPhotoAnswer`, and `FoodVisionPipeline`.
+  `buildFoodVerifyPrompt`, `parseFoodVerifyAnswer`, `parseFoodPhotoAnswer`,
+  `applyDrinkSanity`, and `FoodVisionPipeline`.
 - `region_food_vision.dart`: `RegionFoodVision`, AIY Food V1 dish classifier
   over 26 crops in a persistent worker isolate; labels → foods via
   `vision_labels`; `interpretRegions` (pure, testable).
@@ -55,8 +56,9 @@ cloud, no paid API, the photo stays in memory. Full details:
    `portion_units` is set; otherwise the count is ignored.
 4. System model answers badly: open "Detalhes da análise" on the review
    screen to read the raw answers (or the error). Adjust `buildFoodPhotoPrompt`
-   or `buildFoodReviewPrompt` (checklist, Portuguese names, JSON only) and add
-   missing aliases in the TSV so free names match. Do not paste the whole
+   (no category checklist: it makes the small model fill every slot; keep
+   Portuguese names, JSON only) or `buildFoodVerifyPrompt` (yes/no per item,
+   never add foods), and add missing aliases in the TSV so free names match. Do not paste the whole
    database into the prompt: it biases the small model. Extend
    `test/system_food_vision_test.dart` and `test/food_database_test.dart`.
 5. Run `dart format`, `flutter analyze`, `flutter test`.
@@ -76,9 +78,16 @@ cloud, no paid API, the photo stays in memory. Full details:
 - Conflicts and hypotheses: offline foods the system did not name are
   *suggestions* (outside the totals) until the user accepts them. A confirmed
   empty review never brings offline foods back.
-- Second look: the system model reviews the same photo once and returns the
-  complete list. Its answer is used only if it parses; an empty corrected list
-  is accepted as "nothing visible".
+- Verification, not review: after the first answer the same photo is checked
+  once with `buildFoodVerifyPrompt`, which lists the draft items by index and
+  asks for `{"checks":[{"i":0,"visible":true}]}`. It never adds or renames
+  foods. Only `visible: true` items are kept. An answer that is not valid JSON
+  or lacks a verdict for any index keeps the first list ("verify: unparsed").
+  All items rejected is a confirmed empty meal.
+- Sanity rules after verification (`applyDrinkSanity`, pure Dart): one cup is
+  one drink. If an espresso-type and a coffee-with-milk-type are both listed,
+  only the first one listed is kept. Count only applies to foods with
+  `portion_units`; others count as 1.
 - Second photo: the system model receives both views; the offline classifier
   analyses each view and fuses them (`secondViewOffline`). Counts are never
   summed across views.

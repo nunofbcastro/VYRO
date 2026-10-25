@@ -131,11 +131,11 @@ void main() {
       expect(parseFoodPhotoAnswer('{"items": "x"}', db), isEmpty);
     });
 
-    test('prompts ask for JSON with a checklist and a second look', () {
+    test('photo prompt asks for JSON with a location and no checklist', () {
       final prompt = buildFoodPhotoPrompt();
       expect(prompt, contains('"items"'));
-      expect(prompt, contains('legumes'));
-      expect(prompt, contains('drinks'));
+      expect(prompt, contains('"where"'));
+      expect(prompt, isNot(contains('Check protein')));
       final rice = db.byKey('rice_white_cooked')!;
       final found = [
         DetectedFood(
@@ -145,7 +145,7 @@ void main() {
           source: VisionSource.systemAi,
         ),
       ];
-      expect(buildFoodReviewPrompt(found), contains(rice.namePt));
+      expect(buildFoodVerifyPrompt(found), contains(rice.namePt));
     });
 
     test('a repeated coffee row does not double its cup or nutrients', () {
