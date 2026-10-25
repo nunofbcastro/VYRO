@@ -39,16 +39,42 @@ class _Item {
 }
 
 /// Foods offered as one-tap additions when the detector missed them.
-const _quickKeys = [
+/// Spreads and drinks are hard to see in a photo (butter on toast, coffee
+/// in a cup), so breakfast-like meals offer those first.
+const _plateQuickKeys = [
   'rice_white_cooked',
   'beans_red_cooked',
   'chicken_breast_roasted',
+  'lettuce_raw',
+  'tomato_raw',
   'green_salad',
   'potato_boiled',
   'pasta_cooked',
+  'olive_oil',
   'egg_fried',
-  'potato_fries_oven',
 ];
+const _breakfastQuickKeys = [
+  'butter_salted',
+  'espresso',
+  'coffee_with_milk',
+  'jam',
+  'ham_cooked',
+  'cheese_gouda',
+  'orange_juice',
+  'milk_semi',
+  'tea',
+  'egg_boiled',
+];
+
+List<String> _quickKeysFor(String meal, List<_Item> items) {
+  final breakfastLike =
+      meal == 'breakfast' ||
+      meal == 'snack' ||
+      items.any((i) => i.food?.category == 'padaria');
+  return breakfastLike
+      ? [..._breakfastQuickKeys, ..._plateQuickKeys]
+      : [..._plateQuickKeys, ..._breakfastQuickKeys];
+}
 
 class _PhotoFoodPageState extends State<PhotoFoodPage> {
   final _picker = ImagePicker();
@@ -306,10 +332,10 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
               const SizedBox(height: 14),
               _QuickAdd(
                 foods: [
-                  for (final key in _quickKeys)
+                  for (final key in _quickKeysFor(_meal, items))
                     if (db.byKey(key) case final food?)
                       if (!items.any((i) => i.food?.key == key)) food,
-                ],
+                ].take(8).toList(),
                 onAdd: _addFood,
               ),
             ],
@@ -318,6 +344,10 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
               '${t.get('photoEstimateNote')}\n${t.get('nutritionSourcesNote')}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
+            if (_result?.detail case final detail?) ...[
+              const SizedBox(height: 8),
+              _AnalysisDetail(detail: detail),
+            ],
           ],
         ],
       ),
@@ -472,20 +502,26 @@ class _PhotoHeader extends StatelessWidget {
                 bottom: 10,
                 child: Row(
                   children: [
-                    if (source != null)
-                      Flexible(
-                        child: _GlassTag(
-                          icon: source == VisionSource.systemAi
-                              ? Icons.auto_awesome_rounded
-                              : Icons.grid_view_rounded,
-                          label: t.get(
-                            source == VisionSource.systemAi
-                                ? 'photoSourceSystem'
-                                : 'photoSourceRegions',
-                          ),
-                        ),
+                    // Expanded (not Flexible + Spacer) so the tag gets all
+                    // the free width and is not cut to "IA do tel…".
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: source == null
+                            ? null
+                            : _GlassTag(
+                                icon: source == VisionSource.systemAi
+                                    ? Icons.auto_awesome_rounded
+                                    : Icons.grid_view_rounded,
+                                label: t.get(
+                                  source == VisionSource.systemAi
+                                      ? 'photoSourceSystem'
+                                      : 'photoSourceRegions',
+                                ),
+                              ),
                       ),
-                    const Spacer(),
+                    ),
+                    const SizedBox(width: 8),
                     IconButton.filledTonal(
                       tooltip: t.get('choosePhoto'),
                       onPressed: onGallery,
@@ -863,6 +899,38 @@ class _QuickAdd extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+/// Collapsed by default: the model's raw answer or the fallback error, so a
+/// wrong suggestion can be understood and reported.
+class _AnalysisDetail extends StatelessWidget {
+  const _AnalysisDetail({required this.detail});
+  final String detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Theme(
+      data: theme.copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: const EdgeInsets.only(bottom: 8),
+        title: Text(
+          stringsOf(context).get('photoDetail'),
+          style: theme.textTheme.bodySmall,
+        ),
+        children: [
+          SelectableText(
+            detail,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontFamily: 'monospace',
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

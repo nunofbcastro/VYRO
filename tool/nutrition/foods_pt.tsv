@@ -130,3 +130,7 @@ baiao_de_dois	Baião de dois	Baião de dois	taco	527	br	pratos	250	1 prato	1 pla
 salpicao_frango	Salpicão de frango	Chicken salpicão	taco	547	br	pratos	150	1 dose	1 serving	salpicão|salpicao	
 collards_sauteed	Couve refogada	Sautéed collard greens	taco	116	br	legumes	80	1 dose	1 serving	couve refogada|couve à mineira|collard greens	
 guarana_soda	Refrigerante de guaraná	Guaraná soda	taco	481	br	bebidas	350	1 lata	1 can	guaraná|guarana|refrigerante de guaraná	
+espresso	Café expresso (bica)	Espresso coffee	ciqual	18071	pt	bebidas	30	1 café	1 espresso	café|cafe|café expresso|bica|cimbalino|expresso|espresso|coffee|cafezinho|chávena de café	
+coffee_with_milk	Café com leite (galão, meia de leite)	Coffee with milk	ciqual	18151	pt	bebidas	200	1 chávena/copo	1 cup	café com leite|galão|meia de leite|meia-de-leite|cappuccino|latte|café com leite e espuma|coffee with milk|café au lait	
+tea	Chá (sem açúcar)	Tea (unsweetened)	ciqual	18020	eu	bebidas	250	1 chávena	1 cup	chá|cha|chá preto|chá verde|infusão|tisana|tea	
+jam	Doce/compota de fruta	Fruit jam	ciqual	31006	eu	outros	15	1 colher de sobremesa	1 tbsp	doce|compota|doce de fruta|marmelada|geleia|doce de morango|jam|marmalade	

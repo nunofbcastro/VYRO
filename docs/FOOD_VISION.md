@@ -13,8 +13,13 @@ foto (câmara/galeria, ficheiro temporário apagado logo após leitura)
   ▼ FoodVisionPipeline (lib/features/nutrition/food_vision/system_food_vision.dart)
   ├─ IA do sistema disponível? (OnDeviceLlm.status() == available)
   │     └─ SystemFoodVision: Gemini Nano multimodal (Android, ML Kit GenAI Prompt API)
-  │          prompt com a lista de nomes PT da base → JSON {items:[{name,count,grams}]}
+  │          1.ª passagem: lista de verificação (proteína, arroz/pão, feijão em molho,
+  │             folhas de alface, fruta, bebidas em chávenas, manteiga/doce) → JSON
+  │             {items:[{name,count,grams}]} com nomes em português
+  │          2.ª passagem: "já listado: …; o que falta?" → mergeDetectedFoods
   │          parseFoodPhotoAnswer: match na base, junta duplicados, gramas 5–1500 g
+  │          cada pedido é repetido 1× se o AICore falhar; o erro/resposta crua fica em
+  │          FoodVisionResult.detail ("Detalhes da análise" no ecrã)
   │          falha → RegionFoodVision (nota "systemFailed")
   │          iOS (modelo só texto) → MissingPluginException → RegionFoodVision
   └─ caso contrário: RegionFoodVision (offline, qualquer telemóvel)
@@ -23,6 +28,8 @@ foto (câmara/galeria, ficheiro temporário apagado logo após leitura)
   │
   ▼ PhotoFoodPage: lista editável (trocar alimento, gramas ±, remover, adicionar,
     sugestões rápidas), totais kcal/P/H/G, refeição, "Adicionar N ao diário"
+    Sugestões rápidas: ao pequeno-almoço/lanche ou com pão, primeiro manteiga, café,
+    galão, doce, fiambre, queijo, sumo (difíceis de ver numa foto).
 ```
 
 ## Fallback offline — `RegionFoodVision`
@@ -48,6 +55,10 @@ foto (câmara/galeria, ficheiro temporário apagado logo após leitura)
   Requer AICore/Gemini Nano (ex.: Pixel 9+, Galaxy S25+). A imagem é reduzida
   a 768 px e fica só em memória.
 - Conta peças ("2 bifes de frango") e estima gramas com referências de prato.
+- Testado num telemóvel real: no prato de exemplo encontrou frango ×2, arroz e
+  tomate na 1.ª versão do pedido, mas falhou feijão e alface e inventou
+  laranja — daí a lista de verificação e a 2.ª passagem. Sem lista de 131 nomes
+  no pedido (enviesava o modelo pequeno); o match faz-se depois, com aliases.
 - iOS: o Foundation Models atual é só texto → usa o fallback offline.
 
 ## Ligar um modelo de deteção/segmentação real

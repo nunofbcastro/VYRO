@@ -12,6 +12,7 @@ class VyroStrings {
   String get(String key) => (isEnglish ? _en : _pt)[key] ?? key;
 
   static const _pt = <String, String>{
+    'photoDetail': 'Detalhes da análise (técnico)',
     'photoHeroTitle': 'Fotografa o teu prato',
     'photoHeroBody':
         'Identificamos os alimentos no próprio telemóvel e sugerimos quantidades e calorias. Tu confirmas tudo antes de guardar.',
@@ -723,6 +724,7 @@ class VyroStrings {
   };
 
   static const _en = <String, String>{
+    'photoDetail': 'Analysis details (technical)',
     'photoHeroTitle': 'Photograph your plate',
     'photoHeroBody':
         'We identify the foods on your phone and suggest amounts and calories. You confirm everything before saving.',

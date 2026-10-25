@@ -131,10 +131,46 @@ void main() {
       expect(parseFoodPhotoAnswer('{"items": "x"}', db), isEmpty);
     });
 
-    test('prompt lists database names and asks for JSON', () {
-      final prompt = buildFoodPhotoPrompt(db);
-      expect(prompt, contains('Arroz branco cozido'));
+    test('prompts ask for JSON with a checklist and a second look', () {
+      final prompt = buildFoodPhotoPrompt();
       expect(prompt, contains('"items"'));
+      expect(prompt, contains('beans'));
+      expect(prompt, contains('drinks'));
+      final rice = db.byKey('rice_white_cooked')!;
+      final found = [
+        DetectedFood(
+          food: rice,
+          label: rice.namePt,
+          grams: 150,
+          source: VisionSource.systemAi,
+        ),
+      ];
+      expect(buildMissingFoodsPrompt(found), contains(rice.namePt));
+    });
+
+    test('second look only adds new foods', () {
+      final first = parseFoodPhotoAnswer(
+        '{"items":[{"name":"Arroz branco cozido","grams":150}]}',
+        db,
+      );
+      final extra = parseFoodPhotoAnswer(
+        '{"items":[{"name":"Arroz","grams":90},{"name":"Feijão cozido","grams":120},{"name":"Alface","grams":30}]}',
+        db,
+      );
+      final merged = mergeDetectedFoods(first, extra);
+      expect(merged.map((f) => f.food?.key), [
+        'rice_white_cooked',
+        'beans_red_cooked',
+        'lettuce_raw',
+      ]);
+      expect(merged.first.grams, 150);
+    });
+
+    test('breakfast names match the new drinks and spreads', () {
+      expect(db.match('Café expresso')?.key, 'espresso');
+      expect(db.match('Café com leite')?.key, 'coffee_with_milk');
+      expect(db.match('Manteiga')?.key, 'butter_salted');
+      expect(db.match('Pão torrado')?.key, 'bread_white_toasted');
     });
   });
 

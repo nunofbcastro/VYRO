@@ -36,9 +36,12 @@ cloud, no paid API, the photo stays in memory. Full details:
    `tool/nutrition/foods_pt.tsv` (or remove a misleading one), rebuild the
    database, re-run the probe on several photos (not just one). Tune the
    thresholds in `RegionFoodVision` only with evidence from multiple images.
-3. System model answers badly: adjust `buildFoodPhotoPrompt` (keep it short,
-   JSON only, names from the database list, portion references) and extend
-   `parseFoodPhotoAnswer` tests in `test/food_database_test.dart`.
+3. System model answers badly: open "Detalhes da análise" on the review
+   screen to read the raw answer (or the error). Adjust `buildFoodPhotoPrompt`
+   (checklist, Portuguese names, portion references, JSON only) or
+   `buildMissingFoodsPrompt`; add missing aliases in the TSV so free names
+   match; extend the tests in `test/food_database_test.dart`. Do not paste the
+   whole database into the prompt: it biases the small model.
 4. Run `dart format`, `flutter analyze`, `flutter test`.
 
 ## Plugging in a real multi-food model

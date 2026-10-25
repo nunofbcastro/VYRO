@@ -107,12 +107,12 @@ class OnDeviceLlmChannel(messenger: BinaryMessenger) {
             try {
                 val request = generateContentRequest(ImagePart(image), TextPart(prompt)) {
                     temperature = 0.1f
-                    maxOutputTokens = 512
                 }
                 val response = client().generateContent(request)
                 result.success(response.candidates.joinToString("") { it.text.orEmpty() })
             } catch (e: Exception) {
-                result.error("generation_failed", e.message, null)
+                // Class name helps tell quota/busy/unsupported-input apart.
+                result.error("generation_failed", "${e.javaClass.simpleName}: ${e.message}", null)
             }
         }
     }

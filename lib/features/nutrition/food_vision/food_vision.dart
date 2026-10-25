@@ -63,6 +63,7 @@ class FoodVisionResult {
     required this.source,
     this.dishGuess,
     this.note,
+    this.detail,
   });
 
   final List<DetectedFood> foods;
@@ -73,6 +74,10 @@ class FoodVisionResult {
 
   /// Why a fallback was used, for display.
   final String? note;
+
+  /// Technical detail for the review screen: the model's raw answer, or the
+  /// error that caused the fallback.
+  final String? detail;
 }
 
 /// Finds the foods in a meal photo. Implementations run on the device.
