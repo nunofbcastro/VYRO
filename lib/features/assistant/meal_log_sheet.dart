@@ -10,6 +10,7 @@ import '../nutrition/domain/food_product.dart';
 import '../nutrition/data/food_database.dart';
 import '../nutrition/meals.dart';
 import '../nutrition/widgets/food_picker_sheet.dart';
+import 'domain/meal_math.dart';
 import 'domain/meal_proposal.dart';
 
 /// Review sheet for a meal the assistant proposed. Nutrients never come from
@@ -102,7 +103,7 @@ class _MealLogSheetState extends State<_MealLogSheet> {
     if (!mounted) return;
     setState(() {
       for (final row in _rows) {
-        final ref = db.match(row.item.name);
+        final ref = matchFood(row.item.name, db);
         row.source = ref != null
             ? fromDb(ref)
             : bestMatch(row.item.name, history);

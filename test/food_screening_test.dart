@@ -338,24 +338,36 @@ void main() {
   });
 
   group('whole dishes', () {
-    test('a whole pizza is never shrunk below one serving', () {
-      final pizza = db.byKey('pizza_cheese')!;
-      final units = pizza.portionUnits ?? 1;
+    test('a whole pizza is one item: size does not scale it, count does', () {
+      final whole = db.byKey('pizza_cheese_whole')!;
+      expect(whole.portionUnits, 1);
+      expect(isWholeDish(whole), isTrue);
+      // The model's {"name":"pizza","count":1,"size":"large"} -> one pizza.
       expect(
-        estimatedGrams(
-          food: pizza,
-          count: units.round(),
-          size: PortionSize.small,
-        ),
-        estimatedGrams(food: pizza, count: units.round()),
+        estimatedGrams(food: whole, count: 1, size: PortionSize.large),
+        whole.portionG,
       );
       expect(
-        estimatedGrams(food: pizza, size: PortionSize.large),
-        closeTo(pizza.portionG * 1.5, 1),
+        estimatedGrams(food: whole, count: 1, size: PortionSize.small),
+        whole.portionG,
+      );
+      expect(estimatedGrams(food: whole, count: 2), whole.portionG * 2);
+      expect(whole.portionG, inInclusiveRange(300, 400));
+    });
+
+    test('slices are scaled by count and size, not treated as whole', () {
+      final slice = db.match('fatia de pizza')!;
+      expect(slice.key, 'pizza_cheese');
+      expect(isWholeDish(slice), isFalse);
+      // {"name":"fatia de pizza","count":2} -> two slices.
+      expect(estimatedGrams(food: slice, count: 2), slice.portionG * 2);
+      expect(
+        estimatedGrams(food: slice, size: PortionSize.large),
+        closeTo(slice.portionG * 1.5, 1),
       );
       expect(
-        estimatedGrams(food: pizza, size: PortionSize.large),
-        isNot(closeTo(pizza.portionG, 1)),
+        estimatedGrams(food: slice, size: PortionSize.small),
+        closeTo(slice.portionG * 0.6, 1),
       );
     });
 

@@ -28,12 +28,13 @@ enum PortionSize {
   }
 }
 
-/// Dishes that are eaten whole (one pizza, one burger, one francesinha, one
-/// plate). The photo shows the whole thing, so a "small" look never shrinks
-/// it below one typical serving.
+/// Dishes that are eaten whole (one pizza, one burger, one plate). The photo
+/// shows the whole thing. Slices ("fatia de pizza") are not whole dishes: a
+/// slice is one piece of a pizza and is scaled by size like any other food.
 bool isWholeDish(FoodRef food) {
-  if (food.category == 'pratos') return true;
   final name = '${food.namePt} ${food.nameEn}'.toLowerCase();
+  if (name.contains('fatia') || name.contains('slice')) return false;
+  if (food.category == 'pratos') return true;
   return name.contains('pizza') ||
       name.contains('hambúrguer') ||
       name.contains('hamburguer') ||
@@ -44,9 +45,10 @@ bool isWholeDish(FoodRef food) {
 /// Grams from the offline typical portion, not from a model "weight".
 /// Unmatched names may keep a clamped fallback from the model.
 ///
-/// Known limit: the database portion of a sliced dish (pizza = 1 slice,
-/// 110 g) is one slice, so one whole pizza is still an under-estimate; the
-/// user corrects the grams. A whole-dish row in the database would fix it.
+/// A whole dish counted in pieces (one whole pizza, `portionUnits` 1) is one
+/// item, so its size does not scale it: `count` is the amount. A whole dish
+/// without pieces keeps its size rule (small = one typical serving, never
+/// shrunk; large = 1.5 times).
 double estimatedGrams({
   FoodRef? food,
   int count = 1,
@@ -58,7 +60,10 @@ double estimatedGrams({
     final units = food.portionUnits;
     final multiplier = units != null && units > 0 ? pieces / units : 1.0;
     final wholeDish = isWholeDish(food);
-    final factor = wholeDish && size.factor < 1 ? 1.0 : size.factor;
+    final onePiece = units == 1;
+    final factor = (wholeDish && (onePiece || size.factor < 1))
+        ? 1.0
+        : size.factor;
     return (food.portionG * multiplier * factor).clamp(5, 1500).roundToDouble();
   }
   if (fallbackGrams != null && fallbackGrams.isFinite && fallbackGrams > 0) {

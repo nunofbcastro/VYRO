@@ -16,7 +16,7 @@ VYRO never invents calories. Every food in the app comes from
 1. A curated list, `tool/nutrition/foods_pt.tsv`, has one row per VYRO food:
    `key, name_pt, name_en, source, source_ref, region, category, portion_g,
    portion_pt, portion_en, aliases, vision_labels, portion_units` (lists
-   separated by `|`). `portion_units` is optional (80 of 160 rows): the number
+   separated by `|`). `portion_units` is optional (82 of 168 rows): the number
    of pieces that `portion_g` represents (3 sardines = 120 g ⇒ `3`). Leave it
    empty for foods that are not counted in pieces (rice, soups, sauces); the app
    then ignores piece counts for that food. The build copies it to
@@ -57,6 +57,12 @@ VYRO never invents calories. Every food in the app comes from
    aliases people would type or an LLM would answer (PT and EN, no aliases
    that belong to another food: `alface` is not `salada`); `vision_labels`
    only with exact names from `assets/models/aiy_food_v1_labels.csv`.
+   Whole dishes vs. slices (pizza): see "Whole dishes and slices" below.
+   Alias matching is by words (`FoodDatabase.match`): a query matches a
+   phrase when every word of the shorter one is in the other. So a multi-word
+   alias with a generic word captures that word: "mostarda de mesa" made the
+   table name "Mesa" match mustard, which broke a non-food test. Keep aliases
+   specific and run `test/system_food_vision_test.dart` after adding one.
 3. Rebuild and verify:
    ```bash
    python -I tool/nutrition/build_food_db.py
@@ -72,6 +78,34 @@ VYRO never invents calories. Every food in the app comes from
    file name in `SOURCES`, delete the cached file in `build/`, rebuild, review
    the diff of `foods.json` value by value, and update the citation in
    `docs/NUTRITION_DATA.md`.
+
+## Whole dishes and slices
+
+A row is either one **piece of a dish** or **the whole dish**, never both
+under the same name:
+
+- Pizza slices (`pizza_cheese`, `pizza_pepperoni`): `portion_g` 110 = one
+  slice of a large pizza (8 slices ≈ 880 g). Names "Fatia de pizza de …",
+  aliases "fatia de pizza …", "pizza slice". Count = slices.
+- Whole individual pizzas (`pizza_cheese_whole`, `pizza_pepperoni_whole`):
+  `portion_g` 350 = one individual pizza (about 3 large-pizza slices, 300–400 g
+  range), `portion_units` 1. The bare names ("pizza", "pizza inteira",
+  "pizza individual", "pizza de queijo", "pizza de pepperoni", "pepperoni")
+  and the photo labels of pizzas belong to these rows, because a bare
+  "pizza" in a photo is usually one whole pizza. Both rows reuse the source
+  reference of the slice row, so their `sourceKey` is the same; the grams
+  make the difference.
+- `cheeseburger_whole` (`hambúrguer no pão`) is a whole dish with
+  `portion_units` 1, so "2 hambúrgueres no pão" counts two. The bare
+  "hambúrguer" alias stays on the raw beef patty row (`beef_ground_patty`).
+- Francesinha is not in the database (no suitable source row yet).
+
+`estimatedGrams` (`lib/features/nutrition/food_vision/portion_estimate.dart`):
+a whole dish with `portion_units` 1 is one item, so its size does not scale
+it (`count` is the amount). Slices are never treated as whole dishes, so a
+slice still scales with size. Model output `{"name":"pizza","count":1,
+"size":"large"}` gives 350 g; `{"name":"fatia de pizza","count":2}` gives
+220 g.
 
 ## User recipes (not in the database)
 

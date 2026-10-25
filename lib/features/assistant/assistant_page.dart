@@ -9,8 +9,10 @@ import '../nutrition/domain/food_product.dart';
 import '../workouts/data/workout_repository.dart';
 import '../workouts/domain/plan_generator.dart';
 import '../workouts/domain/week_schedule.dart';
-import 'domain/meal_proposal.dart';
 import 'domain/local_assistant.dart';
+import 'domain/meal_math.dart';
+import 'domain/meal_proposal.dart';
+import 'domain/model_answer.dart';
 import '../nutrition/data/food_database.dart';
 import '../nutrition/meals.dart';
 import '../motion_engine/workout_analysis_history/motion_history_repository.dart';
@@ -34,12 +36,12 @@ class _AssistantPageState extends State<AssistantPage> {
   final _scroll = ScrollController();
   final _turns = <ChatTurn>[];
 
-  /// Meal proposals parsed from assistant answers, by turn index.
-  final _proposals = <int, MealProposal>{};
   LlmStatus? _status;
   bool _busy = false;
   bool _preparing = false;
   int _requestId = 0;
+
+  /// Meal cards, by turn index. Computed from the database, never from prose.
   final _resolved = <int, ResolvedMeal>{};
   final _rated = <int>{};
   final _sources = <int, String>{};
@@ -202,6 +204,7 @@ class _AssistantPageState extends State<AssistantPage> {
       var source = t.isEnglish
           ? 'Calculated from local data'
           : 'Calculado a partir de dados locais';
+      ResolvedMeal? card;
       if (answer == null && _status == LlmStatus.available) {
         final prompt = buildAssistantPrompt(
           question: question,
@@ -210,25 +213,22 @@ class _AssistantPageState extends State<AssistantPage> {
           english: t.isEnglish,
         );
         try {
-          final raw = await services.llm.generate(prompt);
-          final parsed = extractMealProposal(raw);
-          var proposal = parsed.proposal;
-          if (proposal != null &&
-              proposal.items.any((i) {
-                final f = db.match(i.name);
-                return f != null && !foodFitsDiet(f, facts.dietaryChoice);
-              })) {
-            answer = LocalAssistantAnswer(
-              t.isEnglish
-                  ? 'This suggestion did not respect your dietary profile. Please ask for another.'
-                  : 'Esta sugestão não respeitou a tua opção alimentar. Pede outra sugestão.',
-            );
-          } else {
-            answer = LocalAssistantAnswer(parsed.text, proposal: proposal);
-          }
+          final composed = await answerFromModel(
+            llm: services.llm,
+            prompt: prompt,
+            db: db,
+            diet: facts.dietaryChoice,
+            english: t.isEnglish,
+          );
+          card = composed.meal;
+          answer = LocalAssistantAnswer(
+            composed.text.isEmpty
+                ? localAssistantHelp(t.isEnglish)
+                : composed.text,
+          );
           source = t.isEnglish
-              ? 'Generated on device; meal values validated separately'
-              : 'Gerado no dispositivo; valores da refeição validados à parte';
+              ? 'Generated on device; numbers checked against the local database'
+              : 'Gerado no dispositivo; números verificados na base local';
         } catch (_) {
           answer = LocalAssistantAnswer(localAssistantHelp(t.isEnglish));
         }
@@ -236,16 +236,12 @@ class _AssistantPageState extends State<AssistantPage> {
       answer ??= LocalAssistantAnswer(localAssistantHelp(t.isEnglish));
       if (!mounted || request != _requestId) return;
       final response = answer;
+      if (card == null && response.proposal != null) {
+        card = resolveMeal(response.proposal!, db, diet: facts.dietaryChoice);
+      }
       setState(() {
         final index = _turns.length;
-        if (response.proposal != null) {
-          _proposals[index] = response.proposal!;
-          _resolved[index] = resolveMeal(
-            response.proposal!,
-            db,
-            diet: facts.dietaryChoice,
-          );
-        }
+        if (card != null) _resolved[index] = card;
         _sources[index] = source;
         _turns.add(ChatTurn(fromUser: false, text: response.text));
       });
@@ -326,7 +322,6 @@ class _AssistantPageState extends State<AssistantPage> {
               _sources.clear();
               _resolved.clear();
               _turns.clear();
-              _proposals.clear();
             }),
           ),
       ],
@@ -421,14 +416,9 @@ class _AssistantPageState extends State<AssistantPage> {
                             ],
                           ),
                         if (_resolved[i] != null)
-                          Text(
-                            _resolved[i]!.label(t.isEnglish),
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        if (_proposals[i] != null)
                           _ProposalCard(
-                            proposal: _proposals[i]!,
-                            onAdd: () => _logMeal(_proposals[i]!),
+                            meal: _resolved[i]!,
+                            onAdd: () => _logMeal(_resolved[i]!.proposal),
                           ),
                       ],
                     ),
@@ -671,13 +661,78 @@ class _ThinkingBubble extends StatelessWidget {
 
 /// Foods the assistant proposed, with a button to review and log them.
 class _ProposalCard extends StatelessWidget {
-  const _ProposalCard({required this.proposal, required this.onAdd});
-  final MealProposal proposal;
+  const _ProposalCard({required this.meal, required this.onAdd});
+  final ResolvedMeal meal;
   final VoidCallback onAdd;
+
+  Widget _item(BuildContext context, MealItemMatch match, bool en) {
+    final theme = Theme.of(context);
+    final food = match.food;
+    final grams = match.item.grams;
+    final detail = food == null
+        ? null
+        : '${(food.kcal * grams / 100).round()} kcal · '
+              'P ${(food.protein * grams / 100).round()} g · '
+              'H ${(food.carbs * grams / 100).round()} g · '
+              'G ${(food.fat * grams / 100).round()} g';
+    final alternatives = [for (final f in match.alternatives) f.name(en)];
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 64,
+            child: Text(
+              '${grams.round()} g',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  food?.name(en) ?? match.item.name,
+                  style: theme.textTheme.bodyMedium,
+                ),
+                if (detail != null)
+                  Text(detail, style: theme.textTheme.bodySmall)
+                else
+                  Text(
+                    en ? 'no database values' : 'sem valores na base',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                if (alternatives.isNotEmpty)
+                  Text(
+                    en
+                        ? 'Could also be: ${alternatives.join(', ')}. Choose when reviewing.'
+                        : 'Também pode ser: ${alternatives.join(', ')}. Escolhe ao rever.',
+                    style: theme.textTheme.bodySmall,
+                  )
+                else if (match.needsConfirmation && food != null)
+                  Text(
+                    en
+                        ? 'Confirm this food and its restrictions before logging.'
+                        : 'Confirma este alimento e as restrições antes de registar.',
+                    style: theme.textTheme.bodySmall,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final t = stringsOf(context);
+    final en = t.isEnglish;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     return Padding(
@@ -704,26 +759,14 @@ class _ProposalCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            for (final item in proposal.items)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 64,
-                      child: Text(
-                        '${item.grams.round()} g',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(item.name, style: theme.textTheme.bodyMedium),
-                    ),
-                  ],
-                ),
+            for (final match in meal.items) _item(context, match, en),
+            const SizedBox(height: 8),
+            Text(
+              meal.label(en),
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w700,
               ),
+            ),
             const SizedBox(height: 10),
             FilledButton.icon(
               onPressed: onAdd,

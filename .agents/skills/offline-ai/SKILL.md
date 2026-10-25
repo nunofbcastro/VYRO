@@ -9,7 +9,7 @@ No external vision API. Train/validate model outside app, document data licensin
 
 Current implementation (Gemini Nano multimodal + AIY region classifier fallback) and how to plug in a detection/segmentation model: `food-vision` skill and `docs/FOOD_VISION.md`.
 
-The assistant (`docs/ASSISTANT.md`) answers factual questions with deterministic local code first (`lib/features/assistant/domain/local_assistant.dart`); the on-device LLM is used only when no local answer applies, and its meal numbers are recomposed from the database. Local memory is user-editable and never created by the model. Movement analysis (`docs/MOTION_ENGINE.md`) is also rule-based; no model writes its conclusions.
+The assistant (`docs/ASSISTANT.md`) answers factual questions with deterministic local code first (`lib/features/assistant/domain/local_assistant.dart`); the on-device LLM is used only when no local answer applies. Its meal card is resolved from the database (`lib/features/assistant/domain/meal_math.dart`, with alternatives and "sem valores na base" for unknown foods), and its prose is checked against those totals (`prose_numbers.dart`): conflicting lines are removed, and the prompt tells the model not to write nutrient numbers. Local memory is user-editable and never created by the model. Movement analysis (`docs/MOTION_ENGINE.md`) is also rule-based; no model writes its conclusions.
 
 Rules shared by all of these:
 - Numbers shown to the user come from local code and the database, never from model prose.

@@ -81,8 +81,9 @@ class NutrientSource {
   final String sourceKey;
 }
 
-/// Lower-case, accent-free words of a food name.
-Set<String> foodTokens(String name) {
+/// Lower-case, accent-free words of a food name, in order. Keeps the negation
+/// words (`sem`, `com`) that [foodTokens] drops, so matching can read them.
+List<String> foodWords(String name) {
   const accents = {
     'á': 'a',
     'à': 'a',
@@ -103,6 +104,14 @@ Set<String> foodTokens(String name) {
       .map((c) => accents[c] ?? c)
       .join()
       .replaceAll(RegExp(r'[^a-z0-9 ]'), ' ');
+  return [
+    for (final w in plain.split(RegExp(r'\s+')))
+      if (w.isNotEmpty) w,
+  ];
+}
+
+/// Lower-case, accent-free content words of a food name (no stop words).
+Set<String> foodTokens(String name) {
   const stop = {
     'de',
     'do',
@@ -119,7 +128,7 @@ Set<String> foodTokens(String name) {
     'and',
   };
   return {
-    for (final w in plain.split(RegExp(r'\s+')))
+    for (final w in foodWords(name))
       if (w.length > 1 && !stop.contains(w)) w,
   };
 }

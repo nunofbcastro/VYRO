@@ -18,6 +18,16 @@ enum VisionSource {
   user,
 }
 
+/// Which pass of the analysis a result belongs to.
+enum VisionStage {
+  /// First usable list from the phone's model, before verification. Its items
+  /// are [DetectedFood.pending]; the final result may remove some of them.
+  draft,
+
+  /// Verified and merged result. This is what `analyse` returns.
+  final_,
+}
+
 /// Why the phone's model could not give a usable answer.
 enum VisionFailure {
   /// The model is busy or over its quota; trying again later may work.
@@ -64,6 +74,7 @@ class DetectedFood {
     this.where,
     this.needsChoice = false,
     this.corroborated = false,
+    this.pending = false,
   });
 
   /// Matched database food; null when nothing matched (needs correction).
@@ -84,7 +95,7 @@ class DetectedFood {
   /// Relative portion size used to scale the typical grams.
   final PortionSize? size;
 
-  /// Where the model saw it in the photo ("cup top-left"), when given.
+  /// Where the model saw it in the photo ("centro do prato"), when given.
   final String? where;
 
   /// A generic name ("bebida", "sanduíche"): the user must name the food.
@@ -92,6 +103,9 @@ class DetectedFood {
   final bool needsChoice;
   final VisionSource source;
   final bool corroborated;
+
+  /// True on items of a [VisionStage.draft] result: not verified yet.
+  final bool pending;
 
   DetectedFood copyWith({
     FoodRef? food,
@@ -103,6 +117,7 @@ class DetectedFood {
     String? where,
     bool? needsChoice,
     bool? corroborated,
+    bool? pending,
   }) => DetectedFood(
     label: food?.namePt ?? label,
     grams: grams ?? this.grams,
@@ -114,6 +129,7 @@ class DetectedFood {
     where: where ?? this.where,
     needsChoice: needsChoice ?? (food == null ? this.needsChoice : false),
     corroborated: corroborated ?? this.corroborated,
+    pending: pending ?? this.pending,
   );
 
   double? get kcal => food == null ? null : food!.kcal * grams / 100;
@@ -132,8 +148,11 @@ class FoodVisionResult {
     this.confirmedEmpty = false,
     this.suggestions = const [],
     this.failure,
+    this.stage = VisionStage.final_,
+    this.timings = const {},
   });
 
+  /// Foods in the meal totals (when matched). In a draft, pending items.
   final List<DetectedFood> foods;
   final VisionSource source;
 
@@ -146,30 +165,68 @@ class FoodVisionResult {
   /// Why a fallback was used, for display.
   final String? note;
 
-  /// Technical detail for the review screen: the model's raw answer, or the
-  /// error that caused the fallback.
+  /// Technical detail for the review screen: the model's raw answer, the
+  /// error that caused a fallback, and a `timing:` line when known.
   final String? detail;
   final bool confirmedEmpty;
 
   /// Additional hypotheses, never included in meal totals until selected.
   final List<DetectedFood> suggestions;
+
+  /// Draft or final (see [VisionStage]).
+  final VisionStage stage;
+
+  /// Duration per stage, in the order they ran. Keys: `first`,
+  /// `second` (second chance), `verify`, `regions`.
+  final Map<String, Duration> timings;
+
   Set<String> get notes =>
       (note ?? '').split(',').where((s) => s.isNotEmpty).toSet();
 
-  FoodVisionResult withNote(
-    String? note, {
+  FoodVisionResult copyWith({
+    List<DetectedFood>? foods,
+    List<DetectedFood>? suggestions,
+    VisionStage? stage,
+    Map<String, Duration>? timings,
+    String? note,
     String? detail,
     VisionFailure? failure,
   }) => FoodVisionResult(
-    foods: foods,
+    foods: foods ?? this.foods,
     source: source,
     dishGuess: dishGuess,
     note: note ?? this.note,
     detail: detail ?? this.detail,
     confirmedEmpty: confirmedEmpty,
-    suggestions: suggestions,
+    suggestions: suggestions ?? this.suggestions,
     failure: failure ?? this.failure,
+    stage: stage ?? this.stage,
+    timings: timings ?? this.timings,
   );
+
+  FoodVisionResult withNote(
+    String? note, {
+    String? detail,
+    VisionFailure? failure,
+  }) => copyWith(note: note, detail: detail, failure: failure);
+}
+
+/// One line for "Detalhes da análise", e.g.
+/// `timing: first 2.1 s, verify 1.8 s, regions 0.9 s`; null when empty.
+String? timingLine(Map<String, Duration> timings) {
+  if (timings.isEmpty) return null;
+  const labels = {
+    'first': 'first',
+    'second': 'second chance',
+    'verify': 'verify',
+    'regions': 'regions',
+  };
+  final parts = [
+    for (final entry in timings.entries)
+      '${labels[entry.key] ?? entry.key} '
+          '${(entry.value.inMilliseconds / 1000).toStringAsFixed(1)} s',
+  ];
+  return 'timing: ${parts.join(', ')}';
 }
 
 /// Finds the foods in a meal photo. Implementations run on the device.
@@ -180,6 +237,17 @@ abstract interface class FoodVisionService {
 abstract interface class MultiPhotoFoodVisionService
     implements FoodVisionService {
   Future<FoodVisionResult> analyseViews(Uint8List primary, Uint8List secondary);
+}
+
+/// A service that reports its first usable list before the final result.
+/// [onDraft] is called at most once, before [analyseStaged] completes, with a
+/// [VisionStage.draft] result whose foods are [DetectedFood.pending].
+abstract interface class StagedFoodVisionService implements FoodVisionService {
+  Future<FoodVisionResult> analyseStaged(
+    Uint8List imageBytes, {
+    Uint8List? secondaryImage,
+    void Function(FoodVisionResult draft)? onDraft,
+  });
 }
 
 /// Union of the system model and the offline region classifier.
@@ -194,8 +262,12 @@ FoodVisionResult fuseVisionResults(
   final seen = <String>{
     for (final f in foods) (f.food?.key ?? f.label.toLowerCase()),
   };
-  // System suggestions (duplicate coffees) come first; never in totals.
+  // System suggestions (duplicate coffees, companions) come first; never in
+  // totals. Each suggested food appears once.
   final suggestions = <DetectedFood>[...system.suggestions];
+  final suggestionKeys = <String>{
+    for (final s in suggestions) (s.food?.key ?? s.label.toLowerCase()),
+  };
   var offlineSuggestions = 0;
   for (final extra in regions.foods) {
     final key = extra.food?.key ?? extra.label.toLowerCase();
@@ -209,6 +281,7 @@ FoodVisionResult fuseVisionResults(
     }
     // Offline foods are hypotheses even when the system confirmed an empty
     // photo: they stay outside the totals until the user adds them.
+    if (!suggestionKeys.add(key)) continue;
     suggestions.add(extra);
     offlineSuggestions++;
   }
@@ -228,6 +301,7 @@ FoodVisionResult fuseVisionResults(
     source: source,
     dishGuess: regions.dishGuess ?? system.dishGuess,
     note: notes.isEmpty ? null : notes.join(','),
+    timings: {...system.timings, ...regions.timings},
     detail: [
       if (system.detail != null) system.detail!,
       if (regions.dishGuess != null) 'offlineDish=${regions.dishGuess}',

@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../app/app_services.dart';
@@ -11,18 +10,23 @@ import '../../core/platform/image_temp_file.dart';
 import '../../core/ui/vyro_ui.dart';
 import 'data/food_database.dart';
 import 'domain/food_product.dart' show dayKey;
-import 'food_vision/food_screening.dart';
 import 'food_vision/food_vision.dart';
+import 'food_vision/portion_estimate.dart';
 import 'food_vision/region_food_vision.dart';
 import 'food_vision/system_food_vision.dart';
 import 'meals.dart';
+import 'photo/review_model.dart';
 import 'widgets/food_picker_sheet.dart';
 import 'widgets/photo_region_sheet.dart';
-import 'food_vision/portion_estimate.dart';
+import 'widgets/photo_review_widgets.dart';
 
 /// Photo → foods → grams → diary. Recognition runs on the device
 /// ([FoodVisionPipeline]); nutrients come from the offline database and
 /// every food and amount is confirmed by the user before saving.
+///
+/// Several photos can be picked at once: as separate meals (a queue, each
+/// analysed and reviewed in turn, the next one analysed in the background)
+/// or as two views of one meal. Photos are kept in memory only.
 class PhotoFoodPage extends StatefulWidget {
   const PhotoFoodPage({super.key, this.day, this.imagePicker, this.vision});
   final DateTime? day;
@@ -31,17 +35,6 @@ class PhotoFoodPage extends StatefulWidget {
 
   @override
   State<PhotoFoodPage> createState() => _PhotoFoodPageState();
-}
-
-/// One editable line of the review list.
-class _Item {
-  _Item(this.detected) : original = detected, grams = detected.grams;
-  final DetectedFood original;
-  DetectedFood detected;
-  double grams;
-
-  FoodRef? get food => detected.food;
-  double? get kcal => food == null ? null : food!.kcal * grams / 100;
 }
 
 /// Foods offered as one-tap additions when the detector missed them.
@@ -72,7 +65,7 @@ const _breakfastQuickKeys = [
   'egg_boiled',
 ];
 
-List<String> _quickKeysFor(String meal, List<_Item> items) {
+List<String> _quickKeysFor(String meal, List<ReviewItem> items) {
   final breakfastLike =
       meal == 'breakfast' ||
       meal == 'snack' ||
@@ -84,20 +77,24 @@ List<String> _quickKeysFor(String meal, List<_Item> items) {
 
 class _PhotoFoodPageState extends State<PhotoFoodPage> {
   late final _picker = widget.imagePicker ?? ImagePicker();
+  final _scroll = ScrollController();
   FoodDatabase? _db;
-  Uint8List? _photo;
-  Uint8List? _secondPhoto;
   FoodVisionService? _service;
-  List<_Item>? _items;
-  FoodVisionResult? _result;
+
+  /// Photos to review, in order. One shot unless several were picked.
+  List<ReviewShot> _shots = [];
+  int _index = 0;
+
+  /// Bumped for every new batch and on dispose: late events are ignored.
+  int _session = 0;
   late String _meal = mealForTime(DateTime.now());
   bool _busy = false;
   bool _saving = false;
   String? _error;
-  int _analysisId = 0;
-  final _reviewClock = Stopwatch();
   int _removed = 0, _added = 0;
-  VisionFailure? _failure;
+
+  ReviewShot? get _shot => _shots.isEmpty ? null : _shots[_index];
+  bool get _queue => _shots.length > 1;
 
   @override
   void initState() {
@@ -109,114 +106,330 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
 
   @override
   void dispose() {
-    _analysisId++;
-    _photo = null; // the photo lives in memory only
-    _secondPhoto = null;
+    _session++;
+    for (final shot in _shots) {
+      _discard(shot);
+    }
+    _scroll.dispose();
     super.dispose();
   }
 
-  // ------------------------------------------------------------ actions
+  // ------------------------------------------------------- photo batches
 
-  Future<void> _choose(ImageSource source) async {
-    if (_busy || _saving) return;
-    final analysisId = ++_analysisId;
-    setState(() => _busy = true);
-    try {
-      final file = await _picker.pickImage(
-        source: source,
-        maxWidth: 1600,
-        maxHeight: 1600,
-        imageQuality: 88,
-      );
-      if (file == null) return;
-      late final Uint8List bytes;
+  /// Releases a shot's photo and deletes its picker file if never read.
+  void _discard(ReviewShot shot) {
+    final file = shot.file;
+    final second = shot.secondFile;
+    shot.file = null;
+    shot.secondFile = null;
+    shot.release();
+    if (file != null) deleteTemporaryImage(file.path).ignore();
+    if (second != null) deleteTemporaryImage(second.path).ignore();
+  }
+
+  /// Reads the picker files of a shot (once) and deletes the temporary copies.
+  Future<void> _load(ReviewShot shot) async {
+    final file = shot.file;
+    if (shot.bytes == null && file != null) {
+      shot.file = null;
       try {
-        bytes = await file.readAsBytes();
+        shot.bytes = await file.readAsBytes();
       } finally {
-        // Also delete the temporary file if reading fails.
         await deleteTemporaryImage(file.path);
       }
-      if (!mounted || analysisId != _analysisId) return;
-      setState(() {
-        _photo = bytes;
-        _secondPhoto = null;
-        _items = null;
-        _result = null;
-        _error = null;
-        _failure = null;
-        _busy = true;
-      });
-      await _analyse(bytes, analysisId);
-    } catch (_) {
-      if (mounted && analysisId == _analysisId) {
-        setState(() {
-          _error = 'cameraError';
-          _busy = false;
-        });
-      }
-    } finally {
-      if (mounted && analysisId == _analysisId) {
-        setState(() => _busy = false);
+    }
+    final second = shot.secondFile;
+    if (shot.second == null && second != null) {
+      shot.secondFile = null;
+      try {
+        shot.second = await second.readAsBytes();
+      } finally {
+        await deleteTemporaryImage(second.path);
       }
     }
   }
 
-  Future<void> _analyse(Uint8List bytes, int analysisId) async {
+  /// Replaces the review with [shots] and starts the first one.
+  void _startBatch(List<ReviewShot> shots) {
+    if (shots.isEmpty || !mounted) return;
+    _session++;
+    for (final shot in _shots) {
+      _discard(shot);
+    }
+    setState(() {
+      _shots = shots;
+      _index = 0;
+      _removed = 0;
+      _added = 0;
+      _error = null;
+    });
+    if (_scroll.hasClients) _scroll.jumpTo(0);
+    _startShot(shots.first);
+  }
+
+  bool _isCurrent(int session, ReviewShot shot, int generation) =>
+      mounted &&
+      session == _session &&
+      shot.generation == generation &&
+      shot.state == ShotState.analysing;
+
+  /// Analyses one shot. Draft and final events are applied as they arrive.
+  Future<void> _startShot(ReviewShot shot) async {
+    if (!mounted) return;
+    final session = _session;
+    final generation = ++shot.generation;
     final services = AppServicesScope.of(context);
+    shot
+      ..state = ShotState.analysing
+      ..items = null
+      ..result = null
+      ..failure = null
+      ..error = null
+      ..reviewClock.reset();
+    setState(() {});
     try {
+      await _load(shot);
+      final bytes = shot.bytes;
+      if (bytes == null) throw const FormatException('no image');
       final db = _db ?? await FoodDatabase.load();
-      final pipeline = _service ??=
+      if (!_isCurrent(session, shot, generation)) return;
+      _db = db;
+      final service = _service ??=
           widget.vision ??
           FoodVisionPipeline(
             llm: services.llm,
             system: SystemFoodVision(db),
             regions: RegionFoodVision(db),
           );
-      final result = await pipeline.analyse(bytes);
-      if (!mounted || analysisId != _analysisId) return;
-      setState(() {
-        _db = db;
-        _result = result;
-        _failure = result.failure;
-        _items = [for (final f in result.foods) _Item(f)];
-        _removed = 0;
-        _added = 0;
-        _reviewClock
-          ..reset()
-          ..start();
+      await _analyse(service, bytes, shot.second, (event) {
+        if (!_isCurrent(session, shot, generation)) return;
+        setState(() {
+          shot.result = event;
+          shot.failure = event.failure;
+          shot.items = mergeReviewItems(shot.items, event.foods);
+        });
+        _pumpAhead();
       });
     } on FormatException {
-      if (mounted && analysisId == _analysisId) {
-        setState(() => _error = 'photoInvalidImage');
+      if (_isCurrent(session, shot, generation)) {
+        shot.error = 'photoInvalidImage';
       }
     } catch (error) {
-      if (mounted && analysisId == _analysisId) {
-        setState(() {
-          _failure = VisionFailure.fromError(error);
-          _result = null;
-          _items = [];
-        });
+      if (_isCurrent(session, shot, generation)) {
+        shot.failure = VisionFailure.fromError(error);
+        shot.result = null;
       }
+    }
+    if (!_isCurrent(session, shot, generation)) return;
+    shot
+      ..state = ShotState.ready
+      ..items ??= []
+      ..reviewClock.start();
+    setState(() {});
+    _pumpAhead();
+  }
+
+  /// Keeps at most one analysis running in the background: the next waiting
+  /// photo starts while the current one is being reviewed.
+  void _pumpAhead() {
+    if (!mounted) return;
+    if (_shots.any((s) => s.state == ShotState.analysing)) return;
+    final next = _shots.indexWhere((s) => s.state == ShotState.waiting, _index);
+    if (next < 0 || next > _index + 1) return;
+    _startShot(_shots[next]);
+  }
+
+  /// Reports each event to [onEvent] in order: the draft (when the phone's
+  /// model has one), then the final result. The pipeline streams its events;
+  /// other services are called directly, which keeps tests free of stream
+  /// timing. Errors are thrown, as [FoodVisionPipeline.analyse] would.
+  Future<void> _analyse(
+    FoodVisionService service,
+    Uint8List bytes,
+    Uint8List? second,
+    void Function(FoodVisionResult event) onEvent,
+  ) async {
+    if (service is FoodVisionPipeline) {
+      final events = second == null
+          ? service.analyseProgressive(bytes)
+          : service.analyseViewsProgressive(bytes, second);
+      await for (final event in events) {
+        onEvent(event);
+      }
+      return;
+    }
+    if (service is StagedFoodVisionService) {
+      onEvent(
+        await service.analyseStaged(
+          bytes,
+          secondaryImage: second,
+          onDraft: onEvent,
+        ),
+      );
+      return;
+    }
+    onEvent(
+      second != null && service is MultiPhotoFoodVisionService
+          ? await service.analyseViews(bytes, second)
+          : await service.analyse(bytes),
+    );
+  }
+
+  /// Moves to the next photo (or leaves when the queue is finished). The
+  /// current photo is released; nothing is kept for it.
+  void _advance() {
+    final shot = _shot;
+    if (shot == null) return;
+    _discard(shot);
+    shot.state = ShotState.done;
+    final next = _index + 1;
+    if (next >= _shots.length) {
+      Navigator.pop(context);
+      return;
+    }
+    setState(() {
+      _index = next;
+      _removed = 0;
+      _added = 0;
+    });
+    if (_scroll.hasClients) _scroll.jumpTo(0);
+    final upcoming = _shots[next];
+    if (upcoming.state == ShotState.waiting) _startShot(upcoming);
+    _pumpAhead();
+  }
+
+  // -------------------------------------------------------- picking
+
+  Future<Uint8List?> _readAndDelete(XFile file) async {
+    try {
+      return await file.readAsBytes();
+    } finally {
+      await deleteTemporaryImage(file.path);
     }
   }
 
-  /// Runs the analysis again on the same photo (no new capture).
-  Future<void> _retry() async {
-    final photo = _photo;
-    if (photo == null || _busy || _saving) return;
-    final id = ++_analysisId;
-    setState(() {
-      _busy = true;
-      _error = null;
-      _failure = null;
-      _result = null;
-      _items = null;
-    });
-    await _analyse(photo, id);
-    if (mounted && id == _analysisId) setState(() => _busy = false);
+  bool get _analysing => _shot?.state == ShotState.analysing;
+
+  Future<void> _takePhoto() async {
+    if (_busy || _saving || _analysing) return;
+    setState(() => _busy = true);
+    Uint8List? bytes;
+    try {
+      final file = await _picker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1600,
+        maxHeight: 1600,
+        imageQuality: 88,
+      );
+      if (file != null) bytes = await _readAndDelete(file);
+    } catch (_) {
+      if (mounted) setState(() => _error = 'cameraError');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+    if (bytes == null || !mounted) return;
+    _startBatch([ReviewShot(bytes: bytes)]);
   }
 
-  Future<void> _change(_Item item) async {
+  Future<void> _pickGallery() async {
+    if (_busy || _saving || _analysing) return;
+    setState(() => _busy = true);
+    var files = const <XFile>[];
+    try {
+      files = await _picker.pickMultiImage(
+        maxWidth: 1600,
+        maxHeight: 1600,
+        imageQuality: 88,
+      );
+    } catch (_) {
+      if (mounted) setState(() => _error = 'photoGalleryError');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+    if (!mounted || files.isEmpty) return;
+    var sameMeal = false;
+    if (files.length > 1) {
+      sameMeal = await _askSameMeal(files.length) ?? false;
+      if (!mounted) return;
+    }
+    if (sameMeal) {
+      _startBatch([
+        ReviewShot(
+          file: files[0],
+          secondFile: files[1],
+          limitNote: files.length > 2,
+        ),
+      ]);
+    } else {
+      _startBatch([for (final file in files) ReviewShot(file: file)]);
+    }
+  }
+
+  /// Null when dismissed (treated as different meals by the caller).
+  Future<bool?> _askSameMeal(int count) {
+    final t = stringsOf(context);
+    return showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: Text(t.get('photoSameMealQ')),
+        content: Text(
+          '${t.get('photoSameMealBody')}'
+          '${count > 2 ? '\n\n${t.get('photoSameMealLimit')}' : ''}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c, true),
+            child: Text(t.get('photoSameMeal')),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: Text(t.get('photoDifferentMeals')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Runs the analysis again on the same photo (no new capture).
+  void _retry() {
+    final shot = _shot;
+    if (shot == null || !shot.hasPhoto || _busy || _saving || _analysing) {
+      return;
+    }
+    shot.state = ShotState.waiting;
+    _startShot(shot);
+  }
+
+  // ------------------------------------------------------- review edits
+
+  void _addItem(ReviewItem item) {
+    final shot = _shot;
+    if (shot == null) return;
+    _added++;
+    setState(() => (shot.items ??= []).add(item));
+  }
+
+  void _addFood(FoodRef food, {double? grams}) => _addItem(
+    ReviewItem(
+      DetectedFood(
+        food: food,
+        label: food.namePt,
+        grams: grams ?? food.portionG,
+        source: VisionSource.user,
+      ),
+    ),
+  );
+
+  void _removeItem(ReviewItem item) {
+    _removed++;
+    setState(() => item.removing = true);
+  }
+
+  void _dropItem(ReviewItem item) {
+    setState(() => _shot?.items?.remove(item));
+  }
+
+  Future<void> _change(ReviewItem item) async {
     final db = _db;
     if (db == null) return;
     final suggestions = await AppServicesScope.of(
@@ -248,25 +461,13 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
     if (food != null) _addFood(food);
   }
 
-  void _addFood(FoodRef food) {
-    _added++;
-    setState(
-      () => (_items ??= []).add(
-        _Item(
-          DetectedFood(
-            food: food,
-            label: food.namePt,
-            grams: food.portionG,
-            source: VisionSource.user,
-          ),
-        ),
-      ),
-    );
-  }
-
+  /// Second angle (camera) or a region of the photo: candidates to add.
   Future<void> _extraPhoto({required bool region}) async {
-    final photo = _photo;
-    if (photo == null || _busy || _saving) return;
+    final shot = _shot;
+    final photo = shot?.bytes;
+    if (shot == null || photo == null || _busy || _saving || _analysing) {
+      return;
+    }
     Uint8List? bytes;
     try {
       if (region) {
@@ -278,91 +479,49 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
           maxHeight: 1600,
           imageQuality: 88,
         );
-        if (file != null) {
-          try {
-            bytes = await file.readAsBytes();
-          } finally {
-            await deleteTemporaryImage(file.path);
-          }
-        }
+        if (file != null) bytes = await _readAndDelete(file);
       }
-      if (bytes == null || !mounted) return;
-      final id = ++_analysisId;
-      setState(() {
-        _busy = true;
-        _error = null;
-        if (!region) _secondPhoto = bytes;
-      });
-      final service = _service ?? widget.vision;
-      if (service == null) return;
-      final result = !region && service is MultiPhotoFoodVisionService
-          ? await service.analyseViews(photo, bytes)
-          : await service.analyse(bytes);
-      if (!mounted || id != _analysisId) return;
-      setState(() => _busy = false);
-      final candidates = <String, DetectedFood>{};
-      for (final f in [...result.foods, ...result.suggestions]) {
-        if (f.food != null &&
-            !(_items ?? []).any((i) => i.food?.key == f.food!.key))
-          candidates[f.food!.key] = f;
-      }
-      final chosen = <DetectedFood>{};
-      final t = stringsOf(context);
-      final accepted = await showModalBottomSheet<bool>(
-        context: context,
-        useSafeArea: true,
-        isScrollControlled: true,
-        builder: (c) => StatefulBuilder(
-          builder: (c, update) => SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    t.get('photoConfirmExtra'),
-                    style: Theme.of(c).textTheme.titleLarge,
-                  ),
-                  Text(t.get('photoExtraHint')),
-                  if (candidates.isEmpty) Text(t.get('photoNothingFound')),
-                  Flexible(
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: [
-                        for (final f in candidates.values)
-                          CheckboxListTile(
-                            title: Text(f.food!.name(t.isEnglish)),
-                            subtitle: Text(
-                              '${f.grams.round()} g · ${t.get('photoUncertain')}',
-                            ),
-                            value: chosen.contains(f),
-                            onChanged: (v) => update(() {
-                              if (v == true)
-                                chosen.add(f);
-                              else
-                                chosen.remove(f);
-                            }),
-                          ),
-                      ],
-                    ),
-                  ),
-                  FilledButton(
-                    onPressed: () => Navigator.pop(c, true),
-                    child: Text(t.get('add')),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+    } catch (_) {
+      if (mounted) setState(() => _error = 'cameraError');
+      return;
+    }
+    final db = _db;
+    if (bytes == null || !mounted || db == null) return;
+    final session = _session;
+    final generation = shot.generation;
+    if (!region) shot.angle = bytes;
+    setState(() => _busy = true);
+    try {
+      final service = _service ??=
+          widget.vision ??
+          FoodVisionPipeline(
+            llm: AppServicesScope.of(context).llm,
+            system: SystemFoodVision(db),
+            regions: RegionFoodVision(db),
+          );
+      FoodVisionResult? result;
+      await _analyse(
+        service,
+        region ? bytes : photo,
+        region ? null : bytes,
+        (event) => result = event,
       );
-      if (accepted == true && mounted) {
-        for (final f in chosen) {
-          _addFood(f.food!);
-          final added = _items!.last;
-          added.grams = f.grams;
+      final value = result;
+      if (value == null ||
+          !mounted ||
+          session != _session ||
+          shot.generation != generation) {
+        return;
+      }
+      final candidates = <String, DetectedFood>{};
+      for (final f in [...value.foods, ...value.suggestions]) {
+        if (f.food != null &&
+            !(shot.items ?? []).any((i) => i.food?.key == f.food!.key)) {
+          candidates[f.food!.key] = f;
         }
       }
+      if (!mounted) return;
+      await _pickCandidates(candidates.values.toList());
     } catch (_) {
       if (mounted) setState(() => _error = 'photoModelError');
     } finally {
@@ -370,12 +529,71 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
     }
   }
 
-  Future<void> _clarify(_Item item) async {
+  Future<void> _pickCandidates(List<DetectedFood> candidates) async {
+    final chosen = <DetectedFood>{};
+    final t = stringsOf(context);
+    final accepted = await showModalBottomSheet<bool>(
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      builder: (c) => StatefulBuilder(
+        builder: (c, update) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  t.get('photoConfirmExtra'),
+                  style: Theme.of(c).textTheme.titleLarge,
+                ),
+                Text(t.get('photoExtraHint')),
+                if (candidates.isEmpty) Text(t.get('photoNothingFound')),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      for (final f in candidates)
+                        CheckboxListTile(
+                          title: Text(f.food!.name(t.isEnglish)),
+                          subtitle: Text(
+                            '${f.grams.round()} g · ${t.get('photoUncertain')}',
+                          ),
+                          value: chosen.contains(f),
+                          onChanged: (v) => update(() {
+                            if (v == true) {
+                              chosen.add(f);
+                            } else {
+                              chosen.remove(f);
+                            }
+                          }),
+                        ),
+                    ],
+                  ),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(c, true),
+                  child: Text(t.get('add')),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (accepted == true && mounted) {
+      for (final f in chosen) {
+        _addFood(f.food!, grams: f.grams);
+      }
+    }
+  }
+
+  Future<void> _clarify(ReviewItem item) async {
     final food = item.food;
     if (food == null) return _change(item);
     final t = stringsOf(context);
     final alternatives = [
-      for (final f in _result?.suggestions ?? <DetectedFood>[])
+      for (final f in _shot?.result?.suggestions ?? <DetectedFood>[])
         if (f.food != null &&
             f.food!.category == food.category &&
             f.food!.key != food.key)
@@ -395,7 +613,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
           ],
         ),
       );
-      if (selected != null && mounted)
+      if (selected != null && mounted) {
         setState(() {
           item.detected = item.detected.copyWith(
             food: selected,
@@ -403,6 +621,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
           );
           item.grams = selected.portionG;
         });
+      }
       return;
     }
     final units = food.portionUnits;
@@ -479,10 +698,18 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
     if (picked != null && mounted) _addFood(picked);
   }
 
+  // ----------------------------------------------------------- saving
+
+  /// Saves the savable lines of the current photo, then moves on.
   Future<void> _save() async {
-    if (_saving || _busy) return;
-    final items = _items ?? const <_Item>[];
-    final ready = items.where((i) => i.food != null && i.grams > 0).toList();
+    final shot = _shot;
+    if (shot == null || shot.state != ShotState.ready || _saving || _busy) {
+      return;
+    }
+    final ready = [
+      for (final item in shot.items ?? const <ReviewItem>[])
+        if (item.savable) item,
+    ];
     if (ready.isEmpty) return;
     final t = stringsOf(context);
     final services = AppServicesScope.of(context);
@@ -512,17 +739,19 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
         var corrected = 0;
         for (final item in ready) {
           if (item.food?.key != item.original.food?.key ||
-              item.grams != item.original.grams)
+              item.grams != item.original.grams) {
             corrected++;
+          }
           if (item.food?.key != item.original.food?.key &&
-              item.original.source != VisionSource.user)
+              item.original.source != VisionSource.user) {
             await local.recordCorrection(item.original.label, item.food!.key);
+          }
         }
         await local.recordPhotoReview(
           corrected: corrected,
           removed: _removed,
           added: _added,
-          elapsed: _reviewClock.elapsed,
+          elapsed: shot.reviewClock.elapsed,
         );
       });
     } catch (_) {
@@ -535,12 +764,37 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
       return;
     }
     if (!mounted) return;
+    setState(() => _saving = false);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(t.get('photoSaved').replaceAll('{n}', '${ready.length}')),
       ),
     );
-    Navigator.pop(context);
+    _advance();
+  }
+
+  void _scrollToUnresolved() {
+    ReviewItem? first;
+    for (final item in _shot?.items ?? const <ReviewItem>[]) {
+      if (item.unresolved) {
+        first = item;
+        break;
+      }
+    }
+    if (first == null) return;
+    final target = first.anchor.currentContext;
+    if (target != null) {
+      Scrollable.ensureVisible(
+        target,
+        duration: const Duration(milliseconds: 300),
+        alignment: 0.3,
+      );
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(stringsOf(context).get('photoChooseFirst'))),
+      );
   }
 
   // ---------------------------------------------------------------- UI
@@ -548,215 +802,467 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
   @override
   Widget build(BuildContext context) {
     final t = stringsOf(context);
-    final items = _items;
-    final ready = items?.where((i) => i.food != null && i.grams > 0) ?? [];
+    final shot = _shot;
+    final items = shot?.items;
+    final live = [
+      for (final item in items ?? const <ReviewItem>[])
+        if (!item.removing) item,
+    ];
+    final counts = countReview(items ?? const <ReviewItem>[]);
+    final analysing = _analysing;
+    final result = shot?.result;
+    final draft = shot?.draftShown ?? false;
+    final suggestions = [
+      for (final s in result?.suggestions ?? const <DetectedFood>[])
+        if (s.food != null && !live.any((i) => i.food?.key == s.food!.key)) s,
+    ];
+    final busy = _busy || _saving;
+
     return VyroSubpageScaffold(
       title: t.get('photo'),
-      footer: items == null || items.isEmpty
+      footer: shot == null
           ? null
-          : VyroPrimaryButton(
-              label: t.get('photoSaveN').replaceAll('{n}', '${ready.length}'),
-              icon: Icons.check_rounded,
-              loading: _saving,
-              onPressed: ready.isEmpty || _saving || _busy ? null : _save,
+          : _ReviewFooter(
+              counts: counts,
+              queue: _queue,
+              analysing: analysing,
+              saving: _saving,
+              enabled: !busy && shot.state == ShotState.ready,
+              onSave: _save,
+              onAdvance: _advance,
+              onScrollToUnresolved: _scrollToUnresolved,
             ),
       body: ListView(
+        controller: _scroll,
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
         children: [
-          if (_photo == null)
-            _Hero(onPick: kIsWeb || _busy ? null : _choose)
-          else
-            _PhotoHeader(
-              photo: _photo!,
-              busy: _busy,
-              source: _result?.source,
-              onRetake: _busy || _saving
-                  ? null
-                  : () => _choose(ImageSource.camera),
-              onGallery: _busy || _saving
-                  ? null
-                  : () => _choose(ImageSource.gallery),
+          if (shot == null)
+            _Hero(
+              onCamera: kIsWeb || busy ? null : _takePhoto,
+              onGallery: kIsWeb || busy ? null : _pickGallery,
+            )
+          else ...[
+            if (_queue)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Text(
+                  t
+                      .get('photoQueueOf')
+                      .replaceAll('{n}', '${_index + 1}')
+                      .replaceAll('{m}', '${_shots.length}'),
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            _PhotoBlock(
+              shot: shot,
+              analysing: analysing,
+              draft: draft,
+              source: result?.source,
+              onRetake: busy || analysing ? null : _takePhoto,
             ),
-          if (_photo != null && _items != null) ...[
-            Wrap(
-              spacing: 8,
-              children: [
-                OutlinedButton.icon(
-                  onPressed: _busy || _saving
+            const SizedBox(height: 12),
+            PhotoActionRow(
+              actions: [
+                PhotoAction(
+                  icon: Icons.crop,
+                  label: t.get('photoActZone'),
+                  onPressed: busy || analysing || shot.bytes == null
                       ? null
                       : () => _extraPhoto(region: true),
-                  icon: const Icon(Icons.crop),
-                  label: Text(t.get('photoAnalyseArea')),
                 ),
-                OutlinedButton.icon(
-                  onPressed: _busy || _saving
+                PhotoAction(
+                  icon: Icons.add_a_photo_outlined,
+                  label: t.get('photoActSecond'),
+                  onPressed: busy || analysing || shot.bytes == null
                       ? null
                       : () => _extraPhoto(region: false),
-                  icon: const Icon(Icons.add_a_photo_outlined),
-                  label: Text(t.get('photoSecondAngle')),
+                ),
+                PhotoAction(
+                  icon: Icons.menu_book_outlined,
+                  label: t.get('photoActRecipe'),
+                  onPressed: busy || analysing || _db == null
+                      ? null
+                      : _pickRecipe,
+                ),
+                PhotoAction(
+                  icon: Icons.photo_library_outlined,
+                  label: t.get('photoActMore'),
+                  onPressed: busy || analysing ? null : _pickGallery,
                 ),
               ],
             ),
-            if (_secondPhoto != null)
-              SizedBox(
-                height: 72,
-                child: Image.memory(_secondPhoto!, fit: BoxFit.contain),
-              ),
-          ],
-          if (_error != null) ...[
-            const SizedBox(height: 14),
-            _Notice(
-              icon: Icons.info_outline_rounded,
-              text: '${t.get(_error!)} ${t.get('photoManualFallback')}',
-            ),
-          ],
-          if (items != null && !_busy) ...[
-            const SizedBox(height: 18),
-            TextButton.icon(
-              icon: const Icon(Icons.menu_book_outlined),
-              label: Text(
-                t.isEnglish
-                    ? 'Choose a saved recipe'
-                    : 'Escolher uma receita habitual',
-              ),
-              onPressed: _pickRecipe,
-            ),
-            _Totals(items: items),
-            const SizedBox(height: 18),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final meal in mealTypes)
-                  VyroPillChip(
-                    label: mealLabel(t, meal),
-                    selected: _meal == meal,
-                    onTap: () => setState(() => _meal = meal),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 22),
-            VyroSectionTitle(
-              label: '${t.get('photoFoundFoods')} · ${items.length}',
-            ),
-            if (_result?.source == VisionSource.regionClassifier)
+            if (_error != null)
               _Notice(
-                icon: Icons.auto_awesome_outlined,
-                text: t.get(
-                  (_result?.notes.contains('systemFailed') ?? false)
-                      ? 'photoSystemFailedNote'
-                      : 'photoRegionsNote',
-                ),
+                icon: Icons.info_outline_rounded,
+                text: '${t.get(_error!)} ${t.get('photoManualFallback')}',
               ),
-            for (final note in _result?.notes ?? <String>{})
-              if (note != 'systemFailed')
-                _Notice(icon: Icons.info_outline_rounded, text: t.get(note)),
-            if (_result?.suggestions.isNotEmpty ?? false) ...[
-              Text(t.get('photoSuggestions')),
-              Wrap(
-                spacing: 8,
-                children: [
-                  for (final suggestion in _result!.suggestions)
-                    if (suggestion.food != null &&
-                        !items.any((i) => i.food?.key == suggestion.food!.key))
-                      ActionChip(
-                        label: Text(suggestion.food!.name(t.isEnglish)),
-                        onPressed: () => _addFood(suggestion.food!),
+            if (shot.error != null)
+              _Notice(
+                icon: Icons.info_outline_rounded,
+                text: t.get(shot.error!),
+              ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 44,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (final meal in mealTypes)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: VyroPillChip(
+                          label: mealLabel(t, meal),
+                          selected: _meal == meal,
+                          onTap: () => setState(() => _meal = meal),
+                        ),
                       ),
-                ],
-              ),
-            ],
-            // An empty review always offers a retry (same photo, or analyse an
-            // area or add by hand). A confirmed empty photo says so explicitly.
-            if (items.isEmpty)
-              _FailureCard(
-                reason: t.get(switch (_failure) {
-                  VisionFailure.busy => 'photoFailBusy',
-                  VisionFailure.unavailable => 'photoFailUnavailable',
-                  VisionFailure.other => 'photoFailOther',
-                  null =>
-                    (_result?.confirmedEmpty ?? false)
-                        ? 'photoEmptyConfirmed'
-                        : 'photoNothingFound',
-                }),
-                hint: t.get('photoFailHint'),
-                retryLabel: t.get('photoRetry'),
-                onRetry: _busy || _saving || _photo == null ? null : _retry,
-              ),
-            for (final item in items) ...[
-              const SizedBox(height: 10),
-              VyroFadeSlideIn(
-                key: ObjectKey(item),
-                child: _FoodRow(
-                  item: item,
-                  onChange: () => _change(item),
-                  onGrams: (g) => setState(() => item.grams = g),
-                  onRemove: () => setState(() {
-                    items.remove(item);
-                    _removed++;
-                  }),
+                  ],
                 ),
               ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: () => _clarify(item),
-                  icon: const Icon(Icons.help_outline, size: 18),
-                  label: Text(
-                    t.isEnglish
-                        ? 'Clarify food or portion'
-                        : 'Esclarecer alimento ou porção',
+            ),
+            if (items != null) ...[
+              const SizedBox(height: 16),
+              ReviewSummary(items: items),
+              if (result?.source == VisionSource.regionClassifier)
+                _Notice(
+                  icon: Icons.auto_awesome_outlined,
+                  text: t.get(
+                    (result?.notes.contains('systemFailed') ?? false)
+                        ? 'photoSystemFailedNote'
+                        : 'photoRegionsNote',
                   ),
                 ),
+              for (final note in result?.notes ?? <String>{})
+                if (note != 'systemFailed')
+                  _Notice(icon: Icons.info_outline_rounded, text: t.get(note)),
+              if (shot.limitNote)
+                _Notice(
+                  icon: Icons.info_outline_rounded,
+                  text: t.get('photoSameMealLimit'),
+                ),
+              if (live.isNotEmpty) ...[
+                const SizedBox(height: 22),
+                VyroSectionTitle(
+                  label: '${t.get('photoFoundFoods')} · ${live.length}',
+                ),
+              ],
+              // An empty review always offers a retry (same photo, or analyse
+              // an area or add by hand). A confirmed empty photo says so.
+              if (live.isEmpty && !analysing)
+                _FailureCard(
+                  reason: t.get(switch (shot.failure) {
+                    VisionFailure.busy => 'photoFailBusy',
+                    VisionFailure.unavailable => 'photoFailUnavailable',
+                    VisionFailure.other => 'photoFailOther',
+                    null =>
+                      (result?.confirmedEmpty ?? false)
+                          ? 'photoEmptyConfirmed'
+                          : 'photoNothingFound',
+                  }),
+                  hint: t.get('photoFailHint'),
+                  retryLabel: t.get('photoRetry'),
+                  onRetry: busy || !shot.hasPhoto ? null : _retry,
+                ),
+              for (final item in items)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: ReviewCollapse(
+                    key: ObjectKey(item),
+                    collapsing: item.removing,
+                    onGone: () => _dropItem(item),
+                    child: VyroFadeSlideIn(
+                      child: FoodReviewCard(
+                        key: item.anchor,
+                        item: item,
+                        onChange: item.pending || item.removing
+                            ? null
+                            : () => _change(item),
+                        onGrams: (g) => setState(() => item.grams = g),
+                        onRemove: item.pending || item.removing
+                            ? null
+                            : () => _removeItem(item),
+                        onClarify: () => _clarify(item),
+                      ),
+                    ),
+                  ),
+                ),
+              if (suggestions.isNotEmpty && !analysing) ...[
+                const SizedBox(height: 18),
+                ReviewChipRow(
+                  title: t.get('photoSuggestions'),
+                  chips: [
+                    for (final s in suggestions)
+                      ActionChip(
+                        label: Text(s.food!.name(t.isEnglish)),
+                        onPressed: () => _addFood(s.food!),
+                      ),
+                  ],
+                ),
+              ],
+              if (!analysing) ...[
+                const SizedBox(height: 14),
+                OutlinedButton.icon(
+                  onPressed: _db == null || busy ? null : _addFromPicker,
+                  icon: const Icon(Icons.add_rounded),
+                  label: Text(t.get('photoAddFood')),
+                ),
+              ],
+              if (!analysing && _db != null) ...[
+                const SizedBox(height: 18),
+                _QuickAddRow(
+                  foods: _quickFoods(_db!, live, suggestions),
+                  onAdd: _addFood,
+                ),
+              ],
+              const SizedBox(height: 22),
+              Text(
+                '${t.get('photoEstimateNote')}\n${t.get('nutritionSourcesNote')}',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
-            ],
-            const SizedBox(height: 14),
-            OutlinedButton.icon(
-              onPressed: _db == null ? null : _addFromPicker,
-              icon: const Icon(Icons.add_rounded),
-              label: Text(t.get('photoAddFood')),
-            ),
-            if (_db case final db?) ...[
-              const SizedBox(height: 14),
-              _QuickAdd(
-                foods: [
-                  for (final key in _quickKeysFor(_meal, items))
-                    if (db.byKey(key) case final food?)
-                      if (!items.any((i) => i.food?.key == key)) food,
-                ].take(8).toList(),
-                onAdd: _addFood,
-              ),
-            ],
-            const SizedBox(height: 22),
-            Text(
-              '${t.get('photoEstimateNote')}\n${t.get('nutritionSourcesNote')}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            if (_result?.detail case final detail?) ...[
-              const SizedBox(height: 8),
-              _AnalysisDetail(detail: detail),
+              if (_analysisDetail(result) case final detail?) ...[
+                const SizedBox(height: 8),
+                _AnalysisDetail(detail: detail),
+              ],
             ],
           ],
         ],
       ),
     );
   }
+
+  /// Common foods the photo may have missed, without repeats.
+  List<FoodRef> _quickFoods(
+    FoodDatabase db,
+    List<ReviewItem> live,
+    List<DetectedFood> suggestions,
+  ) => [
+    for (final key in _quickKeysFor(_meal, live))
+      if (db.byKey(key) case final food?)
+        if (!live.any((i) => i.food?.key == key) &&
+            !suggestions.any((s) => s.food?.key == key))
+          food,
+  ].take(8).toList();
+
+  /// Technical detail with the timing line appended (when not already there).
+  String? _analysisDetail(FoodVisionResult? result) {
+    if (result == null) return null;
+    final timing = timingLine(result.timings);
+    final detail = result.detail;
+    if (timing == null) return detail;
+    if (detail == null || detail.isEmpty) return timing;
+    return detail.contains('timing:') ? detail : '$detail\n$timing';
+  }
 }
 
-String _askKey(GenericKind? kind) => switch (kind) {
-  GenericKind.drink => 'photoAskDrink',
-  GenericKind.sandwich => 'photoAskSandwich',
-  GenericKind.sauce => 'photoAskSauce',
-  GenericKind.meat => 'photoAskMeat',
-  GenericKind.fish => 'photoAskFish',
-  GenericKind.fruit => 'photoAskFruit',
-  GenericKind.dessert => 'photoAskDessert',
-  GenericKind.food || null => 'photoAskFood',
-};
+/// Sticky footer: the primary action counts the savable foods, and says what
+/// is still unresolved instead of skipping it silently.
+class _ReviewFooter extends StatelessWidget {
+  const _ReviewFooter({
+    required this.counts,
+    required this.queue,
+    required this.analysing,
+    required this.saving,
+    required this.enabled,
+    required this.onSave,
+    required this.onAdvance,
+    required this.onScrollToUnresolved,
+  });
 
-/// Shown when the review is empty and the photo was not a confirmed empty
-/// meal: says why (phone AI busy, unavailable, failed) and offers a retry on
-/// the same photo. Manual adding stays available below.
+  final ReviewCounts counts;
+  final bool queue;
+  final bool analysing;
+  final bool saving;
+  final bool enabled;
+  final VoidCallback onSave;
+  final VoidCallback onAdvance;
+  final VoidCallback onScrollToUnresolved;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = stringsOf(context);
+    final theme = Theme.of(context);
+    final savable = counts.savable;
+    final String label;
+    final VoidCallback? action;
+    final IconData icon;
+    if (analysing || !enabled && !saving) {
+      label = t.get('photoSaveN').replaceAll('{n}', '$savable');
+      action = null;
+      icon = Icons.check_rounded;
+    } else if (counts.hasUnresolved) {
+      label = t.get('photoSaveN').replaceAll('{n}', '$savable');
+      action = onScrollToUnresolved;
+      icon = Icons.check_rounded;
+    } else if (savable > 0) {
+      label = t.get('photoSaveN').replaceAll('{n}', '$savable');
+      action = onSave;
+      icon = Icons.check_rounded;
+    } else if (queue) {
+      label = t.get('photoNext');
+      action = onAdvance;
+      icon = Icons.arrow_forward_rounded;
+    } else {
+      label = t.get('photoSaveN').replaceAll('{n}', '0');
+      action = null;
+      icon = Icons.check_rounded;
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (counts.hasUnresolved && !analysing)
+          Align(
+            alignment: Alignment.center,
+            child: TextButton.icon(
+              onPressed: onScrollToUnresolved,
+              icon: Icon(
+                Icons.help_outline_rounded,
+                size: 18,
+                color: theme.colorScheme.tertiary,
+              ),
+              label: Text(
+                t
+                    .get('photoOneToChoose')
+                    .replaceAll('{n}', '${counts.unresolved}'),
+                style: TextStyle(color: theme.colorScheme.tertiary),
+              ),
+              style: TextButton.styleFrom(minimumSize: const Size(44, 44)),
+            ),
+          ),
+        VyroPrimaryButton(
+          label: label,
+          icon: icon,
+          loading: saving,
+          onPressed: action,
+        ),
+        if (queue || (counts.hasUnresolved && savable > 0))
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (queue && !saving)
+                TextButton(
+                  onPressed: analysing ? null : onAdvance,
+                  style: TextButton.styleFrom(minimumSize: const Size(44, 44)),
+                  child: Text(t.get('photoSkip')),
+                ),
+              if (counts.hasUnresolved && savable > 0 && !analysing)
+                TextButton(
+                  onPressed: saving ? null : onSave,
+                  style: TextButton.styleFrom(minimumSize: const Size(44, 44)),
+                  child: Text(
+                    t.get('photoSaveOnly').replaceAll('{n}', '$savable'),
+                  ),
+                ),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+/// The photo: rounded, with the source tag, a scan overlay while analysing,
+/// and a small thumbnail of a second angle.
+class _PhotoBlock extends StatelessWidget {
+  const _PhotoBlock({
+    required this.shot,
+    required this.analysing,
+    required this.draft,
+    required this.source,
+    required this.onRetake,
+  });
+
+  final ReviewShot shot;
+  final bool analysing;
+  final bool draft;
+  final VisionSource? source;
+  final VoidCallback? onRetake;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = stringsOf(context);
+    final theme = Theme.of(context);
+    final bytes = shot.bytes;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: SizedBox(
+        height: 230,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (bytes != null)
+              Image.memory(bytes, fit: BoxFit.cover, gaplessPlayback: true)
+            else
+              ColoredBox(color: theme.colorScheme.surfaceContainerHighest),
+            if (!analysing)
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.45),
+                    ],
+                  ),
+                ),
+              ),
+            if (analysing)
+              PhotoScanOverlay(
+                label: t.get(draft ? 'photoStepConfirm' : 'photoStepIdentify'),
+              ),
+            if (!analysing && source != null)
+              Positioned(
+                left: 12,
+                bottom: 10,
+                child: _GlassTag(
+                  icon: source == VisionSource.systemAi
+                      ? Icons.auto_awesome_rounded
+                      : Icons.grid_view_rounded,
+                  label: t.get(
+                    source == VisionSource.systemAi
+                        ? 'photoSourceSystem'
+                        : source == VisionSource.fused
+                        ? 'photoSourceFused'
+                        : 'photoSourceRegions',
+                  ),
+                ),
+              ),
+            if (shot.angle != null)
+              Positioned(
+                left: 12,
+                top: 12,
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white70),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.memory(shot.angle!, fit: BoxFit.cover),
+                ),
+              ),
+            if (!analysing)
+              Positioned(
+                right: 10,
+                bottom: 8,
+                child: IconButton.filledTonal(
+                  tooltip: t.get('photoRetake'),
+                  onPressed: onRetake,
+                  icon: const Icon(Icons.photo_camera_outlined),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _FailureCard extends StatelessWidget {
   const _FailureCard({
     required this.reason,
@@ -808,8 +1314,9 @@ class _FailureCard extends StatelessWidget {
 }
 
 class _Hero extends StatelessWidget {
-  const _Hero({required this.onPick});
-  final ValueChanged<ImageSource>? onPick;
+  const _Hero({required this.onCamera, required this.onGallery});
+  final VoidCallback? onCamera;
+  final VoidCallback? onGallery;
 
   @override
   Widget build(BuildContext context) {
@@ -853,15 +1360,11 @@ class _Hero extends StatelessWidget {
             VyroPrimaryButton(
               label: t.get('takePhoto'),
               icon: Icons.photo_camera_outlined,
-              onPressed: onPick == null
-                  ? null
-                  : () => onPick!(ImageSource.camera),
+              onPressed: onCamera,
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(
-              onPressed: onPick == null
-                  ? null
-                  : () => onPick!(ImageSource.gallery),
+              onPressed: onGallery,
               icon: const Icon(Icons.photo_library_outlined),
               label: Text(t.get('choosePhoto')),
             ),
@@ -880,117 +1383,6 @@ class _Hero extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _PhotoHeader extends StatelessWidget {
-  const _PhotoHeader({
-    required this.photo,
-    required this.busy,
-    required this.source,
-    required this.onRetake,
-    required this.onGallery,
-  });
-
-  final Uint8List photo;
-  final bool busy;
-  final VisionSource? source;
-  final VoidCallback? onRetake;
-  final VoidCallback? onGallery;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = stringsOf(context);
-    final theme = Theme.of(context);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: SizedBox(
-        height: 230,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.memory(photo, fit: BoxFit.cover, gaplessPlayback: true),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: busy ? 0.6 : 0.45),
-                  ],
-                ),
-              ),
-            ),
-            if (busy)
-              Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(
-                      width: 34,
-                      height: 34,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      t.get('photoAnalyzing'),
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            else
-              Positioned(
-                left: 14,
-                right: 10,
-                bottom: 10,
-                child: Row(
-                  children: [
-                    // Expanded (not Flexible + Spacer) so the tag gets all
-                    // the free width and is not cut to "IA do tel…".
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: source == null
-                            ? null
-                            : _GlassTag(
-                                icon: source == VisionSource.systemAi
-                                    ? Icons.auto_awesome_rounded
-                                    : Icons.grid_view_rounded,
-                                label: t.get(
-                                  source == VisionSource.systemAi
-                                      ? 'photoSourceSystem'
-                                      : source == VisionSource.fused
-                                      ? 'photoSourceFused'
-                                      : 'photoSourceRegions',
-                                ),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    IconButton.filledTonal(
-                      tooltip: t.get('choosePhoto'),
-                      onPressed: onGallery,
-                      icon: const Icon(Icons.photo_library_outlined),
-                    ),
-                    IconButton.filledTonal(
-                      tooltip: t.get('photoRetake'),
-                      onPressed: onRetake,
-                      icon: const Icon(Icons.photo_camera_outlined),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
       ),
     );
   }
@@ -1029,321 +1421,8 @@ class _GlassTag extends StatelessWidget {
   );
 }
 
-/// Meal totals: kcal and macros of the matched foods.
-class _Totals extends StatelessWidget {
-  const _Totals({required this.items});
-  final List<_Item> items;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = stringsOf(context);
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    double sum(double Function(FoodRef) pick) => items.fold(
-      0,
-      (total, i) =>
-          total + (i.food == null ? 0 : pick(i.food!) * i.grams / 100),
-    );
-    final kcal = sum((f) => f.kcal);
-    final macros = [
-      (t.get('protein'), sum((f) => f.protein), scheme.primary),
-      (t.get('carbs'), sum((f) => f.carbs), scheme.tertiary),
-      (t.get('fat'), sum((f) => f.fat), scheme.secondary),
-    ];
-    final grams = items.fold<double>(0, (total, i) => total + i.grams);
-    return VyroCard(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              VyroAnimatedNumber(
-                value: kcal,
-                style: theme.textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  height: 1,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text('kcal', style: theme.textTheme.titleMedium),
-              ),
-              const Spacer(),
-              Text(
-                '≈ ${grams.round()} g',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              for (final (label, value, color) in macros)
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: color,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(
-                              label,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.bodySmall,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${value.round()} g',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _FoodRow extends StatefulWidget {
-  const _FoodRow({
-    required this.item,
-    required this.onChange,
-    required this.onGrams,
-    required this.onRemove,
-  });
-
-  final _Item item;
-  final VoidCallback onChange;
-  final ValueChanged<double> onGrams;
-  final VoidCallback onRemove;
-
-  @override
-  State<_FoodRow> createState() => _FoodRowState();
-}
-
-class _FoodRowState extends State<_FoodRow> {
-  late final _grams = TextEditingController(text: _format(widget.item.grams));
-  final _focus = FocusNode();
-
-  static String _format(double g) => g.round().toString();
-
-  @override
-  void didUpdateWidget(_FoodRow old) {
-    super.didUpdateWidget(old);
-    final text = _format(widget.item.grams);
-    if (!_focus.hasFocus && _grams.text != text) _grams.text = text;
-  }
-
-  @override
-  void dispose() {
-    _grams.dispose();
-    _focus.dispose();
-    super.dispose();
-  }
-
-  void _step(int direction) {
-    final step = widget.item.grams >= 200 ? 25.0 : 10.0;
-    final next = (widget.item.grams + direction * step).clamp(0.0, 2000.0);
-    _grams.text = _format(next);
-    widget.onGrams(next);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = stringsOf(context);
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final item = widget.item;
-    final food = item.food;
-    final detected = item.detected;
-    final accent = food == null ? scheme.tertiary : scheme.primary;
-    final details = [
-      if (detected.where != null) detected.where!,
-      if (food == null)
-        t.get(detected.needsChoice ? 'photoGenericHint' : 'photoNoMatchRow')
-      else ...[
-        '${food.kcal.round()} kcal/100 g',
-        foodSourceTag(food),
-        if (detected.count != null && detected.count! > 1)
-          '${detected.count} ${t.get('pieces')}',
-        if (detected.source != VisionSource.user)
-          t.get(detected.corroborated ? 'photoCorroborated' : 'photoUncertain'),
-      ],
-    ].join(' · ');
-    // A generic name ("bebida") is shown as a question, not as a failed match.
-    final title =
-        food?.name(t.isEnglish) ??
-        (detected.needsChoice
-            ? t.get(_askKey(genericKindOf(detected.label)))
-            : detected.label);
-    return VyroCard(
-      radius: 20,
-      padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
-      child: Column(
-        children: [
-          InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: widget.onChange,
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 21,
-                  backgroundColor: accent.withValues(alpha: 0.13),
-                  child: Icon(
-                    food == null
-                        ? Icons.help_outline_rounded
-                        : foodCategoryIcon(food.category),
-                    size: 21,
-                    color: accent,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              title,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.unfold_more_rounded,
-                            size: 16,
-                            color: scheme.onSurfaceVariant,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        details,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: food == null ? scheme.tertiary : null,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  tooltip: t.get('delete'),
-                  onPressed: widget.onRemove,
-                  icon: const Icon(Icons.close_rounded, size: 20),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 12,
-            runSpacing: 10,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _StepButton(
-                    icon: Icons.remove_rounded,
-                    onTap: () => _step(-1),
-                  ),
-                  SizedBox(
-                    width: 78,
-                    child: TextField(
-                      controller: _grams,
-                      focusNode: _focus,
-                      textAlign: TextAlign.center,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-                      ],
-                      onChanged: (text) => widget.onGrams(
-                        double.tryParse(text.replaceAll(',', '.')) ?? 0,
-                      ),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                      decoration: const InputDecoration(
-                        isDense: true,
-                        suffixText: 'g',
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 10,
-                        ),
-                      ),
-                    ),
-                  ),
-                  _StepButton(icon: Icons.add_rounded, onTap: () => _step(1)),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Text(
-                  item.kcal == null ? '— kcal' : '${item.kcal!.round()} kcal',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StepButton extends StatelessWidget {
-  const _StepButton({required this.icon, required this.onTap});
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => IconButton(
-    onPressed: onTap,
-    visualDensity: VisualDensity.compact,
-    icon: Icon(icon, size: 20),
-    style: IconButton.styleFrom(
-      side: BorderSide(color: Theme.of(context).colorScheme.outline),
-    ),
-  );
-}
-
-class _QuickAdd extends StatelessWidget {
-  const _QuickAdd({required this.foods, required this.onAdd});
+class _QuickAddRow extends StatelessWidget {
+  const _QuickAddRow({required this.foods, required this.onAdd});
   final List<FoodRef> foods;
   final ValueChanged<FoodRef> onAdd;
 
@@ -1351,33 +1430,22 @@ class _QuickAdd extends StatelessWidget {
   Widget build(BuildContext context) {
     if (foods.isEmpty) return const SizedBox.shrink();
     final t = stringsOf(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          t.get('photoQuickAdd'),
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final food in foods)
-              ActionChip(
-                avatar: Icon(foodCategoryIcon(food.category), size: 16),
-                label: Text(food.name(t.isEnglish)),
-                onPressed: () => onAdd(food),
-              ),
-          ],
-        ),
+    return ReviewChipRow(
+      title: t.get('photoQuickAdd'),
+      chips: [
+        for (final food in foods)
+          ActionChip(
+            avatar: Icon(foodCategoryIcon(food.category), size: 16),
+            label: Text(food.name(t.isEnglish)),
+            onPressed: () => onAdd(food),
+          ),
       ],
     );
   }
 }
 
-/// Collapsed by default: the model's raw answer or the fallback error, so a
-/// wrong suggestion can be understood and reported.
+/// Collapsed by default: the model's raw answer, the timing line and the
+/// fallback error, so a wrong suggestion can be understood and reported.
 class _AnalysisDetail extends StatelessWidget {
   const _AnalysisDetail({required this.detail});
   final String detail;

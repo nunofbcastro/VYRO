@@ -60,15 +60,41 @@ um campo de alergias no contexto.
 
 ## Validação dos números
 
-- O cartão de refeição é montado a partir da base, não do texto do modelo. O
-  texto explicativo do modelo pode conter números, mas os totais mostrados são
-  os calculados pela app.
+Os números que aparecem no chat vêm sempre de código local, nunca do texto do
+modelo. A lógica está em `lib/features/assistant/domain/`:
+
+- `meal_math.dart` — resolve cada item da proposta contra a base offline
+  (`FoodDatabase`) e calcula kcal, proteína, hidratos e gordura. `ResolvedMeal`
+  guarda, por item, o alimento usado, as alternativas e se falta confirmar.
+- `model_answer.dart` — `composeModelAnswer` / `answerFromModel` recebem a
+  resposta bruta do modelo (que pode ser um fake em testes) e devolvem o texto a
+  mostrar, o cartão e os avisos.
+- `prose_numbers.dart` — `checkProseNumbers` verifica os números do texto livre.
+
+Regras:
+
+- **Cartão da refeição**: cada linha mostra o alimento da base, a quantidade e os
+  valores calculados. Um item sem correspondência fica "sem valores na base" e os
+  totais dizem "Valores parciais — resolve os alimentos".
+- **Ambiguidade**: quando um nome corresponde a vários alimentos com pontuação
+  próxima (ex.: "Café" sem qualificativo), o cartão mostra "Também pode ser: …" e
+  o item fica "a confirmar". Um nome com correspondência exata não gera alternativas.
+- **Sem / com**: "sem X" é um pedido de exclusão. Um alimento que contém X nunca
+  é escolhido para "sem X" (e o inverso). Se a base não indica a exclusão, o item
+  fica "a confirmar". Um nome com palavras que a entrada da base não tem
+  (ex.: "Frango com arroz") não é associado silenciosamente ao frango.
+- **Texto do modelo**: o prompt pede que o modelo não escreva kcal, proteína,
+  hidratos ou gordura. Como garantia, cada linha com uma palavra de nutriente e um
+  número é mantida só se o número coincidir com os totais locais: até 15 kcal ou
+  10 % (o menor), e até 2 g ou 10 % (o menor, com mínimo de 1 g). Caso contrário
+  a linha é removida; sem totais completos, nenhuma linha com números nutricionais
+  é mantida. Uma nota diz "Valores calculados pela VYRO a partir da base local" e
+  outra diz quando frases foram removidas. Sem números nutricionais, o texto fica
+  igual. A remoção é por linha, sem reescrever texto livre.
 - Propostas com alimentos que violam a opção alimentar são recusadas com uma
   mensagem a pedir outra sugestão.
-- Os totais dizem se são "Valores da base" ou "Valores parciais — resolve os
-  alimentos".
-- Ainda não há tratamento de ambiguidades de nomes (escolher entre alternativas);
-  um nome só é associado quando a correspondência da base é clara.
+- O registo no diário (`meal_log_sheet.dart`) usa a mesma correspondência do
+  cartão (`matchFood`); o utilizador pode trocar o alimento na revisão.
 
 ## Memória local: "O que a VYRO sabe sobre ti"
 

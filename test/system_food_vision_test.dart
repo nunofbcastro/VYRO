@@ -29,6 +29,22 @@ String verdicts(List<bool> visible) => jsonEncode({
   ],
 });
 
+/// Sauces and sides added from the names of the foods (see food_companions.dart).
+const _companionKeys = {
+  "brown_gravy",
+  "pasta_tomato_sauce",
+  "parmesan_grated",
+  "cooking_cream",
+  "mayonnaise",
+  "olive_oil",
+  "ketchup",
+};
+
+/// Suggestions that are not companion foods: duplicate coffees and offline
+/// hypotheses. These are what the "no suggestions" checks are about.
+Iterable<DetectedFood> hypotheses(FoodVisionResult result) =>
+    result.suggestions.where((s) => !_companionKeys.contains(s.food?.key));
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const channel = MethodChannel('test/food_vision');
@@ -263,7 +279,7 @@ void main() {
       'bread_white_toasted',
       'butter_salted',
     ]);
-    expect(result.suggestions, isEmpty);
+    expect(hypotheses(result), isEmpty);
     expect(result.detail, contains('verify: incomplete'));
     expect(
       result.detail,
@@ -296,7 +312,7 @@ void main() {
         channel: channel,
       ).analyse(photo);
       expect(result.foods, hasLength(2));
-      expect(result.suggestions, isEmpty);
+      expect(hypotheses(result), isEmpty);
       expect(result.foods.map((f) => f.food?.key), contains('beer'));
       expect(result.detail, contains('Cerveja → kept (verify=true, no where'));
     },
@@ -314,7 +330,7 @@ void main() {
         channel: channel,
       ).analyse(photo);
       expect(result.foods.single.food?.key, 'beer');
-      expect(result.suggestions, isEmpty);
+      expect(hypotheses(result), isEmpty);
     },
   );
 
@@ -552,7 +568,7 @@ void main() {
       expect(result.foods.map((f) => f.label), ['Sanduíche', 'Bebida']);
       expect(result.foods.every((f) => f.needsChoice), isTrue);
       expect(result.foods.every((f) => f.food == null), isTrue);
-      expect(result.suggestions, isEmpty);
+      expect(hypotheses(result), isEmpty);
       expect(result.confirmedEmpty, isFalse);
       expect(result.detail, contains('dropped non-food: Toalha, Guardanapo'));
       expect(result.detail, contains('generic: Sanduíche, Bebida'));
@@ -576,7 +592,7 @@ void main() {
     ];
     final result = await SystemFoodVision(db, channel: channel).analyse(photo);
     expect(result.foods.map((f) => f.label), contains('Cerveja'));
-    expect(result.suggestions, isEmpty);
+    expect(hypotheses(result), isEmpty);
     expect(result.foods.map((f) => f.food?.key), contains('espresso'));
     expect(
       result.detail,
@@ -593,7 +609,7 @@ void main() {
     ];
     final result = await SystemFoodVision(db, channel: channel).analyse(photo);
     expect(result.foods.single.label, contains('Sumo'));
-    expect(result.suggestions, isEmpty);
+    expect(hypotheses(result), isEmpty);
     expect(result.confirmedEmpty, isFalse);
   });
 
@@ -615,7 +631,7 @@ void main() {
         'bread_white_toasted',
         'butter_salted',
       ]);
-      expect(result.suggestions, isEmpty);
+      expect(hypotheses(result), isEmpty);
       expect(
         result.detail,
         contains('Pão torrado → kept (verify=true, no where'),
@@ -637,7 +653,7 @@ void main() {
       'bread_white_toasted',
       'espresso',
     ]);
-    expect(result.suggestions, isEmpty);
+    expect(hypotheses(result), isEmpty);
     expect(
       result.detail,
       contains('Café expresso (bica) → kept (verify unparsed'),

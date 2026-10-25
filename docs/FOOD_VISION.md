@@ -56,6 +56,60 @@ Uma nova fotografia substitui a revisão anterior. A seleção/análise fica
 bloqueada durante outro pedido ou gravação; resultados tardios de páginas
 fechadas são ignorados.
 
+## Resultados progressivos, tempos e nomes
+
+**Rascunho e final.** `FoodVisionPipeline.analyseProgressive(bytes)` (ou
+`analyseViewsProgressive(primeira, segunda)`) devolve um `Stream<FoodVisionResult>`:
+
+1. **Rascunho** (`stage: VisionStage.draft`), assim que a 1.ª resposta do modelo
+   do sistema é lida e filtrada (não-alimentos e coerência de café já aplicados).
+   Os itens têm `pending: true`. Se o ramo offline já tiver terminado, as suas
+   hipóteses entram nas sugestões do rascunho; caso contrário ficam para o final.
+2. **Final** (`stage: VisionStage.final_`), depois da verificação e da fusão. É o
+   mesmo resultado que `analyse()` devolve. A verificação só **remove** itens do
+   rascunho; nunca acrescenta. Sem modelo do sistema não há rascunho, só o final.
+   Erros chegam como erro do stream (o mesmo que `analyse()` lançaria).
+
+`analyse()` e `analyseViews()` continuam a devolver só o final.
+
+**Tempos.** `FoodVisionResult.timings` guarda a duração de cada fase (`first`,
+`second` quando há segunda tentativa, `verify`, `regions`). A última linha de
+`detail` resume-os, por exemplo `timing: first 2.1 s, verify 1.8 s, regions 0.9 s`.
+O ramo offline arranca logo no início, em paralelo com a verificação de qualidade
+e o modelo do sistema.
+
+**Nomes antes da correspondência** (`food_names.dart`). Para cada nome do modelo,
+a base é consultada com estas formas, por ordem, e a primeira que corresponder ganha:
+1. o nome como o modelo o escreveu (o original tem sempre prioridade);
+2. o nome normalizado (minúsculas, sem acentos);
+3. uma tradução inglês → português (`englishFoodNames`: egg → ovo, beer → cerveja,
+   cider → sidra, steak → bife, fries → batatas fritas, sparkling water → água com gás,
+   etc.). Para "water" usa-se **água mineral**, porque "água" sozinho cai em
+   "Água com gás" (ordem da base);
+4. formas singulares portuguesas: `-aes/-oes` → `-ao` (pães, limões), `-ns` → `-m`
+   (atuns), `-is` → `-l`, `-es`/`-as`/`-os`/`-s` (tomates, batatas, ovos, morangos).
+   Primeiro todas as palavras no plural, depois só a última.
+
+Palavras genéricas em inglês ("beverage", "dish", "snack") são nomes genéricos:
+ficam como "Que bebida?" / "Que comida?" e não recebem nutrientes.
+
+Os prompts pedem o nome e o "where" em português europeu, com exemplos ("centro do
+prato", "copo em cima à esquerda"). Respostas em inglês são uma das causas de
+correspondência falhada.
+
+**Sugestões de acompanhamento** (`food_companions.dart`). Depois da verificação,
+os nomes confirmados sugerem molhos e acompanhamentos, sem perguntar ao modelo:
+
+- carne, bife, hambúrguer → molho castanho (gravy; o alias "molho de cerveja" é o
+  mesmo registo da base), natas, maionese, ketchup (se existir na base);
+- massa, esparguete, lasanha → natas, molho de tomate e queijo ralado (se existirem);
+- batata frita → ketchup, maionese;
+- salada, alface → azeite.
+
+São **sugestões** (`suggestions`), fora dos totais, e só aparecem se existirem na
+base. Não se repetem alimentos já listados nem os cafés duplicados. Na base atual,
+o ketchup, o molho de tomate e o queijo ralado não existem, por isso não aparecem.
+
 ## Porções e peças — `portion_estimate.dart`
 
 - A única função que calcula gramas é `estimatedGrams`.
@@ -205,15 +259,53 @@ mostra a decisão e o motivo de cada item para se poder analisar uma foto concre
 
 ## Revisão no ecrã — `photo_food_page.dart`
 
-- Cada linha mostra o alimento, a porção (gramas, ±), a origem e, se o alimento
-  não estiver na base, a indicação de que precisa de escolha. Se o modelo indicou
-  o local ("cup top-left"), esse texto aparece no subtítulo.
-- Nomes genéricos aparecem como pergunta ("Que bebida?") com a dica "Nome demasiado
-  geral"; em vez de "Sem correspondência".
-- "Hipótese a confirmar" marca itens incertos ou vindos do classificador; não há
-  percentagens de confiança no ecrã.
-- **Segunda foto**: câmara adicional para outro ângulo. O resultado é apresentado
-  como candidatos a adicionar; alimentos já revistos são preservados.
+Layout, de cima para baixo (componentes em `widgets/photo_review_widgets.dart`,
+modelo puro em `photo/review_model.dart`):
+
+1. **Fila** (só com várias fotos): "Foto 2 de 5".
+2. **Foto** arredondada com a etiqueta da origem. Enquanto analisa: véu, faixa de
+   leitura suave (parada se o sistema pedir menos movimento) e o passo atual:
+   "A identificar alimentos…" e, quando já há rascunho, "A confirmar…".
+3. **Uma linha de botões** sob a foto: Zona, 2.º ângulo, Receita, Mais fotos
+   (desliza na horizontal em ecrãs estreitos, nunca quebra linha).
+4. **Refeição** como fileira horizontal de chips (uma linha, nunca quebra).
+5. **Resumo**: kcal grandes e macros. Mostra "parcial" com "Totais sem N por
+   escolher." enquanto houver linhas sem valores; "a confirmar" enquanto houver
+   rascunho.
+6. **Falta algum?** / **Outras hipóteses**: cada uma é uma fileira horizontal
+   de chips com título, depois da lista.
+7. **Alimentos**: cartões; "Adicionar alimento" e "Esclarecer" fora da lista.
+8. **Detalhes da análise (técnico)** no fim, recolhido, com a linha `timing:`.
+
+Cada cartão mostra só o nome e uma linha: "150 g · 267 kcal". Linhas ainda por
+escolher mostram "Escolhe o alimento" com um botão "Escolher" e contorno
+destacado. Linhas em rascunho mostram "a confirmar…" com indicador. A pílula
+"a confirmar" aparece só em itens da IA ainda não confirmados pelo utilizador.
+Fonte (USDA/Ciqual/TACO), kcal por 100 g, posição na foto (`where`, texto do
+modelo) e "Esclarecer alimento ou porção" ficam em **Detalhes** do cartão. Toda a
+linha é tocável para trocar o alimento; o contador de gramas mantém-se.
+
+**Rascunho e final.** A análise usa `analyseProgressive` (ou
+`analyseViewsProgressive` para duas fotos da mesma refeição). O rascunho entra
+com `pending`; a verificação final **substitui** as linhas: as que continuam
+mantêm a identidade e as removidas colapsam com animação. Eventos de uma análise
+antiga (página fechada ou outra foto escolhida) são ignorados.
+
+**CTA.** "Adicionar N ao diário" conta só as linhas guardáveis (com alimento e
+gramas, sem rascunho). Se houver linhas por escolher, o CTA leva ao primeiro
+cartão por escolher e mostra "N por escolher" acima; "Guardar só N" guarda o
+resto. Sem nada guardável fica desativado (numa fila, passa a "Seguinte").
+
+**Várias fotos.** Na galeria, a escolha é múltipla (`pickMultiImage`). Com duas
+ou mais, pergunta-se "São da mesma refeição?":
+- **Refeições diferentes** (predefinido): fila. Cada foto é revista à vez; a
+  seguinte começa a ser analisada em segundo plano enquanto revês a atual. Em
+  memória há no máximo duas fotos (a atual e a seguinte). "Ignorar" descarta a
+  foto; cada foto é libertada ao guardar ou ignorar. Nada é guardado em disco.
+- **Mesma refeição**: as duas primeiras fotos são analisadas como dois ângulos
+  (`analyseViewsProgressive`). Com mais de duas, avisa-se que só se usam as duas
+  primeiras.
+A câmara continua a tirar uma foto de cada vez.
 - **Região**: o utilizador escolhe um recorte da foto; o recorte é analisado com o
   mesmo pipeline (coordenadas da imagem original) e só entram alimentos da base.
 - **Correções**: ao trocar um alimento sugerido pelo sistema ou pelo offline, o
@@ -255,11 +347,14 @@ classes verificadas para incluir. Para o integrar:
 ## Testar
 
 ```bash
+flutter test test/food_names_test.dart           # plurais, inglês → português, genéricos, sugestões de acompanhamento
+flutter test test/food_progressive_test.dart     # rascunho → final, tempos em detalhes, análise = último evento
 flutter test test/food_database_test.dart        # parsing, matching, pipeline (fakes)
 flutter test test/vision_resilience_test.dart    # porções por peça, falhas independentes, avisos
 flutter test test/system_food_vision_test.dart test/region_food_vision_test.dart
 flutter test test/food_screening_test.dart       # não-alimentos, genéricos, bebidas, verificação, falhas, pizza
-flutter test test/photo_food_page_test.dart      # cartão de falha, "Tentar de novo", genéricos, refeição vazia confirmada com cartão e sugestões
+flutter test test/photo_food_page_test.dart      # cartão de falha, "Tentar de novo", genéricos, refeição vazia confirmada, rascunho → final, CTA e "por escolher", fila de fotos, mesma refeição
+flutter test test/photo_review_widgets_test.dart test/photo_review_model_test.dart   # cartão (detalhes, subtítulo), resumo "parcial", fusão de linhas
 VYRO_FOOD_IMAGE=C:\fotos\prato.png flutter test test/food_model_probe_test.dart
 ```
 

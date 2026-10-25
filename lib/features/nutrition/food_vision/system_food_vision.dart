@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -6,15 +7,18 @@ import 'package:image/image.dart' as img;
 
 import '../../../core/ai/on_device_llm.dart';
 import '../data/food_database.dart';
+import 'food_companions.dart';
+import 'food_names.dart';
 import 'food_screening.dart';
 import 'food_vision.dart';
 import 'photo_quality.dart';
 import 'portion_estimate.dart';
 
-/// Multi-food recognition with the phone's own multimodal model (Gemini
-/// Nano through ML Kit GenAI / AICore). On-device; the photo is not sent
-/// anywhere. Counts pieces; grams come from the offline typical portion.
-class SystemFoodVision implements MultiPhotoFoodVisionService {
+/// Multi-food recognition with the phone's own multimodal model (Gemini Nano
+/// through ML Kit GenAI / AICore). On-device; the photo is not sent anywhere.
+/// Counts pieces; grams come from the offline typical portion.
+class SystemFoodVision
+    implements MultiPhotoFoodVisionService, StagedFoodVisionService {
   SystemFoodVision(this.database, {MethodChannel? channel})
     : _channel = channel ?? const MethodChannel('vyro/on_device_llm');
 
@@ -26,27 +30,38 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
 
   @override
   Future<FoodVisionResult> analyse(Uint8List imageBytes) =>
-      _analyse(imageBytes, null);
+      _analyse(imageBytes, null, null);
 
   @override
   Future<FoodVisionResult> analyseViews(
     Uint8List primary,
     Uint8List secondary,
-  ) => _analyse(primary, secondary);
+  ) => _analyse(primary, secondary, null);
+
+  @override
+  Future<FoodVisionResult> analyseStaged(
+    Uint8List imageBytes, {
+    Uint8List? secondaryImage,
+    void Function(FoodVisionResult draft)? onDraft,
+  }) => _analyse(imageBytes, secondaryImage, onDraft);
 
   Future<FoodVisionResult> _analyse(
     Uint8List imageBytes,
     Uint8List? secondBytes,
+    void Function(FoodVisionResult draft)? onDraft,
   ) async {
+    final timings = <String, Duration>{};
     final jpeg = await compute(_downscale, imageBytes);
     final secondPhoto = secondBytes == null
         ? null
         : await compute(_downscale, secondBytes);
+    final firstWatch = Stopwatch()..start();
     final first = await _ask(
       jpeg,
       buildFoodPhotoPrompt(),
       secondPhoto: secondPhoto,
     );
+    timings['first'] = firstWatch.elapsed;
     var history = first;
     var draft = parseFoodPhotoAnswer(first, database);
     if (draft.isEmpty) {
@@ -55,11 +70,13 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
       }
       // An empty first look is not yet a confirmed empty photo: food can sit
       // in a pan, pot, tray or box. One more look with a fallback prompt.
+      final secondWatch = Stopwatch()..start();
       final second = await _ask(
         jpeg,
         buildFoodSecondChancePrompt(),
         secondPhoto: secondPhoto,
       );
+      timings['second'] = secondWatch.elapsed;
       history = '$first\n---\nfirst: empty → second chance: $second';
       draft = parseFoodPhotoAnswer(second, database);
       if (draft.isEmpty) {
@@ -71,6 +88,7 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
           source: VisionSource.systemAi,
           detail: history,
           confirmedEmpty: true,
+          timings: timings,
         );
       }
     }
@@ -90,6 +108,23 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
           _droppedLine(split.dropped),
           ...nonFoodLines,
         ]),
+        timings: timings,
+      );
+    }
+    // The first usable list is available now: report it before verification.
+    if (onDraft != null) {
+      final pendingDraft = applyDrinkSanity([
+        for (final f in kept) f.copyWith(pending: true),
+      ]);
+      onDraft(
+        FoodVisionResult(
+          foods: pendingDraft.kept,
+          suggestions: pendingDraft.duplicates,
+          source: VisionSource.systemAi,
+          stage: VisionStage.draft,
+          detail: history,
+          timings: Map.of(timings),
+        ),
       );
     }
     // Verification only removes items (explicit visible:false); it never adds
@@ -98,6 +133,7 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
     // as uncertain (see decideDraft).
     List<bool?>? verdicts;
     var detail = history;
+    final verifyWatch = Stopwatch()..start();
     try {
       final verify = await _ask(
         jpeg,
@@ -114,6 +150,7 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
     } catch (error) {
       detail = '$history\n---\nverify: failed ($error)';
     }
+    timings['verify'] = verifyWatch.elapsed;
     final decision = decideDraft(kept, verdicts: verdicts);
     // One cup, one drink: a duplicate coffee is a suggestion, not a total.
     final sanity = applyDrinkSanity(decision.foods);
@@ -129,16 +166,26 @@ class SystemFoodVision implements MultiPhotoFoodVisionService {
         else
           decisionLine(d.item.label, d.action, d.reason),
     ];
+    // Companion foods (gravy with steak, ketchup with fries...) are
+    // suggestions only, read from the verified names.
+    final companions = mealCompanions(
+      sanity.kept,
+      database,
+      alsoTaken: duplicates,
+    );
     return FoodVisionResult(
       foods: sanity.kept,
-      suggestions: duplicates,
+      suggestions: [...duplicates, ...companions],
       source: VisionSource.systemAi,
+      timings: timings,
       detail: _joinDetail([
         detail,
         _droppedLine(split.dropped),
         if (generic.isNotEmpty) 'generic: ${generic.join(', ')}',
         ...nonFoodLines,
         ...decisionLines,
+        if (companions.isNotEmpty)
+          'companions: ${companions.map((c) => c.label).join(', ')}',
       ]),
     );
   }
@@ -200,13 +247,15 @@ const _jsonFormat =
 /// First look: what is visible, where it is, and relative size. Grams are
 /// applied later from the offline database so the small model is not asked
 /// to weigh food. No category checklist: it made the model fill every slot.
+/// Names and locations are asked in European Portuguese: English answers
+/// ("beverage", "centre of plate") do not match the database.
 String buildFoodPhotoPrompt() => '''
 Analyse ONLY the image attached to THIS request. It is a new, independent meal. Never reuse foods from earlier images, messages or meals.
 List only the foods and drinks that are actually in this photo. Include every drink in a glass, cup, bottle or can, and every food on a plate, board or packaging. Food can also be served or photographed in a pan, pot, tray, box, packaging or hand: still list the food, not the container. Never add side dishes, salads, vegetables, legumes, spreads or garnishes that are not clearly visible. Do not infer hidden ingredients, oil, sugar or milk. Do not list non-food objects such as the table, napkins, towels or cutlery.
 One row per food type, with its TOTAL count. A single cup or glass is ONE drink, even with a saucer, handle or shadow. Never list the same coffee twice.
 For each item give:
-- "name": short food name in European Portuguese.
-- "where": short location in the photo, e.g. "centre of plate" or "cup top-left". It helps us check the item; leave it as "" if you cannot tell.
+- "name": the specific food or drink name in European Portuguese (Portugal), e.g. "ovo", "cerveja", "bife de vaca grelhado", "sidra", "batatas fritas". Never English, never a general word such as "bebida" or "comida" when the kind is visible.
+- "where": short location in the photo in European Portuguese, e.g. "centro do prato" or "copo em cima à esquerda". It helps us check the item; leave it as "" if you cannot tell.
 - "count": number of clearly separate pieces or containers, else 1.
 - "size": small, medium or large compared with a typical single serving. Do not output grams.
 If no food or drink is visible reply {"items":[]}.
@@ -218,7 +267,7 @@ Reply with JSON only, no markdown: $_jsonFormat''';
 String buildFoodSecondChancePrompt() => '''
 Look again ONLY at the image attached to THIS request. It is a new, independent meal, and a first look found no food. Meal photos are often hard to read: food can be in a pan, pot, tray, box, packaging or on a board, or only partly eaten.
 Name the main food(s) and drink(s) you can see, even if you are not sure of the exact dish. Name the food itself, not the pan, box or packaging around it. Do not list non-food objects such as the table, napkins, towels or cutlery. If you truly see no food or drink, reply {"items":[]}.
-For each item give "name" (short food name in European Portuguese), "where" (short location, or "" if unsure), "count" (1 if unsure) and "size" (small, medium or large). Do not output grams.
+For each item give "name" (the food name in European Portuguese (Portugal), never English), "where" (short location in European Portuguese, e.g. "centro da frigideira", or "" if unsure), "count" (1 if unsure) and "size" (small, medium or large). Do not output grams.
 Reply with JSON only, no markdown: $_jsonFormat''';
 
 /// Verification: yes/no per draft item. It must not add or rename foods.
@@ -329,8 +378,21 @@ CoffeeKind? coffeeKindOf(DetectedFood food) {
   );
 }
 
+/// The database food for a model name: tries each candidate from
+/// [foodNameCandidates] in order and returns the first match.
+FoodRef? matchFoodName(FoodDatabase db, List<String> candidates) {
+  for (final candidate in candidates) {
+    final food = db.match(candidate);
+    if (food != null) return food;
+  }
+  return null;
+}
+
 /// Matches foods without summing repeated rows. Grams come from typical
 /// portions in the offline database. Unmatched names remain visible.
+/// Names are normalised before matching: plurals fall back to singulars
+/// ("ovos" → ovo) and common English names map to Portuguese ("beer" →
+/// cerveja). A generic name ("beverage", "bebida") is never matched.
 List<DetectedFood> parseFoodPhotoAnswer(String raw, FoodDatabase db) {
   final items = _photoItems(raw);
   if (items == null) return const [];
@@ -352,10 +414,11 @@ List<DetectedFood> parseFoodPhotoAnswer(String raw, FoodDatabase db) {
     final where = whereRaw.isEmpty
         ? null
         : (whereRaw.length > 80 ? whereRaw.substring(0, 80) : whereRaw);
-    // A generic name ("bebida") has no sensible database match: the user
-    // must name the food, so it gets no nutrients from a random match.
-    final needsChoice = genericKindOf(name) != null;
-    final food = needsChoice ? null : db.match(name);
+    // A generic name ("bebida", "beverage") has no sensible database match:
+    // the user must name the food, so it gets no nutrients from a match.
+    final candidates = foodNameCandidates(name);
+    final needsChoice = candidates.any((c) => genericKindOf(c) != null);
+    final food = needsChoice ? null : matchFoodName(db, candidates);
     // Only foods with a per-unit portion can be counted. For beans, lettuce,
     // rice or sauces a "2 unid." from the model must not double anything.
     final count = food != null && food.portionUnits == null ? 1 : modelCount;
@@ -408,6 +471,10 @@ List<DetectedFood> parseFoodPhotoAnswer(String raw, FoodDatabase db) {
 
 /// System model when the phone has it, always combined with the offline
 /// region classifier. Falls back to regions alone on failure or iOS.
+///
+/// Three entry points: [analyse] / [analyseViews] return the final result;
+/// [analyseProgressive] / [analyseViewsProgressive] emit a draft (when the
+/// system model produced one) and then the final result on the same stream.
 class FoodVisionPipeline implements MultiPhotoFoodVisionService {
   FoodVisionPipeline({
     required this.llm,
@@ -421,19 +488,50 @@ class FoodVisionPipeline implements MultiPhotoFoodVisionService {
 
   @override
   Future<FoodVisionResult> analyse(Uint8List imageBytes) =>
-      _analyse(imageBytes, null);
+      _run(imageBytes, null, null);
 
   @override
   Future<FoodVisionResult> analyseViews(
     Uint8List primary,
     Uint8List secondary,
-  ) => _analyse(primary, secondary);
+  ) => _run(primary, secondary, null);
 
-  Future<FoodVisionResult> _analyse(
+  /// Draft, then final. Draft: `stage` [VisionStage.draft], items `pending`,
+  /// offline suggestions only if the offline pass had already finished. Final:
+  /// `stage` [VisionStage.final_], the same result [analyse] returns. Without
+  /// the system model there is no draft and only the final event. Errors are
+  /// delivered as stream errors (the same error [analyse] would throw).
+  Stream<FoodVisionResult> analyseProgressive(Uint8List imageBytes) =>
+      _progressive(imageBytes, null);
+
+  /// [analyseProgressive] for two photos of the same meal.
+  Stream<FoodVisionResult> analyseViewsProgressive(
+    Uint8List primary,
+    Uint8List secondary,
+  ) => _progressive(primary, secondary);
+
+  Stream<FoodVisionResult> _progressive(Uint8List bytes, Uint8List? second) {
+    final controller = StreamController<FoodVisionResult>();
+    () async {
+      try {
+        final result = await _run(bytes, second, (draft) {
+          if (!controller.isClosed) controller.add(draft);
+        });
+        if (!controller.isClosed) controller.add(result);
+      } catch (error, stack) {
+        if (!controller.isClosed) controller.addError(error, stack);
+      } finally {
+        await controller.close();
+      }
+    }();
+    return controller.stream;
+  }
+
+  Future<FoodVisionResult> _run(
     Uint8List imageBytes,
     Uint8List? secondaryImage,
+    void Function(FoodVisionResult draft)? onDraft,
   ) async {
-    final quality = await compute(assessPhotoBytes, imageBytes);
     // Attach handlers immediately: a fast offline failure must never escape.
     Future<({FoodVisionResult? value, Object? error})> capture(
       Future<FoodVisionResult> Function() action,
@@ -445,44 +543,69 @@ class FoodVisionPipeline implements MultiPhotoFoodVisionService {
       }
     }
 
+    // Offline pass starts before anything else so it runs alongside the
+    // system model and the quality check; its timing is recorded as regions.
+    FoodVisionResult? offlineReady;
     final offline = capture(() async {
-      final first = await regions.analyse(imageBytes);
-      if (secondaryImage == null) return first;
-      try {
-        final second = await regions.analyse(secondaryImage);
-        return fuseVisionResults(first, second).withNote('secondViewOffline');
-      } catch (_) {
-        return first;
+      final watch = Stopwatch()..start();
+      var result = await regions.analyse(imageBytes);
+      if (secondaryImage != null) {
+        try {
+          final second = await regions.analyse(secondaryImage);
+          result = fuseVisionResults(
+            result,
+            second,
+          ).withNote('secondViewOffline');
+        } catch (_) {
+          // The first view's result stands.
+        }
       }
+      return result.copyWith(
+        timings: {...result.timings, 'regions': watch.elapsed},
+      );
     });
+    offline.then((outcome) => offlineReady = outcome.value);
+    final quality = await compute(assessPhotoBytes, imageBytes);
     final status = await llm.status();
     if (status == LlmStatus.available) {
-      final primary = await capture(
-        () => secondaryImage != null && system is MultiPhotoFoodVisionService
+      final primary = await capture(() {
+        final staged = system;
+        if (staged is StagedFoodVisionService) {
+          return staged.analyseStaged(
+            imageBytes,
+            secondaryImage: secondaryImage,
+            onDraft: (draft) {
+              final offlineNow = offlineReady;
+              final view = offlineNow == null
+                  ? draft
+                  : fuseVisionResults(draft, offlineNow);
+              onDraft?.call(
+                _finish(view.copyWith(stage: VisionStage.draft), quality),
+              );
+            },
+          );
+        }
+        return secondaryImage != null && system is MultiPhotoFoodVisionService
             ? (system as MultiPhotoFoodVisionService).analyseViews(
                 imageBytes,
                 secondaryImage,
               )
-            : system.analyse(imageBytes),
-      );
+            : system.analyse(imageBytes);
+      });
       final secondary = await offline;
       if (primary.value != null) {
         final result = primary.value!;
         // A confirmed empty review still shows offline hypotheses (as
         // suggestions only); fuseVisionResults keeps confirmedEmpty.
         if (secondary.value == null) {
-          return _withQuality(result, quality);
+          return _finish(result, quality);
         }
-        return fuseVisionResults(
-          result,
-          secondary.value!,
-          qualityNote: quality.note,
-        );
+        return _finish(fuseVisionResults(result, secondary.value!), quality);
       }
       if (secondary.value != null) {
         final result = secondary.value!;
         final missing = primary.error is MissingPluginException;
-        return _withQuality(
+        return _finish(
           result.withNote(
             missing ? result.note : 'systemFailed',
             detail: '${primary.error}',
@@ -503,16 +626,23 @@ class FoodVisionPipeline implements MultiPhotoFoodVisionService {
     final failure = status == LlmStatus.downloading
         ? VisionFailure.busy
         : VisionFailure.unavailable;
-    return _withQuality(
-      secondary.value!.withNote(null, failure: failure),
-      quality,
-    );
+    return _finish(secondary.value!.withNote(null, failure: failure), quality);
   }
 }
 
-FoodVisionResult _withQuality(FoodVisionResult result, PhotoQuality quality) {
-  if (quality.note == null) return result;
-  return result.withNote(
-    [if (result.note != null) result.note!, quality.note!].join(','),
+/// Quality note, then the `timing:` line in the detail (once per result).
+FoodVisionResult _finish(FoodVisionResult result, PhotoQuality quality) {
+  final noted = quality.note == null
+      ? result
+      : result.withNote(
+          [if (result.note != null) result.note!, quality.note!].join(','),
+        );
+  final line = timingLine(noted.timings);
+  if (line == null) return noted;
+  return noted.copyWith(
+    detail: [
+      if (noted.detail != null && noted.detail!.isNotEmpty) noted.detail!,
+      line,
+    ].join('\n'),
   );
 }

@@ -1,63 +1,16 @@
 import '../../../core/ai/on_device_llm.dart';
 import '../../nutrition/data/food_database.dart';
+import 'meal_math.dart';
 import 'meal_proposal.dart';
+
+// Meal resolution lives in meal_math.dart; re-exported for existing callers.
+export 'meal_math.dart' show ResolvedMeal, foodFitsDiet, resolveMeal;
 
 class LocalAssistantAnswer {
   const LocalAssistantAnswer(this.text, {this.proposal});
   final String text;
   final MealProposal? proposal;
 }
-
-/// Conservative candidate filter; mixed dishes require recipe-level knowledge.
-bool foodFitsDiet(FoodRef food, String? diet) {
-  if (diet != 'vegan' && diet != 'vegetarian') return true;
-  if ({'carne', 'peixe', 'salgados', 'pratos'}.contains(food.category))
-    return false;
-  if (diet == 'vegetarian') return true;
-  if ({'ovos', 'laticínios', 'sobremesas'}.contains(food.category))
-    return false;
-  if ({
-    'butter_salted',
-    'honey',
-    'coffee_with_milk',
-    'croissant',
-    'pao_de_queijo',
-    'tapioca_butter',
-    'farofa',
-  }.contains(food.key))
-    return false;
-  return true;
-}
-
-class ResolvedMeal {
-  ResolvedMeal(this.proposal, this.foods);
-  final MealProposal proposal;
-  final List<FoodRef?> foods;
-  bool get complete => foods.every((f) => f != null);
-  double total(double Function(FoodRef) nutrient) {
-    var value = 0.0;
-    for (var i = 0; i < foods.length; i++) {
-      if (foods[i] != null)
-        value += nutrient(foods[i]!) * proposal.items[i].grams / 100;
-    }
-    return value;
-  }
-
-  String label(bool english) =>
-      '${complete ? (english ? "Database values" : "Valores da base") : (english ? "Partial values — resolve foods" : "Valores parciais — resolve os alimentos")}: ${total((f) => f.kcal).round()} kcal · P ${total((f) => f.protein).round()} g · H ${total((f) => f.carbs).round()} g · G ${total((f) => f.fat).round()} g';
-}
-
-ResolvedMeal resolveMeal(
-  MealProposal proposal,
-  FoodDatabase db, {
-  String? diet,
-}) => ResolvedMeal(proposal, [
-  for (final item in proposal.items)
-    switch (db.match(item.name)) {
-      final FoodRef f when foodFitsDiet(f, diet) => f,
-      _ => null,
-    },
-]);
 
 /// Answers factual requests without a model. No action writes to the diary.
 LocalAssistantAnswer? answerLocally(

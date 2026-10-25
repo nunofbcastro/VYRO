@@ -38,7 +38,8 @@ VYRO_RENDER_ICONS=1 VYRO_PREVIEW_DIR=DIR flutter test tool/brand/render_previews
 ```
 
 - Android legacy (`mipmap-*/ic_launcher.png`, 48–192 px): V at 60% of the width, full bleed on `#0B0D10`.
-- Android adaptive (`mipmap-*/ic_launcher_foreground.png`, 108 dp layer): V at 50% of the width, transparent, inside the 66 dp safe zone. Background colour is `@color/vyro_ink` (`#0B0D10`). The monochrome layer reuses this foreground.
+- Android adaptive (`mipmap-*/ic_launcher_foreground.png`, 108 dp layer): V at 43% of the width (0.43 × 108 dp), transparent, centred on the bounding box. The furthest point of the mark, the lime cap included, is 31.99 dp from the centre, inside the 33 dp circular mask. The script prints and checks this value. Background colour is `@color/vyro_ink` (`#0B0D10`).
+- Android 13+ themed icon (`drawable/ic_launcher_monochrome.xml`, vector, 108 dp): one-colour silhouette of the V body and cap, no background, referenced as `<monochrome>` in `mipmap-anydpi-v26/ic_launcher.xml`. Geometry is the mark above scaled by 0.49 and centred (`x' = 54 + (x - 57.5) × 0.49`, `y' = 54 + (y - 55) × 0.49`), so the furthest point is 32.1 dp from the centre, inside the 66 dp safe zone. Android tints it, so the fill colour is ignored. It is a vector, so `render_icons.py` does not produce it: edit the file by hand if the mark changes.
 - iOS (`ios/Runner/Assets.xcassets/AppIcon.appiconset`): every size in `Contents.json`, opaque, V at 60%.
 - Web (`web/favicon.png`, `web/icons/Icon-*.png`): standard and maskable icons, V at 60%.
 

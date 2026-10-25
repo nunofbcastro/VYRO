@@ -11,7 +11,7 @@ alimentos descarregadas legalmente.
 foods_pt.tsv (curado à mão: nomes PT/EN, fonte + referência, porção, unidades da porção, aliases, etiquetas de imagem)
         │
         ▼  build_food_db.py  (descarrega/usa build/usda, build/ciqual, build/taco)
-assets/nutrition/foods.json  (160 alimentos, valores por 100 g, fonte de cada um)
+assets/nutrition/foods.json  (168 alimentos, valores por 100 g, fonte de cada um)
         │
         ▼  FoodDatabase.load()  (lib/features/nutrition/data/food_database.dart)
 fotografia, assistente, diário  →  kcal = gramas × kcal/100 g ÷ 100
@@ -60,7 +60,7 @@ polvo, chouriço, queijo de ovelha, pão caseiro…).
   inválidas são rejeitadas, nunca adivinhadas.
 - Porções (`portion_g`, `portion_pt`) são **estimativas do VYRO** para sugerir
   quantidades. O utilizador confirma sempre as gramas.
-- `portion_units` (coluna opcional, última do TSV; preenchida em 80 dos 160
+- `portion_units` (coluna opcional, última do TSV; preenchida em 82 dos 168
   alimentos) indica quantas peças correspondem a `portion_g`: 3 sardinhas = 120 g
   ⇒ `portion_units = 3`. A app escala a contagem de peças por
   `portion_g × peças ÷ portion_units`. Sem valor, a contagem não multiplica a
@@ -83,6 +83,11 @@ alimento e as gramas.
 - Refresco de laranja (Sumol): Ciqual «Jus d'orange, à base de concentré»
   (não há refrigerante de laranja na Ciqual).
 - Pizza de pepperoni: Ciqual «Pizza au chorizo ou salami».
+- Pizza inteira (individual, 350 g ≈ 3 fatias de uma pizza grande): mesmas
+  referências USDA/Ciqual das fatias (a composição por 100 g é a mesma; só a
+  porção muda). Fatias: 110 g cada (8 fatias ≈ 880 g). O nome «pizza» sem
+  mais nada refere-se à pizza inteira; as fatias usam «fatia de pizza».
+  Francesinha: não existe na base (ainda sem referência adequada).
 - Molho de hambúrguer (Big Mac, molho especial): Ciqual «Sauce burger».
 - Natas para cozinha: USDA «Cream, fluid, light whipping» (creme de leite
   no Brasil tem teor de gordura diferente; a estimativa é aproximada).
@@ -90,6 +95,14 @@ alimento e as gramas.
 - Sandes mista: Ciqual «Sandwich pain polaire, jambon fromage».
 - Presunto: Ciqual «Jambon cru» (curado). O fiambre (cozido) mantém a sua linha.
 - Bife de vaca frito: Ciqual «Boeuf, steak ou bifteck grillé/poêlé».
+- Ketchup: Ciqual «Ketchup, préemballé» (11008).
+- Molho de tomate (para massa): USDA «Sauce, pasta, spaghetti/marinara,
+  ready-to-serve» (171192). Não é o molho de carne (bolonhesa).
+- Queijo ralado: USDA «Cheese, parmesan, grated» (171247).
+- Mostarda: USDA «Mustard, prepared, yellow» (172234), mostarda amarela.
+- Molho de soja (shoyu): Ciqual «Sauce soja, préemballée» (11104).
+- Molho de iogurte: Ciqual «Sauce au yaourt, faite maison» (11166). Não é o
+  tzatziki (sem pepino nem alho); o nome tzatziki não está nos aliases.
 
 ## Receitas habituais (locais)
 

@@ -18,6 +18,19 @@ cloud, no paid API, the photo stays in memory. Full details:
   `confidence` kept in the model but not shown); `FoodVisionResult` (foods,
   suggestions, typed `confirmedEmpty`, `failure` (`VisionFailure`: busy,
   unavailable, other), `notes` set, `detail` for diagnostics); `fuseVisionResults`.
+  Stage and timing: `VisionStage` (`draft`, `final_`), `DetectedFood.pending`
+  (true only on draft items), `FoodVisionResult.stage` and `timings`
+  (`Map<String, Duration>`: `first`, `second`, `verify`, `regions`),
+  `timingLine` (the `timing:` line appended to `detail` by the pipeline),
+  `copyWith`. `StagedFoodVisionService.analyseStaged(bytes, {secondaryImage,
+  onDraft})` is the only way to receive a draft.
+- `food_names.dart`: `foodNameCandidates(raw)` (ordered names to try: as
+  written, normalised, English → Portuguese, Portuguese singulars), `singularVariants`,
+  `englishFoodName` and the `englishFoodNames` map.
+- `food_companions.dart`: `mealCompanions(foods, db, {alsoTaken})`, context
+  sauces and sides (steak/meat → gravy, cream, mayonnaise, ketchup; pasta →
+  cream; fries/potatoes → ketchup, mayonnaise; salad → olive oil), only when the
+  database has them, always as suggestions.
 - `food_screening.dart`: pure trust rules: `dropNonFood`, `isNonFoodName`,
   `genericKindOf`, `mentionsContainer`, `isDrinkItem`, `decideDraft` (only
   `visible:false` drops; omitted verdict stays uncertain; `where` and drink
@@ -29,7 +42,12 @@ cloud, no paid API, the photo stays in memory. Full details:
 - `system_food_vision.dart`: `SystemFoodVision` (Gemini Nano via
   `vyro/on_device_llm` → `describeImage`), `buildFoodPhotoPrompt`,
   `buildFoodVerifyPrompt`, `parseFoodVerifyAnswer` (per-index, null when
-  omitted), `parseFoodPhotoAnswer`, `applyDrinkSanity`, and `FoodVisionPipeline`.
+  omitted), `parseFoodPhotoAnswer` (matches each name through `matchFoodName`
+  over `foodNameCandidates`), `applyDrinkSanity`, `SystemFoodVision.analyseStaged`
+  (calls `onDraft` once the first usable list exists), and `FoodVisionPipeline`
+  with `analyse`, `analyseViews`, `analyseProgressive` and
+  `analyseViewsProgressive` (draft then final on one stream; the offline pass
+  starts first and runs alongside the system model).
 - `region_food_vision.dart`: `RegionFoodVision`, AIY Food V1 dish classifier
   over 26 crops in a persistent worker isolate; labels → foods via
   `vision_labels`; `interpretRegions` (pure, testable).
@@ -37,6 +55,19 @@ cloud, no paid API, the photo stays in memory. Full details:
   low detail). Warnings only, never a rejection.
 - `lib/features/nutrition/photo_food_page.dart`: review screen (list, totals,
   second angle, region re-analysis, corrections, save, learning counters).
+  UI shape: photo → one row of tonal actions (Zona, 2.º ângulo, Receita, Mais
+  fotos) → single-row meal chips → summary ("parcial" while lines are unresolved)
+  → Falta algum? / Outras hipóteses chip rows → cards (name + one subtitle line;
+  source, kcal/100 g, `where` and clarify live in the card's Detalhes) → CTA counts
+  savable lines and "N por escolher" leads to the first unresolved card.
+  Progressive: `analyseProgressive` / `analyseViewsProgressive` (draft lines show
+  "a confirmar…", the final result replaces them). Several gallery photos: "São da
+  mesma refeição?" then a queue ("Foto N de M", next one analysed in background, at
+  most two photos in memory) or a two-view merge.
+- `photo/review_model.dart`: `ReviewItem`, `ReviewShot` (one photo or two views),
+  `mergeReviewItems` (draft → final, collapsing removals), `countReview`.
+- `widgets/photo_review_widgets.dart`: scan overlay, action row, summary, food
+  card, chip row, collapse animation.
 - `widgets/photo_region_sheet.dart`: pick a crop of the photo to re-analyse.
 - `widgets/food_picker_sheet.dart`: database picker; shows learned suggestions
   first when the user changes a food.
@@ -133,6 +164,25 @@ cloud, no paid API, the photo stays in memory. Full details:
   encontrou comida nesta foto. Tenta outra vez, analisa uma zona ou adiciona
   manualmente."); other empty reviews use `photoNothingFound`. A "only non-food
   items" answer is not confirmed empty.
+- Names before matching: the model's name is tried as written, then
+  normalised, then an English translation (`englishFoodNames`, e.g. beer →
+  cerveja, steak → bife, water → água mineral), then Portuguese singulars
+  (ovos → ovo, batatas fritas → batata frita). The first candidate the
+  database matches wins, so the original match is never replaced. English
+  generic words ("beverage", "dish", "snack") are generic names: "Que bebida?".
+  The prompts ask for European Portuguese names and "where" text
+  ("centro do prato"); English answers do not match the database.
+- Progressive results: `analyseProgressive` emits (a) a `VisionStage.draft`
+  result once the first usable list exists (items `pending`; offline
+  suggestions only if the offline pass has already finished), then (b) the
+  `VisionStage.final_` result, which is what `analyse` returns. Verification can
+  only remove draft items, so the final items are the draft items minus the
+  removed ones. No system model: only the final event. Errors arrive as stream
+  errors. `detail` ends with a `timing:` line, e.g.
+  `timing: first 2.1 s, verify 1.8 s, regions 0.9 s`.
+- Companion suggestions (`mealCompanions`): sauces and sides implied by the
+  verified names go to `suggestions`, never to totals and never asked of the
+  model. Keys already in the main list or in the duplicate coffees are not repeated.
 - Sanity rules after verification (`applyDrinkSanity`, pure Dart): one cup is
   one drink. If an espresso-type and a coffee-with-milk-type are both listed,
   only the first one listed is kept. Count only applies to foods with
@@ -187,6 +237,14 @@ percentages.
   burger + beer with no `where` both kept; prose `where` kept; omitted verdict
   kept as uncertain; explicit `visible:false` dropped; prompts never contain
   "Fewer items" or "1 to 4".
+- `test/food_names_test.dart`: plural and English candidates (ovos → egg row),
+  singular variants, generic "beverage"/"dish", the cider/Somersby alias,
+  still vs sparkling water, prompt wording, companion suggestions (steak, pasta,
+  fries, salad, dedupe, no companions for unrelated foods).
+- `test/food_progressive_test.dart`: draft then final with the same items when
+  verify agrees; removals appear only in the final; `analyse` equals the last
+  stream event; `timing:` line in detail; no draft without the system model;
+  steak sauce suggestions outside totals.
 - `test/food_database_test.dart`, `test/system_food_vision_test.dart` (croissant
   and pasta cases), `test/region_food_vision_test.dart`,
   `test/photo_food_page_test.dart` (generic prompt, failure card, retry).

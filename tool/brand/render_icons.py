@@ -17,6 +17,7 @@ Launcher icons use the dark V on #0B0D10; the adaptive foreground is transparent
 
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -35,9 +36,13 @@ WORDMARK_LIGHT = os.path.join(ROOT, "brand", "logos", "vyro-wordmark-light.svg")
 
 # Width of the V monogram as a fraction of the icon canvas.
 ICON_FRACTION = 0.6
-# Adaptive foreground: V kept within the 66dp safe zone of the 108dp layer
-# (corner distance from centre stays under the 33dp safe radius).
-ADAPTIVE_FRACTION = 0.5
+# Adaptive foreground: the 108dp layer's circular mask keeps a 66dp safe zone
+# (radius 33dp). The fraction is the content width over the 108dp canvas; it is
+# chosen so the furthest point of the mark, the cap included, lies within
+# ADAPTIVE_MAX_RADIUS_DP of the centre (checked in write_icons).
+ADAPTIVE_FRACTION = 0.43
+ADAPTIVE_MAX_RADIUS_DP = 32.0
+ADAPTIVE_CANVAS_DP = 108
 # Maskable web icons keep the V inside the 80% safe circle.
 MASKABLE_FRACTION = 0.6
 
@@ -171,6 +176,16 @@ def icon(shapes, box, px, fraction, background, opaque=False):
     return render(shapes, box, (px, px), px * fraction, background)
 
 
+def max_radius_dp(shapes, box, fraction, canvas_dp=ADAPTIVE_CANVAS_DP):
+    """Distance in dp from the canvas centre to the furthest point of the mark
+    when its box is [fraction] of [canvas_dp] wide and centred on the canvas."""
+    x0, _, x1, _ = box
+    cx, cy = (x0 + x1) / 2, (box[1] + box[3]) / 2
+    scale = fraction * canvas_dp / (x1 - x0)
+    points = [(x, y) for subpaths, _ in shapes for sp in subpaths for x, y in sp]
+    return max(math.hypot((x - cx) * scale, (y - cy) * scale) for x, y in points)
+
+
 def write_icons(dark_shapes, box):
     # Android legacy launcher icons (full bleed, V at 60%).
     legacy = {48: "mdpi", 72: "hdpi", 96: "xhdpi", 144: "xxhdpi", 192: "xxxhdpi"}
@@ -178,7 +193,11 @@ def write_icons(dark_shapes, box):
         folder = os.path.join(ROOT, "android", "app", "src", "main", "res", "mipmap-" + density)
         save(icon(dark_shapes, box, px, ICON_FRACTION, INK_BG), os.path.join(folder, "ic_launcher.png"))
 
-    # Android adaptive foreground (108dp layer; transparent, V within safe zone).
+    # Android adaptive foreground (108dp layer; transparent, mark within the safe zone).
+    radius = max_radius_dp(dark_shapes, box, ADAPTIVE_FRACTION)
+    print(f"adaptive foreground: max radius {radius:.2f}dp (limit {ADAPTIVE_MAX_RADIUS_DP}dp)")
+    if radius > ADAPTIVE_MAX_RADIUS_DP:
+        sys.exit("adaptive foreground exceeds the safe radius")
     adaptive = {"mdpi": 108, "hdpi": 162, "xhdpi": 216, "xxhdpi": 324, "xxxhdpi": 432}
     for density, px in adaptive.items():
         folder = os.path.join(ROOT, "android", "app", "src", "main", "res", "mipmap-" + density)

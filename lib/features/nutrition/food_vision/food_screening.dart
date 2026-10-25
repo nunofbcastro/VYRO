@@ -215,6 +215,8 @@ const _genericNames = <String, GenericKind>{
   'bebidas': GenericKind.drink,
   'drink': GenericKind.drink,
   'drinks': GenericKind.drink,
+  'beverage': GenericKind.drink,
+  'beverages': GenericKind.drink,
   'sanduiche': GenericKind.sandwich,
   'sanduiches': GenericKind.sandwich,
   'sandes': GenericKind.sandwich,
@@ -235,6 +237,12 @@ const _genericNames = <String, GenericKind>{
   'refeicoes': GenericKind.food,
   'food': GenericKind.food,
   'meal': GenericKind.food,
+  'dish': GenericKind.food,
+  'dishes': GenericKind.food,
+  'snack': GenericKind.food,
+  'snacks': GenericKind.food,
+  'lanche': GenericKind.food,
+  'lanches': GenericKind.food,
 };
 
 /// The generic kind of a name ("uma bebida" → drink), or null if specific.

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vyro/core/ai/on_device_llm.dart';
 import 'package:vyro/features/nutrition/data/food_database.dart';
+import 'package:vyro/features/nutrition/food_vision/food_companions.dart';
 import 'package:vyro/features/nutrition/food_vision/food_vision.dart';
 import 'package:vyro/features/nutrition/food_vision/system_food_vision.dart';
 
@@ -129,9 +130,25 @@ void main() {
       'guaraná': 'guarana_soda',
       'refrigerante de guaraná': 'guarana_soda',
       'presunto': 'cured_ham',
-      'pizza pepperoni': 'pizza_pepperoni',
-      'pizza': 'pizza_cheese',
+      'pizza pepperoni': 'pizza_pepperoni_whole',
+      'pizza': 'pizza_cheese_whole',
+      'pizza inteira': 'pizza_cheese_whole',
+      'pizza de pepperoni': 'pizza_pepperoni_whole',
+      'fatia de pizza': 'pizza_cheese',
+      'fatia de pizza de pepperoni': 'pizza_pepperoni',
       'massa com carne': 'pasta_bolognese',
+      'ketchup': 'ketchup',
+      'catsup': 'ketchup',
+      'molho de tomate': 'pasta_tomato_sauce',
+      'molho de tomate para massa': 'pasta_tomato_sauce',
+      'queijo ralado': 'parmesan_grated',
+      'parmesão ralado': 'parmesan_grated',
+      'mostarda': 'mustard',
+      'molho de soja': 'soy_sauce',
+      'shoyu': 'soy_sauce',
+      'molho de iogurte': 'yogurt_sauce',
+      'fio de azeite': 'olive_oil',
+      'azeite': 'olive_oil',
     };
 
     test('the photo-model names resolve to the expected foods', () {
@@ -153,6 +170,54 @@ void main() {
       expect(db.byKey('beef_ground_raw')!.sourceKey, 'ciqual_6254');
       expect(db.byKey('croquete_meat_fried')!.sourceKey, 'taco_388');
       expect(db.byKey('sparkling_water')!.kcal, closeTo(0, 0.1));
+    });
+  });
+
+  group('companion foods', () {
+    DetectedFood food(String name) => DetectedFood(
+      label: name,
+      grams: 100,
+      source: VisionSource.systemAi,
+      food: db.match(name),
+    );
+
+    test('new companion rows have their exact source references', () {
+      expect(db.byKey('ketchup')!.sourceKey, 'ciqual_11008');
+      expect(db.byKey('pasta_tomato_sauce')!.sourceKey, 'usda_171192');
+      expect(db.byKey('parmesan_grated')!.sourceKey, 'usda_171247');
+      expect(db.byKey('mustard')!.sourceKey, 'usda_172234');
+      expect(db.byKey('soy_sauce')!.sourceKey, 'ciqual_11104');
+      expect(db.byKey('yogurt_sauce')!.sourceKey, 'ciqual_11166');
+    });
+
+    test('new companion rows use the portions agreed for them', () {
+      expect(db.byKey('ketchup')!.portionG, 15);
+      expect(db.byKey('pasta_tomato_sauce')!.portionG, 60);
+      expect(db.byKey('parmesan_grated')!.portionG, 10);
+      expect(db.byKey('mustard')!.portionG, 5);
+      expect(db.byKey('soy_sauce')!.portionG, 10);
+      expect(db.byKey('yogurt_sauce')!.portionG, 30);
+    });
+
+    test('the names the companion rules look up exist as foods', () {
+      for (final name in ['ketchup', 'molho de tomate', 'queijo ralado']) {
+        expect(db.match(name), isNotNull, reason: name);
+      }
+    });
+
+    test('steak suggests ketchup; pasta suggests tomato sauce and cheese', () {
+      expect([
+        for (final c in mealCompanions([food('Bife')], db)) c.food?.key,
+      ], contains('ketchup'));
+      final pasta = [
+        for (final c in mealCompanions([food('Massa')], db)) c.food?.key,
+      ];
+      expect(pasta, containsAll(['pasta_tomato_sauce', 'parmesan_grated']));
+    });
+
+    test('kcal for a companion portion follows grams x kcal/100 g', () {
+      final ketchup = db.byKey('ketchup')!;
+      expect(ketchup.kcal * ketchup.portionG / 100, closeTo(16.2, 0.05));
     });
   });
 

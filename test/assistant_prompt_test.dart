@@ -48,6 +48,17 @@ void main() {
     expect(prompt, contains('medical advice'));
   });
 
+  test('prompt keeps nutrient numbers out of the model text', () {
+    final pt = buildAssistantPrompt(question: 'Jantar?', context: context);
+    expect(pt, contains('Não escrevas kcal'));
+    final en = buildAssistantPrompt(
+      question: 'Dinner?',
+      context: context,
+      english: true,
+    );
+    expect(en, contains('Do not write kcal'));
+  });
+
   test('status parsing falls back to unavailable', () {
     expect(LlmStatus.parse('available'), LlmStatus.available);
     expect(LlmStatus.parse('downloadable'), LlmStatus.downloadable);

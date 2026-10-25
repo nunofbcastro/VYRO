@@ -15,7 +15,7 @@ Camera-based rep counting and technique feedback built from **reusable movement 
 | Video (experimental) | `video/` | `VideoAnalysisPage` and `LocalVideoAnalysis`: a gallery video is analysed frame by frame with the same engine. |
 | History | `workout_analysis_history/` | `MotionHistoryRepository` writes to the Drift table `motion_analyses`. It is included in export, import and "delete all data". Stores counts, duration, observed ratio, status and events; no frames or video. |
 
-Entry points: on a workout day, each compatible exercise card has **"Analisar com câmara"**; the in-progress session shows a camera icon. The camera screen also offers **"Analisar vídeo da galeria"** when the exercise has a pattern (not on web). The older MoveNet squat demo (`/motion`) now opens `MotionCoachPage` for `goblet_squat`.
+Entry points: on a workout day, each compatible exercise card has **"Analisar com câmara"**; the in-progress session shows a camera icon. The camera screen also offers **"Analisar vídeo da galeria"** when the exercise has a pattern (not on web). The `/motion` route also opens `MotionCoachPage`, for `goblet_squat`.
 
 ## Patterns
 `squat`, `hip_hinge`, `horizontal_push`, `vertical_push`, `horizontal_pull`, `vertical_pull`, `elbow_flexion`, `elbow_extension`, `shoulder_abduction`, `lunge`, `trunk_rotation` (experimental, 2D), and `core_stabilization` (hold mode).
@@ -72,8 +72,6 @@ Code: `workout_camera/positioning_guide.dart` (pure Dart: templates, checks, tra
 - **Preview**: the ghost is painted in the same `FittedBox` box as the camera image, using the same orientation rule as the skeleton, and it is mirrored for the front lens. The preview uses `BoxFit.cover`, so on some phones the screen edges, and parts of the target frame, may be cropped. This is unchanged from the camera preview and is not verified on devices.
 - **Voice** (Modo PT): before a set, the top framing issue is spoken at most every 5 s (separate limit; it does not share the cue limit). The start cue is spoken once when the body is ready, and it is not repeated when the set starts. No framing prompts are spoken during a set.
 - **Limits**: seated or bent positions are approximated by the standing template, and their feet may be out of frame. The guide then reports "Não te vejo" or "Afasta-te" even though counting still works, because the guide never blocks counting. Frames for the guide are not stored. It is a framing aid only: it is not a technique, range-of-motion or safety check, and it is not verified on devices.
-
-## Adaptive sampling
 
 ## Camera orientation and preview
 - `CameraPreview` (camera 0.12.1) lays its image out with the sensor aspect ratio in landscape and its inverse in portrait, using the orientation it is given (preview pause, locked capture or device orientation).
@@ -133,7 +131,7 @@ Validation (applied to every model answer; a failing item is dropped, and a fail
 
 **Not verified:** TTS voice availability and quality per device and language; whether a late completion callback from a stopped phrase can start the next one slightly early on some platforms; the spoken text of form cues depends on the translation of each key; the output quality of the on-device model in PT-PT (no real-device run yet; the tests use a fake model).
 
-**Not wired:** `VoiceCoach` accepts a target number of reps, but the camera screen does not receive one yet (`MotionCoachPage` has no target parameter in use), so the target milestones only run when a caller provides one. Without a target, milestones are every five reps.
+**Target reps:** `MotionCoachPage` takes an optional `targetReps`. The workout day and workout session pages pass the planned reps (holds pass none), so the target milestones run there. The `/motion` route passes no target, so its milestones are every five reps.
 
 ## Adaptive sampling
 `MotionSamplingPolicy.interval` chooses the time between analysed frames:
@@ -204,7 +202,6 @@ Unsupported: dead bug, bird dog, superman, calf raise.
 - The "low light" message (`mfLowLight`) is shown when detection quality is low; the camera does not measure light, so the message may name the wrong cause.
 - Load is unknown; a camera cannot judge weight or effort.
 - Criteria need professional review before any validated score is shown.
-- The older `MotionPage` (`lib/features/pose/motion_page.dart`) still exists in the code, but the `/motion` route now opens `MotionCoachPage`. Its removal or unification with the engine is pending.
 - iOS: ML Kit needs iOS 15.5 or later in the Podfile. This was not built here (no Mac).
 - No raw camera frames or videos are stored. Adding that would require explicit consent first.
 - No machine-learning classifier of errors is used. Every check is an explicit, reviewable rule.
