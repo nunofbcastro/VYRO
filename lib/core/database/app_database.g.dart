@@ -2074,8 +2074,26 @@ class $WorkoutDaysTable extends WorkoutDays
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _weekdayMeta = const VerificationMeta(
+    'weekday',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, planId, dayNumber, namePt, nameEn];
+  late final GeneratedColumn<int> weekday = GeneratedColumn<int>(
+    'weekday',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    planId,
+    dayNumber,
+    namePt,
+    nameEn,
+    weekday,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2123,6 +2141,12 @@ class $WorkoutDaysTable extends WorkoutDays
     } else if (isInserting) {
       context.missing(_nameEnMeta);
     }
+    if (data.containsKey('weekday')) {
+      context.handle(
+        _weekdayMeta,
+        weekday.isAcceptableOrUnknown(data['weekday']!, _weekdayMeta),
+      );
+    }
     return context;
   }
 
@@ -2152,6 +2176,10 @@ class $WorkoutDaysTable extends WorkoutDays
         DriftSqlType.string,
         data['${effectivePrefix}name_en'],
       )!,
+      weekday: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}weekday'],
+      ),
     );
   }
 
@@ -2167,12 +2195,16 @@ class WorkoutDay extends DataClass implements Insertable<WorkoutDay> {
   final int dayNumber;
   final String namePt;
   final String nameEn;
+
+  /// ISO weekday this workout is scheduled on (1 = Monday … 7 = Sunday).
+  final int? weekday;
   const WorkoutDay({
     required this.id,
     required this.planId,
     required this.dayNumber,
     required this.namePt,
     required this.nameEn,
+    this.weekday,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2182,6 +2214,9 @@ class WorkoutDay extends DataClass implements Insertable<WorkoutDay> {
     map['day_number'] = Variable<int>(dayNumber);
     map['name_pt'] = Variable<String>(namePt);
     map['name_en'] = Variable<String>(nameEn);
+    if (!nullToAbsent || weekday != null) {
+      map['weekday'] = Variable<int>(weekday);
+    }
     return map;
   }
 
@@ -2192,6 +2227,9 @@ class WorkoutDay extends DataClass implements Insertable<WorkoutDay> {
       dayNumber: Value(dayNumber),
       namePt: Value(namePt),
       nameEn: Value(nameEn),
+      weekday: weekday == null && nullToAbsent
+          ? const Value.absent()
+          : Value(weekday),
     );
   }
 
@@ -2206,6 +2244,7 @@ class WorkoutDay extends DataClass implements Insertable<WorkoutDay> {
       dayNumber: serializer.fromJson<int>(json['dayNumber']),
       namePt: serializer.fromJson<String>(json['namePt']),
       nameEn: serializer.fromJson<String>(json['nameEn']),
+      weekday: serializer.fromJson<int?>(json['weekday']),
     );
   }
   @override
@@ -2217,6 +2256,7 @@ class WorkoutDay extends DataClass implements Insertable<WorkoutDay> {
       'dayNumber': serializer.toJson<int>(dayNumber),
       'namePt': serializer.toJson<String>(namePt),
       'nameEn': serializer.toJson<String>(nameEn),
+      'weekday': serializer.toJson<int?>(weekday),
     };
   }
 
@@ -2226,12 +2266,14 @@ class WorkoutDay extends DataClass implements Insertable<WorkoutDay> {
     int? dayNumber,
     String? namePt,
     String? nameEn,
+    Value<int?> weekday = const Value.absent(),
   }) => WorkoutDay(
     id: id ?? this.id,
     planId: planId ?? this.planId,
     dayNumber: dayNumber ?? this.dayNumber,
     namePt: namePt ?? this.namePt,
     nameEn: nameEn ?? this.nameEn,
+    weekday: weekday.present ? weekday.value : this.weekday,
   );
   WorkoutDay copyWithCompanion(WorkoutDaysCompanion data) {
     return WorkoutDay(
@@ -2240,6 +2282,7 @@ class WorkoutDay extends DataClass implements Insertable<WorkoutDay> {
       dayNumber: data.dayNumber.present ? data.dayNumber.value : this.dayNumber,
       namePt: data.namePt.present ? data.namePt.value : this.namePt,
       nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      weekday: data.weekday.present ? data.weekday.value : this.weekday,
     );
   }
 
@@ -2250,13 +2293,15 @@ class WorkoutDay extends DataClass implements Insertable<WorkoutDay> {
           ..write('planId: $planId, ')
           ..write('dayNumber: $dayNumber, ')
           ..write('namePt: $namePt, ')
-          ..write('nameEn: $nameEn')
+          ..write('nameEn: $nameEn, ')
+          ..write('weekday: $weekday')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, planId, dayNumber, namePt, nameEn);
+  int get hashCode =>
+      Object.hash(id, planId, dayNumber, namePt, nameEn, weekday);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2265,7 +2310,8 @@ class WorkoutDay extends DataClass implements Insertable<WorkoutDay> {
           other.planId == this.planId &&
           other.dayNumber == this.dayNumber &&
           other.namePt == this.namePt &&
-          other.nameEn == this.nameEn);
+          other.nameEn == this.nameEn &&
+          other.weekday == this.weekday);
 }
 
 class WorkoutDaysCompanion extends UpdateCompanion<WorkoutDay> {
@@ -2274,12 +2320,14 @@ class WorkoutDaysCompanion extends UpdateCompanion<WorkoutDay> {
   final Value<int> dayNumber;
   final Value<String> namePt;
   final Value<String> nameEn;
+  final Value<int?> weekday;
   const WorkoutDaysCompanion({
     this.id = const Value.absent(),
     this.planId = const Value.absent(),
     this.dayNumber = const Value.absent(),
     this.namePt = const Value.absent(),
     this.nameEn = const Value.absent(),
+    this.weekday = const Value.absent(),
   });
   WorkoutDaysCompanion.insert({
     this.id = const Value.absent(),
@@ -2287,6 +2335,7 @@ class WorkoutDaysCompanion extends UpdateCompanion<WorkoutDay> {
     required int dayNumber,
     required String namePt,
     required String nameEn,
+    this.weekday = const Value.absent(),
   }) : planId = Value(planId),
        dayNumber = Value(dayNumber),
        namePt = Value(namePt),
@@ -2297,6 +2346,7 @@ class WorkoutDaysCompanion extends UpdateCompanion<WorkoutDay> {
     Expression<int>? dayNumber,
     Expression<String>? namePt,
     Expression<String>? nameEn,
+    Expression<int>? weekday,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2304,6 +2354,7 @@ class WorkoutDaysCompanion extends UpdateCompanion<WorkoutDay> {
       if (dayNumber != null) 'day_number': dayNumber,
       if (namePt != null) 'name_pt': namePt,
       if (nameEn != null) 'name_en': nameEn,
+      if (weekday != null) 'weekday': weekday,
     });
   }
 
@@ -2313,6 +2364,7 @@ class WorkoutDaysCompanion extends UpdateCompanion<WorkoutDay> {
     Value<int>? dayNumber,
     Value<String>? namePt,
     Value<String>? nameEn,
+    Value<int?>? weekday,
   }) {
     return WorkoutDaysCompanion(
       id: id ?? this.id,
@@ -2320,6 +2372,7 @@ class WorkoutDaysCompanion extends UpdateCompanion<WorkoutDay> {
       dayNumber: dayNumber ?? this.dayNumber,
       namePt: namePt ?? this.namePt,
       nameEn: nameEn ?? this.nameEn,
+      weekday: weekday ?? this.weekday,
     );
   }
 
@@ -2341,6 +2394,9 @@ class WorkoutDaysCompanion extends UpdateCompanion<WorkoutDay> {
     if (nameEn.present) {
       map['name_en'] = Variable<String>(nameEn.value);
     }
+    if (weekday.present) {
+      map['weekday'] = Variable<int>(weekday.value);
+    }
     return map;
   }
 
@@ -2351,7 +2407,8 @@ class WorkoutDaysCompanion extends UpdateCompanion<WorkoutDay> {
           ..write('planId: $planId, ')
           ..write('dayNumber: $dayNumber, ')
           ..write('namePt: $namePt, ')
-          ..write('nameEn: $nameEn')
+          ..write('nameEn: $nameEn, ')
+          ..write('weekday: $weekday')
           ..write(')'))
         .toString();
   }
@@ -4660,6 +4717,219 @@ class BodyMeasurementsCompanion extends UpdateCompanion<BodyMeasurement> {
   }
 }
 
+class $ScheduleSkipsTable extends ScheduleSkips
+    with TableInfo<$ScheduleSkipsTable, ScheduleSkip> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ScheduleSkipsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [date, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'schedule_skips';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ScheduleSkip> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {date};
+  @override
+  ScheduleSkip map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ScheduleSkip(
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ScheduleSkipsTable createAlias(String alias) {
+    return $ScheduleSkipsTable(attachedDatabase, alias);
+  }
+}
+
+class ScheduleSkip extends DataClass implements Insertable<ScheduleSkip> {
+  final String date;
+  final DateTime createdAt;
+  const ScheduleSkip({required this.date, required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['date'] = Variable<String>(date);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  ScheduleSkipsCompanion toCompanion(bool nullToAbsent) {
+    return ScheduleSkipsCompanion(
+      date: Value(date),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory ScheduleSkip.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ScheduleSkip(
+      date: serializer.fromJson<String>(json['date']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'date': serializer.toJson<String>(date),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  ScheduleSkip copyWith({String? date, DateTime? createdAt}) => ScheduleSkip(
+    date: date ?? this.date,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  ScheduleSkip copyWithCompanion(ScheduleSkipsCompanion data) {
+    return ScheduleSkip(
+      date: data.date.present ? data.date.value : this.date,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScheduleSkip(')
+          ..write('date: $date, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(date, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ScheduleSkip &&
+          other.date == this.date &&
+          other.createdAt == this.createdAt);
+}
+
+class ScheduleSkipsCompanion extends UpdateCompanion<ScheduleSkip> {
+  final Value<String> date;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const ScheduleSkipsCompanion({
+    this.date = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ScheduleSkipsCompanion.insert({
+    required String date,
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : date = Value(date);
+  static Insertable<ScheduleSkip> custom({
+    Expression<String>? date,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (date != null) 'date': date,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ScheduleSkipsCompanion copyWith({
+    Value<String>? date,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return ScheduleSkipsCompanion(
+      date: date ?? this.date,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScheduleSkipsCompanion(')
+          ..write('date: $date, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4678,6 +4948,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $BodyMeasurementsTable bodyMeasurements = $BodyMeasurementsTable(
     this,
   );
+  late final $ScheduleSkipsTable scheduleSkips = $ScheduleSkipsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4692,6 +4963,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     workoutSessions,
     exerciseSets,
     bodyMeasurements,
+    scheduleSkips,
   ];
 }
 
@@ -5693,6 +5965,7 @@ typedef $$WorkoutDaysTableCreateCompanionBuilder =
       required int dayNumber,
       required String namePt,
       required String nameEn,
+      Value<int?> weekday,
     });
 typedef $$WorkoutDaysTableUpdateCompanionBuilder =
     WorkoutDaysCompanion Function({
@@ -5701,6 +5974,7 @@ typedef $$WorkoutDaysTableUpdateCompanionBuilder =
       Value<int> dayNumber,
       Value<String> namePt,
       Value<String> nameEn,
+      Value<int?> weekday,
     });
 
 class $$WorkoutDaysTableFilterComposer
@@ -5734,6 +6008,11 @@ class $$WorkoutDaysTableFilterComposer
 
   ColumnFilters<String> get nameEn => $composableBuilder(
     column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get weekday => $composableBuilder(
+    column: $table.weekday,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -5771,6 +6050,11 @@ class $$WorkoutDaysTableOrderingComposer
     column: $table.nameEn,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get weekday => $composableBuilder(
+    column: $table.weekday,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$WorkoutDaysTableAnnotationComposer
@@ -5796,6 +6080,9 @@ class $$WorkoutDaysTableAnnotationComposer
 
   GeneratedColumn<String> get nameEn =>
       $composableBuilder(column: $table.nameEn, builder: (column) => column);
+
+  GeneratedColumn<int> get weekday =>
+      $composableBuilder(column: $table.weekday, builder: (column) => column);
 }
 
 class $$WorkoutDaysTableTableManager
@@ -5834,12 +6121,14 @@ class $$WorkoutDaysTableTableManager
                 Value<int> dayNumber = const Value.absent(),
                 Value<String> namePt = const Value.absent(),
                 Value<String> nameEn = const Value.absent(),
+                Value<int?> weekday = const Value.absent(),
               }) => WorkoutDaysCompanion(
                 id: id,
                 planId: planId,
                 dayNumber: dayNumber,
                 namePt: namePt,
                 nameEn: nameEn,
+                weekday: weekday,
               ),
           createCompanionCallback:
               ({
@@ -5848,12 +6137,14 @@ class $$WorkoutDaysTableTableManager
                 required int dayNumber,
                 required String namePt,
                 required String nameEn,
+                Value<int?> weekday = const Value.absent(),
               }) => WorkoutDaysCompanion.insert(
                 id: id,
                 planId: planId,
                 dayNumber: dayNumber,
                 namePt: namePt,
                 nameEn: nameEn,
+                weekday: weekday,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -7150,6 +7441,158 @@ typedef $$BodyMeasurementsTableProcessedTableManager =
       BodyMeasurement,
       PrefetchHooks Function()
     >;
+typedef $$ScheduleSkipsTableCreateCompanionBuilder =
+    ScheduleSkipsCompanion Function({
+      required String date,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$ScheduleSkipsTableUpdateCompanionBuilder =
+    ScheduleSkipsCompanion Function({
+      Value<String> date,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$ScheduleSkipsTableFilterComposer
+    extends Composer<_$AppDatabase, $ScheduleSkipsTable> {
+  $$ScheduleSkipsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ScheduleSkipsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ScheduleSkipsTable> {
+  $$ScheduleSkipsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ScheduleSkipsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ScheduleSkipsTable> {
+  $$ScheduleSkipsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$ScheduleSkipsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ScheduleSkipsTable,
+          ScheduleSkip,
+          $$ScheduleSkipsTableFilterComposer,
+          $$ScheduleSkipsTableOrderingComposer,
+          $$ScheduleSkipsTableAnnotationComposer,
+          $$ScheduleSkipsTableCreateCompanionBuilder,
+          $$ScheduleSkipsTableUpdateCompanionBuilder,
+          (
+            ScheduleSkip,
+            BaseReferences<_$AppDatabase, $ScheduleSkipsTable, ScheduleSkip>,
+          ),
+          ScheduleSkip,
+          PrefetchHooks Function()
+        > {
+  $$ScheduleSkipsTableTableManager(_$AppDatabase db, $ScheduleSkipsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ScheduleSkipsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ScheduleSkipsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ScheduleSkipsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> date = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ScheduleSkipsCompanion(
+                date: date,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String date,
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ScheduleSkipsCompanion.insert(
+                date: date,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ScheduleSkipsTable, ScheduleSkip>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ScheduleSkipsTable,
+                    ScheduleSkip
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ScheduleSkipsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ScheduleSkipsTable,
+      ScheduleSkip,
+      $$ScheduleSkipsTableFilterComposer,
+      $$ScheduleSkipsTableOrderingComposer,
+      $$ScheduleSkipsTableAnnotationComposer,
+      $$ScheduleSkipsTableCreateCompanionBuilder,
+      $$ScheduleSkipsTableUpdateCompanionBuilder,
+      (
+        ScheduleSkip,
+        BaseReferences<_$AppDatabase, $ScheduleSkipsTable, ScheduleSkip>,
+      ),
+      ScheduleSkip,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -7172,4 +7615,6 @@ class $AppDatabaseManager {
       $$ExerciseSetsTableTableManager(_db, _db.exerciseSets);
   $$BodyMeasurementsTableTableManager get bodyMeasurements =>
       $$BodyMeasurementsTableTableManager(_db, _db.bodyMeasurements);
+  $$ScheduleSkipsTableTableManager get scheduleSkips =>
+      $$ScheduleSkipsTableTableManager(_db, _db.scheduleSkips);
 }

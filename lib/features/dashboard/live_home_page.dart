@@ -12,6 +12,8 @@ import '../nutrition/meals.dart';
 import '../nutrition/nutrition_diary_page.dart';
 import 'home_shell.dart';
 import '../workouts/data/workout_repository.dart';
+import '../workouts/domain/plan_generator.dart';
+import '../workouts/domain/week_schedule.dart';
 
 class LiveHomePage extends StatefulWidget {
   const LiveHomePage({super.key});
@@ -149,19 +151,46 @@ class _LiveHomePageState extends State<LiveHomePage> {
                     future: _planFuture,
                     builder: (context, planSnapshot) {
                       final plan = planSnapshot.data;
-                      final firstDay = (plan?.days.isNotEmpty ?? false)
-                          ? plan!.days.first.day
-                          : null;
-                      final dayName = firstDay == null
-                          ? null
-                          : (t.isEnglish ? firstDay.nameEn : firstDay.namePt);
-                      return ActionCard(
-                        icon: Icons.fitness_center_rounded,
-                        title: dayName ?? t.get('starterPlan'),
-                        subtitle: plan == null
-                            ? t.get('nextWorkoutLocal')
-                            : '${t.get('plans')} · ${plan.days.length} ${t.get('setupDays')}',
-                        onTap: () => _openTab(context, 2, '/training'),
+                      final repository = services.workoutRepository;
+                      return StreamBuilder<Map<String, String>>(
+                        stream: repository.watchDoneDays(),
+                        builder: (context, done) => StreamBuilder<Set<String>>(
+                          stream: repository.watchSkippedDays(),
+                          builder: (context, skipped) {
+                            final week = plan == null
+                                ? const <ScheduledDay>[]
+                                : buildWeek(
+                                    today: DateTime.now(),
+                                    slots: WorkoutRepository.slotsOf(plan),
+                                    done: done.data ?? const {},
+                                    skipped: skipped.data ?? const {},
+                                  );
+                            final next = nextWorkout(week);
+                            final progress = weekProgress(week);
+                            final slot = next?.slot;
+                            return ActionCard(
+                              icon: Icons.fitness_center_rounded,
+                              title: slot == null
+                                  ? t.get(switch (weekOutcome(
+                                      week,
+                                      DateTime.now(),
+                                    )) {
+                                      WeekOutcome.allDone => 'weekAllDone',
+                                      WeekOutcome.paused => 'weekPaused',
+                                      _ =>
+                                        plan == null
+                                            ? 'starterPlan'
+                                            : 'weekOver',
+                                    })
+                                  : (t.isEnglish ? slot.nameEn : slot.namePt),
+                              subtitle: next == null
+                                  ? '${progress.done}/${progress.scheduled} ${t.get('workoutsDone')}'
+                                  : '${next.status == DayStatus.today ? t.get('todayShort') : weekdayLong(next.date.weekday, english: t.isEnglish)}'
+                                        ' · ${progress.done}/${progress.scheduled} ${t.get('workoutsDone')}',
+                              onTap: () => _openTab(context, 2, '/training'),
+                            );
+                          },
+                        ),
                       );
                     },
                   ),

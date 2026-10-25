@@ -56,6 +56,9 @@ class WorkoutDays extends Table {
   IntColumn get dayNumber => integer()();
   TextColumn get namePt => text()();
   TextColumn get nameEn => text()();
+
+  /// ISO weekday this workout is scheduled on (1 = Monday … 7 = Sunday).
+  IntColumn get weekday => integer().nullable()();
 }
 
 class ExerciseCatalog extends Table {
@@ -102,6 +105,15 @@ class ExerciseSets extends Table {
   RealColumn get weightKg => real().nullable()();
   BoolColumn get completed => boolean().withDefault(const Constant(false))();
   DateTimeColumn get completedAt => dateTime().nullable()();
+}
+
+/// Dates the user marked as "não posso treinar" in the weekly plan.
+class ScheduleSkips extends Table {
+  TextColumn get date => text()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column<Object>> get primaryKey => {date};
 }
 
 class BodyMeasurements extends Table {

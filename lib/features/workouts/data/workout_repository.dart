@@ -2,6 +2,8 @@ import 'package:drift/drift.dart';
 
 import '../../../core/database/app_database.dart';
 import '../../nutrition/domain/food_product.dart' show dayKey;
+import '../domain/plan_generator.dart';
+import '../domain/week_schedule.dart';
 
 class ExerciseInfo {
   const ExerciseInfo({
@@ -268,91 +270,43 @@ class WorkoutRepository {
 
   Future<WorkoutPlan> _createPlan(VyroProfile profile) async {
     return database.transaction(() async {
+      final catalog = await database.select(database.exerciseCatalog).get();
+      final generated = generatePlan(
+        daysPerWeek: profile.trainingDays,
+        goal: profile.goal,
+        experience: profile.workoutExperience,
+        available: profile.availableEquipment.toSet(),
+        equipmentOf: {
+          for (final row in catalog) row.exerciseKey: row.equipment,
+        },
+      );
       final planId = await database.addWorkoutPlan(
         WorkoutPlansCompanion.insert(
-          title: 'Plano pessoal · ${profile.trainingDays} dias',
+          title: generated.titlePt,
           goal: profile.goal,
         ),
       );
-      final dayDefinitions = <(String, String, List<String>)>[
-        (
-          'Dia A · Corpo inteiro',
-          'Day A · Full body',
-          [
-            'goblet_squat',
-            'dumbbell_press',
-            'seated_row',
-            'glute_bridge',
-            'plank',
-          ],
-        ),
-        (
-          'Dia B · Corpo inteiro',
-          'Day B · Full body',
-          [
-            'split_squat',
-            'shoulder_press',
-            'lat_pulldown',
-            'hip_hinge',
-            'dead_bug',
-          ],
-        ),
-        (
-          'Dia C · Corpo inteiro',
-          'Day C · Full body',
-          ['goblet_squat', 'push_up', 'seated_row', 'hip_hinge', 'side_plank'],
-        ),
-      ];
-      final dayCount = profile.trainingDays.clamp(1, 7);
-      final availableEquipment = profile.availableEquipment.toSet();
-      final catalog = (await database.select(database.exerciseCatalog).get())
-          .map(_toInfo)
-          .toList();
-      for (var index = 0; index < dayCount; index++) {
-        final definition = dayDefinitions[index % dayDefinitions.length];
+      for (var index = 0; index < generated.days.length; index++) {
+        final day = generated.days[index];
         final dayId = await database.addWorkoutDay(
           WorkoutDaysCompanion.insert(
             planId: planId,
             dayNumber: index + 1,
-            namePt: index < 3
-                ? definition.$1
-                : 'Dia ${String.fromCharCode(65 + index)} · Corpo inteiro',
-            nameEn: index < 3
-                ? definition.$2
-                : 'Day ${String.fromCharCode(65 + index)} · Full body',
+            namePt: day.namePt,
+            nameEn: day.nameEn,
+            weekday: Value(day.weekday),
           ),
         );
-        final selectedExercises = definition.$3.where((key) {
-          final matches = catalog.where((exercise) => exercise.key == key);
-          if (matches.isEmpty) return false;
-          final info = matches.first;
-          final needs = info.equipment.toLowerCase();
-          return (needs.contains('peso corporal') &&
-                  availableEquipment.contains('bodyweight')) ||
-              (needs.contains('halteres') &&
-                  availableEquipment.contains('dumbbells')) ||
-              (needs.contains('cabo') && availableEquipment.contains('cable'));
-        }).toList();
-        final safeBodyweightFallback = [
-          'plank',
-          'dead_bug',
-          'push_up',
-          'side_plank',
-          'glute_bridge',
-        ];
-        final exercises = selectedExercises.isEmpty
-            ? safeBodyweightFallback
-            : selectedExercises;
-        for (var position = 0; position < exercises.length; position++) {
+        for (var position = 0; position < day.exercises.length; position++) {
+          final slot = day.exercises[position];
           await database.addPlanExercise(
             PlanExercisesCompanion.insert(
               dayId: dayId,
-              exerciseKey: exercises[position],
+              exerciseKey: slot.exerciseKey,
               sortOrder: position,
-              sets: const Value(3),
-              repTarget: Value(
-                profile.workoutExperience == 'intermediate' ? 8 : 10,
-              ),
+              sets: Value(slot.sets),
+              repTarget: Value(slot.reps),
+              restSeconds: Value(slot.restSeconds),
             ),
           );
         }
@@ -361,7 +315,127 @@ class WorkoutRepository {
     });
   }
 
+  /// Plans created before weekdays existed get the default spread.
+  Future<void> _ensureWeekdays(List<WorkoutDay> days) async {
+    if (days.every((day) => day.weekday != null)) return;
+    final defaults = defaultWeekdays(days.length);
+    for (var i = 0; i < days.length; i++) {
+      if (days[i].weekday != null) continue;
+      await (database.update(
+        database.workoutDays,
+      )..where((row) => row.id.equals(days[i].id))).write(
+        WorkoutDaysCompanion(weekday: Value(defaults[i % defaults.length])),
+      );
+    }
+  }
+
+  /// Moves a workout to another weekday; a workout already there swaps
+  /// places, so the week never has two workouts on one day.
+  Future<void> setWeekday({required int dayId, required int weekday}) async {
+    await database.transaction(() async {
+      final plan = await database.getActiveWorkoutPlan();
+      if (plan == null) return;
+      final days = await (database.select(
+        database.workoutDays,
+      )..where((day) => day.planId.equals(plan.id))).get();
+      final moving = days.firstWhere((day) => day.id == dayId);
+      for (final other in days) {
+        if (other.id != dayId && other.weekday == weekday) {
+          await (database.update(database.workoutDays)
+                ..where((row) => row.id.equals(other.id)))
+              .write(WorkoutDaysCompanion(weekday: Value(moving.weekday)));
+        }
+      }
+      await (database.update(database.workoutDays)
+            ..where((row) => row.id.equals(dayId)))
+          .write(WorkoutDaysCompanion(weekday: Value(weekday)));
+    });
+  }
+
+  /// Schedule slots of a loaded plan, for [buildWeek].
+  static List<ScheduleSlot> slotsOf(WorkoutPlanData plan) => [
+    for (final day in plan.days)
+      if (day.day.weekday != null)
+        ScheduleSlot(
+          dayId: day.day.id,
+          weekday: day.day.weekday!,
+          namePt: day.day.namePt,
+          nameEn: day.day.nameEn,
+        ),
+  ];
+
+  /// Date key → workout name of sessions completed on that date.
+  Stream<Map<String, String>> watchDoneDays() => watchSessions().map(
+    (sessions) => {
+      for (final session in sessions.reversed)
+        if (session.status == 'completed') session.day: session.workoutName,
+    },
+  );
+
+  Stream<Set<String>> watchSkippedDays() => database
+      .select(database.scheduleSkips)
+      .watch()
+      .map((rows) => {for (final row in rows) row.date});
+
+  Future<void> skipDates(Iterable<String> keys) async {
+    await database.batch((batch) {
+      batch.insertAllOnConflictUpdate(database.scheduleSkips, [
+        for (final key in keys) ScheduleSkipsCompanion.insert(date: key),
+      ]);
+    });
+  }
+
+  Future<void> unskipDates(Iterable<String> keys) async {
+    await (database.delete(
+      database.scheduleSkips,
+    )..where((row) => row.date.isIn(keys.toList()))).go();
+  }
+
+  /// Records a workout as done without logging sets ("já fiz").
+  Future<void> markDone({
+    required DateTime date,
+    required String workoutName,
+  }) async {
+    final plan = await database.getActiveWorkoutPlan();
+    final key = dayKey(date);
+    await unskipDates([key]);
+    await database
+        .into(database.workoutSessions)
+        .insert(
+          WorkoutSessionsCompanion.insert(
+            day: key,
+            planName: plan?.title ?? '',
+            workoutName: workoutName,
+            status: const Value('completed'),
+            finishedAt: Value(DateTime.now()),
+          ),
+        );
+  }
+
+  /// Removes completed sessions on [date] (undo of "marcar como feito").
+  Future<void> clearDone(DateTime date) async {
+    final key = dayKey(date);
+    final sessions =
+        await (database.select(database.workoutSessions)..where(
+              (row) => row.day.equals(key) & row.status.equals('completed'),
+            ))
+            .get();
+    for (final session in sessions) {
+      await (database.delete(
+        database.exerciseSets,
+      )..where((row) => row.sessionId.equals(session.id))).go();
+      await (database.delete(
+        database.workoutSessions,
+      )..where((row) => row.id.equals(session.id))).go();
+    }
+  }
+
   Future<WorkoutPlanData> _loadPlan(WorkoutPlan plan) async {
+    await _ensureWeekdays(
+      await (database.select(
+        database.workoutDays,
+      )..where((day) => day.planId.equals(plan.id))).get(),
+    );
     final days =
         await (database.select(database.workoutDays)
               ..where((day) => day.planId.equals(plan.id))
@@ -564,6 +638,120 @@ const _starterExercises = <ExerciseInfo>[
         'Mantém a bacia elevada e reduz o tempo se perderes o alinhamento.',
     instructionsEn:
         'Keep your hips lifted and shorten the hold if alignment changes.',
+    equipment: 'peso corporal',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'reverse_lunge',
+    namePt: 'Afundo à retaguarda',
+    nameEn: 'Reverse lunge',
+    muscleGroup: 'legs',
+    instructionsPt:
+        'Dá um passo atrás e baixa com controlo; o joelho da frente acompanha o pé.',
+    instructionsEn:
+        'Step back and lower with control; front knee tracks over the foot.',
+    equipment: 'peso corporal ou halteres',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'dumbbell_row',
+    namePt: 'Remada com halter',
+    nameEn: 'Dumbbell row',
+    muscleGroup: 'back',
+    instructionsPt:
+        'Apoia uma mão, mantém as costas neutras e puxa o halter em direção à anca.',
+    instructionsEn:
+        'Support one hand, keep a neutral back and pull the dumbbell toward the hip.',
+    equipment: 'halteres',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'lateral_raise',
+    namePt: 'Elevação lateral',
+    nameEn: 'Lateral raise',
+    muscleGroup: 'shoulders',
+    instructionsPt:
+        'Eleva os halteres de lado até à altura dos ombros, sem balanço.',
+    instructionsEn: 'Raise the dumbbells to shoulder height without swinging.',
+    equipment: 'halteres',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'biceps_curl',
+    namePt: 'Curl de bíceps',
+    nameEn: 'Biceps curl',
+    muscleGroup: 'arms',
+    instructionsPt: 'Cotovelos junto ao tronco; sobe e desce com controlo.',
+    instructionsEn: 'Elbows by your sides; lift and lower with control.',
+    equipment: 'halteres',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'triceps_pushdown',
+    namePt: 'Extensão de tríceps no cabo',
+    nameEn: 'Cable triceps pushdown',
+    muscleGroup: 'arms',
+    instructionsPt:
+        'Cotovelos fixos; estende os braços até ao fim e regressa devagar.',
+    instructionsEn: 'Keep elbows fixed; extend fully and return slowly.',
+    equipment: 'cabo',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'face_pull',
+    namePt: 'Face pull',
+    nameEn: 'Face pull',
+    muscleGroup: 'shoulders',
+    instructionsPt:
+        'Puxa a corda em direção ao rosto, afastando as mãos no final.',
+    instructionsEn:
+        'Pull the rope toward your face, spreading the hands at the end.',
+    equipment: 'cabo',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'pike_push_up',
+    namePt: 'Flexão em pique',
+    nameEn: 'Pike push-up',
+    muscleGroup: 'shoulders',
+    instructionsPt:
+        'Anca alta, baixa a cabeça entre as mãos e empurra de volta.',
+    instructionsEn:
+        'Hips high, lower your head between the hands and push back up.',
+    equipment: 'peso corporal',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'superman',
+    namePt: 'Super-homem',
+    nameEn: 'Superman',
+    muscleGroup: 'back',
+    instructionsPt:
+        'Deitado de barriga para baixo, eleva braços e pernas sem forçar o pescoço.',
+    instructionsEn:
+        'Lying face down, lift arms and legs without straining the neck.',
+    equipment: 'peso corporal',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'calf_raise',
+    namePt: 'Elevação de gémeos',
+    nameEn: 'Calf raise',
+    muscleGroup: 'legs',
+    instructionsPt: 'Sobe na ponta dos pés, pausa e desce devagar.',
+    instructionsEn: 'Rise onto your toes, pause and lower slowly.',
+    equipment: 'peso corporal',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'bird_dog',
+    namePt: 'Bird dog',
+    nameEn: 'Bird dog',
+    muscleGroup: 'core',
+    instructionsPt:
+        'De quatro, estende braço e perna opostos mantendo a anca estável.',
+    instructionsEn:
+        'On all fours, extend opposite arm and leg keeping the hips steady.',
     equipment: 'peso corporal',
     difficulty: 'iniciante',
   ),
