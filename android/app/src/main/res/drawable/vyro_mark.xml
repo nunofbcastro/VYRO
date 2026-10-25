@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- VYRO mark (same geometry as brand/logos), for widgets. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path android:fillColor="#F5F7F8" android:pathData="M4,14 L33,14 L50,60 L67,14 L96,14 L63,88 L37,88 Z" />
+    <path android:fillColor="#12151A" android:pathData="M67,14 L96,14 L89.04,29.6 L61.23,29.6 Z" />
+    <path android:fillColor="#B8F36B" android:pathData="M67,14 L96,14 L90.2,27 L62.2,27 Z" />
+</vector>

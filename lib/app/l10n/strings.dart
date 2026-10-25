@@ -520,6 +520,7 @@ class VyroStrings {
     'extraWorkout': 'Treino extra',
     'confirm': 'Confirmar',
     'weekOver': 'Esta semana terminou.',
+    'widgetOver': 'acima do objetivo',
   };
 
   static const _en = <String, String>{
@@ -1024,6 +1025,7 @@ class VyroStrings {
     'extraWorkout': 'Extra workout',
     'confirm': 'Confirm',
     'weekOver': 'This week is over.',
+    'widgetOver': 'over goal',
   };
 }
 

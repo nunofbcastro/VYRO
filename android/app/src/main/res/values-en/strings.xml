@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_empty">Open VYRO to see your day.</string>
+    <string name="widget_today_description">Today\'s calories, protein and next workout.</string>
+    <string name="widget_calories_description">Calories you have left today.</string>
+</resources>

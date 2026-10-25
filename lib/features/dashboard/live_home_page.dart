@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
 import '../../core/database/app_database.dart';
+import '../../core/platform/home_widgets.dart';
 import '../../core/ui/vyro_ui.dart';
 import '../nutrition/domain/food_product.dart';
 import '../nutrition/meals.dart';
@@ -165,6 +166,16 @@ class _LiveHomePageState extends State<LiveHomePage> {
                             final next = nextWorkout(week);
                             final progress = weekProgress(week);
                             final slot = next?.slot;
+                            if (plan != null) {
+                              _publishWidgets(
+                                t: t,
+                                kcal: totals.kcal,
+                                kcalGoal: calorieGoal,
+                                protein: totals.protein,
+                                proteinGoal: proteinGoal,
+                                week: week,
+                              );
+                            }
                             return ActionCard(
                               icon: Icons.fitness_center_rounded,
                               title: slot == null
@@ -203,6 +214,54 @@ class _LiveHomePageState extends State<LiveHomePage> {
 
 /// Daily energy card: progress ring on the left, goal and remaining on the
 /// right. Numbers use tabular figures so they do not shift while logging.
+/// Sends today's numbers to the home-screen widgets after the frame, so the
+/// build stays free of side effects. Identical snapshots are skipped.
+void _publishWidgets({
+  required VyroStrings t,
+  required double kcal,
+  required double kcalGoal,
+  required double protein,
+  required double proteinGoal,
+  required List<ScheduledDay> week,
+}) {
+  if (!VyroHomeWidgets.supported) return;
+  final next = nextWorkout(week);
+  final progress = weekProgress(week);
+  final outcome = weekOutcome(week, DateTime.now());
+  final snapshot = HomeWidgetSnapshot(
+    kcalEaten: kcal.round(),
+    kcalGoal: kcalGoal.round(),
+    proteinEaten: protein.round(),
+    proteinGoal: proteinGoal.round(),
+    nextWorkout: next?.slot == null
+        ? t.get(switch (outcome) {
+            WeekOutcome.allDone => 'weekAllDone',
+            WeekOutcome.paused => 'weekPaused',
+            _ => 'weekOver',
+          })
+        : (t.isEnglish ? next!.slot!.nameEn : next!.slot!.namePt),
+    nextWhen: next == null
+        ? ''
+        : next.status == DayStatus.today
+        ? t.get('todayShort')
+        : weekdayLong(next.date.weekday, english: t.isEnglish),
+    weekDone: progress.done,
+    weekTotal: progress.scheduled,
+    labels: {
+      'title': t.get('todayShort'),
+      'kcal': 'kcal',
+      'left': t.get('remaining'),
+      'over': t.get('widgetOver'),
+      'next': t.get('nextUp'),
+      'week': t.get('workoutsDone'),
+      'protein': t.get('protein'),
+    },
+  );
+  WidgetsBinding.instance.addPostFrameCallback(
+    (_) => VyroHomeWidgets.publish(snapshot),
+  );
+}
+
 void _openTab(BuildContext context, int index, String route) {
   if (!HomeShell.selectTab(context, index)) {
     Navigator.pushNamed(context, route);
