@@ -20,7 +20,7 @@ BodyPose syntheticPose({
       torso = 0.22,
       upperArm = 0.12,
       forearm = 0.11;
-  final ankle = (x: 0.5, y: 0.88);
+  const ankle = (x: 0.5, y: 0.88);
   final knee = (x: 0.5, y: ankle.y - shank);
   final k = kneeAngle * math.pi / 180;
   // Hip direction from knee: rotate "down" by the knee angle.

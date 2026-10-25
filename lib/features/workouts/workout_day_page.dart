@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../app/l10n/strings.dart';
 import '../../core/ui/vyro_ui.dart';
 import 'data/workout_repository.dart';
+import '../motion_engine/exercise_registry/exercise_analysis_registry.dart';
+import '../motion_engine/workout_camera/motion_coach_page.dart';
 import 'domain/exercise_guides.dart';
 import 'domain/plan_generator.dart';
 import 'workout_session_page.dart';
@@ -448,6 +450,7 @@ class _ExerciseCard extends StatefulWidget {
 }
 
 class _ExerciseCardState extends State<_ExerciseCard> {
+  static final _registry = ExerciseAnalysisRegistry();
   bool _open = false;
 
   @override
@@ -551,6 +554,25 @@ class _ExerciseCardState extends State<_ExerciseCard> {
               ],
             ),
           ),
+          if (_registry.canAnalyse(e.info.key)) ...[
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.push<void>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MotionCoachPage(
+                      exerciseKey: e.info.key,
+                      exerciseName: english ? e.info.nameEn : e.info.namePt,
+                    ),
+                  ),
+                ),
+                icon: const Icon(Icons.videocam_outlined, size: 18),
+                label: Text(t.get('maOpen')),
+              ),
+            ),
+          ],
           const SizedBox(height: 10),
           InkWell(
             borderRadius: BorderRadius.circular(12),

@@ -107,6 +107,30 @@ class ExerciseSets extends Table {
   DateTimeColumn get completedAt => dateTime().nullable()();
 }
 
+/// One camera-analysed set (motion engine). No video or images are stored.
+@DataClassName('MotionAnalysisRecord')
+class MotionAnalyses extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get exerciseKey => text()();
+  TextColumn get patternId => text()();
+  DateTimeColumn get startedAt => dateTime()();
+  IntColumn get durationMs => integer()();
+  IntColumn get fullReps => integer()();
+  IntColumn get partialReps => integer()();
+  IntColumn get holdMs => integer().withDefault(const Constant(0))();
+  RealColumn get meanConfidence => real()();
+  RealColumn get observedRatio => real()();
+
+  /// withinCriteria | possibleIssue | notObservable | inconclusive
+  TextColumn get status => text()();
+
+  /// JSON list of technique events (check id, time, confidence, rep).
+  TextColumn get eventsJson => text().withDefault(const Constant('[]'))();
+
+  /// Only set when every check used was professionally validated.
+  RealColumn get techniqueScore => real().nullable()();
+}
+
 /// Dates the user marked as "não posso treinar" in the weekly plan.
 class ScheduleSkips extends Table {
   TextColumn get date => text()();

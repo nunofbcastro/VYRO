@@ -4930,6 +4930,779 @@ class ScheduleSkipsCompanion extends UpdateCompanion<ScheduleSkip> {
   }
 }
 
+class $MotionAnalysesTable extends MotionAnalyses
+    with TableInfo<$MotionAnalysesTable, MotionAnalysisRecord> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MotionAnalysesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _exerciseKeyMeta = const VerificationMeta(
+    'exerciseKey',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseKey = GeneratedColumn<String>(
+    'exercise_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _patternIdMeta = const VerificationMeta(
+    'patternId',
+  );
+  @override
+  late final GeneratedColumn<String> patternId = GeneratedColumn<String>(
+    'pattern_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta(
+    'startedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
+    'started_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _durationMsMeta = const VerificationMeta(
+    'durationMs',
+  );
+  @override
+  late final GeneratedColumn<int> durationMs = GeneratedColumn<int>(
+    'duration_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fullRepsMeta = const VerificationMeta(
+    'fullReps',
+  );
+  @override
+  late final GeneratedColumn<int> fullReps = GeneratedColumn<int>(
+    'full_reps',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _partialRepsMeta = const VerificationMeta(
+    'partialReps',
+  );
+  @override
+  late final GeneratedColumn<int> partialReps = GeneratedColumn<int>(
+    'partial_reps',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _holdMsMeta = const VerificationMeta('holdMs');
+  @override
+  late final GeneratedColumn<int> holdMs = GeneratedColumn<int>(
+    'hold_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _meanConfidenceMeta = const VerificationMeta(
+    'meanConfidence',
+  );
+  @override
+  late final GeneratedColumn<double> meanConfidence = GeneratedColumn<double>(
+    'mean_confidence',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _observedRatioMeta = const VerificationMeta(
+    'observedRatio',
+  );
+  @override
+  late final GeneratedColumn<double> observedRatio = GeneratedColumn<double>(
+    'observed_ratio',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _eventsJsonMeta = const VerificationMeta(
+    'eventsJson',
+  );
+  @override
+  late final GeneratedColumn<String> eventsJson = GeneratedColumn<String>(
+    'events_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _techniqueScoreMeta = const VerificationMeta(
+    'techniqueScore',
+  );
+  @override
+  late final GeneratedColumn<double> techniqueScore = GeneratedColumn<double>(
+    'technique_score',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    exerciseKey,
+    patternId,
+    startedAt,
+    durationMs,
+    fullReps,
+    partialReps,
+    holdMs,
+    meanConfidence,
+    observedRatio,
+    status,
+    eventsJson,
+    techniqueScore,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'motion_analyses';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MotionAnalysisRecord> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('exercise_key')) {
+      context.handle(
+        _exerciseKeyMeta,
+        exerciseKey.isAcceptableOrUnknown(
+          data['exercise_key']!,
+          _exerciseKeyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_exerciseKeyMeta);
+    }
+    if (data.containsKey('pattern_id')) {
+      context.handle(
+        _patternIdMeta,
+        patternId.isAcceptableOrUnknown(data['pattern_id']!, _patternIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_patternIdMeta);
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(
+        _startedAtMeta,
+        startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('duration_ms')) {
+      context.handle(
+        _durationMsMeta,
+        durationMs.isAcceptableOrUnknown(data['duration_ms']!, _durationMsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_durationMsMeta);
+    }
+    if (data.containsKey('full_reps')) {
+      context.handle(
+        _fullRepsMeta,
+        fullReps.isAcceptableOrUnknown(data['full_reps']!, _fullRepsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fullRepsMeta);
+    }
+    if (data.containsKey('partial_reps')) {
+      context.handle(
+        _partialRepsMeta,
+        partialReps.isAcceptableOrUnknown(
+          data['partial_reps']!,
+          _partialRepsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_partialRepsMeta);
+    }
+    if (data.containsKey('hold_ms')) {
+      context.handle(
+        _holdMsMeta,
+        holdMs.isAcceptableOrUnknown(data['hold_ms']!, _holdMsMeta),
+      );
+    }
+    if (data.containsKey('mean_confidence')) {
+      context.handle(
+        _meanConfidenceMeta,
+        meanConfidence.isAcceptableOrUnknown(
+          data['mean_confidence']!,
+          _meanConfidenceMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_meanConfidenceMeta);
+    }
+    if (data.containsKey('observed_ratio')) {
+      context.handle(
+        _observedRatioMeta,
+        observedRatio.isAcceptableOrUnknown(
+          data['observed_ratio']!,
+          _observedRatioMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_observedRatioMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('events_json')) {
+      context.handle(
+        _eventsJsonMeta,
+        eventsJson.isAcceptableOrUnknown(data['events_json']!, _eventsJsonMeta),
+      );
+    }
+    if (data.containsKey('technique_score')) {
+      context.handle(
+        _techniqueScoreMeta,
+        techniqueScore.isAcceptableOrUnknown(
+          data['technique_score']!,
+          _techniqueScoreMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MotionAnalysisRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MotionAnalysisRecord(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      exerciseKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_key'],
+      )!,
+      patternId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pattern_id'],
+      )!,
+      startedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at'],
+      )!,
+      durationMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_ms'],
+      )!,
+      fullReps: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}full_reps'],
+      )!,
+      partialReps: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}partial_reps'],
+      )!,
+      holdMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hold_ms'],
+      )!,
+      meanConfidence: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}mean_confidence'],
+      )!,
+      observedRatio: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}observed_ratio'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      eventsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}events_json'],
+      )!,
+      techniqueScore: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}technique_score'],
+      ),
+    );
+  }
+
+  @override
+  $MotionAnalysesTable createAlias(String alias) {
+    return $MotionAnalysesTable(attachedDatabase, alias);
+  }
+}
+
+class MotionAnalysisRecord extends DataClass
+    implements Insertable<MotionAnalysisRecord> {
+  final int id;
+  final String exerciseKey;
+  final String patternId;
+  final DateTime startedAt;
+  final int durationMs;
+  final int fullReps;
+  final int partialReps;
+  final int holdMs;
+  final double meanConfidence;
+  final double observedRatio;
+
+  /// withinCriteria | possibleIssue | notObservable | inconclusive
+  final String status;
+
+  /// JSON list of technique events (check id, time, confidence, rep).
+  final String eventsJson;
+
+  /// Only set when every check used was professionally validated.
+  final double? techniqueScore;
+  const MotionAnalysisRecord({
+    required this.id,
+    required this.exerciseKey,
+    required this.patternId,
+    required this.startedAt,
+    required this.durationMs,
+    required this.fullReps,
+    required this.partialReps,
+    required this.holdMs,
+    required this.meanConfidence,
+    required this.observedRatio,
+    required this.status,
+    required this.eventsJson,
+    this.techniqueScore,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['exercise_key'] = Variable<String>(exerciseKey);
+    map['pattern_id'] = Variable<String>(patternId);
+    map['started_at'] = Variable<DateTime>(startedAt);
+    map['duration_ms'] = Variable<int>(durationMs);
+    map['full_reps'] = Variable<int>(fullReps);
+    map['partial_reps'] = Variable<int>(partialReps);
+    map['hold_ms'] = Variable<int>(holdMs);
+    map['mean_confidence'] = Variable<double>(meanConfidence);
+    map['observed_ratio'] = Variable<double>(observedRatio);
+    map['status'] = Variable<String>(status);
+    map['events_json'] = Variable<String>(eventsJson);
+    if (!nullToAbsent || techniqueScore != null) {
+      map['technique_score'] = Variable<double>(techniqueScore);
+    }
+    return map;
+  }
+
+  MotionAnalysesCompanion toCompanion(bool nullToAbsent) {
+    return MotionAnalysesCompanion(
+      id: Value(id),
+      exerciseKey: Value(exerciseKey),
+      patternId: Value(patternId),
+      startedAt: Value(startedAt),
+      durationMs: Value(durationMs),
+      fullReps: Value(fullReps),
+      partialReps: Value(partialReps),
+      holdMs: Value(holdMs),
+      meanConfidence: Value(meanConfidence),
+      observedRatio: Value(observedRatio),
+      status: Value(status),
+      eventsJson: Value(eventsJson),
+      techniqueScore: techniqueScore == null && nullToAbsent
+          ? const Value.absent()
+          : Value(techniqueScore),
+    );
+  }
+
+  factory MotionAnalysisRecord.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MotionAnalysisRecord(
+      id: serializer.fromJson<int>(json['id']),
+      exerciseKey: serializer.fromJson<String>(json['exerciseKey']),
+      patternId: serializer.fromJson<String>(json['patternId']),
+      startedAt: serializer.fromJson<DateTime>(json['startedAt']),
+      durationMs: serializer.fromJson<int>(json['durationMs']),
+      fullReps: serializer.fromJson<int>(json['fullReps']),
+      partialReps: serializer.fromJson<int>(json['partialReps']),
+      holdMs: serializer.fromJson<int>(json['holdMs']),
+      meanConfidence: serializer.fromJson<double>(json['meanConfidence']),
+      observedRatio: serializer.fromJson<double>(json['observedRatio']),
+      status: serializer.fromJson<String>(json['status']),
+      eventsJson: serializer.fromJson<String>(json['eventsJson']),
+      techniqueScore: serializer.fromJson<double?>(json['techniqueScore']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'exerciseKey': serializer.toJson<String>(exerciseKey),
+      'patternId': serializer.toJson<String>(patternId),
+      'startedAt': serializer.toJson<DateTime>(startedAt),
+      'durationMs': serializer.toJson<int>(durationMs),
+      'fullReps': serializer.toJson<int>(fullReps),
+      'partialReps': serializer.toJson<int>(partialReps),
+      'holdMs': serializer.toJson<int>(holdMs),
+      'meanConfidence': serializer.toJson<double>(meanConfidence),
+      'observedRatio': serializer.toJson<double>(observedRatio),
+      'status': serializer.toJson<String>(status),
+      'eventsJson': serializer.toJson<String>(eventsJson),
+      'techniqueScore': serializer.toJson<double?>(techniqueScore),
+    };
+  }
+
+  MotionAnalysisRecord copyWith({
+    int? id,
+    String? exerciseKey,
+    String? patternId,
+    DateTime? startedAt,
+    int? durationMs,
+    int? fullReps,
+    int? partialReps,
+    int? holdMs,
+    double? meanConfidence,
+    double? observedRatio,
+    String? status,
+    String? eventsJson,
+    Value<double?> techniqueScore = const Value.absent(),
+  }) => MotionAnalysisRecord(
+    id: id ?? this.id,
+    exerciseKey: exerciseKey ?? this.exerciseKey,
+    patternId: patternId ?? this.patternId,
+    startedAt: startedAt ?? this.startedAt,
+    durationMs: durationMs ?? this.durationMs,
+    fullReps: fullReps ?? this.fullReps,
+    partialReps: partialReps ?? this.partialReps,
+    holdMs: holdMs ?? this.holdMs,
+    meanConfidence: meanConfidence ?? this.meanConfidence,
+    observedRatio: observedRatio ?? this.observedRatio,
+    status: status ?? this.status,
+    eventsJson: eventsJson ?? this.eventsJson,
+    techniqueScore: techniqueScore.present
+        ? techniqueScore.value
+        : this.techniqueScore,
+  );
+  MotionAnalysisRecord copyWithCompanion(MotionAnalysesCompanion data) {
+    return MotionAnalysisRecord(
+      id: data.id.present ? data.id.value : this.id,
+      exerciseKey: data.exerciseKey.present
+          ? data.exerciseKey.value
+          : this.exerciseKey,
+      patternId: data.patternId.present ? data.patternId.value : this.patternId,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      durationMs: data.durationMs.present
+          ? data.durationMs.value
+          : this.durationMs,
+      fullReps: data.fullReps.present ? data.fullReps.value : this.fullReps,
+      partialReps: data.partialReps.present
+          ? data.partialReps.value
+          : this.partialReps,
+      holdMs: data.holdMs.present ? data.holdMs.value : this.holdMs,
+      meanConfidence: data.meanConfidence.present
+          ? data.meanConfidence.value
+          : this.meanConfidence,
+      observedRatio: data.observedRatio.present
+          ? data.observedRatio.value
+          : this.observedRatio,
+      status: data.status.present ? data.status.value : this.status,
+      eventsJson: data.eventsJson.present
+          ? data.eventsJson.value
+          : this.eventsJson,
+      techniqueScore: data.techniqueScore.present
+          ? data.techniqueScore.value
+          : this.techniqueScore,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MotionAnalysisRecord(')
+          ..write('id: $id, ')
+          ..write('exerciseKey: $exerciseKey, ')
+          ..write('patternId: $patternId, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('fullReps: $fullReps, ')
+          ..write('partialReps: $partialReps, ')
+          ..write('holdMs: $holdMs, ')
+          ..write('meanConfidence: $meanConfidence, ')
+          ..write('observedRatio: $observedRatio, ')
+          ..write('status: $status, ')
+          ..write('eventsJson: $eventsJson, ')
+          ..write('techniqueScore: $techniqueScore')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    exerciseKey,
+    patternId,
+    startedAt,
+    durationMs,
+    fullReps,
+    partialReps,
+    holdMs,
+    meanConfidence,
+    observedRatio,
+    status,
+    eventsJson,
+    techniqueScore,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MotionAnalysisRecord &&
+          other.id == this.id &&
+          other.exerciseKey == this.exerciseKey &&
+          other.patternId == this.patternId &&
+          other.startedAt == this.startedAt &&
+          other.durationMs == this.durationMs &&
+          other.fullReps == this.fullReps &&
+          other.partialReps == this.partialReps &&
+          other.holdMs == this.holdMs &&
+          other.meanConfidence == this.meanConfidence &&
+          other.observedRatio == this.observedRatio &&
+          other.status == this.status &&
+          other.eventsJson == this.eventsJson &&
+          other.techniqueScore == this.techniqueScore);
+}
+
+class MotionAnalysesCompanion extends UpdateCompanion<MotionAnalysisRecord> {
+  final Value<int> id;
+  final Value<String> exerciseKey;
+  final Value<String> patternId;
+  final Value<DateTime> startedAt;
+  final Value<int> durationMs;
+  final Value<int> fullReps;
+  final Value<int> partialReps;
+  final Value<int> holdMs;
+  final Value<double> meanConfidence;
+  final Value<double> observedRatio;
+  final Value<String> status;
+  final Value<String> eventsJson;
+  final Value<double?> techniqueScore;
+  const MotionAnalysesCompanion({
+    this.id = const Value.absent(),
+    this.exerciseKey = const Value.absent(),
+    this.patternId = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.durationMs = const Value.absent(),
+    this.fullReps = const Value.absent(),
+    this.partialReps = const Value.absent(),
+    this.holdMs = const Value.absent(),
+    this.meanConfidence = const Value.absent(),
+    this.observedRatio = const Value.absent(),
+    this.status = const Value.absent(),
+    this.eventsJson = const Value.absent(),
+    this.techniqueScore = const Value.absent(),
+  });
+  MotionAnalysesCompanion.insert({
+    this.id = const Value.absent(),
+    required String exerciseKey,
+    required String patternId,
+    required DateTime startedAt,
+    required int durationMs,
+    required int fullReps,
+    required int partialReps,
+    this.holdMs = const Value.absent(),
+    required double meanConfidence,
+    required double observedRatio,
+    required String status,
+    this.eventsJson = const Value.absent(),
+    this.techniqueScore = const Value.absent(),
+  }) : exerciseKey = Value(exerciseKey),
+       patternId = Value(patternId),
+       startedAt = Value(startedAt),
+       durationMs = Value(durationMs),
+       fullReps = Value(fullReps),
+       partialReps = Value(partialReps),
+       meanConfidence = Value(meanConfidence),
+       observedRatio = Value(observedRatio),
+       status = Value(status);
+  static Insertable<MotionAnalysisRecord> custom({
+    Expression<int>? id,
+    Expression<String>? exerciseKey,
+    Expression<String>? patternId,
+    Expression<DateTime>? startedAt,
+    Expression<int>? durationMs,
+    Expression<int>? fullReps,
+    Expression<int>? partialReps,
+    Expression<int>? holdMs,
+    Expression<double>? meanConfidence,
+    Expression<double>? observedRatio,
+    Expression<String>? status,
+    Expression<String>? eventsJson,
+    Expression<double>? techniqueScore,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (exerciseKey != null) 'exercise_key': exerciseKey,
+      if (patternId != null) 'pattern_id': patternId,
+      if (startedAt != null) 'started_at': startedAt,
+      if (durationMs != null) 'duration_ms': durationMs,
+      if (fullReps != null) 'full_reps': fullReps,
+      if (partialReps != null) 'partial_reps': partialReps,
+      if (holdMs != null) 'hold_ms': holdMs,
+      if (meanConfidence != null) 'mean_confidence': meanConfidence,
+      if (observedRatio != null) 'observed_ratio': observedRatio,
+      if (status != null) 'status': status,
+      if (eventsJson != null) 'events_json': eventsJson,
+      if (techniqueScore != null) 'technique_score': techniqueScore,
+    });
+  }
+
+  MotionAnalysesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? exerciseKey,
+    Value<String>? patternId,
+    Value<DateTime>? startedAt,
+    Value<int>? durationMs,
+    Value<int>? fullReps,
+    Value<int>? partialReps,
+    Value<int>? holdMs,
+    Value<double>? meanConfidence,
+    Value<double>? observedRatio,
+    Value<String>? status,
+    Value<String>? eventsJson,
+    Value<double?>? techniqueScore,
+  }) {
+    return MotionAnalysesCompanion(
+      id: id ?? this.id,
+      exerciseKey: exerciseKey ?? this.exerciseKey,
+      patternId: patternId ?? this.patternId,
+      startedAt: startedAt ?? this.startedAt,
+      durationMs: durationMs ?? this.durationMs,
+      fullReps: fullReps ?? this.fullReps,
+      partialReps: partialReps ?? this.partialReps,
+      holdMs: holdMs ?? this.holdMs,
+      meanConfidence: meanConfidence ?? this.meanConfidence,
+      observedRatio: observedRatio ?? this.observedRatio,
+      status: status ?? this.status,
+      eventsJson: eventsJson ?? this.eventsJson,
+      techniqueScore: techniqueScore ?? this.techniqueScore,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (exerciseKey.present) {
+      map['exercise_key'] = Variable<String>(exerciseKey.value);
+    }
+    if (patternId.present) {
+      map['pattern_id'] = Variable<String>(patternId.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<DateTime>(startedAt.value);
+    }
+    if (durationMs.present) {
+      map['duration_ms'] = Variable<int>(durationMs.value);
+    }
+    if (fullReps.present) {
+      map['full_reps'] = Variable<int>(fullReps.value);
+    }
+    if (partialReps.present) {
+      map['partial_reps'] = Variable<int>(partialReps.value);
+    }
+    if (holdMs.present) {
+      map['hold_ms'] = Variable<int>(holdMs.value);
+    }
+    if (meanConfidence.present) {
+      map['mean_confidence'] = Variable<double>(meanConfidence.value);
+    }
+    if (observedRatio.present) {
+      map['observed_ratio'] = Variable<double>(observedRatio.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (eventsJson.present) {
+      map['events_json'] = Variable<String>(eventsJson.value);
+    }
+    if (techniqueScore.present) {
+      map['technique_score'] = Variable<double>(techniqueScore.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MotionAnalysesCompanion(')
+          ..write('id: $id, ')
+          ..write('exerciseKey: $exerciseKey, ')
+          ..write('patternId: $patternId, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('fullReps: $fullReps, ')
+          ..write('partialReps: $partialReps, ')
+          ..write('holdMs: $holdMs, ')
+          ..write('meanConfidence: $meanConfidence, ')
+          ..write('observedRatio: $observedRatio, ')
+          ..write('status: $status, ')
+          ..write('eventsJson: $eventsJson, ')
+          ..write('techniqueScore: $techniqueScore')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4949,6 +5722,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $ScheduleSkipsTable scheduleSkips = $ScheduleSkipsTable(this);
+  late final $MotionAnalysesTable motionAnalyses = $MotionAnalysesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4964,6 +5738,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     exerciseSets,
     bodyMeasurements,
     scheduleSkips,
+    motionAnalyses,
   ];
 }
 
@@ -7593,6 +8368,387 @@ typedef $$ScheduleSkipsTableProcessedTableManager =
       ScheduleSkip,
       PrefetchHooks Function()
     >;
+typedef $$MotionAnalysesTableCreateCompanionBuilder =
+    MotionAnalysesCompanion Function({
+      Value<int> id,
+      required String exerciseKey,
+      required String patternId,
+      required DateTime startedAt,
+      required int durationMs,
+      required int fullReps,
+      required int partialReps,
+      Value<int> holdMs,
+      required double meanConfidence,
+      required double observedRatio,
+      required String status,
+      Value<String> eventsJson,
+      Value<double?> techniqueScore,
+    });
+typedef $$MotionAnalysesTableUpdateCompanionBuilder =
+    MotionAnalysesCompanion Function({
+      Value<int> id,
+      Value<String> exerciseKey,
+      Value<String> patternId,
+      Value<DateTime> startedAt,
+      Value<int> durationMs,
+      Value<int> fullReps,
+      Value<int> partialReps,
+      Value<int> holdMs,
+      Value<double> meanConfidence,
+      Value<double> observedRatio,
+      Value<String> status,
+      Value<String> eventsJson,
+      Value<double?> techniqueScore,
+    });
+
+class $$MotionAnalysesTableFilterComposer
+    extends Composer<_$AppDatabase, $MotionAnalysesTable> {
+  $$MotionAnalysesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exerciseKey => $composableBuilder(
+    column: $table.exerciseKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get patternId => $composableBuilder(
+    column: $table.patternId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fullReps => $composableBuilder(
+    column: $table.fullReps,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get partialReps => $composableBuilder(
+    column: $table.partialReps,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get holdMs => $composableBuilder(
+    column: $table.holdMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get meanConfidence => $composableBuilder(
+    column: $table.meanConfidence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get observedRatio => $composableBuilder(
+    column: $table.observedRatio,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventsJson => $composableBuilder(
+    column: $table.eventsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get techniqueScore => $composableBuilder(
+    column: $table.techniqueScore,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MotionAnalysesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MotionAnalysesTable> {
+  $$MotionAnalysesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get exerciseKey => $composableBuilder(
+    column: $table.exerciseKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get patternId => $composableBuilder(
+    column: $table.patternId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fullReps => $composableBuilder(
+    column: $table.fullReps,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get partialReps => $composableBuilder(
+    column: $table.partialReps,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get holdMs => $composableBuilder(
+    column: $table.holdMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get meanConfidence => $composableBuilder(
+    column: $table.meanConfidence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get observedRatio => $composableBuilder(
+    column: $table.observedRatio,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventsJson => $composableBuilder(
+    column: $table.eventsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get techniqueScore => $composableBuilder(
+    column: $table.techniqueScore,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MotionAnalysesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MotionAnalysesTable> {
+  $$MotionAnalysesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get exerciseKey => $composableBuilder(
+    column: $table.exerciseKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get patternId =>
+      $composableBuilder(column: $table.patternId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get fullReps =>
+      $composableBuilder(column: $table.fullReps, builder: (column) => column);
+
+  GeneratedColumn<int> get partialReps => $composableBuilder(
+    column: $table.partialReps,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get holdMs =>
+      $composableBuilder(column: $table.holdMs, builder: (column) => column);
+
+  GeneratedColumn<double> get meanConfidence => $composableBuilder(
+    column: $table.meanConfidence,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get observedRatio => $composableBuilder(
+    column: $table.observedRatio,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get eventsJson => $composableBuilder(
+    column: $table.eventsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get techniqueScore => $composableBuilder(
+    column: $table.techniqueScore,
+    builder: (column) => column,
+  );
+}
+
+class $$MotionAnalysesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MotionAnalysesTable,
+          MotionAnalysisRecord,
+          $$MotionAnalysesTableFilterComposer,
+          $$MotionAnalysesTableOrderingComposer,
+          $$MotionAnalysesTableAnnotationComposer,
+          $$MotionAnalysesTableCreateCompanionBuilder,
+          $$MotionAnalysesTableUpdateCompanionBuilder,
+          (
+            MotionAnalysisRecord,
+            BaseReferences<
+              _$AppDatabase,
+              $MotionAnalysesTable,
+              MotionAnalysisRecord
+            >,
+          ),
+          MotionAnalysisRecord,
+          PrefetchHooks Function()
+        > {
+  $$MotionAnalysesTableTableManager(
+    _$AppDatabase db,
+    $MotionAnalysesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MotionAnalysesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MotionAnalysesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MotionAnalysesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> exerciseKey = const Value.absent(),
+                Value<String> patternId = const Value.absent(),
+                Value<DateTime> startedAt = const Value.absent(),
+                Value<int> durationMs = const Value.absent(),
+                Value<int> fullReps = const Value.absent(),
+                Value<int> partialReps = const Value.absent(),
+                Value<int> holdMs = const Value.absent(),
+                Value<double> meanConfidence = const Value.absent(),
+                Value<double> observedRatio = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> eventsJson = const Value.absent(),
+                Value<double?> techniqueScore = const Value.absent(),
+              }) => MotionAnalysesCompanion(
+                id: id,
+                exerciseKey: exerciseKey,
+                patternId: patternId,
+                startedAt: startedAt,
+                durationMs: durationMs,
+                fullReps: fullReps,
+                partialReps: partialReps,
+                holdMs: holdMs,
+                meanConfidence: meanConfidence,
+                observedRatio: observedRatio,
+                status: status,
+                eventsJson: eventsJson,
+                techniqueScore: techniqueScore,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String exerciseKey,
+                required String patternId,
+                required DateTime startedAt,
+                required int durationMs,
+                required int fullReps,
+                required int partialReps,
+                Value<int> holdMs = const Value.absent(),
+                required double meanConfidence,
+                required double observedRatio,
+                required String status,
+                Value<String> eventsJson = const Value.absent(),
+                Value<double?> techniqueScore = const Value.absent(),
+              }) => MotionAnalysesCompanion.insert(
+                id: id,
+                exerciseKey: exerciseKey,
+                patternId: patternId,
+                startedAt: startedAt,
+                durationMs: durationMs,
+                fullReps: fullReps,
+                partialReps: partialReps,
+                holdMs: holdMs,
+                meanConfidence: meanConfidence,
+                observedRatio: observedRatio,
+                status: status,
+                eventsJson: eventsJson,
+                techniqueScore: techniqueScore,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$MotionAnalysesTable, MotionAnalysisRecord>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $MotionAnalysesTable,
+                    MotionAnalysisRecord
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MotionAnalysesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MotionAnalysesTable,
+      MotionAnalysisRecord,
+      $$MotionAnalysesTableFilterComposer,
+      $$MotionAnalysesTableOrderingComposer,
+      $$MotionAnalysesTableAnnotationComposer,
+      $$MotionAnalysesTableCreateCompanionBuilder,
+      $$MotionAnalysesTableUpdateCompanionBuilder,
+      (
+        MotionAnalysisRecord,
+        BaseReferences<
+          _$AppDatabase,
+          $MotionAnalysesTable,
+          MotionAnalysisRecord
+        >,
+      ),
+      MotionAnalysisRecord,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -7617,4 +8773,6 @@ class $AppDatabaseManager {
       $$BodyMeasurementsTableTableManager(_db, _db.bodyMeasurements);
   $$ScheduleSkipsTableTableManager get scheduleSkips =>
       $$ScheduleSkipsTableTableManager(_db, _db.scheduleSkips);
+  $$MotionAnalysesTableTableManager get motionAnalyses =>
+      $$MotionAnalysesTableTableManager(_db, _db.motionAnalyses);
 }

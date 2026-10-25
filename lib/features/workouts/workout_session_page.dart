@@ -6,6 +6,8 @@ import '../../app/l10n/strings.dart';
 import '../../core/ui/vyro_ui.dart';
 import '../../core/database/app_database.dart';
 import 'data/workout_repository.dart';
+import '../motion_engine/exercise_registry/exercise_analysis_registry.dart';
+import '../motion_engine/workout_camera/motion_coach_page.dart';
 import 'domain/exercise_guides.dart';
 
 class WorkoutSessionPage extends StatefulWidget {
@@ -316,6 +318,8 @@ class _SessionHeader extends StatelessWidget {
 }
 
 class _SessionExerciseCard extends StatelessWidget {
+  static final _registry = ExerciseAnalysisRegistry();
+
   const _SessionExerciseCard({
     required this.info,
     required this.exerciseKey,
@@ -359,6 +363,23 @@ class _SessionExerciseCard extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Expanded(child: Text(name, style: theme.textTheme.titleMedium)),
+              if (_registry.canAnalyse(exerciseKey))
+                IconButton(
+                  tooltip: t.get('maOpen'),
+                  onPressed: () => Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MotionCoachPage(
+                        exerciseKey: exerciseKey,
+                        exerciseName: name,
+                      ),
+                    ),
+                  ),
+                  icon: Icon(
+                    Icons.videocam_outlined,
+                    color: VyroTheme.accentTextOf(context),
+                  ),
+                ),
               if (guide != null)
                 TextButton.icon(
                   onPressed: () => _showGuide(context, name, guide),

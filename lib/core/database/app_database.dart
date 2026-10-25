@@ -19,6 +19,7 @@ part 'app_database.g.dart';
     ExerciseSets,
     BodyMeasurements,
     ScheduleSkips,
+    MotionAnalyses,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -35,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
       );
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -64,6 +65,9 @@ class AppDatabase extends _$AppDatabase {
       if (from < 4) {
         await migrator.addColumn(workoutDays, workoutDays.weekday);
         await migrator.createTable(scheduleSkips);
+      }
+      if (from < 5) {
+        await migrator.createTable(motionAnalyses);
       }
     },
     beforeOpen: (_) async {
@@ -159,6 +163,7 @@ class AppDatabase extends _$AppDatabase {
       await delete(exerciseCatalog).go();
       await delete(bodyMeasurements).go();
       await delete(scheduleSkips).go();
+      await delete(motionAnalyses).go();
       await customStatement('DELETE FROM vyro_preferences');
       return removedEntries;
     });
@@ -220,6 +225,7 @@ class AppDatabase extends _$AppDatabase {
     final sets = await select(exerciseSets).get();
     final measurements = await select(bodyMeasurements).get();
     final skips = await select(scheduleSkips).get();
+    final analyses = await select(motionAnalyses).get();
     final profile = await getUserProfile();
     return {
       'format': 'vyro-local-export-v1',
@@ -234,6 +240,7 @@ class AppDatabase extends _$AppDatabase {
       'exerciseSets': sets.map((row) => row.toJson()).toList(),
       'bodyMeasurements': measurements.map((row) => row.toJson()).toList(),
       'scheduleSkips': skips.map((row) => row.toJson()).toList(),
+      'motionAnalyses': analyses.map((row) => row.toJson()).toList(),
       if (profile != null) 'userProfile': profile.toJson(),
     };
   }
@@ -265,6 +272,9 @@ class AppDatabase extends _$AppDatabase {
     final foodEntryRows = rows('foodEntries');
     final cachedProductRows = rows('cachedProducts');
     // Optional: exports made before schema v4 have no schedule skips.
+    final analysisRows = data['motionAnalyses'] == null
+        ? const <Map<String, dynamic>>[]
+        : rows('motionAnalyses');
     final skipRows = data['scheduleSkips'] == null
         ? const <Map<String, dynamic>>[]
         : rows('scheduleSkips');
@@ -284,6 +294,7 @@ class AppDatabase extends _$AppDatabase {
       await delete(foodEntries).go();
       await delete(cachedProducts).go();
       await delete(scheduleSkips).go();
+      await delete(motionAnalyses).go();
       await customStatement('DELETE FROM vyro_preferences');
 
       for (final row in exerciseCatalogRows) {
@@ -331,6 +342,11 @@ class AppDatabase extends _$AppDatabase {
           // Exports made before schema v3 have no `liquid` flag.
           CachedProduct.fromJson({'liquid': false, ...row}).toCompanion(true),
         );
+      }
+      for (final row in analysisRows) {
+        await into(
+          motionAnalyses,
+        ).insert(MotionAnalysisRecord.fromJson(row).toCompanion(true));
       }
       for (final row in skipRows) {
         await into(
