@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/l10n/strings.dart';
 import '../../app/theme/vyro_shell.dart';
+import '../../core/ui/components/vyro_motion.dart';
 import '../nutrition/nutrition_diary_page.dart';
 import '../profile/profile_settings_page.dart';
 import '../progress/progress_page.dart';
@@ -51,7 +52,7 @@ class _HomeShellState extends State<HomeShell> {
     return Scaffold(
       extendBody: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: IndexedStack(index: index, children: pages),
+      body: VyroFadeIndexedStack(index: index, children: pages),
       bottomNavigationBar: VyroNavBar(
         index: index,
         onSelect: (value) => setState(() => index = value),

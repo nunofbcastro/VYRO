@@ -4,6 +4,7 @@ import '../../app/l10n/strings.dart';
 import '../../app/theme/vyro_chrome.dart';
 import '../../app/theme/vyro_shell.dart';
 import '../../app/theme/vyro_theme.dart';
+import '../ui/components/vyro_motion.dart';
 
 class DemoBadge extends StatelessWidget {
   const DemoBadge({super.key});
@@ -177,49 +178,52 @@ class ActionCard extends StatelessWidget {
     final theme = Theme.of(context);
     final color = accent ?? theme.colorScheme.primary;
     final radius = BorderRadius.circular(20);
-    return VyroCard(
-      radius: 20,
-      padding: EdgeInsets.zero,
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: radius,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
-            child: Row(
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(13),
-                  ),
-                  child: Icon(icon, size: 20, color: color),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(title, style: theme.textTheme.titleMedium),
-                      if (subtitle != null) ...[
-                        const SizedBox(height: 2),
-                        Text(subtitle!, style: theme.textTheme.bodySmall),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                trailing ??
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: theme.textTheme.bodySmall?.color,
+    return VyroPressable(
+      enabled: onTap != null,
+      child: VyroCard(
+        radius: 20,
+        padding: EdgeInsets.zero,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: radius,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(13),
                     ),
-              ],
+                    child: Icon(icon, size: 20, color: color),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(title, style: theme.textTheme.titleMedium),
+                        if (subtitle != null) ...[
+                          const SizedBox(height: 2),
+                          Text(subtitle!, style: theme.textTheme.bodySmall),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  trailing ??
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: theme.textTheme.bodySmall?.color,
+                      ),
+                ],
+              ),
             ),
           ),
         ),

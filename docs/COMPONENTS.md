@@ -69,6 +69,16 @@ VyroSubpageScaffold(
 - `VyroMacroBar(label, value, goal, color)`: thin macro progress bar with "82 / 140 g".
 - `MetricCard`: label + big number + optional progress.
 
+## Motion
+All motion lives in `components/vyro_motion.dart`. Every animation runs once, lasts 450 ms or less and is skipped when the OS asks to reduce motion.
+- `VyroPageBody` staggers its children in automatically (fade + 14 px rise, 45 ms apart, capped at 360 ms). Pass `animate: false` to turn it off.
+- `VyroFadeSlideIn(delay, child)`: entrance for a single widget; `vyroStagger(children)` for a list.
+- `VyroAnimatedNumber(value)`: counts to new values (calories, grams).
+- `VyroPressable`: scales to 0.97 while pressed and gives a light haptic tick. `VyroActionTile` and `ActionCard` already use it.
+- `VyroFadeIndexedStack`: the tab shell fades and lifts the newly selected tab in, keeping each tab's state.
+- `VyroRing` and `VyroMacroBar` animate their progress; the tab bar icon bounces when selected.
+- Splash: the V draws itself, the letters rise one by one, and rings pulse while data loads (`lib/app/splash_page.dart`).
+
 ## Brand
 - `VyroBrandTile(size)`: the monogram tile used in the splash, onboarding and brand row.
 - `VyroMarkPainter(primary, secondary)`: draws the "folded ribbon" V. The geometry matches `brand/logos/*.svg` and the launcher icons.

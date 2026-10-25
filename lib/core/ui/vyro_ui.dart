@@ -15,6 +15,8 @@
 /// * Actions — `VyroPrimaryButton`, `VyroRoundButton`, `VyroActionTile`,
 ///   `VyroChoiceCard`, `VyroPillChip`, `VyroSegmentedControl`.
 /// * Data — `VyroRing`, `VyroMacroBar`, `MetricCard`, `ActionCard`.
+/// * Motion — `VyroFadeSlideIn`, `vyroStagger`, `VyroAnimatedNumber`,
+///   `VyroPressable`, `VyroFadeIndexedStack`.
 /// * Brand — `VyroBrandTile`, `VyroMarkPainter`, `VyroBrandRow`.
 /// * Flow — `VyroStepRail`, `VyroStepPill`, `VyroStepHeader`, `VyroDots`,
 ///   `VyroFooter`, `VyroSectionTitle`, `DemoBadge`.
@@ -27,5 +29,6 @@ export '../widgets/vyro_widgets.dart';
 export 'components/vyro_action_tile.dart';
 export 'components/vyro_glass.dart';
 export 'components/vyro_grouped_list.dart';
+export 'components/vyro_motion.dart';
 export 'components/vyro_progress.dart';
 export 'components/vyro_segmented_control.dart';

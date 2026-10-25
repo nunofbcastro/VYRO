@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../l10n/strings.dart';
 import '../../core/ui/components/vyro_glass.dart';
+import '../../core/ui/components/vyro_motion.dart';
 import 'vyro_chrome.dart';
 import 'vyro_theme.dart';
 
@@ -301,11 +303,16 @@ class VyroPageBody extends StatelessWidget {
     required this.children,
     this.padding = const EdgeInsets.fromLTRB(20, 6, 20, 28),
     this.controller,
+    this.animate = true,
   });
 
   final List<Widget> children;
   final EdgeInsets padding;
   final ScrollController? controller;
+
+  /// Children fade and rise in, one after another, the first time they are
+  /// built. Off when the OS asks to reduce motion.
+  final bool animate;
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -316,7 +323,7 @@ class VyroPageBody extends StatelessWidget {
       top: padding.top + MediaQuery.paddingOf(context).top,
       bottom: padding.bottom + MediaQuery.paddingOf(context).bottom,
     ),
-    children: children,
+    children: animate ? vyroStagger(children) : children,
   );
 }
 
@@ -417,7 +424,10 @@ class VyroNavBar extends StatelessWidget {
                         child: _NavButton(
                           item: items[i],
                           selected: i == index,
-                          onTap: () => onSelect(i),
+                          onTap: () {
+                            if (i != index) HapticFeedback.selectionClick();
+                            onSelect(i);
+                          },
                         ),
                       ),
                   ],
@@ -481,10 +491,15 @@ class _NavButton extends StatelessWidget {
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(99),
                   ),
-                  child: Icon(
-                    item.icon,
-                    size: 20,
-                    color: selected ? active : idle,
+                  child: AnimatedScale(
+                    scale: selected ? 1.12 : 1,
+                    duration: const Duration(milliseconds: 260),
+                    curve: Curves.easeOutBack,
+                    child: Icon(
+                      item.icon,
+                      size: 20,
+                      color: selected ? active : idle,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 4),

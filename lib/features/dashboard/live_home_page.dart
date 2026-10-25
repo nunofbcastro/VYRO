@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
-import '../../app/theme/vyro_chrome.dart';
-import '../../app/theme/vyro_shell.dart';
-import '../../app/theme/vyro_theme.dart';
 import '../../core/database/app_database.dart';
-import '../../core/widgets/vyro_widgets.dart';
+import '../../core/ui/vyro_ui.dart';
 import '../nutrition/domain/food_product.dart';
 import '../nutrition/meals.dart';
 import '../nutrition/nutrition_diary_page.dart';
@@ -311,39 +308,23 @@ class _CalorieHero extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
       child: Row(
         children: [
-          SizedBox(
-            width: 128,
-            height: 128,
-            child: Stack(
-              alignment: Alignment.center,
+          VyroRing(
+            value: value,
+            size: 128,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox.expand(
-                  child: CircularProgressIndicator(
-                    value: value,
-                    strokeWidth: 9,
-                    strokeCap: StrokeCap.round,
-                    backgroundColor: scheme.outline.withValues(alpha: 0.55),
+                VyroAnimatedNumber(
+                  value: consumed,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -1,
                   ),
                 ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      consumed.round().toString(),
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -1,
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                    Text(
-                      stringsOf(context).get('eaten'),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        fontSize: 9.5,
-                      ),
-                    ),
-                  ],
+                Text(
+                  stringsOf(context).get('eaten'),
+                  style: theme.textTheme.labelSmall?.copyWith(fontSize: 9.5),
                 ),
               ],
             ),
@@ -364,8 +345,9 @@ class _CalorieHero extends StatelessWidget {
                   style: theme.textTheme.bodySmall,
                 ),
                 const SizedBox(height: 14),
-                Text(
-                  '${remaining.round()} ${stringsOf(context).get('remaining')}',
+                VyroAnimatedNumber(
+                  value: remaining,
+                  suffix: ' ${stringsOf(context).get('remaining')}',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,

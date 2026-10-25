@@ -351,11 +351,10 @@ class _DailySummary extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  kcal.round().toString(),
+                VyroAnimatedNumber(
+                  value: kcal,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w900,
-                    fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
                 Text(
