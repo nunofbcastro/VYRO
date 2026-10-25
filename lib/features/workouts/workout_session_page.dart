@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../app/l10n/strings.dart';
-import '../../app/theme/vyro_shell.dart';
+import '../../core/ui/vyro_ui.dart';
 import '../../core/database/app_database.dart';
-import '../../core/widgets/vyro_widgets.dart';
 import 'data/workout_repository.dart';
+import 'domain/exercise_guides.dart';
 
 class WorkoutSessionPage extends StatefulWidget {
   const WorkoutSessionPage({
@@ -37,113 +37,63 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
   @override
   Widget build(BuildContext context) {
     final t = stringsOf(context);
-    return VyroSubpageScaffold(
-      title: widget.title,
-      body: StreamBuilder<List<ExerciseSet>>(
-        stream: widget.repository.watchSets(widget.sessionId),
-        builder: (context, snapshot) {
-          final sets = snapshot.data ?? const <ExerciseSet>[];
-          final groups = <String, List<ExerciseSet>>{};
-          for (final set in sets) {
-            groups.putIfAbsent(set.exerciseKey, () => []).add(set);
-          }
-          final complete =
-              sets.isNotEmpty && sets.every((set) => set.completed);
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-            children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.timer_outlined,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          _secondsLeft > 0
-                              ? '${t.get('restTimer')} · ${_formatTime(_secondsLeft)}'
-                              : t.get('savedLocally'),
-                        ),
-                      ),
-                      if (_secondsLeft > 0)
-                        TextButton(
-                          onPressed: _stopRest,
-                          child: Text(t.get('skip')),
-                        ),
-                    ],
-                  ),
+    return StreamBuilder<List<ExerciseSet>>(
+      stream: widget.repository.watchSets(widget.sessionId),
+      builder: (context, snapshot) {
+        final sets = snapshot.data ?? const <ExerciseSet>[];
+        final groups = <String, List<ExerciseSet>>{};
+        for (final set in sets) {
+          groups.putIfAbsent(set.exerciseKey, () => []).add(set);
+        }
+        final done = sets.where((s) => s.completed).length;
+        final complete = sets.isNotEmpty && done == sets.length;
+        return VyroSubpageScaffold(
+          title: widget.title,
+          footer: sets.isEmpty
+              ? null
+              : VyroPrimaryButton(
+                  label: complete
+                      ? t.get('finishWorkout')
+                      : '${t.get('finishWorkout')} · $done/${sets.length}',
+                  icon: Icons.check_rounded,
+                  loading: _saving,
+                  onPressed: complete ? _finish : null,
                 ),
+          body: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+            children: [
+              _SessionHeader(
+                done: done,
+                total: sets.length,
+                secondsLeft: _secondsLeft,
+                onSkipRest: _stopRest,
               ),
-              const SizedBox(height: 12),
-              for (final group in groups.entries)
+              const SizedBox(height: 18),
+              for (final group in groups.entries) ...[
                 FutureBuilder<ExerciseInfo?>(
                   future: widget.repository.exerciseInfo(group.key),
-                  builder: (context, exerciseSnapshot) {
-                    final info = exerciseSnapshot.data;
-                    final name = info == null
-                        ? group.key
-                        : t.isEnglish
-                        ? info.nameEn
-                        : info.namePt;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 14),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SectionTitle(name),
-                          for (final set in group.value)
-                            Card(
-                              child: ListTile(
-                                leading: Checkbox(
-                                  value: set.completed,
-                                  onChanged: (value) =>
-                                      _toggleSet(set, value ?? false),
-                                ),
-                                title: Text('${t.get('set')} ${set.setNumber}'),
-                                subtitle: Text(
-                                  '${set.reps ?? '—'} ${t.get('reps').toLowerCase()} · '
-                                  '${set.weightKg == null ? '—' : set.weightKg!.toStringAsFixed(1)} kg',
-                                ),
-                                onTap: () => _editSet(set),
-                                trailing: IconButton(
-                                  tooltip: t.get('edit'),
-                                  onPressed: () => _editSet(set),
-                                  icon: const Icon(Icons.edit_outlined),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    );
-                  },
+                  builder: (context, info) => _SessionExerciseCard(
+                    info: info.data,
+                    exerciseKey: group.key,
+                    sets: group.value,
+                    onToggle: _toggleSet,
+                    onEdit: _editSet,
+                  ),
                 ),
+                const SizedBox(height: 14),
+              ],
               if (groups.isEmpty && !snapshot.hasError)
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text(t.get('empty')),
-                ),
-              const SizedBox(height: 8),
-              FilledButton.icon(
-                onPressed: complete && !_saving ? _finish : null,
-                icon: const Icon(Icons.check),
-                label: Text(t.get('finishWorkout')),
-              ),
-              if (!complete && sets.isNotEmpty) ...[
-                const SizedBox(height: 8),
+                VyroCard(child: Text(t.get('empty'))),
+              if (!complete && sets.isNotEmpty)
                 Text(
                   t.get('completeSetsHint'),
                   style: Theme.of(context).textTheme.bodySmall,
                   textAlign: TextAlign.center,
                 ),
-              ],
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -287,5 +237,252 @@ class _SetEditDialogState extends State<_SetEditDialog> {
   }
 }
 
-String _formatTime(int value) =>
-    '${(value ~/ 60).toString().padLeft(2, '0')}:${(value % 60).toString().padLeft(2, '0')}';
+class _SessionHeader extends StatelessWidget {
+  const _SessionHeader({
+    required this.done,
+    required this.total,
+    required this.secondsLeft,
+    required this.onSkipRest,
+  });
+
+  final int done;
+  final int total;
+  final int secondsLeft;
+  final VoidCallback onSkipRest;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = stringsOf(context);
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final dark = theme.brightness == Brightness.dark;
+    final resting = secondsLeft > 0;
+    return VyroCard(
+      tint: scheme.primary.withValues(alpha: dark ? 0.07 : 0.09),
+      padding: const EdgeInsets.all(18),
+      child: Row(
+        children: [
+          VyroRing(
+            value: total == 0 ? 0 : done / total,
+            size: 76,
+            stroke: 7,
+            child: Text(
+              '$done/$total',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+          ),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  resting ? t.get('restTimer') : t.get('sets'),
+                  style: theme.textTheme.bodySmall,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  resting ? _clock(secondsLeft) : t.get('savedLocally'),
+                  style: resting
+                      ? theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: VyroTheme.accentTextOf(context),
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        )
+                      : theme.textTheme.titleSmall,
+                ),
+                if (resting)
+                  TextButton(
+                    onPressed: onSkipRest,
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(44, 32),
+                    ),
+                    child: Text(t.get('skip')),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _clock(int seconds) =>
+      '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+}
+
+class _SessionExerciseCard extends StatelessWidget {
+  const _SessionExerciseCard({
+    required this.info,
+    required this.exerciseKey,
+    required this.sets,
+    required this.onToggle,
+    required this.onEdit,
+  });
+
+  final ExerciseInfo? info;
+  final String exerciseKey;
+  final List<ExerciseSet> sets;
+  final Future<void> Function(ExerciseSet, bool) onToggle;
+  final Future<void> Function(ExerciseSet) onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = stringsOf(context);
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final english = t.isEnglish;
+    final name = info == null
+        ? exerciseKey
+        : (english ? info!.nameEn : info!.namePt);
+    final guide = guideFor(exerciseKey);
+    final allDone = sets.every((s) => s.completed);
+    return VyroCard(
+      padding: const EdgeInsets.fromLTRB(16, 14, 10, 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Icon(
+                allDone
+                    ? Icons.check_circle_rounded
+                    : Icons.fitness_center_rounded,
+                size: 20,
+                color: allDone
+                    ? VyroTheme.accentTextOf(context)
+                    : theme.textTheme.bodySmall?.color,
+              ),
+              const SizedBox(width: 10),
+              Expanded(child: Text(name, style: theme.textTheme.titleMedium)),
+              if (guide != null)
+                TextButton.icon(
+                  onPressed: () => _showGuide(context, name, guide),
+                  icon: const Icon(Icons.menu_book_outlined, size: 16),
+                  label: Text(t.get('howTo')),
+                ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          for (final set in sets)
+            InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => onEdit(set),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  children: [
+                    InkResponse(
+                      onTap: () => onToggle(set, !set.completed),
+                      radius: 24,
+                      child: AnimatedContainer(
+                        duration: VyroMotion.fast,
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: set.completed
+                              ? scheme.primary
+                              : Colors.transparent,
+                          border: Border.all(
+                            color: set.completed
+                                ? scheme.primary
+                                : scheme.outline,
+                            width: 1.6,
+                          ),
+                        ),
+                        child: set.completed
+                            ? Icon(
+                                Icons.check_rounded,
+                                size: 18,
+                                color: scheme.onPrimary,
+                              )
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      width: 70,
+                      child: Text(
+                        '${t.get('set')} ${set.setNumber}',
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        '${set.reps ?? set.targetReps} ${t.get('reps').toLowerCase()}'
+                        '${set.weightKg == null ? '' : ' · ${set.weightKg!.toStringAsFixed(1)} kg'}',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                          decoration: set.completed
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.edit_outlined,
+                      size: 18,
+                      color: theme.textTheme.bodySmall?.color,
+                    ),
+                    const SizedBox(width: 6),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showGuide(BuildContext context, String name, ExerciseGuide guide) {
+    final english = stringsOf(context).isEnglish;
+    final t = stringsOf(context);
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) {
+        final theme = Theme.of(context);
+        return SafeArea(
+          child: ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+            children: [
+              Text(name, style: theme.textTheme.headlineSmall),
+              const SizedBox(height: 14),
+              for (var i = 0; i < guide.steps(english).length; i++)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(
+                    '${i + 1}. ${guide.steps(english)[i]}',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 6),
+              Text(
+                '${t.get('tipLabel')}: ${guide.tip(english)}',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: VyroTheme.accentTextOf(context),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '${t.get('mistakeLabel')}: ${guide.mistake(english)}',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.tertiary,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

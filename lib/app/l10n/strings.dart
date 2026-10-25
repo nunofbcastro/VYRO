@@ -596,6 +596,11 @@ class VyroStrings {
     'personaliseBody':
         'Este plano foi criado só com o número de dias. Responde a 6 perguntas rápidas (dias, duração, equipamento, prioridades) para um plano à tua medida.',
     'personaliseCta': 'Responder às perguntas',
+    'howTo': 'Como fazer',
+    'tipLabel': 'Dica',
+    'mistakeLabel': 'Evita',
+    'holdLabel': 'segurar',
+    'restLabel': 'descanso',
   };
 
   static const _en = <String, String>{
@@ -1176,6 +1181,11 @@ class VyroStrings {
     'personaliseBody':
         'This plan was created from your number of days only. Answer 6 quick questions (days, duration, equipment, priorities) for a plan that fits you.',
     'personaliseCta': 'Answer the questions',
+    'howTo': 'How to do it',
+    'tipLabel': 'Tip',
+    'mistakeLabel': 'Avoid',
+    'holdLabel': 'hold',
+    'restLabel': 'rest',
   };
 }
 
