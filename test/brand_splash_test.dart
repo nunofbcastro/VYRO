@@ -28,7 +28,8 @@ void main() {
     );
     final box = tester.getSize(find.byType(VyroWordmark));
     expect(box.height, 22);
-    expect(box.width, closeTo(22 * 472 / 92, 0.01));
+    // Compact lettering (VyroWordmarkLayout.b): 388.78 x 92 units.
+    expect(box.width, closeTo(22 * 388.78 / 92, 0.01));
     final semantics = tester.ensureSemantics();
     expect(find.bySemanticsLabel('VYRO'), findsOneWidget);
     semantics.dispose();

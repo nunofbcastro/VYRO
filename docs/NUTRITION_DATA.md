@@ -11,7 +11,7 @@ alimentos descarregadas legalmente.
 foods_pt.tsv (curado à mão: nomes PT/EN, fonte + referência, porção, unidades da porção, aliases, etiquetas de imagem)
         │
         ▼  build_food_db.py  (descarrega/usa build/usda, build/ciqual, build/taco)
-assets/nutrition/foods.json  (168 alimentos, valores por 100 g, fonte de cada um)
+assets/nutrition/foods.json  (191 alimentos, valores por 100 g, fonte de cada um)
         │
         ▼  FoodDatabase.load()  (lib/features/nutrition/data/food_database.dart)
 fotografia, assistente, diário  →  kcal = gramas × kcal/100 g ÷ 100
@@ -60,7 +60,7 @@ polvo, chouriço, queijo de ovelha, pão caseiro…).
   inválidas são rejeitadas, nunca adivinhadas.
 - Porções (`portion_g`, `portion_pt`) são **estimativas do VYRO** para sugerir
   quantidades. O utilizador confirma sempre as gramas.
-- `portion_units` (coluna opcional, última do TSV; preenchida em 82 dos 168
+- `portion_units` (coluna opcional, última do TSV; preenchida em 85 dos 191
   alimentos) indica quantas peças correspondem a `portion_g`: 3 sardinhas = 120 g
   ⇒ `portion_units = 3`. A app escala a contagem de peças por
   `portion_g × peças ÷ portion_units`. Sem valor, a contagem não multiplica a
@@ -83,6 +83,24 @@ alimento e as gramas.
 - Refresco de laranja (Sumol): Ciqual «Jus d'orange, à base de concentré»
   (não há refrigerante de laranja na Ciqual).
 - Pizza de pepperoni: Ciqual «Pizza au chorizo ou salami».
+- Aproximações (nomes em inglês usados por modelos de imagem; o utilizador
+  confirma sempre):
+  - Pomelo (`pomelo_raw`): USDA «Grapefruit, raw, pink and red and white» (não
+    há pomelo na SR Legacy).
+  - Passas / «dried fruit» (`dried_fruit_raisins`): USDA «Raisins, dark,
+    seedless». Não é uma mistura de fruta seca; é a aproximação mais simples.
+  - Couve galega (`kale_*`): tratada como kale; a couve-galega é parecida.
+  - Beringela «fried/grilled/roasted» (`eggplant_cooked`): Ciqual «Aubergine,
+    cuite» (cozida); grelhada e assada não têm linha própria.
+  - Banana-pão frita (`plantain_cooked`): Ciqual «Banane plantain, cuite».
+  - Milho na espiga («corn on the cob») → milho doce em lata (`corn_canned`).
+  - Romana / iceberg (`lettuce_raw`) → alface de folha verde.
+  - Tomate cereja (`tomato_raw`) → tomate; «flat white» → café com leite;
+    «café preto» → café expresso (aproximação de intensidade, não de volume).
+  - Peixe genérico (`fish`, «white fish») → pescada cozida (`cod_cooked`).
+  - Puré de batata (`mashed_potato`): Ciqual «Purée de pomme de terre (aliment
+    moyen)». Molho bechamel (`white_sauce_bechamel`): Ciqual «Sauce béchamel au
+    beurre, faite maison».
 - Pizza inteira (individual, 350 g ≈ 3 fatias de uma pizza grande): mesmas
   referências USDA/Ciqual das fatias (a composição por 100 g é a mesma; só a
   porção muda). Fatias: 110 g cada (8 fatias ≈ 880 g). O nome «pizza» sem

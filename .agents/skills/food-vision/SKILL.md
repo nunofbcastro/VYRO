@@ -26,7 +26,8 @@ cloud, no paid API, the photo stays in memory. Full details:
   onDraft})` is the only way to receive a draft.
 - `food_names.dart`: `foodNameCandidates(raw)` (ordered names to try: as
   written, normalised, English → Portuguese, Portuguese singulars), `singularVariants`,
-  `englishFoodName` and the `englishFoodNames` map.
+  `englishFoodName` and the `englishFoodNames` map; `matchEnglishFoodName`
+  (English names and aliases first) and `englishNameVariants`.
 - `food_companions.dart`: `mealCompanions(foods, db, {alsoTaken})`, context
   sauces and sides (steak/meat → gravy, cream, mayonnaise, ketchup; pasta →
   cream; fries/potatoes → ketchup, mayonnaise; salad → olive oil), only when the
@@ -50,7 +51,12 @@ cloud, no paid API, the photo stays in memory. Full details:
   starts first and runs alongside the system model).
 - `region_food_vision.dart`: `RegionFoodVision`, AIY Food V1 dish classifier
   over 26 crops in a persistent worker isolate; labels → foods via
-  `vision_labels`; `interpretRegions` (pure, testable).
+  `vision_labels`; `interpretRegions` (pure, testable). Non-food gate:
+  background (index 0) raw probability per crop; more than half the crops
+  (`nonFoodRegionShare` 0.5) → no food, note `offlineNoFood`.
+- `food_vision.dart` also has `offlineHypothesesOnly`: the offline result when
+  the system model gave no answer (failed, busy, unavailable). Its foods become
+  suggestions only, never the main list.
 - `photo_quality.dart`: `PhotoQuality` warnings (too small, dark, bright,
   low detail). Warnings only, never a rejection.
 - `lib/features/nutrition/photo_food_page.dart`: review screen (list, totals,
@@ -95,14 +101,16 @@ cloud, no paid API, the photo stays in memory. Full details:
 4. System model answers badly: open "Detalhes da análise" on the review
    screen to read the raw answers (or the error). Adjust `buildFoodPhotoPrompt`
    (no category checklist: it makes the small model fill every slot; keep
-   Portuguese names, JSON only; do NOT restore "fewer items is better" or
+   English names (measured best; do not switch back to Portuguese or mix
+   languages), JSON only; do NOT restore "fewer items is better" or
    "1 to 4 items": that cut true positives on device) or
    `buildFoodVerifyPrompt` (yes/no per item, never add foods; visible if
    partly visible, false only when confident it is absent), and add missing
    aliases in the TSV so free names match. Do not paste the whole
    database into the prompt: it biases the small model. Extend
    `test/system_food_vision_test.dart` and `test/food_database_test.dart`.
-5. Run `dart format`, `flutter analyze`, `flutter test`.
+5. Run `dart format`, `flutter analyze`, `flutter test`. Tests for the offline
+   fallback: `test/food_offline_only_test.dart`.
 
 ## Rules
 
@@ -116,6 +124,18 @@ cloud, no paid API, the photo stays in memory. Full details:
 - Independent branches: system and offline run independently; one failure keeps
   the other result (note `systemFailed`). Both failing shows
   `photoModelError`. iOS `MissingPluginException` is not shown as a failure.
+- Offline is never the main list without the system model (v0.6.8). Eval
+  `eval/datasets/nutrition5k_50`, regions only: precision 0.28 (8/29), recall
+  0.06 (8/140), 21 false positives. A wooden ball came back as "Alface" in the
+  main list. So when the system model fails or is unavailable, all offline foods
+  go to suggestions ("Outras hipóteses"), the main list is empty, the CTA is 0,
+  the source badge says "Reconhecimento offline (pouco fiável)", and the card
+  says the suggestions must be confirmed. With the system model answering, the
+  offline foods remain suggestions or corroboration, as before.
+- Non-food gate for offline: background wins on more than half the 26 regions →
+  no suggestions at all (`offlineNoFood`). Minimum for an offline suggestion:
+  peak ≥ 0.14 in ≥ 2 regions. The background gate is not yet calibrated on food-free
+  photos. Do not lower these thresholds without the eval.
 - Conflicts and hypotheses: offline foods the system did not name are
   *suggestions* (outside the totals) until the user accepts them. Even a
   confirmed empty review shows them as "Outras hipóteses"; they never enter
@@ -164,14 +184,19 @@ cloud, no paid API, the photo stays in memory. Full details:
   encontrou comida nesta foto. Tenta outra vez, analisa uma zona ou adiciona
   manualmente."); other empty reviews use `photoNothingFound`. A "only non-food
   items" answer is not confirmed empty.
-- Names before matching: the model's name is tried as written, then
-  normalised, then an English translation (`englishFoodNames`, e.g. beer →
+- Names before matching (`matchFoodName`): first the English name against the
+  database's English names and aliases only (`matchEnglishFoodName`, with
+  English singular/plural variants: almond → almonds). Then the model's name as
+  written, normalised, an English translation (`englishFoodNames`, e.g. beer →
   cerveja, steak → bife, water → água mineral), then Portuguese singulars
-  (ovos → ovo, batatas fritas → batata frita). The first candidate the
-  database matches wins, so the original match is never replaced. English
-  generic words ("beverage", "dish", "snack") are generic names: "Que bebida?".
-  The prompts ask for European Portuguese names and "where" text
-  ("centro do prato"); English answers do not match the database.
+  (ovos → ovo, batatas fritas → batata frita). The first match wins, so the
+  original match is never replaced. English generic words ("food", "drink",
+  "beverage", "dish", "sauce", "meat", "snack") are generic names: "Que bebida?".
+- Prompts ask for English names and "where" text ("fried egg", "centre of
+  plate"), the measured best variant (F1 0.47 vs 0.35 with Portuguese names,
+  offline eval, see docs/FOOD_VISION.md). An unmatched name is never the card
+  title: the title is "Que alimento?" and the raw name stays in "Detalhes da
+  análise". The "where" text is shown only in English UI.
 - Progressive results: `analyseProgressive` emits (a) a `VisionStage.draft`
   result once the first usable list exists (items `pending`; offline
   suggestions only if the offline pass has already finished), then (b) the
@@ -238,9 +263,15 @@ percentages.
   kept as uncertain; explicit `visible:false` dropped; prompts never contain
   "Fewer items" or "1 to 4".
 - `test/food_names_test.dart`: plural and English candidates (ovos → egg row),
-  singular variants, generic "beverage"/"dish", the cider/Somersby alias,
-  still vs sparkling water, prompt wording, companion suggestions (steak, pasta,
-  fries, salad, dedupe, no companions for unrelated foods).
+  English answers ("fried egg" → Ovo estrelado, "beer", "almond" → almonds),
+  unmatched English names are not generic, singular variants, generic
+  "beverage"/"dish"/"food"/"sauce", the cider/Somersby alias, still vs sparkling
+  water, prompt wording (English), companion suggestions (steak, pasta, fries,
+  salad, dedupe, no companions for unrelated foods).
+- `test/eval_variants_test.dart`: the harness `en_names` variant is the app
+  prompt; `pt_prompt` stays historical.
+- `test/photo_review_widgets_test.dart`: an unmatched English name is never the
+  card title; a matched English answer shows the Portuguese name.
 - `test/food_progressive_test.dart`: draft then final with the same items when
   verify agrees; removals appear only in the final; `analyse` equals the last
   stream event; `timing:` line in detail; no draft without the system model;

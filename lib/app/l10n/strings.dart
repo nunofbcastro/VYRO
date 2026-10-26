@@ -37,9 +37,17 @@ class VyroStrings {
     'nutritionSourcesNote':
         'Valores por 100 g: USDA FoodData Central, Ciqual 2025 (ANSES) e TACO (NEPA/UNICAMP).',
     'photoSourceSystem': 'IA do telemóvel',
-    'photoSourceRegions': 'Reconhecimento offline',
+    'photoSourceRegions': 'Reconhecimento offline (pouco fiável)',
+    'offlineNoFood':
+        'Nenhum alimento reconhecido nesta foto. Adiciona à mão o que estiver no prato.',
+    'photoFailOtherSuggest':
+        'A IA do telemóvel não conseguiu analisar a foto. Sugestões do reconhecimento offline abaixo (pouco fiável) — confirma antes de adicionar.',
+    'photoFailUnavailableSuggest':
+        'A IA do telemóvel não está disponível neste aparelho. Sugestões do reconhecimento offline abaixo (pouco fiável) — confirma antes de adicionar.',
+    'photoFailBusySuggest':
+        'A IA do telemóvel está ocupada. Sugestões do reconhecimento offline abaixo (pouco fiável) — confirma antes de adicionar.',
     'photoRegionsNote':
-        'Este telemóvel não tem IA multimodal do sistema (Gemini Nano), por isso usámos o reconhecimento offline, que é aproximado. Confirma os alimentos e adiciona o que faltar.',
+        'Este telemóvel não tem IA multimodal do sistema (Gemini Nano). Só há sugestões do reconhecimento offline, pouco fiáveis: confirma antes de adicionar.',
     'photoConfirmExtra': 'Confirma os alimentos adicionais',
     'photoExtraHint':
         'Os alimentos já revistos são preservados. Troca a identidade ou porção na lista de revisão.',
@@ -51,7 +59,7 @@ class VyroStrings {
         'Arrasta um retângulo. Os alimentos já revistos são preservados.',
     'photoRegionAnalyse': 'Analisar esta zona',
     'photoSystemFailedNote':
-        'A IA do telemóvel não conseguiu analisar a foto; usámos o reconhecimento offline aproximado.',
+        'A IA do telemóvel não conseguiu analisar a foto. As sugestões do reconhecimento offline são pouco fiáveis: confirma antes de adicionar.',
     'photoNothingFound':
         'Não identificámos alimentos com confiança suficiente. Adiciona-os abaixo.',
     'photoEmptyConfirmed':
@@ -889,9 +897,17 @@ class VyroStrings {
     'nutritionSourcesNote':
         'Values per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES) and TACO (NEPA/UNICAMP).',
     'photoSourceSystem': 'Phone AI',
-    'photoSourceRegions': 'Offline recognition',
+    'photoSourceRegions': 'Offline recognition (low reliability)',
+    'offlineNoFood':
+        'No food recognised in this photo. Add by hand what is on the plate.',
+    'photoFailOtherSuggest':
+        'The phone AI could not analyse the photo. Offline suggestions are below (low reliability): confirm before adding.',
+    'photoFailUnavailableSuggest':
+        'The phone AI is not available on this device. Offline suggestions are below (low reliability): confirm before adding.',
+    'photoFailBusySuggest':
+        'The phone AI is busy. Offline suggestions are below (low reliability): confirm before adding.',
     'photoRegionsNote':
-        'This phone has no multimodal system AI (Gemini Nano), so the approximate offline recognition was used. Confirm the foods and add anything missing.',
+        'This phone has no multimodal system AI (Gemini Nano). Only low-reliability offline suggestions are available: confirm before adding.',
     'photoConfirmExtra': 'Confirm additional foods',
     'photoExtraHint':
         'Existing foods are preserved. Change their identity or portion in the review list.',
@@ -902,7 +918,7 @@ class VyroStrings {
     'photoRegionHint': 'Drag a rectangle. Your reviewed foods stay unchanged.',
     'photoRegionAnalyse': 'Analyse this area',
     'photoSystemFailedNote':
-        'The phone AI could not analyse the photo; the approximate offline recognition was used.',
+        'The phone AI could not analyse the photo. The offline suggestions are low reliability: confirm before adding.',
     'photoNothingFound':
         'No foods identified with enough confidence. Add them below.',
     'photoEmptyConfirmed':

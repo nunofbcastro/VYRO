@@ -80,6 +80,15 @@ Code: `workout_camera/positioning_guide.dart` (pure Dart: templates, checks, tra
 - In landscape the controls move to a 280 px side panel (scrollable, inside `SafeArea`); the preview, top bar and banner stop at the panel edge. In portrait the bottom panel is unchanged.
 - **Not verified on a device.** iOS still derives the ML Kit rotation from the sensor orientation only; if the iOS preview is rotated for landscape, the skeleton may not match. Check this on an iPhone before relying on it.
 
+## Screen orientation
+- The app is locked to portrait at startup (`lib/main.dart` calls `OrientationLock.lockPortrait()` after `WidgetsFlutterBinding.ensureInitialized()`, before `runApp`). Only `portraitUp` is allowed; upside-down portrait is not.
+- `MotionCoachPage` (live exercise camera) is the only screen that rotates. In `initState` it calls `OrientationLock.allowAllOrientations()` (portrait, landscape left and right); in `dispose` it calls `releaseAllOrientations()`. Pop by back gesture, system back or route removal all run `dispose`.
+- `OrientationLock` (`lib/core/platform/orientation_lock.dart`) counts landscape holders, so a camera page pushed twice keeps landscape until the last one closes. Portrait is restored only when the count reaches zero.
+- The video analysis page (`video/video_analysis_page.dart`) has no live camera and stays portrait.
+- Android: `AndroidManifest.xml` sets no `android:screenOrientation`, so the camera page can rotate. The activity already lists `orientation` in `configChanges`, so rotation does not recreate it.
+- iOS: `ios/Runner/Info.plist` keeps the landscape entries in `UISupportedInterfaceOrientations` (and the `~ipad` key). Flutter intersects the app request with these, so portrait-only for the rest of the app depends on the runtime lock, not on the plist. Not verified on devices.
+- Tests: `test/motion_engine/orientation_lock_test.dart` checks the messages sent on `SystemChannels.platform` for startup, camera page init and dispose, and the two-page hold count.
+
 ## Modo PT (voice coach)
 An optional spoken coach. It is off by default. The speaker-style toggle in the camera top bar switches it on or off and is stored in the local key/value table (`vyro_preferences`, key `motion_voice_coach_v1`, value `on`/`off`). Turning it off stops speech at once and drops the queue. The silence button (shown while the coach is on) stops the current phrase and clears the queue without ending the set.
 

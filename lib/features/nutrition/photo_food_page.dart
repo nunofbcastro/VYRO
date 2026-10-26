@@ -436,11 +436,14 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
       context,
     ).localIntelligence.correctionSuggestions(item.original.label, db);
     if (!mounted) return;
+    // The model's English name pre-fills the search only in English; in
+    // other languages the user types their own word.
+    final english = stringsOf(context).isEnglish;
     final food = await showFoodPicker(
       context,
       db,
       suggestions: suggestions,
-      initialQuery: item.food == null ? item.detected.label : '',
+      initialQuery: item.food == null && english ? item.detected.label : '',
     );
     if (food == null || !mounted) return;
     final wasUnmatched = item.food == null;
@@ -954,10 +957,21 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
               // an area or add by hand). A confirmed empty photo says so.
               if (live.isEmpty && !analysing)
                 _FailureCard(
+                  // With offline suggestions on screen, say they are unreliable
+                  // and must be confirmed (they never enter the list by themselves).
                   reason: t.get(switch (shot.failure) {
-                    VisionFailure.busy => 'photoFailBusy',
-                    VisionFailure.unavailable => 'photoFailUnavailable',
-                    VisionFailure.other => 'photoFailOther',
+                    VisionFailure.busy =>
+                      suggestions.isEmpty
+                          ? 'photoFailBusy'
+                          : 'photoFailBusySuggest',
+                    VisionFailure.unavailable =>
+                      suggestions.isEmpty
+                          ? 'photoFailUnavailable'
+                          : 'photoFailUnavailableSuggest',
+                    VisionFailure.other =>
+                      suggestions.isEmpty
+                          ? 'photoFailOther'
+                          : 'photoFailOtherSuggest',
                     null =>
                       (result?.confirmedEmpty ?? false)
                           ? 'photoEmptyConfirmed'

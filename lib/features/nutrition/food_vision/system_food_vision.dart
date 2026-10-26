@@ -247,15 +247,16 @@ const _jsonFormat =
 /// First look: what is visible, where it is, and relative size. Grams are
 /// applied later from the offline database so the small model is not asked
 /// to weigh food. No category checklist: it made the model fill every slot.
-/// Names and locations are asked in European Portuguese: English answers
-/// ("beverage", "centre of plate") do not match the database.
+/// Names and locations are asked in plain English: the measured best variant
+/// (offline eval, F1 0.47 vs 0.35 with European Portuguese names; see
+/// docs/FOOD_VISION.md). The database matches English names and aliases first.
 String buildFoodPhotoPrompt() => '''
 Analyse ONLY the image attached to THIS request. It is a new, independent meal. Never reuse foods from earlier images, messages or meals.
 List only the foods and drinks that are actually in this photo. Include every drink in a glass, cup, bottle or can, and every food on a plate, board or packaging. Food can also be served or photographed in a pan, pot, tray, box, packaging or hand: still list the food, not the container. Never add side dishes, salads, vegetables, legumes, spreads or garnishes that are not clearly visible. Do not infer hidden ingredients, oil, sugar or milk. Do not list non-food objects such as the table, napkins, towels or cutlery.
 One row per food type, with its TOTAL count. A single cup or glass is ONE drink, even with a saucer, handle or shadow. Never list the same coffee twice.
 For each item give:
-- "name": the specific food or drink name in European Portuguese (Portugal), e.g. "ovo", "cerveja", "bife de vaca grelhado", "sidra", "batatas fritas". Never English, never a general word such as "bebida" or "comida" when the kind is visible.
-- "where": short location in the photo in European Portuguese, e.g. "centro do prato" or "copo em cima à esquerda". It helps us check the item; leave it as "" if you cannot tell.
+- "name": the specific food or drink name in plain English, short, common and singular, e.g. "fried egg", "beer", "white rice", "beef steak". Never a general word such as "drink" or "food" when the kind is visible.
+- "where": short location in the photo in plain English, e.g. "centre of plate" or "top left glass". It helps us check the item; leave it as "" if you cannot tell.
 - "count": number of clearly separate pieces or containers, else 1.
 - "size": small, medium or large compared with a typical single serving. Do not output grams.
 If no food or drink is visible reply {"items":[]}.
@@ -263,11 +264,12 @@ Reply with JSON only, no markdown: $_jsonFormat''';
 
 /// Second look, only after a first answer with no items. Food is often in a
 /// pan, pot, tray, box or packaging, or partly eaten, so the prompt names
-/// those places and asks for the main foods and drinks by name.
+/// those places and asks for the main foods and drinks by name (in English,
+/// same as [buildFoodPhotoPrompt]).
 String buildFoodSecondChancePrompt() => '''
 Look again ONLY at the image attached to THIS request. It is a new, independent meal, and a first look found no food. Meal photos are often hard to read: food can be in a pan, pot, tray, box, packaging or on a board, or only partly eaten.
 Name the main food(s) and drink(s) you can see, even if you are not sure of the exact dish. Name the food itself, not the pan, box or packaging around it. Do not list non-food objects such as the table, napkins, towels or cutlery. If you truly see no food or drink, reply {"items":[]}.
-For each item give "name" (the food name in European Portuguese (Portugal), never English), "where" (short location in European Portuguese, e.g. "centro da frigideira", or "" if unsure), "count" (1 if unsure) and "size" (small, medium or large). Do not output grams.
+For each item give "name" (the food name in plain English, short, common and singular, e.g. "fried egg", "beer", "white rice"), "where" (short location in plain English, e.g. "centre of pan", or "" if unsure), "count" (1 if unsure) and "size" (small, medium or large). Do not output grams.
 Reply with JSON only, no markdown: $_jsonFormat''';
 
 /// Verification: yes/no per draft item. It must not add or rename foods.
@@ -378,9 +380,14 @@ CoffeeKind? coffeeKindOf(DetectedFood food) {
   );
 }
 
-/// The database food for a model name: tries each candidate from
-/// [foodNameCandidates] in order and returns the first match.
+/// The database food for a model name: English names and aliases first
+/// ([matchEnglishFoodName]), then each candidate from [foodNameCandidates] in
+/// order, returning the first match.
 FoodRef? matchFoodName(FoodDatabase db, List<String> candidates) {
+  // English names first: the photo prompt asks for English names, and the
+  // database holds English names and aliases for most foods.
+  final english = matchEnglishFoodName(db, candidates);
+  if (english != null) return english;
   for (final candidate in candidates) {
     final food = db.match(candidate);
     if (food != null) return food;
@@ -603,11 +610,13 @@ class FoodVisionPipeline implements MultiPhotoFoodVisionService {
         return _finish(fuseVisionResults(result, secondary.value!), quality);
       }
       if (secondary.value != null) {
-        final result = secondary.value!;
+        // The system model gave no answer: offline foods are only suggestions
+        // (see offlineHypothesesOnly), the main list stays empty.
         final missing = primary.error is MissingPluginException;
         return _finish(
-          result.withNote(
-            missing ? result.note : 'systemFailed',
+          offlineHypothesesOnly(
+            secondary.value!,
+            systemFailed: !missing,
             detail: '${primary.error}',
             failure: missing
                 ? VisionFailure.unavailable
@@ -623,10 +632,14 @@ class FoodVisionPipeline implements MultiPhotoFoodVisionService {
       throw LlmException('vision_failed: ${secondary.error}');
     }
     // Downloading the model counts as busy; unsupported or off as unavailable.
+    // No system model: offline guesses are suggestions only, never main items.
     final failure = status == LlmStatus.downloading
         ? VisionFailure.busy
         : VisionFailure.unavailable;
-    return _finish(secondary.value!.withNote(null, failure: failure), quality);
+    return _finish(
+      offlineHypothesesOnly(secondary.value!, failure: failure),
+      quality,
+    );
   }
 }
 

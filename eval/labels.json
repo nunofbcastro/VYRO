@@ -1,0 +1,78 @@
+[
+  {
+    "file": "burger.jpg",
+    "notes": "Placeholder file name. Two beef burgers (Big Mac type). Count is not scored; only the foods.",
+    "foods": [
+      {"name": "hambúrguer de vaca", "key": "beef_ground_patty", "any_of": ["cheeseburger_whole"]},
+      {"name": "queijo", "key": "cheese_gouda", "any_of": ["cheese_mozzarella"]},
+      {"name": "pão de hambúrguer", "key": "hamburger_bun"},
+      {"name": "molho de hambúrguer", "key": "burger_sauce"}
+    ]
+  },
+  {
+    "file": "strawberries_salad_tuna.jpg",
+    "notes": "Placeholder file name. Strawberries, banana, lettuce salad, carrot, red cabbage, tuna.",
+    "foods": [
+      {"name": "morangos", "key": "strawberries_raw"},
+      {"name": "banana", "key": "banana_raw"},
+      {"name": "salada de alface", "key": "green_salad", "any_of": ["lettuce_raw"]},
+      {"name": "cenoura", "key": "carrot_raw"},
+      {"name": "couve roxa", "key": "cabbage_red_raw"},
+      {"name": "atum", "key": "tuna_canned_water", "any_of": ["tuna_olive_oil"]}
+    ]
+  },
+  {
+    "file": "croissant_water.jpg",
+    "notes": "Placeholder file name. Croissant misto (ham and cheese) and Água das Pedras.",
+    "foods": [
+      {"name": "croissant misto", "key": "croissant_ham_cheese"},
+      {"name": "Água das Pedras", "key": "sparkling_water"}
+    ]
+  },
+  {
+    "file": "steak_egg.jpg",
+    "notes": "Placeholder file name. Beef steak with a fried egg. Beer sauce (gravy) is optional: it is a proxy, the photo may not show it.",
+    "foods": [
+      {"name": "bife de vaca", "key": "beef_sirloin_broiled", "any_of": ["beef_steak_fried"]},
+      {"name": "ovo estrelado", "key": "egg_fried", "any_of": ["egg_boiled"]},
+      {"name": "molho de cerveja", "key": "brown_gravy", "optional": true}
+    ]
+  },
+  {
+    "file": "pasta.jpg",
+    "notes": "Placeholder file name. Pasta with minced beef and pork, presunto and natas. The minced-meat label also accepts the bolognese dish, so one prediction can serve either label.",
+    "foods": [
+      {"name": "massa", "key": "pasta_cooked", "any_of": ["pasta_bolognese"]},
+      {"name": "carne picada (vaca e porco)", "key": "beef_ground_raw", "any_of": ["pork_ground_raw", "pasta_bolognese"]},
+      {"name": "presunto", "key": "cured_ham", "any_of": ["ham_cooked"]},
+      {"name": "natas", "key": "cooking_cream"}
+    ]
+  },
+  {
+    "file": "snacks.jpg",
+    "notes": "Placeholder file name. The cheese croquette has no database row: it is an unmatched label (text), optional, and a predicted name with no database row matches it by name. A predicted meat croquette is a false positive.",
+    "foods": [
+      {"name": "Doritos", "key": "tortilla_chips"},
+      {"name": "nuggets de frango", "key": "chicken_nuggets"},
+      {"name": "croquete de queijo", "text": "croquete de queijo", "optional": true},
+      {"name": "cerveja", "key": "beer"},
+      {"name": "Água das Pedras limão", "key": "sparkling_water"}
+    ]
+  },
+  {
+    "file": "pizza_cider.jpg",
+    "notes": "Placeholder file name. Pizza (cheese, pepper, pepperoni, tomato) is scored as one food: any whole pizza or pizza slice counts. Somersby cider.",
+    "foods": [
+      {"name": "pizza", "key": "pizza_cheese_whole", "any_of": ["pizza_pepperoni_whole", "pizza_cheese", "pizza_pepperoni"]},
+      {"name": "Somersby (sidra)", "key": "cider"}
+    ]
+  },
+  {
+    "file": "toast_coffee.jpg",
+    "notes": "Placeholder file name. Two slices of toast and one espresso. Count is not scored.",
+    "foods": [
+      {"name": "pão torrado", "key": "bread_white_toasted"},
+      {"name": "café expresso", "key": "espresso"}
+    ]
+  }
+]

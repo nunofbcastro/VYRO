@@ -102,12 +102,80 @@ void main() {
   });
 
   group('prompts', () {
-    test('ask for European Portuguese names and locations', () {
-      final prompt = buildFoodPhotoPrompt();
-      expect(prompt, contains('European Portuguese'));
-      expect(prompt, contains('centro do prato'));
-      expect(prompt, contains('copo em cima à esquerda'));
-      expect(buildFoodSecondChancePrompt(), contains('European Portuguese'));
+    test(
+      'ask for plain English names and locations (the measured variant)',
+      () {
+        final prompt = buildFoodPhotoPrompt();
+        expect(
+          prompt,
+          contains('in plain English, short, common and singular'),
+        );
+        expect(prompt, contains('"fried egg", "beer", "white rice"'));
+        expect(prompt, contains('"centre of plate"'));
+        expect(prompt, isNot(contains('European Portuguese')));
+        expect(prompt, isNot(contains('centro do prato')));
+      },
+    );
+
+    test('second look asks for the same English names', () {
+      final prompt = buildFoodSecondChancePrompt();
+      expect(prompt, contains('plain English'));
+      expect(prompt, contains('"fried egg", "beer", "white rice"'));
+      expect(prompt, isNot(contains('European Portuguese')));
+    });
+  });
+
+  group('English answers', () {
+    String _one(String name) =>
+        '{"items":[{"name":"$name","where":"",'
+        '"count":1,"size":"medium"}]}';
+
+    test('fried egg, beer and almond map to database foods', () {
+      final egg = parseFoodPhotoAnswer(_one('fried egg'), db).single;
+      expect(egg.food?.key, 'egg_fried');
+      expect(egg.needsChoice, isFalse);
+      expect(parseFoodPhotoAnswer(_one('beer'), db).single.food?.key, 'beer');
+      expect(
+        parseFoodPhotoAnswer(_one('almond'), db).single.food?.key,
+        'almonds',
+      );
+    });
+
+    test('a matched English answer is shown with the Portuguese name', () {
+      final egg = parseFoodPhotoAnswer(_one('fried egg'), db).single;
+      expect(egg.label, 'Ovo estrelado');
+      expect(egg.label, isNot('fried egg'));
+    });
+
+    test('English singular and plural forms reach the same row', () {
+      expect(englishNameVariants('almond'), contains('almonds'));
+      expect(englishNameVariants('almonds'), contains('almond'));
+      expect(englishNameVariants('berries'), contains('berry'));
+      expect(englishNameVariants('peaches'), contains('peach'));
+      expect(englishNameVariants(''), isEmpty);
+    });
+
+    test('an unmatched English name has no food and is not generic', () {
+      final item = parseFoodPhotoAnswer(_one('blorf'), db).single;
+      expect(item.food, isNull);
+      expect(item.needsChoice, isFalse);
+      // The raw name is kept for the technical details only.
+      expect(item.label, 'blorf');
+    });
+
+    test('English generic words need a choice and have no match', () {
+      for (final name in [
+        'food',
+        'drink',
+        'beverage',
+        'dish',
+        'sauce',
+        'meat',
+      ]) {
+        final item = parseFoodPhotoAnswer(_one(name), db).single;
+        expect(item.needsChoice, isTrue, reason: name);
+        expect(item.food, isNull, reason: name);
+      }
     });
   });
 

@@ -71,7 +71,8 @@ void main() {
       await tester.tap(find.text('Detalhes'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Nome demasiado geral'), findsOneWidget);
-      expect(find.text('Posição na foto: cup top-left'), findsOneWidget);
+      // The location is English from the model: not shown in Portuguese.
+      expect(find.textContaining('Posição na foto'), findsNothing);
       expect(find.text('Esclarecer alimento ou porção'), findsOneWidget);
     },
   );
@@ -118,6 +119,44 @@ void main() {
     expect(find.text('a confirmar…'), findsOneWidget);
     expect(find.text('a confirmar'), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  });
+
+  testWidgets('an unmatched English model name is never the card title', (
+    tester,
+  ) async {
+    await pumpCard(
+      tester,
+      ReviewItem(
+        const DetectedFood(
+          label: 'blorf',
+          grams: 100,
+          source: VisionSource.systemAi,
+          where: 'centre of plate',
+        ),
+      ),
+    );
+    expect(find.text('blorf'), findsNothing);
+    expect(find.text('Que alimento?'), findsOneWidget);
+    expect(find.text('Escolhe o alimento'), findsOneWidget);
+  });
+
+  testWidgets('a matched English answer shows the Portuguese food name', (
+    tester,
+  ) async {
+    final egg = db.byKey('egg_fried')!;
+    await pumpCard(
+      tester,
+      ReviewItem(
+        DetectedFood(
+          food: egg,
+          label: 'fried egg',
+          grams: 50,
+          source: VisionSource.systemAi,
+        ),
+      ),
+    );
+    expect(find.text(egg.name(false)), findsOneWidget);
+    expect(find.text('fried egg'), findsNothing);
   });
 
   testWidgets('the summary says parcial while some lines have no values', (

@@ -14,3 +14,12 @@ ios/Flutter/ephemeral/
 # Kotlin compiler daemon state
 android/.kotlin/
 .claude/launch.json
+
+# Offline food-vision evaluation: private photos and local model results
+eval/photos/
+eval/results/
+
+# Public benchmark data downloaded by tool/eval_data/*.py (photos, metadata, labels, manifests).
+# Only the README is committed; the scripts and tool/eval_data/*_map.json are committed.
+eval/datasets/*
+!eval/datasets/README.md

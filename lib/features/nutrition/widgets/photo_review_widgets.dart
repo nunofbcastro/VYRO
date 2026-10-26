@@ -387,11 +387,14 @@ class _FoodReviewCardState extends State<FoodReviewCard> {
     final detected = item.detected;
     final unresolved = item.unresolved;
     final accent = unresolved ? scheme.tertiary : scheme.primary;
+    // A model name without a database match is never the card title (it is
+    // English): the question asks for the food; the raw name stays in the
+    // technical details. A generic name asks for its kind ("Que bebida?").
     final title =
         food?.name(t.isEnglish) ??
         (detected.needsChoice
             ? t.get(askKeyFor(genericKindOf(detected.label)))
-            : detected.label);
+            : t.get('photoAskFood'));
     final pill =
         !item.pending &&
             food != null &&
@@ -608,7 +611,10 @@ class _FoodDetails extends StatelessWidget {
         t.get(detected.needsChoice ? 'photoGenericHint' : 'photoNoMatchRow'),
       if (detected.count != null && detected.count! > 1)
         '${detected.count} ${t.get('pieces')}',
-      if (detected.where != null) '${t.get('photoWhere')}: ${detected.where}',
+      // The model's location is English: shown in English only. In other
+      // languages it stays in the technical details ("Detalhes da análise").
+      if (detected.where != null && t.isEnglish)
+        '${t.get('photoWhere')}: ${detected.where}',
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

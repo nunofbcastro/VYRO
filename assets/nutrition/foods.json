@@ -20,9 +20,40 @@
   }
  },
  "curatedList": "tool/nutrition/foods_pt.tsv",
- "curatedSha256": "e9a9fbbcd599980489d3a21cde7a6b88c8847043576c0a2373a470fbee6d1c66",
+ "curatedSha256": "dee45daf5e5a52e0fd3ba345d1aa71d7898d2d57b1de824110b2dd57c4510104",
  "portionNote": "Typical portions are VYRO estimates for suggestions; users confirm grams.",
  "foods": [
+  {
+   "key": "almond_drink",
+   "namePt": "Bebida de amêndoa",
+   "nameEn": "Almond drink, unsweetened",
+   "category": "bebidas",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "18107",
+   "sourceLabel": "Boisson à l'amande, nature, sans sucres ajoutés, non enrichie, préemballée",
+   "kcal": 35.8,
+   "protein": 1.06,
+   "carbs": 0.68,
+   "fat": 3.2,
+   "fiber": 0.25,
+   "portionG": 200.0,
+   "portionUnits": null,
+   "portionPt": "1 copo",
+   "portionEn": "1 glass",
+   "aliases": [
+    "bebida de amêndoa",
+    "bebida de amendoa",
+    "leite de amêndoa",
+    "leite de amendoa",
+    "almond milk",
+    "almond drink",
+    "almond beverage",
+    "almond milk unsweetened",
+    "unsweetened almond milk"
+   ],
+   "visionLabels": []
+  },
   {
    "key": "coffee_with_milk",
    "namePt": "Café com leite (galão, meia de leite)",
@@ -45,12 +76,16 @@
     "café com leite",
     "galão",
     "meia de leite",
-    "meia-de-leite",
     "cappuccino",
     "latte",
     "café com leite e espuma",
     "coffee with milk",
-    "café au lait"
+    "café au lait",
+    "cappuccinos",
+    "flat white",
+    "café latte",
+    "milk coffee",
+    "white coffee"
    ],
    "visionLabels": []
   },
@@ -74,7 +109,6 @@
    "portionEn": "1 espresso",
    "aliases": [
     "café",
-    "cafe",
     "café expresso",
     "bica",
     "cimbalino",
@@ -82,7 +116,13 @@
     "espresso",
     "coffee",
     "cafezinho",
-    "chávena de café"
+    "chávena de café",
+    "black coffee",
+    "café preto",
+    "café curto",
+    "café simples",
+    "café solo",
+    "espresso coffee"
    ],
    "visionLabels": []
   },
@@ -111,7 +151,13 @@
     "beer",
     "super bock",
     "sagres",
-    "bock"
+    "bock",
+    "beers",
+    "draft beer",
+    "copo de cerveja",
+    "cerveja de barril",
+    "glass of beer",
+    "bottle of beer"
    ],
    "visionLabels": []
   },
@@ -135,12 +181,15 @@
    "portionEn": "1 cup",
    "aliases": [
     "chá",
-    "cha",
     "chá preto",
     "chá verde",
     "infusão",
     "tisana",
-    "tea"
+    "tea",
+    "green tea",
+    "black tea",
+    "herbal tea",
+    "chá de ervas"
    ],
    "visionLabels": []
   },
@@ -164,10 +213,13 @@
    "portionEn": "1 can",
    "aliases": [
     "coca-cola",
-    "coca cola",
     "coca",
     "cola",
-    "coke"
+    "coke",
+    "soda",
+    "soft drink",
+    "pepsi",
+    "cola drink"
    ],
    "visionLabels": []
   },
@@ -191,7 +243,6 @@
    "portionEn": "1 can",
    "aliases": [
     "guaraná",
-    "guarana",
     "guaraná antárctica"
    ],
    "visionLabels": []
@@ -217,10 +268,9 @@
    "aliases": [
     "licor",
     "licor beirão",
-    "licor beirao",
     "beirão",
-    "beirao",
-    "liqueur"
+    "liqueur",
+    "liquor"
    ],
    "visionLabels": []
   },
@@ -244,7 +294,10 @@
    "portionEn": "1 glass",
    "aliases": [
     "limonada",
-    "limonade"
+    "limonade",
+    "lemonade",
+    "sweet lemonade",
+    "limonada doce"
    ],
    "visionLabels": []
   },
@@ -271,7 +324,10 @@
     "laranjada",
     "fanta",
     "fanta laranja",
-    "orange soda"
+    "orange soda",
+    "refresco de laranja",
+    "orange drink",
+    "orange fanta"
    ],
    "visionLabels": []
   },
@@ -298,7 +354,10 @@
     "cidra",
     "cidre",
     "cider",
-    "somersby"
+    "somersby",
+    "hard cider",
+    "apple cider",
+    "sidra de maçã"
    ],
    "visionLabels": []
   },
@@ -324,7 +383,40 @@
     "sumo de laranja",
     "sumo",
     "orange juice",
-    "juice"
+    "juice",
+    "suco de laranja",
+    "fresh orange juice",
+    "orange juice fresh",
+    "sumo de laranja natural"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "lemon_juice",
+   "namePt": "Sumo de limão",
+   "nameEn": "Lemon juice",
+   "category": "bebidas",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "2028",
+   "sourceLabel": "Jus de citron, pur jus",
+   "kcal": 29.4,
+   "protein": 0.4,
+   "carbs": 6.1,
+   "fat": 0.29,
+   "fiber": 0.4,
+   "portionG": 15.0,
+   "portionUnits": null,
+   "portionPt": "1 colher de sopa",
+   "portionEn": "1 tablespoon",
+   "aliases": [
+    "sumo de limão",
+    "suco de limão",
+    "lemon juice",
+    "juice of lemon",
+    "fresh lemon juice",
+    "squeeze of lemon",
+    "limão espremido"
    ],
    "visionLabels": []
   },
@@ -350,7 +442,13 @@
     "vinho",
     "vinho tinto",
     "wine",
-    "red wine"
+    "red wine",
+    "tinto",
+    "copo de vinho tinto",
+    "copo de vinho",
+    "glass of wine",
+    "glass of red wine",
+    "wine glass"
    ],
    "visionLabels": []
   },
@@ -374,18 +472,16 @@
    "portionEn": "1 glass",
    "aliases": [
     "água com gás",
-    "agua com gas",
     "água mineral com gás",
-    "agua mineral com gas",
     "água gaseificada",
-    "agua gaseificada",
     "água das pedras",
-    "agua das pedras",
     "água das pedras limão",
-    "agua das pedras limao",
-    "água das pedras com limão",
-    "agua das pedras com limao",
-    "sparkling water"
+    "sparkling water",
+    "carbonated water",
+    "soda water",
+    "água gasosa",
+    "club soda",
+    "sparkling mineral water"
    ],
    "visionLabels": []
   },
@@ -409,14 +505,50 @@
    "portionEn": "1 glass",
    "aliases": [
     "água",
-    "agua",
     "água mineral",
-    "agua mineral",
     "água natural",
-    "agua natural",
     "água plana",
     "still water",
-    "water"
+    "water",
+    "plain water",
+    "mineral water",
+    "water still",
+    "bottled water"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "bacon_cooked",
+   "namePt": "Bacon (frito)",
+   "nameEn": "Bacon, cooked",
+   "category": "carne",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "168322",
+   "sourceLabel": "Pork, cured, bacon, pre-sliced, cooked, pan-fried",
+   "kcal": 468.0,
+   "protein": 33.92,
+   "carbs": 1.7,
+   "fat": 35.09,
+   "fiber": 0.0,
+   "portionG": 16.0,
+   "portionUnits": 2.0,
+   "portionPt": "2 fatias",
+   "portionEn": "2 slices",
+   "aliases": [
+    "bacon",
+    "bacon cooked",
+    "cooked bacon",
+    "bacon slices",
+    "bacon slice",
+    "bacon strips",
+    "bacon strip",
+    "bacon frito",
+    "bacon grelhado",
+    "bacon crispy",
+    "fatia de bacon",
+    "fatias de bacon",
+    "bacons"
    ],
    "visionLabels": []
   },
@@ -444,7 +576,12 @@
     "bife na frigideira",
     "bife de vaca na frigideira",
     "steak frito",
-    "fried steak"
+    "fried steak",
+    "pan fried steak",
+    "pan fried beef",
+    "beef steak fried",
+    "bifes fritos",
+    "fried beef steak"
    ],
    "visionLabels": []
   },
@@ -473,7 +610,20 @@
     "novilho",
     "carne de vaca",
     "steak",
-    "beef"
+    "beef",
+    "beef steak",
+    "beef steaks",
+    "grilled beef",
+    "grilled steak",
+    "grilled beef steak",
+    "bifes",
+    "bife grelhado",
+    "bifes grelhados",
+    "steak grelhado",
+    "sirloin",
+    "sirloin steak",
+    "top sirloin",
+    "vaca grelhada"
    ],
    "visionLabels": [
     "Carne asada",
@@ -509,8 +659,11 @@
    "aliases": [
     "carne picada de porco",
     "carne moída de porco",
-    "carne moida de porco",
-    "ground pork"
+    "ground pork",
+    "minced pork",
+    "pork mince",
+    "porco picado",
+    "ground pork raw"
    ],
    "visionLabels": []
   },
@@ -536,12 +689,17 @@
     "carne picada",
     "carne picada de vaca",
     "carne moída",
-    "carne moida",
     "carne moída de vaca",
-    "carne moida de vaca",
     "picada de vaca",
     "ground beef",
-    "minced beef"
+    "minced beef",
+    "beef mince",
+    "raw ground beef",
+    "ground beef raw",
+    "carne picada crua",
+    "carne moída crua",
+    "carne de vaca picada",
+    "minced beef raw"
    ],
    "visionLabels": []
   },
@@ -565,8 +723,11 @@
    "portionEn": "3–4 slices",
    "aliases": [
     "chouriço",
-    "chourico",
-    "chorizo"
+    "chorizo",
+    "chouriços",
+    "chorizos",
+    "chouriço assado",
+    "chorizo sausage"
    ],
    "visionLabels": [
     "Chorizo"
@@ -593,7 +754,9 @@
    "aliases": [
     "coelho",
     "coelho guisado",
-    "rabbit"
+    "rabbit",
+    "coelho assado",
+    "rabbit stew"
    ],
    "visionLabels": []
   },
@@ -619,7 +782,14 @@
     "coxa de frango",
     "frango assado",
     "chicken thigh",
-    "roast chicken"
+    "roast chicken",
+    "chicken thighs",
+    "chicken leg",
+    "chicken legs",
+    "coxas de frango",
+    "coxas de frango assadas",
+    "roasted chicken thigh",
+    "roast chicken thighs"
    ],
    "visionLabels": [
     "Fried chicken",
@@ -647,7 +817,13 @@
    "aliases": [
     "fiambre",
     "presunto cozido",
-    "ham"
+    "ham",
+    "cooked ham",
+    "sliced ham",
+    "ham slices",
+    "fiambre fatiado",
+    "ham slice",
+    "fatias de fiambre"
    ],
    "visionLabels": []
   },
@@ -672,7 +848,15 @@
    "aliases": [
     "hambúrguer",
     "burger",
-    "hambúrguer de vaca"
+    "hambúrguer de vaca",
+    "beef patty",
+    "beef patties",
+    "beef burger patty",
+    "hamburger patty",
+    "burger patty",
+    "burger patties",
+    "hambúrgueres",
+    "hambúrguer grelhado"
    ],
    "visionLabels": [
     "Hamburger",
@@ -702,7 +886,6 @@
    "portionEn": "1 link",
    "aliases": [
     "linguiça",
-    "linguica",
     "salsicha fresca"
    ],
    "visionLabels": [
@@ -730,9 +913,12 @@
    "portionEn": "1 serving",
    "aliases": [
     "lombinho",
-    "febra",
-    "febras",
-    "pork tenderloin"
+    "pork tenderloin",
+    "lombinho de porco",
+    "pork fillet",
+    "pork fillets",
+    "tenderloin",
+    "pork tenderloin grilled"
    ],
    "visionLabels": []
   },
@@ -761,7 +947,16 @@
     "costeleta",
     "febras",
     "pork",
-    "pork chop"
+    "pork chop",
+    "pork chops",
+    "grilled pork",
+    "pork loin",
+    "pork loin chop",
+    "grilled pork chop",
+    "lombo de porco",
+    "costeletas de porco",
+    "costeleta de porco",
+    "porco grelhado"
    ],
    "visionLabels": [
     "Pork tenderloin sandwich",
@@ -795,7 +990,10 @@
     "nuggets de frango",
     "nuggets de galinha",
     "nuggets de pollo",
-    "chicken nuggets"
+    "chicken nuggets",
+    "chicken nugget",
+    "nuggets fritos",
+    "nugget de frango"
    ],
    "visionLabels": []
   },
@@ -824,7 +1022,18 @@
     "frango grelhado",
     "chicken",
     "chicken breast",
-    "grilled chicken"
+    "grilled chicken",
+    "chicken breasts",
+    "chicken breast fillet",
+    "grilled chicken breast",
+    "roasted chicken breast",
+    "baked chicken breast",
+    "chicken breast cooked",
+    "chicken fillet",
+    "chicken fillets",
+    "peito de frango assado",
+    "filete de frango",
+    "frango no forno"
    ],
    "visionLabels": [
     "Tandoori chicken",
@@ -870,7 +1079,13 @@
     "peru",
     "bife de peru",
     "peito de peru",
-    "turkey"
+    "turkey",
+    "turkey breast grilled",
+    "roasted turkey breast",
+    "peru grelhado",
+    "peito de peru assado",
+    "turkey breasts",
+    "turkey breast meat"
    ],
    "visionLabels": []
   },
@@ -897,10 +1112,13 @@
     "presunto curado",
     "presunto cru",
     "jamón",
-    "jamon",
     "jambon cru",
     "jambon sec",
-    "jamon curado"
+    "jamon curado",
+    "prosciutto",
+    "parma ham",
+    "serrano ham",
+    "jamón serrano"
    ],
    "visionLabels": []
   },
@@ -928,7 +1146,13 @@
     "arroz cozido",
     "rice",
     "white rice",
-    "steamed rice"
+    "steamed rice",
+    "white rice cooked",
+    "cooked white rice",
+    "boiled rice",
+    "cooked rice",
+    "plain rice",
+    "steamed white rice"
    ],
    "visionLabels": [
     "White rice",
@@ -969,7 +1193,10 @@
    "portionEn": "1 serving",
    "aliases": [
     "arroz integral",
-    "brown rice"
+    "brown rice",
+    "cooked brown rice",
+    "brown rice cooked",
+    "arroz integral cozido"
    ],
    "visionLabels": []
   },
@@ -993,7 +1220,9 @@
    "portionEn": "1 serving",
    "aliases": [
     "cuscuz",
-    "couscous"
+    "couscous",
+    "cooked couscous",
+    "couscous cooked"
    ],
    "visionLabels": [
     "Couscous"
@@ -1020,7 +1249,9 @@
    "aliases": [
     "cuscuz de milho",
     "cuscuz nordestino",
-    "cuscuz"
+    "corn couscous",
+    "cuscuz de milho cozido",
+    "cuscuz paulista"
    ],
    "visionLabels": []
   },
@@ -1045,7 +1276,8 @@
    "aliases": [
     "farinha de mandioca",
     "farinha de pau",
-    "cassava flour"
+    "cassava flour",
+    "manioc flour"
    ],
    "visionLabels": []
   },
@@ -1096,7 +1328,11 @@
     "papas de aveia",
     "oats",
     "oatmeal",
-    "porridge"
+    "porridge",
+    "rolled oats",
+    "oat flakes",
+    "aveia em flocos",
+    "oats dry"
    ],
    "visionLabels": []
   },
@@ -1125,7 +1361,19 @@
     "massa cozida",
     "pasta",
     "spaghetti",
-    "penne"
+    "penne",
+    "pasta cooked",
+    "cooked pasta",
+    "boiled pasta",
+    "macaroni",
+    "fusilli",
+    "penne pasta",
+    "cooked spaghetti",
+    "spaghetti cooked",
+    "macarrão cozido",
+    "massas",
+    "massa cozidas",
+    "esparguete cozido"
    ],
    "visionLabels": [
     "Spaghetti",
@@ -1155,13 +1403,18 @@
    "aliases": [
     "massa com carne",
     "massa à bolonhesa",
-    "massa a bolonhesa",
-    "massa bolonhesa",
     "esparguete à bolonhesa",
     "esparguete com carne",
     "bolonhesa",
     "bolognese",
-    "spaghetti bolognese"
+    "spaghetti bolognese",
+    "bolognaise",
+    "spaghetti bolognaise",
+    "bolognese pasta",
+    "spaghetti with meat sauce",
+    "pasta with meat sauce",
+    "esparguete com molho de carne",
+    "massa com molho de carne"
    ],
    "visionLabels": []
   },
@@ -1184,7 +1437,9 @@
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
-    "quinoa"
+    "quinoa",
+    "cooked quinoa",
+    "quinoa cooked"
    ],
    "visionLabels": []
   },
@@ -1208,7 +1463,12 @@
    "portionEn": "1/2 avocado",
    "aliases": [
     "abacate",
-    "avocado"
+    "avocado",
+    "avocados",
+    "avocado slices",
+    "avocado slice",
+    "abacates",
+    "sliced avocado"
    ],
    "visionLabels": [
     "Guacamole"
@@ -1235,7 +1495,10 @@
    "aliases": [
     "ameixa",
     "ameixas",
-    "plum"
+    "plum",
+    "plums",
+    "plum slices",
+    "ameixas frescas"
    ],
    "visionLabels": []
   },
@@ -1260,7 +1523,12 @@
    "aliases": [
     "ananás",
     "abacaxi",
-    "pineapple"
+    "pineapple",
+    "pineapple chunks",
+    "pineapple slices",
+    "pineapple pieces",
+    "pineapple slice",
+    "pineapple chunk"
    ],
    "visionLabels": []
   },
@@ -1284,7 +1552,9 @@
    "portionEn": "1 pack",
    "aliases": [
     "açaí",
-    "acai"
+    "açaí polpa",
+    "polpa de açaí",
+    "acai pulp"
    ],
    "visionLabels": []
   },
@@ -1307,7 +1577,12 @@
    "portionPt": "1 banana média",
    "portionEn": "1 medium banana",
    "aliases": [
-    "banana"
+    "banana",
+    "bananas",
+    "banana slices",
+    "sliced banana",
+    "bananas raw",
+    "banana slice"
    ],
    "visionLabels": []
   },
@@ -1331,9 +1606,42 @@
    "portionEn": "1 banana",
    "aliases": [
     "banana prata",
-    "banana-prata"
+    "bananas-prata"
    ],
    "visionLabels": []
+  },
+  {
+   "key": "plantain_cooked",
+   "namePt": "Banana-pão cozida",
+   "nameEn": "Plantain, cooked",
+   "category": "fruta",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "53101",
+   "sourceLabel": "Banane plantain, cuite",
+   "kcal": 125.0,
+   "protein": 0.79,
+   "carbs": 28.9,
+   "fat": 0.18,
+   "fiber": 2.3,
+   "portionG": 100.0,
+   "portionUnits": null,
+   "portionPt": "1 dose",
+   "portionEn": "1 serving",
+   "aliases": [
+    "banana-pão",
+    "bananas-pão",
+    "plantain",
+    "plantains",
+    "plantain cooked",
+    "cooked plantain",
+    "plátano",
+    "banana-da-terra",
+    "fried plantain"
+   ],
+   "visionLabels": [
+    "Fried plantain"
+   ]
   },
   {
    "key": "cherries_raw",
@@ -1356,7 +1664,10 @@
    "aliases": [
     "cerejas",
     "cereja",
-    "cherries"
+    "cherries",
+    "cherry",
+    "sweet cherries",
+    "sweet cherry"
    ],
    "visionLabels": []
   },
@@ -1381,7 +1692,11 @@
    "aliases": [
     "figo",
     "figos",
-    "fig"
+    "fig",
+    "figs",
+    "fresh fig",
+    "fresh figs",
+    "figos frescos"
    ],
    "visionLabels": []
   },
@@ -1405,7 +1720,9 @@
    "portionEn": "1 guava",
    "aliases": [
     "goiaba",
-    "guava"
+    "guava",
+    "guavas",
+    "goiabas"
    ],
    "visionLabels": []
   },
@@ -1428,7 +1745,10 @@
    "portionPt": "1 kiwi",
    "portionEn": "1 kiwi",
    "aliases": [
-    "kiwi"
+    "kiwi",
+    "kiwis",
+    "kiwi slices",
+    "kiwifruit"
    ],
    "visionLabels": []
   },
@@ -1452,7 +1772,49 @@
    "portionEn": "1 medium orange",
    "aliases": [
     "laranja",
-    "orange"
+    "orange",
+    "oranges",
+    "orange slices",
+    "orange slice",
+    "laranjas",
+    "orange segments",
+    "laranja em gomos",
+    "gomos de laranja"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "lemon_raw",
+   "namePt": "Limão",
+   "nameEn": "Lemon",
+   "category": "fruta",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "13009",
+   "sourceLabel": "Citron, chair sans peau, sans pépins, cru",
+   "kcal": 24.3,
+   "protein": 0.25,
+   "carbs": 1.56,
+   "fat": 0.25,
+   "fiber": 0.25,
+   "portionG": 20.0,
+   "portionUnits": null,
+   "portionPt": "1 gomo de limão",
+   "portionEn": "1 lemon wedge",
+   "aliases": [
+    "limão",
+    "lemon",
+    "lemons",
+    "lemon wedge",
+    "lemon wedges",
+    "lemon slice",
+    "lemon slices",
+    "sliced lemon",
+    "rodela de limão",
+    "rodelas de limão",
+    "gomo de limão",
+    "limão cru",
+    "raw lemon"
    ],
    "visionLabels": []
   },
@@ -1477,7 +1839,11 @@
    "aliases": [
     "mamão",
     "papaia",
-    "papaya"
+    "papaya",
+    "papayas",
+    "papaya slices",
+    "papaya slice",
+    "mamões"
    ],
    "visionLabels": []
   },
@@ -1501,7 +1867,11 @@
    "portionEn": "1/2 mango",
    "aliases": [
     "manga",
-    "mango"
+    "mango",
+    "mangoes",
+    "mango slices",
+    "mango slice",
+    "mangas"
    ],
    "visionLabels": []
   },
@@ -1525,8 +1895,13 @@
    "portionEn": "1 medium apple",
    "aliases": [
     "maçã",
-    "maca",
-    "apple"
+    "apple",
+    "apples",
+    "apple slices",
+    "sliced apple",
+    "apple slice",
+    "maçãs",
+    "maçãs fatiadas"
    ],
    "visionLabels": []
   },
@@ -1550,7 +1925,39 @@
    "portionEn": "1 slice",
    "aliases": [
     "melancia",
-    "watermelon"
+    "watermelon",
+    "watermelon slices",
+    "watermelon slice",
+    "sliced watermelon"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "honeydew_raw",
+   "namePt": "Melão verde (honeydew)",
+   "nameEn": "Honeydew melon",
+   "category": "fruta",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "169911",
+   "sourceLabel": "Melons, honeydew, raw",
+   "kcal": 36.0,
+   "protein": 0.54,
+   "carbs": 9.09,
+   "fat": 0.14,
+   "fiber": 0.8,
+   "portionG": 150.0,
+   "portionUnits": null,
+   "portionPt": "1 fatia média",
+   "portionEn": "1 medium slice",
+   "aliases": [
+    "honeydew",
+    "honeydew melon",
+    "honeydews",
+    "honeydew melons",
+    "melão verde",
+    "honeydew slice",
+    "honeydew slices"
    ],
    "visionLabels": []
   },
@@ -1576,7 +1983,40 @@
     "melão",
     "meloa",
     "melon",
-    "cantaloupe"
+    "cantaloupe",
+    "cantaloupe melon",
+    "cantaloupe slices",
+    "melon slices",
+    "cantaloupes",
+    "cantaloupe slice"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "blueberries_raw",
+   "namePt": "Mirtilos",
+   "nameEn": "Blueberries",
+   "category": "fruta",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "171711",
+   "sourceLabel": "Blueberries, raw",
+   "kcal": 57.0,
+   "protein": 0.74,
+   "carbs": 14.49,
+   "fat": 0.33,
+   "fiber": 2.4,
+   "portionG": 75.0,
+   "portionUnits": null,
+   "portionPt": "1 pequena chávena",
+   "portionEn": "1 small cup",
+   "aliases": [
+    "mirtilos",
+    "mirtilo",
+    "blueberries",
+    "blueberry",
+    "blueberries raw",
+    "fresh blueberries"
    ],
    "visionLabels": []
   },
@@ -1602,7 +2042,10 @@
     "morangos",
     "morango",
     "strawberries",
-    "strawberry"
+    "strawberry",
+    "strawberry slices",
+    "sliced strawberries",
+    "morangos frescos"
    ],
    "visionLabels": []
   },
@@ -1626,7 +2069,12 @@
    "portionEn": "1 medium pear",
    "aliases": [
     "pera",
-    "pear"
+    "pear",
+    "pears",
+    "pear slices",
+    "sliced pear",
+    "peras",
+    "pear slice"
    ],
    "visionLabels": []
   },
@@ -1650,8 +2098,12 @@
    "portionEn": "1 peach",
    "aliases": [
     "pêssego",
-    "pessego",
-    "peach"
+    "peach",
+    "peaches",
+    "sliced peaches",
+    "peach slices",
+    "peach slice",
+    "pêssegos"
    ],
    "visionLabels": []
   },
@@ -1677,7 +2129,45 @@
     "tangerina",
     "clementina",
     "mandarina",
-    "tangerine"
+    "tangerine",
+    "tangerines",
+    "mandarin",
+    "mandarins",
+    "clementine",
+    "clementines",
+    "tangerinas",
+    "mandarinas",
+    "clementinas"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pomelo_raw",
+   "namePt": "Toranja (pomelo)",
+   "nameEn": "Pomelo (grapefruit)",
+   "category": "fruta",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "173033",
+   "sourceLabel": "Grapefruit, raw, pink and red and white, all areas",
+   "kcal": 32.0,
+   "protein": 0.63,
+   "carbs": 8.08,
+   "fat": 0.1,
+   "fiber": 1.1,
+   "portionG": 150.0,
+   "portionUnits": null,
+   "portionPt": "1 porção (gomos)",
+   "portionEn": "1 serving (segments)",
+   "aliases": [
+    "pomelo",
+    "pomelos",
+    "toranja",
+    "toranjas",
+    "grapefruit",
+    "grapefruits",
+    "gomos de pomelo",
+    "pomelo segments"
    ],
    "visionLabels": []
   },
@@ -1701,7 +2191,13 @@
    "portionEn": "1 small bunch",
    "aliases": [
     "uvas",
-    "grapes"
+    "grapes",
+    "grape",
+    "red grapes",
+    "green grapes",
+    "uva",
+    "uvas vermelhas",
+    "uvas verdes"
    ],
    "visionLabels": []
   },
@@ -1725,7 +2221,41 @@
    "portionEn": "1 handful",
    "aliases": [
     "amêndoas",
-    "almonds"
+    "almonds",
+    "almond",
+    "amêndoa",
+    "sliced almonds",
+    "raw almonds",
+    "almonds raw",
+    "amêndoas cruas"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "cranberries_dried",
+   "namePt": "Arandos secos",
+   "nameEn": "Dried cranberries",
+   "category": "frutos secos",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "171723",
+   "sourceLabel": "Cranberries, dried, sweetened (Includes foods for USDA's Food Distribution Program)",
+   "kcal": 308.0,
+   "protein": 0.17,
+   "carbs": 82.8,
+   "fat": 1.09,
+   "fiber": 5.3,
+   "portionG": 20.0,
+   "portionUnits": null,
+   "portionPt": "1 pequena porção",
+   "portionEn": "1 small serving",
+   "aliases": [
+    "dried cranberries",
+    "dried cranberry",
+    "cranberries dried",
+    "arandos secos",
+    "arando seco",
+    "cranberries secas"
    ],
    "visionLabels": []
   },
@@ -1749,11 +2279,41 @@
    "portionEn": "1 tablespoon",
    "aliases": [
     "manteiga de amendoim",
-    "peanut butter"
+    "peanut butter",
+    "creamy peanut butter",
+    "smooth peanut butter"
    ],
    "visionLabels": [
     "Peanut butter and jelly sandwich"
    ]
+  },
+  {
+   "key": "pecan_nuts",
+   "namePt": "Noz-pecã",
+   "nameEn": "Pecans",
+   "category": "frutos secos",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "170182",
+   "sourceLabel": "Nuts, pecans",
+   "kcal": 691.0,
+   "protein": 9.17,
+   "carbs": 13.86,
+   "fat": 71.97,
+   "fiber": 9.6,
+   "portionG": 25.0,
+   "portionUnits": null,
+   "portionPt": "1 mão-cheia",
+   "portionEn": "1 handful",
+   "aliases": [
+    "noz-pecã",
+    "noz pecan",
+    "nozes pecã",
+    "pecã",
+    "pecan",
+    "pecans"
+   ],
+   "visionLabels": []
   },
   {
    "key": "walnuts",
@@ -1775,7 +2335,45 @@
    "portionEn": "1 handful",
    "aliases": [
     "nozes",
-    "walnuts"
+    "walnuts",
+    "walnut",
+    "walnut halves",
+    "noz",
+    "nozes cruas"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "dried_fruit_raisins",
+   "namePt": "Passas (fruta seca)",
+   "nameEn": "Dried fruit (raisins)",
+   "category": "frutos secos",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "168165",
+   "sourceLabel": "Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",
+   "kcal": 299.0,
+   "protein": 3.3,
+   "carbs": 79.32,
+   "fat": 0.25,
+   "fiber": 4.5,
+   "portionG": 30.0,
+   "portionUnits": null,
+   "portionPt": "1 mão-cheia",
+   "portionEn": "1 handful",
+   "aliases": [
+    "fruta seca",
+    "frutas secas",
+    "fruta desidratada",
+    "dried fruit",
+    "dried fruits",
+    "dried fruit mix",
+    "passas",
+    "uvas passas",
+    "passa",
+    "raisins",
+    "raisin",
+    "dried raisins"
    ],
    "visionLabels": []
   },
@@ -1801,7 +2399,10 @@
     "azeite",
     "fio de azeite",
     "um fio de azeite",
-    "olive oil"
+    "olive oil",
+    "extra virgin olive oil",
+    "azeite virgem",
+    "azeite extra virgem"
    ],
    "visionLabels": []
   },
@@ -1827,7 +2428,8 @@
     "maionese",
     "mayonese",
     "mayonnaise",
-    "mayo"
+    "mayo",
+    "mayonese caseira"
    ],
    "visionLabels": []
   },
@@ -1851,7 +2453,11 @@
    "portionEn": "1 pat",
    "aliases": [
     "manteiga",
-    "butter"
+    "butter",
+    "salted butter",
+    "butter salted",
+    "manteiga com sal",
+    "manteiga salgada"
    ],
    "visionLabels": []
   },
@@ -1876,10 +2482,8 @@
    "aliases": [
     "molho big mac",
     "molho de hambúrguer",
-    "molho de hamburguer",
     "molho especial",
     "molho para hambúrguer",
-    "molho para hamburguer",
     "molho burger",
     "big mac sauce",
     "burger sauce",
@@ -1908,7 +2512,12 @@
    "aliases": [
     "iogurte grego",
     "skyr",
-    "greek yogurt"
+    "greek yogurt",
+    "greek yoghurt",
+    "greek yogurt nonfat",
+    "natural greek yogurt",
+    "iogurte grego magro",
+    "greek yoghurt nonfat"
    ],
    "visionLabels": []
   },
@@ -1933,7 +2542,13 @@
    "aliases": [
     "iogurte",
     "iogurte natural",
-    "yogurt"
+    "yogurt",
+    "yoghurt",
+    "plain yoghurt",
+    "natural yogurt",
+    "natural yoghurt",
+    "yogurt natural",
+    "iogurtes"
    ],
    "visionLabels": [
     "Frozen yogurt"
@@ -1961,7 +2576,13 @@
     "leite",
     "leite gordo",
     "whole milk",
-    "milk"
+    "milk",
+    "full fat milk",
+    "leite inteiro",
+    "leite de vaca",
+    "cow milk",
+    "cows milk",
+    "fresh whole milk"
    ],
    "visionLabels": []
   },
@@ -1985,7 +2606,13 @@
    "portionEn": "1 glass",
    "aliases": [
     "leite magro",
-    "skim milk"
+    "skim milk",
+    "skimmed milk",
+    "nonfat milk",
+    "fat free milk",
+    "leite desnatado",
+    "desnatado",
+    "skim"
    ],
    "visionLabels": []
   },
@@ -2009,8 +2636,9 @@
    "portionEn": "1 glass",
    "aliases": [
     "leite meio gordo",
-    "leite meio-gordo",
-    "semi skimmed milk"
+    "semi skimmed milk",
+    "semi skimmed",
+    "meio gordo"
    ],
    "visionLabels": []
   },
@@ -2034,7 +2662,11 @@
    "portionEn": "1 serving",
    "aliases": [
     "mozzarella",
-    "queijo mozzarella"
+    "queijo mozzarella",
+    "fresh mozzarella",
+    "mozzarella cheese",
+    "queijo mozarela",
+    "mozarela"
    ],
    "visionLabels": []
   },
@@ -2063,7 +2695,13 @@
     "nata para cozinhar",
     "creme de leite",
     "cooking cream",
-    "whipping cream"
+    "whipping cream",
+    "light cream",
+    "fresh cream",
+    "natas para cozinha",
+    "natas culinárias",
+    "natas de cozinha",
+    "nata de cozinha"
    ],
    "visionLabels": []
   },
@@ -2087,9 +2725,8 @@
    "portionEn": "1 serving",
    "aliases": [
     "cottage",
-    "requeijão",
-    "queijo fresco",
-    "cottage cheese"
+    "cottage cheese",
+    "low fat cottage cheese"
    ],
    "visionLabels": []
   },
@@ -2115,7 +2752,11 @@
     "queijo de ovelha",
     "queijo da serra",
     "queijo curado",
-    "sheep cheese"
+    "sheep cheese",
+    "sheeps cheese",
+    "manchego",
+    "pecorino",
+    "queijo manchego"
    ],
    "visionLabels": []
   },
@@ -2141,7 +2782,12 @@
     "queijo",
     "queijo flamengo",
     "gouda",
-    "cheese"
+    "cheese",
+    "gouda cheese slice",
+    "queijo gouda",
+    "cheese slice",
+    "cheese slices",
+    "gouda cheese slices"
    ],
    "visionLabels": []
   },
@@ -2166,7 +2812,10 @@
    "aliases": [
     "queijo minas",
     "minas frescal",
-    "queijo fresco"
+    "queijo fresco",
+    "minas cheese",
+    "fresh cheese",
+    "queijo minas fresco"
    ],
    "visionLabels": []
   },
@@ -2191,12 +2840,15 @@
    "aliases": [
     "queijo ralado",
     "parmesão ralado",
-    "parmesao ralado",
     "queijo parmesão",
     "parmesão",
     "parmesan",
     "grated cheese",
-    "parmesan cheese"
+    "parmesan cheese",
+    "grated parmesan",
+    "parmigiano",
+    "parmigiano reggiano",
+    "queijo parmesão ralado"
    ],
    "visionLabels": []
   },
@@ -2220,7 +2872,10 @@
    "portionEn": "1 tablespoon",
    "aliases": [
     "requeijão",
-    "requeijao cremoso"
+    "requeijao cremoso",
+    "cream cheese",
+    "queijo creme",
+    "queijo cremoso"
    ],
    "visionLabels": []
   },
@@ -2244,7 +2899,16 @@
    "portionEn": "1 salad serving",
    "aliases": [
     "alface",
-    "lettuce"
+    "lettuce",
+    "green lettuce",
+    "lettuce leaves",
+    "lettuce leaf",
+    "romaine",
+    "romaine lettuce",
+    "alface lisa",
+    "alface romana",
+    "alface crua",
+    "green leaf lettuce"
    ],
    "visionLabels": [
     "Greek salad",
@@ -2254,6 +2918,46 @@
     "Wrap",
     "Coleslaw",
     "Seven-layer salad"
+   ]
+  },
+  {
+   "key": "eggplant_cooked",
+   "namePt": "Beringela cozida",
+   "nameEn": "Eggplant, cooked",
+   "category": "legumes",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "20002",
+   "sourceLabel": "Aubergine, cuite",
+   "kcal": 27.1,
+   "protein": 0.83,
+   "carbs": 4.17,
+   "fat": 0.23,
+   "fiber": 2.5,
+   "portionG": 100.0,
+   "portionUnits": null,
+   "portionPt": "1 dose",
+   "portionEn": "1 serving",
+   "aliases": [
+    "beringela",
+    "beringela cozida",
+    "beringelas",
+    "berinjela",
+    "berinjela cozida",
+    "eggplant",
+    "eggplants",
+    "eggplant cooked",
+    "cooked eggplant",
+    "aubergine",
+    "aubergines",
+    "aubergine cooked",
+    "eggplant slices",
+    "grilled eggplant",
+    "roasted eggplant",
+    "fried eggplant"
+   ],
+   "visionLabels": [
+    "Fried eggplant"
    ]
   },
   {
@@ -2276,8 +2980,12 @@
    "portionEn": "1 serving",
    "aliases": [
     "brócolos",
-    "brocolos",
-    "broccoli"
+    "broccoli",
+    "broccoli florets",
+    "broccoli cooked",
+    "cooked broccoli",
+    "brócolis",
+    "brócolis cozidos"
    ],
    "visionLabels": []
   },
@@ -2301,11 +3009,51 @@
    "portionEn": "1/2 onion",
    "aliases": [
     "cebola",
-    "onion"
+    "onion",
+    "onions",
+    "onion slices",
+    "sliced onion",
+    "raw onion",
+    "cebolas",
+    "cebola crua",
+    "onion slice"
    ],
    "visionLabels": [
     "Onion ring"
    ]
+  },
+  {
+   "key": "spring_onion_raw",
+   "namePt": "Cebolinho (cebola tenra)",
+   "nameEn": "Spring onion, raw",
+   "category": "legumes",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "170005",
+   "sourceLabel": "Onions, spring or scallions (includes tops and bulb), raw",
+   "kcal": 32.0,
+   "protein": 1.83,
+   "carbs": 7.34,
+   "fat": 0.19,
+   "fiber": 2.6,
+   "portionG": 20.0,
+   "portionUnits": null,
+   "portionPt": "2 cebolinhos",
+   "portionEn": "2 spring onions",
+   "aliases": [
+    "cebolinho",
+    "cebolinhos",
+    "cebola tenra",
+    "cebola-de-mola",
+    "spring onion",
+    "spring onions",
+    "scallion",
+    "scallions",
+    "green onion",
+    "green onions",
+    "cebolinha verde"
+   ],
+   "visionLabels": []
   },
   {
    "key": "carrot_raw",
@@ -2328,7 +3076,16 @@
    "aliases": [
     "cenoura",
     "cenoura ralada",
-    "carrot"
+    "carrot",
+    "carrots",
+    "carrot slices",
+    "carrot slice",
+    "sliced carrot",
+    "carrot sticks",
+    "raw carrot",
+    "cenouras",
+    "cenoura crua",
+    "cenouras raladas"
    ],
    "visionLabels": [
     "Coleslaw"
@@ -2354,7 +3111,11 @@
    "portionEn": "1 serving",
    "aliases": [
     "cenoura cozida",
-    "cooked carrot"
+    "cooked carrot",
+    "cooked carrots",
+    "carrots cooked",
+    "boiled carrots",
+    "cenouras cozidas"
    ],
    "visionLabels": []
   },
@@ -2379,7 +3140,71 @@
    "aliases": [
     "cogumelos",
     "champignons",
-    "mushrooms"
+    "mushrooms",
+    "mushroom",
+    "button mushrooms",
+    "mushroom slices",
+    "sliced mushrooms",
+    "cogumelo",
+    "cogumelos frescos"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "kale_cooked",
+   "namePt": "Couve kale cozida",
+   "nameEn": "Kale, cooked",
+   "category": "legumes",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "169238",
+   "sourceLabel": "Kale, cooked, boiled, drained, without salt",
+   "kcal": 36.0,
+   "protein": 2.94,
+   "carbs": 5.3,
+   "fat": 1.21,
+   "fiber": 4.0,
+   "portionG": 100.0,
+   "portionUnits": null,
+   "portionPt": "1 dose",
+   "portionEn": "1 serving",
+   "aliases": [
+    "kale cooked",
+    "cooked kale",
+    "kale boiled",
+    "boiled kale",
+    "couve kale cozida",
+    "couve galega cozida"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "kale_raw",
+   "namePt": "Couve kale crua",
+   "nameEn": "Kale, raw",
+   "category": "legumes",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "168421",
+   "sourceLabel": "Kale, raw",
+   "kcal": 35.0,
+   "protein": 2.92,
+   "carbs": 4.42,
+   "fat": 1.49,
+   "fiber": 4.1,
+   "portionG": 50.0,
+   "portionUnits": null,
+   "portionPt": "1 mão-cheia",
+   "portionEn": "1 handful",
+   "aliases": [
+    "kale",
+    "couve kale",
+    "chou kale",
+    "kale raw",
+    "raw kale",
+    "kale leaves",
+    "curly kale",
+    "couve galega"
    ],
    "visionLabels": []
   },
@@ -2404,7 +3229,10 @@
    "aliases": [
     "couve refogada",
     "couve à mineira",
-    "collard greens"
+    "collard greens",
+    "collards",
+    "collard",
+    "refogado de couve"
    ],
    "visionLabels": []
   },
@@ -2430,7 +3258,11 @@
     "couve roxa",
     "couve roxo",
     "repolho roxo",
-    "red cabbage"
+    "red cabbage",
+    "red cabbages",
+    "red cabbage raw",
+    "repolho roxo cru",
+    "couve roxa crua"
    ],
    "visionLabels": []
   },
@@ -2454,8 +3286,11 @@
    "portionEn": "1 serving",
    "aliases": [
     "couve-flor",
-    "couve flor",
-    "cauliflower"
+    "cauliflower",
+    "cauliflower cooked",
+    "cooked cauliflower",
+    "boiled cauliflower",
+    "couves-flor cozidas"
    ],
    "visionLabels": []
   },
@@ -2480,11 +3315,48 @@
    "aliases": [
     "couve",
     "repolho",
-    "cabbage"
+    "cabbage",
+    "white cabbage",
+    "green cabbage",
+    "repolho branco",
+    "repolho verde",
+    "cabbage raw"
    ],
    "visionLabels": [
     "Coleslaw"
    ]
+  },
+  {
+   "key": "brussels_cooked",
+   "namePt": "Couves de bruxelas cozidas",
+   "nameEn": "Brussels sprouts, cooked",
+   "category": "legumes",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "169971",
+   "sourceLabel": "Brussels sprouts, cooked, boiled, drained, without salt",
+   "kcal": 36.0,
+   "protein": 2.55,
+   "carbs": 7.1,
+   "fat": 0.5,
+   "fiber": 2.6,
+   "portionG": 80.0,
+   "portionUnits": null,
+   "portionPt": "1 dose",
+   "portionEn": "1 serving",
+   "aliases": [
+    "couves de bruxelas",
+    "couve de bruxelas",
+    "couves de bruxelas cozidas",
+    "brussels sprouts",
+    "brussels sprout",
+    "brussel sprouts",
+    "brussels",
+    "brussels cooked",
+    "chou de bruxelles",
+    "couve de bruxelles"
+   ],
+   "visionLabels": []
   },
   {
    "key": "zucchini_cooked",
@@ -2507,7 +3379,15 @@
    "aliases": [
     "curgete",
     "courgette",
-    "zucchini"
+    "zucchini",
+    "courgettes",
+    "zucchinis",
+    "curgetes",
+    "abobrinha",
+    "abobrinhas",
+    "zucchini cooked",
+    "cooked zucchini",
+    "courgette cooked"
    ],
    "visionLabels": []
   },
@@ -2531,7 +3411,42 @@
    "portionEn": "1 serving",
    "aliases": [
     "espinafres",
-    "spinach"
+    "spinach",
+    "cooked spinach",
+    "spinach cooked",
+    "boiled spinach",
+    "espinafre",
+    "espinafre cozido"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "spinach_raw",
+   "namePt": "Espinafres crus",
+   "nameEn": "Spinach, raw",
+   "category": "legumes",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "168462",
+   "sourceLabel": "Spinach, raw",
+   "kcal": 23.0,
+   "protein": 2.86,
+   "carbs": 3.63,
+   "fat": 0.39,
+   "fiber": 2.2,
+   "portionG": 30.0,
+   "portionUnits": null,
+   "portionPt": "1 mão-cheia",
+   "portionEn": "1 handful",
+   "aliases": [
+    "espinafres crus",
+    "espinafre cru",
+    "espinafres frescos",
+    "raw spinach",
+    "baby spinach",
+    "spinach leaves",
+    "salad spinach",
+    "espinafre fresco"
    ],
    "visionLabels": []
   },
@@ -2555,8 +3470,13 @@
    "portionEn": "1 serving",
    "aliases": [
     "feijão verde",
-    "feijão-verde",
-    "green beans"
+    "green beans",
+    "string beans",
+    "french beans",
+    "vagem",
+    "vagens",
+    "green beans cooked",
+    "cooked green beans"
    ],
    "visionLabels": []
   },
@@ -2582,7 +3502,18 @@
     "milho",
     "milho doce",
     "corn",
-    "sweet corn"
+    "sweet corn",
+    "corn on the cob",
+    "corn kernels",
+    "sweetcorn",
+    "sweet corn kernels",
+    "maize",
+    "milho em lata",
+    "milho cozido",
+    "milho em grão",
+    "corn cob",
+    "espiga de milho",
+    "corn cobs"
    ],
    "visionLabels": []
   },
@@ -2606,12 +3537,53 @@
    "portionEn": "1 serving",
    "aliases": [
     "pepino",
-    "cucumber"
+    "cucumber",
+    "cucumbers",
+    "cucumber slices",
+    "sliced cucumber",
+    "cucumber slice",
+    "pepinos",
+    "pepino em rodelas",
+    "rodelas de pepino",
+    "sliced cucumbers"
    ],
    "visionLabels": [
     "Greek salad",
     "Cucumber soup"
    ]
+  },
+  {
+   "key": "green_pepper_raw",
+   "namePt": "Pimento verde",
+   "nameEn": "Green bell pepper",
+   "category": "legumes",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "170427",
+   "sourceLabel": "Peppers, sweet, green, raw",
+   "kcal": 20.0,
+   "protein": 0.86,
+   "carbs": 4.64,
+   "fat": 0.17,
+   "fiber": 1.7,
+   "portionG": 60.0,
+   "portionUnits": null,
+   "portionPt": "1/2 pimento",
+   "portionEn": "1/2 pepper",
+   "aliases": [
+    "pimento verde",
+    "pimentos verdes",
+    "pimento verde cru",
+    "green pepper",
+    "green peppers",
+    "green bell pepper",
+    "green bell peppers",
+    "green pepper slices",
+    "sliced green pepper",
+    "sliced green peppers",
+    "bell pepper green"
+   ],
+   "visionLabels": []
   },
   {
    "key": "pepper_red_raw",
@@ -2635,7 +3607,47 @@
     "pimento",
     "pimento vermelho",
     "red pepper",
-    "bell pepper"
+    "bell pepper",
+    "red peppers",
+    "red pepper slices",
+    "sliced red peppers",
+    "red bell pepper",
+    "red bell peppers",
+    "pimentos vermelhos",
+    "pimentos",
+    "sliced red pepper",
+    "red pepper slice"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "arugula_raw",
+   "namePt": "Rúcula",
+   "nameEn": "Arugula",
+   "category": "legumes",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "20217",
+   "sourceLabel": "Roquette, crue",
+   "kcal": 27.9,
+   "protein": 2.58,
+   "carbs": 2.1,
+   "fat": 0.66,
+   "fiber": 1.6,
+   "portionG": 30.0,
+   "portionUnits": null,
+   "portionPt": "1 mão-cheia",
+   "portionEn": "1 handful",
+   "aliases": [
+    "rúcula",
+    "arugula",
+    "arugulas",
+    "rocket",
+    "rocket leaves",
+    "arugula leaves",
+    "roquette",
+    "rúcula crua",
+    "roquette crua"
    ],
    "visionLabels": []
   },
@@ -2662,7 +3674,15 @@
     "salada verde",
     "salada mista",
     "salad",
-    "green salad"
+    "green salad",
+    "salad leaves",
+    "mixed salad",
+    "garden salad",
+    "side salad",
+    "saladas",
+    "mixed greens",
+    "salad greens",
+    "folhas de salada"
    ],
    "visionLabels": [
     "Garden salad",
@@ -2695,7 +3715,16 @@
    "aliases": [
     "tomate",
     "tomato",
-    "tomatoes"
+    "tomatoes",
+    "tomato slices",
+    "slices of tomato",
+    "tomato slice",
+    "tomates",
+    "tomate cereja",
+    "tomates cereja",
+    "tomate cherry",
+    "cherry tomato",
+    "cherry tomatoes"
    ],
    "visionLabels": [
     "Caprese salad",
@@ -2723,7 +3752,13 @@
    "portionEn": "1 serving",
    "aliases": [
     "ervilhas",
-    "peas"
+    "peas",
+    "green peas",
+    "pea",
+    "cooked peas",
+    "peas cooked",
+    "ervilha",
+    "ervilhas cozidas"
    ],
    "visionLabels": []
   },
@@ -2748,7 +3783,10 @@
    "aliases": [
     "feijão branco",
     "feijoada à transmontana",
-    "white beans"
+    "white beans",
+    "feijões brancos",
+    "haricot beans",
+    "cannellini beans"
    ],
    "visionLabels": []
   },
@@ -2772,7 +3810,10 @@
    "portionEn": "1 ladle",
    "aliases": [
     "feijão carioca",
-    "carioca beans"
+    "carioca beans",
+    "feijões carioca",
+    "carioca beans cooked",
+    "cooked carioca beans"
    ],
    "visionLabels": [
     "Feijoada",
@@ -2801,9 +3842,9 @@
    "portionEn": "1 serving",
    "aliases": [
     "feijão catarino",
-    "feijão carioca",
     "feijão castanho",
-    "pinto beans"
+    "pinto beans",
+    "pinto beans cooked"
    ],
    "visionLabels": []
   },
@@ -2832,7 +3873,11 @@
     "feijão cozido",
     "kidney beans",
     "beans",
-    "red beans"
+    "red beans",
+    "red kidney beans",
+    "cooked red beans",
+    "feijões",
+    "feijões vermelhos"
    ],
    "visionLabels": [
     "Feijoada",
@@ -2869,7 +3914,10 @@
    "portionEn": "1 serving",
    "aliases": [
     "feijão preto",
-    "black beans"
+    "black beans",
+    "feijões pretos",
+    "black beans cooked",
+    "cooked black beans"
    ],
    "visionLabels": []
   },
@@ -2892,10 +3940,16 @@
    "portionPt": "1 dose",
    "portionEn": "1 serving",
    "aliases": [
-    "grão",
     "grão-de-bico",
     "chickpeas",
-    "garbanzo"
+    "garbanzo",
+    "chickpea",
+    "chickpeas cooked",
+    "cooked chickpeas",
+    "garbanzo beans",
+    "garbanzos",
+    "grão de bico cozido",
+    "chick peas"
    ],
    "visionLabels": [
     "Chana masala",
@@ -2923,7 +3977,11 @@
    "portionEn": "1 serving",
    "aliases": [
     "lentilhas",
-    "lentils"
+    "lentils",
+    "lentil",
+    "lentils cooked",
+    "cooked lentils",
+    "lentilha"
    ],
    "visionLabels": [
     "Dal makhani",
@@ -2950,8 +4008,11 @@
    "portionEn": "1 sachet",
    "aliases": [
     "açúcar",
-    "acucar",
-    "sugar"
+    "sugar",
+    "white sugar",
+    "açúcar branco",
+    "cubos de açúcar",
+    "sugar cubes"
    ],
    "visionLabels": []
   },
@@ -2981,7 +4042,12 @@
     "geleia",
     "doce de morango",
     "jam",
-    "marmalade"
+    "marmalade",
+    "jams",
+    "strawberry jam",
+    "geleia de frutas",
+    "fruit preserves",
+    "geleia de morango"
    ],
    "visionLabels": []
   },
@@ -3007,7 +4073,8 @@
     "ketchup",
     "catchup",
     "catsup",
-    "ketchup de tomate"
+    "ketchup de tomate",
+    "tomato ketchup"
    ],
    "visionLabels": []
   },
@@ -3031,7 +4098,36 @@
    "portionEn": "1 tablespoon",
    "aliases": [
     "mel",
-    "honey"
+    "honey",
+    "mel de abelha"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "white_sauce_bechamel",
+   "namePt": "Molho bechamel",
+   "nameEn": "White sauce (béchamel)",
+   "category": "outros",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "11143",
+   "sourceLabel": "Sauce béchamel au beurre, faite maison",
+   "kcal": 147.0,
+   "protein": 3.84,
+   "carbs": 8.97,
+   "fat": 10.6,
+   "fiber": 0.2,
+   "portionG": 50.0,
+   "portionUnits": null,
+   "portionPt": "1 dose pequena",
+   "portionEn": "1 small serving",
+   "aliases": [
+    "molho bechamel",
+    "bechamel",
+    "bechamel sauce",
+    "molho branco",
+    "white sauce",
+    "molho branco de bechamel"
    ],
    "visionLabels": []
   },
@@ -3059,7 +4155,9 @@
     "molho de carne",
     "gravy",
     "brown gravy",
-    "beef gravy"
+    "beef gravy",
+    "molho de carne de vaca",
+    "molho gravy"
    ],
    "visionLabels": []
   },
@@ -3086,7 +4184,8 @@
     "molho de yogurte",
     "molho de iogurte natural",
     "yogurt sauce",
-    "sauce au yaourt"
+    "sauce au yaourt",
+    "yoghurt sauce"
    ],
    "visionLabels": []
   },
@@ -3112,7 +4211,8 @@
     "molho de soja",
     "shoyu",
     "molho shoyu",
-    "soy sauce"
+    "soy sauce",
+    "soya sauce"
    ],
    "visionLabels": []
   },
@@ -3141,7 +4241,12 @@
     "molho marinara",
     "marinara",
     "tomato sauce",
-    "pasta sauce"
+    "pasta sauce",
+    "marinara sauce",
+    "molho pronto para massa",
+    "molho napolitano",
+    "tomato sauce for pasta",
+    "pasta tomato sauce"
    ],
    "visionLabels": []
   },
@@ -3166,7 +4271,10 @@
    "aliases": [
     "mostarda",
     "mostarda amarela",
-    "mustard"
+    "mustard",
+    "yellow mustard",
+    "dijon mustard",
+    "mostarda de dijon"
    ],
    "visionLabels": []
   },
@@ -3197,7 +4305,41 @@
     "tortilla chips",
     "chips de tortilha",
     "nacho cheese",
-    "tortillas"
+    "tortillas",
+    "corn chips",
+    "nacho chips",
+    "tortilla chip",
+    "chips de milho"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "egg_white",
+   "namePt": "Claras de ovo",
+   "nameEn": "Egg whites",
+   "category": "ovos",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "172183",
+   "sourceLabel": "Egg, white, raw, fresh",
+   "kcal": 52.0,
+   "protein": 10.9,
+   "carbs": 0.73,
+   "fat": 0.17,
+   "fiber": 0.0,
+   "portionG": 33.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 clara",
+   "portionEn": "1 egg white",
+   "aliases": [
+    "claras de ovo",
+    "clara de ovo",
+    "clara",
+    "claras",
+    "egg white",
+    "egg whites",
+    "raw egg white",
+    "claras de ovos"
    ],
    "visionLabels": []
   },
@@ -3222,7 +4364,13 @@
    "aliases": [
     "omelete",
     "omeleta",
-    "omelette"
+    "omelette",
+    "omelet",
+    "omelets",
+    "omelettes",
+    "omeletes",
+    "plain omelet",
+    "omelete simples"
    ],
    "visionLabels": [
     "Omelette"
@@ -3250,7 +4398,13 @@
     "ovo",
     "ovo cozido",
     "egg",
-    "boiled egg"
+    "boiled egg",
+    "hard boiled egg",
+    "hard boiled eggs",
+    "boiled eggs",
+    "ovos cozidos",
+    "ovo duro",
+    "ovos duros"
    ],
    "visionLabels": [
     "Deviled egg",
@@ -3278,12 +4432,50 @@
    "aliases": [
     "ovo estrelado",
     "ovo frito",
-    "fried egg"
+    "fried egg",
+    "fried eggs",
+    "ovos fritos",
+    "ovos estrelados",
+    "sunny side up egg",
+    "sunny side up eggs",
+    "egg sunny side up",
+    "fried egg sunny side up"
    ],
    "visionLabels": [
     "Eggs Benedict",
     "Omelette"
    ]
+  },
+  {
+   "key": "egg_scrambled",
+   "namePt": "Ovos mexidos",
+   "nameEn": "Scrambled eggs",
+   "category": "ovos",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "172187",
+   "sourceLabel": "Egg, whole, cooked, scrambled",
+   "kcal": 149.0,
+   "protein": 9.99,
+   "carbs": 1.61,
+   "fat": 10.98,
+   "fiber": 0.0,
+   "portionG": 100.0,
+   "portionUnits": 2.0,
+   "portionPt": "2 ovos mexidos",
+   "portionEn": "2 scrambled eggs",
+   "aliases": [
+    "ovos mexidos",
+    "ovo mexido",
+    "mexidos",
+    "scrambled eggs",
+    "scrambled egg",
+    "scrambled",
+    "eggs scrambled",
+    "ovos revolvidos",
+    "ovo revolvido"
+   ],
+   "visionLabels": []
   },
   {
    "key": "croissant",
@@ -3307,7 +4499,12 @@
     "croissant",
     "croissã",
     "croissant simples",
-    "croissant normal"
+    "croissant normal",
+    "croissants",
+    "plain croissant",
+    "butter croissant",
+    "croissant de manteiga",
+    "croissants simples"
    ],
    "visionLabels": []
   },
@@ -3334,8 +4531,10 @@
     "croissant de fiambre",
     "croissant de fiambre e queijo",
     "croissant de presunto e queijo",
-    "croissant com fiambre",
-    "ham and cheese croissant"
+    "ham and cheese croissant",
+    "ham and cheese croissants",
+    "croissant misto de fiambre",
+    "croissant misto de queijo e fiambre"
    ],
    "visionLabels": []
   },
@@ -3360,9 +4559,13 @@
    "aliases": [
     "papo-seco",
     "carcaça",
-    "pão",
     "bread roll",
-    "roll"
+    "roll",
+    "bread rolls",
+    "dinner roll",
+    "dinner rolls",
+    "pãozinho",
+    "pãezinhos"
    ],
    "visionLabels": []
   },
@@ -3389,7 +4592,12 @@
     "pão branco",
     "pão de forma",
     "bread",
-    "white bread"
+    "white bread",
+    "sliced bread",
+    "bread slice",
+    "slice of bread",
+    "fatia de pão",
+    "fatias de pão"
    ],
    "visionLabels": [
     "Rye bread"
@@ -3418,7 +4626,11 @@
     "pão de mistura",
     "pão alentejano",
     "pão rústico",
-    "country bread"
+    "country bread",
+    "rustic bread",
+    "country loaf",
+    "artisan bread",
+    "pão artesanal"
    ],
    "visionLabels": []
   },
@@ -3442,11 +4654,13 @@
    "portionEn": "1 bun",
    "aliases": [
     "pão de hambúrguer",
-    "pao de hamburguer",
     "pão para hambúrguer",
     "pão de hot dog",
     "hamburger bun",
-    "burger bun"
+    "burger bun",
+    "hamburger buns",
+    "burger buns",
+    "pães de hambúrguer"
    ],
    "visionLabels": []
   },
@@ -3470,7 +4684,9 @@
    "portionEn": "3 small pieces",
    "aliases": [
     "pão de queijo",
-    "cheese bread"
+    "cheese bread",
+    "pães de queijo",
+    "cheese breads"
    ],
    "visionLabels": []
   },
@@ -3495,7 +4711,12 @@
    "aliases": [
     "pão francês",
     "pão de sal",
-    "cacetinho"
+    "cacetinho",
+    "pães franceses",
+    "french roll",
+    "french bread roll",
+    "french bread",
+    "pães de sal"
    ],
    "visionLabels": []
   },
@@ -3519,8 +4740,11 @@
    "portionEn": "1 slice",
    "aliases": [
     "pão integral",
-    "pão de mistura",
-    "whole wheat bread"
+    "whole wheat bread",
+    "wholemeal bread",
+    "wholegrain bread",
+    "brown bread",
+    "whole grain bread"
    ],
    "visionLabels": []
   },
@@ -3546,7 +4770,12 @@
     "torrada",
     "pão torrado",
     "tosta",
-    "toast"
+    "toast",
+    "toasted bread",
+    "bread toast",
+    "torradas",
+    "tostas",
+    "pão tostado"
    ],
    "visionLabels": [
     "Tostada",
@@ -3576,11 +4805,16 @@
    "portionEn": "1 sandwich",
    "aliases": [
     "sanduíche mista",
-    "sanduiche mista",
     "sandes mista",
     "sandwich mista",
     "tosta mista",
-    "ham and cheese sandwich"
+    "ham and cheese sandwich",
+    "ham and cheese sandwiches",
+    "sandes de fiambre e queijo",
+    "sandes de queijo e fiambre",
+    "sanduíche de fiambre e queijo",
+    "toasted ham and cheese",
+    "ham and cheese toastie"
    ],
    "visionLabels": []
   },
@@ -3604,7 +4838,10 @@
    "portionEn": "1 crepe",
    "aliases": [
     "tapioca",
-    "beiju"
+    "beiju",
+    "tapioca pancake",
+    "tapioca crepe",
+    "tapioca com manteiga e sal"
    ],
    "visionLabels": []
   },
@@ -3629,7 +4866,10 @@
    "aliases": [
     "atum em azeite",
     "atum em óleo",
-    "tuna in oil"
+    "tuna in oil",
+    "olive oil tuna",
+    "tuna olive oil",
+    "canned tuna in olive oil"
    ],
    "visionLabels": []
   },
@@ -3656,7 +4896,13 @@
     "atum em lata",
     "tuna",
     "atum natural",
-    "atum em conserva"
+    "atum em conserva",
+    "canned tuna",
+    "tuna chunks",
+    "atum enlatado",
+    "atum ao natural",
+    "lata de atum",
+    "tuna fish"
    ],
    "visionLabels": [
     "Tuna fish sandwich"
@@ -3685,7 +4931,10 @@
     "bacalhau cozido",
     "bacalhau com grão",
     "bacalhau com todos",
-    "salt cod"
+    "salt cod",
+    "salt cod boiled",
+    "bacalhau cozido com batatas",
+    "bacalhau cozido com legumes"
    ],
    "visionLabels": [
     "Bacalhau",
@@ -3715,7 +4964,13 @@
     "camarão",
     "gambas",
     "shrimp",
-    "prawns"
+    "prawns",
+    "shrimps",
+    "prawn",
+    "cooked shrimp",
+    "camarões",
+    "camarões cozidos",
+    "camarão cozido"
    ],
    "visionLabels": [
     "White boiled shrimp",
@@ -3742,7 +4997,10 @@
    "portionEn": "1 fish (portion)",
    "aliases": [
     "dourada",
-    "sea bream"
+    "sea bream",
+    "sea bream baked",
+    "gilthead bream",
+    "dourada no forno"
    ],
    "visionLabels": []
   },
@@ -3769,7 +5027,10 @@
     "lulas",
     "lulas grelhadas",
     "squid",
-    "calamari"
+    "calamari",
+    "squid rings",
+    "squid cooked",
+    "boiled squid"
    ],
    "visionLabels": [
     "Squid"
@@ -3796,7 +5057,10 @@
    "aliases": [
     "lulas fritas",
     "calamares fritos",
-    "fried squid"
+    "fried squid",
+    "fried calamari",
+    "lulas à romana",
+    "fried squid rings"
    ],
    "visionLabels": []
   },
@@ -3821,7 +5085,12 @@
    "aliases": [
     "pescada",
     "pescada cozida",
-    "hake"
+    "hake",
+    "hake fillet",
+    "hake steamed",
+    "merluza",
+    "merluza cozida",
+    "hake cooked"
    ],
    "visionLabels": []
   },
@@ -3847,7 +5116,15 @@
     "peixe branco",
     "peixe cozido",
     "cod",
-    "white fish"
+    "white fish",
+    "fish",
+    "fish fillet",
+    "fish fillets",
+    "white fish fillet",
+    "cooked fish",
+    "steamed fish",
+    "boiled fish",
+    "filete de peixe branco"
    ],
    "visionLabels": [
     "Fried fish"
@@ -3875,7 +5152,9 @@
     "polvo",
     "polvo à lagareiro",
     "polvo cozido",
-    "octopus"
+    "octopus",
+    "boiled octopus",
+    "octopus cooked"
    ],
    "visionLabels": []
   },
@@ -3899,7 +5178,11 @@
    "portionEn": "1 fish (portion)",
    "aliases": [
     "robalo",
-    "sea bass"
+    "sea bass",
+    "seabass",
+    "seabass baked",
+    "robalo no forno",
+    "sea bass baked"
    ],
    "visionLabels": []
   },
@@ -3923,7 +5206,15 @@
    "portionEn": "1 fillet",
    "aliases": [
     "salmão",
-    "salmon"
+    "salmon",
+    "salmon fillet",
+    "salmon fillets",
+    "grilled salmon",
+    "baked salmon",
+    "salmon cooked",
+    "filete de salmão",
+    "salmão assado",
+    "salmão no forno"
    ],
    "visionLabels": []
   },
@@ -3973,8 +5264,12 @@
    "portionPt": "1 lata escorrida",
    "portionEn": "1 can, drained",
    "aliases": [
-    "sardinhas",
-    "sardines"
+    "sardines",
+    "canned sardines",
+    "sardinhas enlatadas",
+    "sardinhas de lata",
+    "sardinha em lata",
+    "sardinhas em azeite"
    ],
    "visionLabels": []
   },
@@ -4000,7 +5295,10 @@
     "arroz de marisco",
     "arroz de mariscos",
     "paella",
-    "seafood rice"
+    "seafood rice",
+    "seafood paella",
+    "paella de marisco",
+    "paella de mariscos"
    ],
    "visionLabels": [
     "Portuguese seafood rice",
@@ -4027,7 +5325,7 @@
    "portionEn": "1 plate",
    "aliases": [
     "baião de dois",
-    "baiao de dois"
+    "baião"
    ],
    "visionLabels": []
   },
@@ -4051,12 +5349,14 @@
    "portionEn": "1 large slice",
    "aliases": [
     "fatia de pizza de pepperoni",
-    "fatia de pizza pepperoni",
-    "fatia pizza pepperoni",
     "fatia de pepperoni",
     "pepperoni pizza slice",
     "pepperoni slice",
-    "fatia de salame"
+    "fatia de salame",
+    "pepperoni slices",
+    "pepperoni pizza slices",
+    "fatias de pizza pepperoni",
+    "fatias de pepperoni"
    ],
    "visionLabels": []
   },
@@ -4080,11 +5380,16 @@
    "portionEn": "1 large slice",
    "aliases": [
     "fatia de pizza",
-    "fatia pizza",
     "pizza fatia",
     "fatia de pizza de queijo",
     "cheese pizza slice",
-    "pizza slice"
+    "pizza slice",
+    "cheese pizza slices",
+    "pizza slices",
+    "slice of pizza",
+    "slices of pizza",
+    "fatias de pizza",
+    "fatias de pizza de queijo"
    ],
    "visionLabels": []
   },
@@ -4108,7 +5413,8 @@
    "portionEn": "1 deep plate",
    "aliases": [
     "feijoada",
-    "feijoada brasileira"
+    "feijoada brasileira",
+    "feijoadas"
    ],
    "visionLabels": []
   },
@@ -4132,13 +5438,13 @@
    "portionEn": "1 cheeseburger",
    "aliases": [
     "hambúrguer no pão",
-    "hamburguer no pao",
     "hambúrguer completo",
-    "hamburguer completo",
     "hambúrguer com queijo",
-    "hamburguer com queijo",
     "cheeseburger",
-    "cheese burger"
+    "cheese burger",
+    "cheeseburgers",
+    "hambúrgueres no pão",
+    "hambúrgueres com queijo"
    ],
    "visionLabels": []
   },
@@ -4162,7 +5468,11 @@
    "portionEn": "1 serving",
    "aliases": [
     "lasanha",
-    "lasagna"
+    "lasagna",
+    "lasagne",
+    "lasagnes",
+    "lasanha à bolonhesa",
+    "lasagne bolognese"
    ],
    "visionLabels": []
   },
@@ -4186,16 +5496,16 @@
    "portionEn": "1 individual pizza (≈ 3 slices)",
    "aliases": [
     "pizza de pepperoni",
-    "pizza pepperoni",
     "pepperoni pizza",
     "pepperoni",
     "pizza de salame",
     "pizza de salami",
     "pizza inteira de pepperoni",
     "pizza pepperoni inteira",
-    "pizza de pepperoni inteira",
     "pizza de pepperoni individual",
-    "whole pepperoni pizza"
+    "whole pepperoni pizza",
+    "individual pepperoni pizza",
+    "pepperoni pizza individual"
    ],
    "visionLabels": []
   },
@@ -4227,7 +5537,9 @@
     "cheese pizza",
     "whole pizza",
     "individual pizza",
-    "pizza inteira de queijo"
+    "pizza inteira de queijo",
+    "cheese pizza whole",
+    "individual cheese pizza"
    ],
    "visionLabels": [
     "New York-style pizza",
@@ -4256,7 +5568,10 @@
    "portionEn": "1 slice",
    "aliases": [
     "quiche",
-    "tarte salgada"
+    "tarte salgada",
+    "quiches",
+    "quiche slice",
+    "quiche slices"
    ],
    "visionLabels": []
   },
@@ -4280,7 +5595,8 @@
    "portionEn": "1 serving",
    "aliases": [
     "salpicão",
-    "salpicao"
+    "salpicao de frango",
+    "frango salpicão"
    ],
    "visionLabels": []
   },
@@ -4307,7 +5623,12 @@
     "sopa de legumes",
     "creme de legumes",
     "caldo verde",
-    "vegetable soup"
+    "vegetable soup",
+    "caldo de legumes",
+    "sopa de vegetais",
+    "vegetable soups",
+    "vegetable broth",
+    "caldo de vegetais"
    ],
    "visionLabels": [
     "Minestrone"
@@ -4332,7 +5653,10 @@
    "portionPt": "1 coxinha",
    "portionEn": "1 coxinha",
    "aliases": [
-    "coxinha"
+    "coxinha",
+    "coxinhas",
+    "chicken croquette",
+    "coxinhas de frango"
    ],
    "visionLabels": []
   },
@@ -4360,7 +5684,13 @@
     "croquete de carne",
     "croquete frito",
     "croquete de carne frito",
-    "croquettes de carne"
+    "croquettes de carne",
+    "croquette",
+    "croquettes",
+    "meat croquette",
+    "croquetes de carne",
+    "croquetes de carne fritos",
+    "croquette de carne"
    ],
    "visionLabels": []
   },
@@ -4384,7 +5714,11 @@
    "portionEn": "1 pastel",
    "aliases": [
     "pastel",
-    "pastel de carne"
+    "pastel de carne",
+    "pastéis",
+    "pastéis de carne",
+    "meat pastry",
+    "fried meat pastry"
    ],
    "visionLabels": []
   },
@@ -4408,7 +5742,9 @@
    "portionEn": "1 bowl",
    "aliases": [
     "açaí na tigela",
-    "acai bowl"
+    "acai bowl",
+    "tigela de açaí",
+    "bowl de açaí"
    ],
    "visionLabels": []
   },
@@ -4434,7 +5770,10 @@
     "pudim",
     "pudim flan",
     "flan",
-    "leite-creme"
+    "creme caramel",
+    "crème caramel",
+    "caramel custard",
+    "pudim de ovos"
    ],
    "visionLabels": []
   },
@@ -4461,11 +5800,15 @@
     "batata cozida",
     "batatas",
     "potato",
-    "boiled potatoes"
+    "boiled potatoes",
+    "potatoes",
+    "cooked potatoes",
+    "potatoes cooked",
+    "batatas cozidas",
+    "boiled potato"
    ],
    "visionLabels": [
     "Salt potatoes",
-    "Mashed potato",
     "Potato salad"
    ]
   },
@@ -4492,7 +5835,12 @@
     "batatas fritas",
     "fries",
     "french fries",
-    "chips"
+    "chips",
+    "oven fries",
+    "oven baked fries",
+    "oven chips",
+    "batata frita de forno",
+    "batatas fritas de forno"
    ],
    "visionLabels": [
     "Cheese fries",
@@ -4520,8 +5868,12 @@
    "portionEn": "1 sweet potato",
    "aliases": [
     "batata doce",
-    "batata-doce",
-    "sweet potato"
+    "sweet potato",
+    "sweet potatoes",
+    "baked sweet potato",
+    "sweet potatoes baked",
+    "batatas doces",
+    "batata doce assada"
    ],
    "visionLabels": []
   },
@@ -4547,7 +5899,16 @@
     "mandioca",
     "aipim",
     "macaxeira",
-    "cassava"
+    "cassava",
+    "boiled cassava",
+    "cassava cooked",
+    "cooked cassava",
+    "aipim cozido",
+    "macaxeira cozida",
+    "yuca",
+    "yuca boiled",
+    "manioc",
+    "cassava root"
    ],
    "visionLabels": []
   },
@@ -4572,9 +5933,45 @@
    "aliases": [
     "mandioca frita",
     "aipim frito",
-    "fried cassava"
+    "fried cassava",
+    "fried yuca",
+    "yuca frita",
+    "macaxeira frita",
+    "fried manioc"
    ],
    "visionLabels": []
+  },
+  {
+   "key": "mashed_potato",
+   "namePt": "Puré de batata",
+   "nameEn": "Mashed potatoes",
+   "category": "tubérculos",
+   "region": "eu",
+   "source": "ciqual",
+   "sourceRef": "4047",
+   "sourceLabel": "Purée de pomme de terre (aliment moyen)",
+   "kcal": 96.8,
+   "protein": 2.1,
+   "carbs": 13.0,
+   "fat": 3.7,
+   "fiber": 1.64,
+   "portionG": 150.0,
+   "portionUnits": null,
+   "portionPt": "1 dose",
+   "portionEn": "1 serving",
+   "aliases": [
+    "puré de batata",
+    "puré de batatas",
+    "mashed potatoes",
+    "mashed potato",
+    "potato mash",
+    "mashed potatoes cooked",
+    "purée de pomme de terre",
+    "purée de batata"
+   ],
+   "visionLabels": [
+    "Mashed potato"
+   ]
   }
  ]
 }

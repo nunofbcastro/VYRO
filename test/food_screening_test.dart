@@ -449,7 +449,10 @@ void main() {
     );
 
     test(
-      'model unavailable: failure unavailable with offline foods kept',
+      // Changed in v0.6.8: offline foods are suggestions only when the phone's
+      // model gives no answer; they were in the main list before. Offline
+      // precision was 0.28 on 50 photos (see docs/FOOD_VISION.md).
+      'model unavailable: failure unavailable, offline foods only as suggestions',
       () async {
         final pipeline = FoodVisionPipeline(
           llm: const _Llm(LlmStatus.unavailable),
@@ -469,7 +472,8 @@ void main() {
           ),
         );
         final result = await pipeline.analyse(photo);
-        expect(result.foods, hasLength(1));
+        expect(result.foods, isEmpty);
+        expect(result.suggestions, hasLength(1));
         expect(result.failure, VisionFailure.unavailable);
       },
     );

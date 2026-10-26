@@ -397,11 +397,68 @@ class VyroMarkPainter extends CustomPainter {
       oldDelegate.progress != progress;
 }
 
+/// Spacing and horizontal scale of the lettering, in artwork units (the
+/// 500 × 120 viewBox of `brand/logos/source/`). The V and its cap are never
+/// changed. Y, R and O are scaled horizontally about their own left edge;
+/// their vertical geometry is kept.
+class VyroWordmarkLayout {
+  const VyroWordmarkLayout({
+    required this.name,
+    required this.gaps,
+    required this.scales,
+  });
+
+  /// Label used in previews.
+  final String name;
+
+  /// Gaps between the ink boxes of V–Y, Y–R and R–O.
+  final List<double> gaps;
+
+  /// Horizontal scale of Y, R and O.
+  final List<double> scales;
+
+  /// Source spacing from `vyro-letterieng-*.svg` (gaps 15, 15, 18).
+  static const current = VyroWordmarkLayout(
+    name: 'current',
+    gaps: [15, 15, 18],
+    scales: [1, 1, 1],
+  );
+
+  /// A: tighter tracking only.
+  static const a = VyroWordmarkLayout(
+    name: 'A',
+    gaps: [8, 8, 8],
+    scales: [1, 1, 1],
+  );
+
+  /// B: Y, R and O at 82 %, tight tracking.
+  static const b = VyroWordmarkLayout(
+    name: 'B',
+    gaps: [8, 8, 8],
+    scales: [0.82, 0.82, 0.82],
+  );
+
+  /// C: Y and R at 80 %, O at 68 %, slightly tighter tracking.
+  static const c = VyroWordmarkLayout(
+    name: 'C',
+    gaps: [7, 7, 7],
+    scales: [0.8, 0.8, 0.68],
+  );
+
+  /// Lettering used by the app. Switch to [a], [b], [c] or [current] to compare.
+  static const active = b;
+}
+
 /// Full VYRO lettering (V + Y + R + O) from `brand/logos/vyro-wordmark*.svg`,
-/// painted from the SVG path data. The drawn area is the tight box
-/// (10,10)–(482,102) of the 500 × 120 artwork, scaled to fit the paint size.
+/// painted from the SVG path data with the spacing of [layout]. The drawn area
+/// is the tight box from (10,10) to the right edge of the last letter, at
+/// y 102, scaled to fit the paint size.
 class VyroWordmarkPainter extends CustomPainter {
-  const VyroWordmarkPainter({required this.body, required this.accent});
+  const VyroWordmarkPainter({
+    required this.body,
+    required this.accent,
+    this.layout = VyroWordmarkLayout.active,
+  });
 
   /// Body is white on dark and ink on light; the cap follows [VyroLogo].
   factory VyroWordmarkPainter.of(BuildContext context) {
@@ -412,13 +469,46 @@ class VyroWordmarkPainter extends CustomPainter {
     );
   }
 
-  /// Width / height of the tight lettering box (472 × 92).
-  static const double aspectRatio = 472 / 92;
+  /// Source left and right ink edges of V, Y, R and O.
+  static const List<double> _srcLeft = [10, 120, 245, 358];
+  static const List<double> _srcRight = [105, 230, 340, 482];
+
+  /// Width / height of the tight lettering box for [layout]. For the active
+  /// layout this is the in-app aspect ratio.
+  static double aspectRatioOf(VyroWordmarkLayout layout) {
+    final box = _boxOf(layout);
+    return box.width / box.height;
+  }
+
+  /// Width / height of the active lettering box.
+  static double get aspectRatio => aspectRatioOf(VyroWordmarkLayout.active);
 
   final Color body;
   final Color accent;
 
-  static const _tight = Rect.fromLTRB(10, 10, 482, 102);
+  /// Spacing and scale of the lettering.
+  final VyroWordmarkLayout layout;
+
+  static List<_WordmarkGlyph> _glyphsOf(VyroWordmarkLayout layout) {
+    final glyphs = <_WordmarkGlyph>[];
+    var x = _srcLeft[0];
+    for (var i = 0; i < 4; i++) {
+      final scale = i == 0 ? 1.0 : layout.scales[i - 1];
+      if (i > 0) x += layout.gaps[i - 1];
+      final glyph = _WordmarkGlyph(
+        srcLeft: _srcLeft[i],
+        srcRight: _srcRight[i],
+        left: x,
+        scale: scale,
+      );
+      glyphs.add(glyph);
+      x = glyph.right;
+    }
+    return glyphs;
+  }
+
+  static Rect _boxOf(VyroWordmarkLayout layout) =>
+      Rect.fromLTRB(10, 10, _glyphsOf(layout).last.right, 102);
 
   static final _vLeft = _polygon(const [
     Offset(10, 24),
@@ -504,30 +594,64 @@ class VyroWordmarkPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final scale = math.min(
-      size.width / _tight.width,
-      size.height / _tight.height,
-    );
-    final dx = (size.width - _tight.width * scale) / 2;
-    final dy = (size.height - _tight.height * scale) / 2;
+    final glyphs = _glyphsOf(layout);
+    final box = _boxOf(layout);
+    final fit = math.min(size.width / box.width, size.height / box.height);
+    final dx = (size.width - box.width * fit) / 2;
+    final dy = (size.height - box.height * fit) / 2;
     final bodyPaint = Paint()..color = body;
+    final accentPaint = Paint()..color = accent;
+
+    // Draws [paths] with the glyph's own transform: source x is moved to the
+    // glyph's new left edge and scaled horizontally about that edge.
+    void drawGlyph(_WordmarkGlyph glyph, List<(Path, Paint)> paths) {
+      canvas
+        ..save()
+        ..translate(glyph.left, 0)
+        ..scale(glyph.scale, 1)
+        ..translate(-glyph.srcLeft, 0);
+      for (final (path, paint) in paths) {
+        canvas.drawPath(path, paint);
+      }
+      canvas.restore();
+    }
+
     canvas
       ..save()
       ..translate(dx, dy)
-      ..scale(scale)
-      ..translate(-_tight.left, -_tight.top)
-      ..drawPath(_vLeft, bodyPaint)
-      ..drawPath(_vRight, bodyPaint)
-      ..drawPath(_y, bodyPaint)
-      ..drawPath(_r, bodyPaint)
-      ..drawPath(_o, bodyPaint)
-      ..drawPath(_vCap, Paint()..color = accent)
-      ..restore();
+      ..scale(fit)
+      ..translate(-box.left, -box.top);
+    drawGlyph(glyphs[0], [(_vLeft, bodyPaint), (_vRight, bodyPaint)]);
+    drawGlyph(glyphs[0], [(_vCap, accentPaint)]);
+    drawGlyph(glyphs[1], [(_y, bodyPaint)]);
+    drawGlyph(glyphs[2], [(_r, bodyPaint)]);
+    drawGlyph(glyphs[3], [(_o, bodyPaint)]);
+    canvas.restore();
   }
 
   @override
   bool shouldRepaint(VyroWordmarkPainter oldDelegate) =>
-      oldDelegate.body != body || oldDelegate.accent != accent;
+      oldDelegate.body != body ||
+      oldDelegate.accent != accent ||
+      oldDelegate.layout != layout;
+}
+
+/// One letter placed by [VyroWordmarkPainter]: its source ink span, new left
+/// edge and horizontal scale.
+class _WordmarkGlyph {
+  const _WordmarkGlyph({
+    required this.srcLeft,
+    required this.srcRight,
+    required this.left,
+    required this.scale,
+  });
+
+  final double srcLeft;
+  final double srcRight;
+  final double left;
+  final double scale;
+
+  double get right => left + (srcRight - srcLeft) * scale;
 }
 
 /// Primary pill call to action with the brand lime gradient.

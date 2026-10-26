@@ -20,7 +20,7 @@ foto (câmara/galeria, ficheiro temporário apagado logo após leitura)
   ├─ ramo do sistema (só se OnDeviceLlm.status() == available)
   │     SystemFoodVision: Gemini Nano multimodal (Android, ML Kit GenAI Prompt API)
   │       1.ª passagem (`buildFoodPhotoPrompt`): só a imagem atual, sem lista
-  │         de categorias → {items:[{name,where,count,size}]}, nomes em português;
+  │         de categorias → {items:[{name,where,count,size}]}, nomes e "where" em inglês (0.6.7);
   │         só alimentos e bebidas da foto; todas as bebidas em copo/chávena/garrafa/lata
   │         e todos os alimentos em pratos/tábuas/embalagens; "where" pedido mas opcional
   │       regras determinísticas (`applyDrinkSanity`): uma chávena = uma bebida;
@@ -41,6 +41,11 @@ foto (câmara/galeria, ficheiro temporário apagado logo após leitura)
   │
   ├─ falhas independentes: se um ramo falhar, o outro continua (aviso
   │   "systemFailed"); se os dois falharem, ou se a revisão ficar vazia sem confirmação, aparece o cartão de falha com "Tentar de novo" (`VisionFailure`)
+  │   **Sem resposta do modelo do sistema (falha, ocupado, indisponível, sem AICore):
+  │   o offline entra só como SUGESTÕES** (`offlineHypothesesOnly`, 0.6.8). A lista
+  │   principal fica vazia, o total é 0 kcal, o cartão de falha explica que as
+  │   sugestões são pouco fiáveis e a fonte mostra "Reconhecimento offline (pouco fiável)".
+  │   Motivo: ver "Avaliação offline" abaixo (precisão 0,28, recall 0,06).
   │
   ▼ fuseVisionResults: alimentos do sistema primeiro; alimentos do offline que
     coincidem ficam "corroborados"; os restantes são SUGESTÕES fora dos totais
@@ -78,8 +83,11 @@ fechadas são ignorados.
 O ramo offline arranca logo no início, em paralelo com a verificação de qualidade
 e o modelo do sistema.
 
-**Nomes antes da correspondência** (`food_names.dart`). Para cada nome do modelo,
-a base é consultada com estas formas, por ordem, e a primeira que corresponder ganha:
+**Nomes antes da correspondência** (`food_names.dart`, `matchFoodName`). Primeiro,
+o **nome em inglês** é comparado só com o nome inglês e os aliases da base
+(`matchEnglishFoodName`), com as formas singular/plural em inglês (`englishNameVariants`:
+almond → almonds, berries → berry). Só se não houver correspondência, a base é
+consultada com estas formas, por ordem, e a primeira que corresponder ganha:
 1. o nome como o modelo o escreveu (o original tem sempre prioridade);
 2. o nome normalizado (minúsculas, sem acentos);
 3. uma tradução inglês → português (`englishFoodNames`: egg → ovo, beer → cerveja,
@@ -93,9 +101,31 @@ a base é consultada com estas formas, por ordem, e a primeira que corresponder 
 Palavras genéricas em inglês ("beverage", "dish", "snack") são nomes genéricos:
 ficam como "Que bebida?" / "Que comida?" e não recebem nutrientes.
 
-Os prompts pedem o nome e o "where" em português europeu, com exemplos ("centro do
-prato", "copo em cima à esquerda"). Respostas em inglês são uma das causas de
-correspondência falhada.
+Os prompts pedem o nome e o "where" **em inglês** (ver "Decisão de idioma" abaixo).
+Um nome sem correspondência na base **nunca** é o título do cartão: aparece
+"Que alimento?" (ou "Que bebida?" para genéricos) com "Escolhe o alimento"; o nome
+original fica só em "Detalhes da análise (técnico)". O "where" em inglês só aparece
+na interface em inglês; em português fica nos detalhes técnicos.
+
+**Decisão de idioma (0.6.7).** Avaliação offline em `eval/datasets/nutrition5k_50`
+(50 fotos, pipeline real da app, gemma3n:e2b como proxy do Gemini Nano), com a mesma
+lógica de análise e só o prompt a mudar:
+
+| Variante (`tool/eval/variants.dart`) | F1 | Precisão | Recall | FP/foto | Erros de análise |
+| --- | --- | --- | --- | --- | --- |
+| prompts da app antes de 0.6.7 (nomes em português europeu) | 0,35 | 0,37 | 0,33 | 1,64 | — |
+| nomes em inglês (`en_names`, agora os prompts da app) | **0,47** | 0,48 | 0,45 | 1,44 | 0 |
+| prompts inteiramente em português (`pt_prompt`, histórica) | 0,29 | — | — | — | — |
+
+Também medidos e **sem ganho**: autoconsistência com 2 amostras (`sc_union`,
+`sc_inter`) e o checklist de categorias antigo (`checklist`). Decisão: os prompts da
+app pedem nomes curtos, comuns e no singular em inglês (ex.: "fried egg", "beer",
+"white rice", "beef steak"). As restantes regras (JSON, não-alimentos, uma chávena =
+uma bebida, panela/embalagem) mantêm-se como estavam. O texto exato está em
+`buildFoodPhotoPrompt` e `buildFoodSecondChancePrompt` (`system_food_vision.dart`) e
+é igual ao antigo `en_names`. A verificação já era em inglês e não muda.
+Nota: a medição foi feita com gemma3n:e2b, não com o Gemini Nano no telemóvel; a
+precisão no dispositivo continua por medir.
 
 **Sugestões de acompanhamento** (`food_companions.dart`). Depois da verificação,
 os nomes confirmados sugerem molhos e acompanhamentos, sem perguntar ao modelo:
@@ -148,6 +178,45 @@ o ketchup, o molho de tomate e o queijo ralado não existem, por isso não apare
 - Resultado com o prato de exemplo (arroz, feijão, frango, alface, tomate):
   feijão, alface, tomate, frango e arroz. Noutras fotos pode falhar ou
   sugerir alimentos errados — por isso a revisão é obrigatória.
+- **Porta de não-alimentos (0.6.8).** O índice 0 do CSV é `__background__`. Antes
+  era descartado antes do ranking, por isso o classificador "adivinhava" sempre um
+  prato. Agora cada recorte guarda a probabilidade bruta de fundo. Um recorte
+  vota "sem comida" quando o fundo é mais provável do que a melhor etiqueta de
+  alimento desse recorte (ou quando nenhuma etiqueta chega a 0,08). Se mais de
+  metade dos 26 recortes votar assim (`nonFoodRegionShare` = 0,5, ou seja, ≥ 14),
+  a foto não tem alimento reconhecível: o resultado offline fica vazio, sem
+  sugestões, com a nota `offlineNoFood` ("Nenhum alimento reconhecido nesta foto").
+  Um empate (13 de 26) não conta como "a maioria". Os limites de sugestão são os
+  mesmos de sempre: pico ≥ 0,14 e ≥ 2 regiões (`minFoodPeak`, `minRegions`).
+  Limite: a porta não foi calibrada em fotos sem comida (o conjunto de 50 fotos
+  só tem pratos); o efeito real num objeto como uma bola de madeira precisa de
+  medição no dispositivo.
+
+## Avaliação offline (0.6.8) — motivo das sugestões
+
+Conjunto `eval/datasets/nutrition5k_50` (50 fotos de pratos reais; resultados em
+`eval/datasets/nutrition5k_50/results/*regions_only*`), só o ramo offline
+(`RegionFoodVision`), sem o modelo do sistema:
+
+| Métrica | Valor |
+| --- | --- |
+| Precisão | 0,28 (8 de 29) |
+| Recall | 0,06 (8 de 140) |
+| F1 | 0,09 |
+| Falsos positivos por foto | 0,42 (21 no total) |
+| Refeições exatas | 0 |
+
+Com precisão e recall destes valores, o offline **não pode** adicionar alimentos
+à lista principal sem confirmação. Foi também o caso real de uma foto de uma bola
+de madeira (sem comida) que devolveu "Alface" (50 g, 8 kcal) na lista principal
+com "Adicionar 1 ao diário". Por isso (0.6.8):
+
+- sem resposta do modelo do sistema, todos os alimentos offline vão para
+  "Outras hipóteses" (`offlineHypothesesOnly` em `food_vision.dart`); a lista
+  principal fica vazia e o CTA fica em 0;
+- a porta de não-alimentos devolve nada quando o fundo domina (ver acima);
+- com resposta do modelo do sistema, nada muda: os alimentos offline só
+  corroboram ou ficam como sugestões (`fuseVisionResults`).
 
 ## IA do sistema — `SystemFoodVision`
 
@@ -158,7 +227,8 @@ o ketchup, o molho de tomate e o queijo ralado não existem, por isso não apare
   a 768 px e fica só em memória.
 - Para a 2.ª foto, o pedido envia as duas imagens e instrui o modelo a reconciliar
   identidades sem somar contagens entre vistas.
-- O prompt pede o local de cada item ("where"), contagens e tamanho relativo
+- O prompt (inglês desde 0.6.7) pede o nome, o local de cada item ("where"),
+  contagens e tamanho relativo
   (pequeno/médio/grande), não gramas. Não há lista de categorias (proteína,
   leguminosas, saladas...): essa lista fazia o modelo preencher todas as
   categorias. Uma chávena, asa, pires ou reflexo não são recipientes separados.
@@ -245,7 +315,9 @@ nunca portões.
    `busy` (IA ocupada ou em quota), `unavailable` (não suportada, desligada ou a
    descarregar) ou `other`. A página mostra o motivo em português/inglês e um botão
    "Tentar de novo" que repete a análise da mesma foto. O botão de adicionar
-   alimento continua disponível.
+   alimento continua disponível. Com sugestões offline no ecrã, o motivo diz que
+   são pouco fiáveis e que devem ser confirmadas ("…Sugestões do reconhecimento
+   offline abaixo (pouco fiável) — confirma antes de adicionar.").
 
 **Compromisso desta revisão (recall sobre precisão).** A versão 0.6.3 removia para
 sugestões os itens sem `where`, as bebidas sem palavra de recipiente e os itens sem
@@ -347,13 +419,15 @@ classes verificadas para incluir. Para o integrar:
 ## Testar
 
 ```bash
-flutter test test/food_names_test.dart           # plurais, inglês → português, genéricos, sugestões de acompanhamento
+flutter test test/food_names_test.dart           # plurais, inglês → base (nome e aliases) → português, genéricos, prompts em inglês, sugestões de acompanhamento
+flutter test test/eval_variants_test.dart        # variantes do harness: en_names = prompts da app, pt_prompt histórico
 flutter test test/food_progressive_test.dart     # rascunho → final, tempos em detalhes, análise = último evento
 flutter test test/food_database_test.dart        # parsing, matching, pipeline (fakes)
 flutter test test/vision_resilience_test.dart    # porções por peça, falhas independentes, avisos
 flutter test test/system_food_vision_test.dart test/region_food_vision_test.dart
 flutter test test/food_screening_test.dart       # não-alimentos, genéricos, bebidas, verificação, falhas, pizza
-flutter test test/photo_food_page_test.dart      # cartão de falha, "Tentar de novo", genéricos, refeição vazia confirmada, rascunho → final, CTA e "por escolher", fila de fotos, mesma refeição
+flutter test test/photo_food_page_test.dart      # cartão de falha, "Tentar de novo", genéricos, refeição vazia confirmada, rascunho → final, CTA e "por escolher", fila de fotos, mesma refeição, falha do sistema com sugestões offline (CTA 0)
+flutter test test/food_offline_only_test.dart    # 0.6.8: sem resposta do sistema o offline é só sugestão (Alface); porta de não-alimentos; sucesso do sistema inalterado
 flutter test test/photo_review_widgets_test.dart test/photo_review_model_test.dart   # cartão (detalhes, subtítulo), resumo "parcial", fusão de linhas
 VYRO_FOOD_IMAGE=C:\fotos\prato.png flutter test test/food_model_probe_test.dart
 ```
@@ -364,9 +438,12 @@ alimentos, gramas e kcal sugeridos. Os restantes testes usam respostas simuladas
 ## Limites conhecidos
 
 - Não há medição de precisão, recall ou falsos positivos em fotos reais; a
-  avaliação está planeada (`docs/AI_REVIEW_2026-10-25.md`, secção 5).
+  avaliação está planeada (`docs/AI_REVIEW_2026-10-25.md`, secção 5). A única
+  medição offline é a de `regions_only` (precisão 0,28, recall 0,06, acima).
 - O classificador offline reconhece pratos, não ingredientes; pode perder
-  alimentos ou sugerir outros.
+  alimentos ou sugerir outros. Sem o modelo do sistema, só mostra sugestões.
+- A porta de não-alimentos não foi testada com fotos sem comida reais (só
+  com respostas simuladas nos testes).
 - A segunda passagem do modelo do sistema corre sempre que a primeira devolve
   alimentos; ainda não é condicionada por ambiguidade ou desacordo.
 - Recall sobre precisão: a versão atual mantém quase tudo o que o modelo lista.

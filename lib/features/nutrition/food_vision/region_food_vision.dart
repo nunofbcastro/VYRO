@@ -31,12 +31,25 @@ class RegionFoodVision implements FoodVisionService {
   /// A food is kept when its best region reached this probability…
   static const minFoodPeak = 0.14;
 
-  /// …and it appeared in at least this many distinct regions.
+  /// …and it appeared in at least this many distinct regions. These two are
+  /// also the minimum for an offline suggestion. The eval on 50 Nutrition5k
+  /// photos (regions only) gave precision 0.28 and recall 0.06, so they are a
+  /// floor, not a guarantee; offline results are never added to the main list.
   static const minRegions = 2;
 
   /// Categories where a plate usually has a single food (one main protein,
   /// one kind of beans).
   static const exclusiveCategories = {'carne', 'peixe', 'leguminosas'};
+
+  /// Non-food gate. A region votes "no food" when the background class (index
+  /// 0 of the AIY labels) is more probable than the best food label there, or
+  /// when no food label reaches [minRegionProbability]. When more than this
+  /// share of the regions vote that way, the photo has no recognisable food and
+  /// the offline pass returns nothing (not even suggestions).
+  static const nonFoodRegionShare = 0.5;
+
+  /// Index of the "__background__" class in `aiy_food_v1_labels.csv`.
+  static const backgroundLabel = 0;
 
   static Uint8List? _modelCache;
   static Future<_RegionWorker>? _worker;
@@ -63,15 +76,47 @@ class RegionFoodVision implements FoodVisionService {
     List<List<(int, double)>> perCrop,
     Map<int, String> labels,
   ) {
+    // Non-food gate first: background wins on most regions → no food at all.
+    var nonFoodRegions = 0;
+    for (final ranked in perCrop) {
+      var background = 0.0;
+      var bestFood = 0.0;
+      for (final (k, p) in ranked) {
+        if (k == backgroundLabel) {
+          background = p;
+        } else if (p > bestFood) {
+          bestFood = p;
+        }
+      }
+      if (background > bestFood) nonFoodRegions++;
+    }
+    if (perCrop.isNotEmpty &&
+        nonFoodRegions > perCrop.length * nonFoodRegionShare) {
+      return FoodVisionResult(
+        source: VisionSource.regionClassifier,
+        foods: const [],
+        note: offlineNoFoodNote,
+        detail:
+            'offline: background wins in $nonFoodRegions of '
+            '${perCrop.length} regions, no food kept',
+      );
+    }
     final peak = <String, double>{};
     final regions = <String, int>{};
     final score = <String, double>{};
     String? dish;
     for (var i = 0; i < perCrop.length; i++) {
       final ranked = perCrop[i];
-      if (i == 0 && ranked.isNotEmpty) dish = labels[ranked.first.$1];
+      if (i == 0) {
+        for (final (k, _) in ranked) {
+          if (k == backgroundLabel) continue;
+          dish = labels[k];
+          break;
+        }
+      }
       final cropPeak = <String, double>{};
       for (final (k, p) in ranked) {
+        if (k == backgroundLabel) continue;
         final label = labels[k];
         if (label == null) continue;
         for (final food in database.forVisionLabel(label)) {
@@ -119,8 +164,9 @@ class RegionFoodVision implements FoodVisionService {
     );
   }
 
-  /// Top labels (index, probability ≥ [minRegionProbability]) for the
-  /// centre square and every grid region. Runs inside a worker isolate.
+  /// Per region: the background probability (index 0, raw) followed by the top
+  /// food labels (index, probability ≥ [minRegionProbability], renormalised
+  /// over food classes). Runs inside a worker isolate.
   static List<List<(int, double)>> classifyRegions(
     Uint8List model,
     Uint8List imageBytes, {
@@ -188,6 +234,7 @@ class RegionFoodVision implements FoodVisionService {
     final ranked = [for (var k = 1; k < p.length; k++) k]
       ..sort((a, b) => p[b].compareTo(p[a]));
     return [
+      (backgroundLabel, p[backgroundLabel]),
       for (final k in ranked.take(5))
         if (p[k] >= minRegionProbability) (k, p[k]),
     ];
@@ -229,8 +276,12 @@ class RegionFoodVision implements FoodVisionService {
             zeroPoint: output.params.zeroPoint,
           )
         : raw.cast<double>();
-    final p = List<double>.of(values)..[0] = 0; // drop "background"
-    return toProbabilities(p);
+    // Food probabilities are renormalised without "background" (as before);
+    // the raw background probability is kept at index 0 for the non-food gate.
+    final foods = List<double>.of(values)..[backgroundLabel] = 0;
+    final probabilities = toProbabilities(foods);
+    probabilities[backgroundLabel] = values[backgroundLabel];
+    return probabilities;
   }
 
   static Map<int, String>? _labelCache;

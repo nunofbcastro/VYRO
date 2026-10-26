@@ -1,0 +1,12 @@
+{
+  "_about": "UEC FOOD 256 class name (English, as written in category.txt) -> VYRO foods.json key. Best-effort and UNVERIFIED: the class names were not checked against a real download. null or missing = class skipped. Eval-only, research / non-commercial licence.",
+  "classes": {
+    "rice": "rice_white_cooked",
+    "green salad": "green_salad",
+    "pizza": "pizza_cheese",
+    "hamburger": "cheeseburger_whole",
+    "fried egg": "egg_fried",
+    "boiled egg": "egg_boiled",
+    "miso soup": null
+  }
+}

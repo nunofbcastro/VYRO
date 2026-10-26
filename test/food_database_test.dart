@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vyro/core/ai/on_device_llm.dart';
+import 'package:vyro/features/assistant/domain/meal_proposal.dart'
+    show foodTokens;
 import 'package:vyro/features/nutrition/data/food_database.dart';
 import 'package:vyro/features/nutrition/food_vision/food_companions.dart';
 import 'package:vyro/features/nutrition/food_vision/food_vision.dart';
@@ -170,6 +172,213 @@ void main() {
       expect(db.byKey('beef_ground_raw')!.sourceKey, 'ciqual_6254');
       expect(db.byKey('croquete_meat_fried')!.sourceKey, 'taco_388');
       expect(db.byKey('sparkling_water')!.kcal, closeTo(0, 0.1));
+    });
+  });
+
+  group('English names, singular and plural', () {
+    /// English names a model or a US/UK user types → expected key.
+    const expected = {
+      'almond': 'almonds',
+      'almonds': 'almonds',
+      'lemon': 'lemon_raw',
+      'lemons': 'lemon_raw',
+      'lemon wedge': 'lemon_raw',
+      'lemon juice': 'lemon_juice',
+      'white sauce': 'white_sauce_bechamel',
+      'bechamel sauce': 'white_sauce_bechamel',
+      'bacon': 'bacon_cooked',
+      'bacon slice': 'bacon_cooked',
+      'bacon slices': 'bacon_cooked',
+      'mashed potato': 'mashed_potato',
+      'mashed potatoes': 'mashed_potato',
+      'arugula': 'arugula_raw',
+      'rocket': 'arugula_raw',
+      'fish': 'cod_cooked',
+      'fish fillet': 'cod_cooked',
+      'white fish': 'cod_cooked',
+      'kale': 'kale_raw',
+      'kale raw': 'kale_raw',
+      'cooked kale': 'kale_cooked',
+      'pomelo': 'pomelo_raw',
+      'pomelos': 'pomelo_raw',
+      'dried fruit': 'dried_fruit_raisins',
+      'dried fruits': 'dried_fruit_raisins',
+      'dried cranberries': 'cranberries_dried',
+      'brussels sprouts': 'brussels_cooked',
+      'brussels sprout': 'brussels_cooked',
+      'plantain': 'plantain_cooked',
+      'plantains': 'plantain_cooked',
+      'pecan': 'pecan_nuts',
+      'pecans': 'pecan_nuts',
+      'eggplant': 'eggplant_cooked',
+      'eggplants': 'eggplant_cooked',
+      'aubergine': 'eggplant_cooked',
+      'aubergines': 'eggplant_cooked',
+      'egg white': 'egg_white',
+      'egg whites': 'egg_white',
+      'scrambled egg': 'egg_scrambled',
+      'scrambled eggs': 'egg_scrambled',
+      'boiled egg': 'egg_boiled',
+      'boiled eggs': 'egg_boiled',
+      'fried egg': 'egg_fried',
+      'fried eggs': 'egg_fried',
+      'corn on the cob': 'corn_canned',
+      'sweet corn': 'corn_canned',
+      'blueberry': 'blueberries_raw',
+      'blueberries': 'blueberries_raw',
+      'honeydew melon': 'honeydew_raw',
+      'green bell pepper': 'green_pepper_raw',
+      'green peppers': 'green_pepper_raw',
+      'raw spinach': 'spinach_raw',
+      'spinach': 'spinach_cooked',
+      'spring onion': 'spring_onion_raw',
+      'spring onions': 'spring_onion_raw',
+      'scallion': 'spring_onion_raw',
+      'scallions': 'spring_onion_raw',
+      'green onion': 'spring_onion_raw',
+      'onion': 'onion_raw',
+      'onions': 'onion_raw',
+      'eggplant cooked': 'eggplant_cooked',
+      'chickpea': 'chickpeas_cooked',
+      'chickpeas': 'chickpeas_cooked',
+      'garbanzo': 'chickpeas_cooked',
+      'garbanzos': 'chickpeas_cooked',
+      'zucchini': 'zucchini_cooked',
+      'zucchinis': 'zucchini_cooked',
+      'courgette': 'zucchini_cooked',
+      'courgettes': 'zucchini_cooked',
+      'ground beef': 'beef_ground_raw',
+      'minced beef': 'beef_ground_raw',
+      'french fries': 'potato_fries_oven',
+      'fries': 'potato_fries_oven',
+      'soda': 'cola_coca',
+      'soft drink': 'cola_coca',
+      'chicken breast': 'chicken_breast_roasted',
+      'chicken breasts': 'chicken_breast_roasted',
+      'grilled chicken': 'chicken_breast_roasted',
+      'white rice': 'rice_white_cooked',
+      'steamed rice': 'rice_white_cooked',
+      'tomato': 'tomato_raw',
+      'tomatoes': 'tomato_raw',
+      'cherry tomatoes': 'tomato_raw',
+      'carrot': 'carrot_raw',
+      'carrots': 'carrot_raw',
+      'cooked carrots': 'carrot_cooked',
+      'grape': 'grapes_raw',
+      'grapes': 'grapes_raw',
+      'strawberries': 'strawberries_raw',
+      'peaches': 'peach_raw',
+      'mushrooms': 'mushrooms_raw',
+      'pork chop': 'pork_loin_broiled',
+      'pork chops': 'pork_loin_broiled',
+      'beef steak': 'beef_sirloin_broiled',
+      'beef steaks': 'beef_sirloin_broiled',
+      'sweet potatoes': 'sweet_potato_baked',
+      'mozzarella': 'cheese_mozzarella',
+      'cheese slice': 'cheese_gouda',
+      'olive oil': 'olive_oil',
+      'extra virgin olive oil': 'olive_oil',
+      'sardines': 'sardines_canned_oil',
+      'shrimps': 'shrimp_cooked',
+      'prawns': 'shrimp_cooked',
+      'pizza slices': 'pizza_cheese',
+      'pepperoni slices': 'pizza_pepperoni',
+      'hamburger patty': 'beef_ground_patty',
+      'hamburger buns': 'hamburger_bun',
+      'cheeseburgers': 'cheeseburger_whole',
+      'ham slices': 'ham_cooked',
+      'cooked ham': 'ham_cooked',
+      'lentils': 'lentils_cooked',
+      'lentil': 'lentils_cooked',
+      'green beans': 'green_beans_cooked',
+      'peas': 'peas_cooked',
+      'pea': 'peas_cooked',
+    };
+
+    test('each English name maps to its food', () {
+      for (final entry in expected.entries) {
+        expect(
+          db.match(entry.key)?.key,
+          entry.value,
+          reason: '"${entry.key}" should match ${entry.value}',
+        );
+      }
+    });
+
+    test('new rows match their English names and keep their refs', () {
+      expect(db.byKey('almonds')!.sourceKey, 'usda_170567');
+      expect(db.byKey('bacon_cooked')!.sourceKey, 'usda_168322');
+      expect(db.byKey('kale_raw')!.sourceKey, 'usda_168421');
+      expect(db.byKey('kale_cooked')!.sourceKey, 'usda_169238');
+      expect(db.byKey('eggplant_cooked')!.sourceKey, 'ciqual_20002');
+      expect(db.byKey('mashed_potato')!.sourceKey, 'ciqual_4047');
+      expect(db.byKey('lemon_raw')!.sourceKey, 'ciqual_13009');
+      expect(db.byKey('lemon_juice')!.sourceKey, 'ciqual_2028');
+      expect(db.byKey('brussels_cooked')!.sourceKey, 'usda_169971');
+      expect(db.byKey('arugula_raw')!.sourceKey, 'ciqual_20217');
+      expect(db.byKey('pecan_nuts')!.sourceKey, 'usda_170182');
+      expect(db.byKey('plantain_cooked')!.sourceKey, 'ciqual_53101');
+      expect(db.byKey('dried_fruit_raisins')!.sourceKey, 'usda_168165');
+      expect(db.byKey('cranberries_dried')!.sourceKey, 'usda_171723');
+      expect(db.byKey('white_sauce_bechamel')!.sourceKey, 'ciqual_11143');
+      expect(db.byKey('egg_white')!.sourceKey, 'usda_172183');
+      expect(db.byKey('egg_scrambled')!.sourceKey, 'usda_172187');
+      expect(db.byKey('blueberries_raw')!.sourceKey, 'usda_171711');
+      expect(db.byKey('pomelo_raw')!.sourceKey, 'usda_173033');
+      expect(db.byKey('honeydew_raw')!.sourceKey, 'usda_169911');
+      expect(db.byKey('green_pepper_raw')!.sourceKey, 'usda_170427');
+      expect(db.byKey('spinach_raw')!.sourceKey, 'usda_168462');
+      expect(db.byKey('spring_onion_raw')!.sourceKey, 'usda_170005');
+    });
+
+    test('the photo-model names that were unmatched now resolve', () {
+      // Names from the on-device English-name evaluation (training subset).
+      for (final name in [
+        'almond',
+        'lemon',
+        'white sauce',
+        'bacon',
+        'mashed potatoes',
+        'arugula',
+        'fish',
+        'kale',
+        'pomelo',
+        'dried fruit',
+        'brussels sprouts',
+        'plantain',
+        'pecan',
+        'eggplant',
+        'egg whites',
+      ]) {
+        expect(db.match(name), isNotNull, reason: name);
+      }
+    });
+  });
+
+  group('alias hygiene', () {
+    test('no name or alias maps to two different foods', () {
+      final owners = <String, Set<String>>{};
+      for (final f in db.foods) {
+        for (final text in [f.namePt, f.nameEn, ...f.aliases]) {
+          final tokens = foodTokens(text);
+          if (tokens.isEmpty) continue;
+          final signature = (tokens.toList()..sort()).join(' ');
+          owners.putIfAbsent(signature, () => <String>{}).add(f.key);
+        }
+      }
+      final clashes = {
+        for (final e in owners.entries)
+          if (e.value.length > 1) e.key: e.value,
+      };
+      expect(clashes, isEmpty);
+    });
+
+    test('bare generic words do not pick one food', () {
+      // "bean" and "nuts" are too generic: a row with that word must not win.
+      expect(db.match('bean'), isNull);
+      expect(db.match('nuts'), isNull);
+      expect(db.match('almond milk')?.key, 'almond_drink');
+      expect(db.match('corn chips')?.key, 'tortilla_chips');
     });
   });
 
@@ -351,6 +560,8 @@ void main() {
       ).analyse(Uint8List(0));
       expect(result.source, VisionSource.regionClassifier);
       expect(result.notes, contains('systemFailed'));
+      // Offline guesses never enter the main list after a system failure.
+      expect(result.foods, isEmpty);
     });
 
     test('text-only system model falls back silently', () async {

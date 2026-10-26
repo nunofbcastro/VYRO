@@ -6,6 +6,8 @@ The logo is a heavy geometric lettering, V Y R O, with a separate accent "progre
 | --- | --- |
 | `vyro-wordmark.svg` | Full lettering (V Y R O) for dark backgrounds: white body, cap `#A3E635`. Copied from `source/vyro-letterieng-white.svg`. |
 | `vyro-wordmark-light.svg` | Full lettering for light backgrounds: ink body `#18191C`, cap `#4D7C0F`. Copied from `source/vyro-letterieng-dark.svg`. |
+| `vyro-wordmark-compact.svg` | Compact lettering for dark backgrounds, the one the app uses: same paths as `vyro-wordmark.svg` with tighter spacing (8 units between letters), and Y, R and O scaled to 82% horizontally about their own left edge (`transform="matrix(0.82 0 0 1 tx 0)"`). V and cap unchanged. ViewBox is the tight box `10 10 388.78 92`. |
+| `vyro-wordmark-compact-light.svg` | Compact lettering for light backgrounds, same transform as above, ink body `#18191C`, cap `#4D7C0F`. |
 | `vyro-mark-dark.svg` | V monogram alone on `#0B0D10` (viewBox `2.5 0 110 110`). App icon source. |
 | `vyro-mark-lime.svg` | V monogram alone on no background, for light surfaces (ink body, `#4D7C0F` cap). |
 | `vyro-app-icon-1024.png` | Rendered app icon master (opaque). |
@@ -13,7 +15,7 @@ The logo is a heavy geometric lettering, V Y R O, with a separate accent "progre
 
 All logo files are outlined paths, so they need no fonts.
 
-Geometry (lettering viewBox `0 0 500 120`, tight box `(10,10)`–`(482,102)`):
+Geometry (lettering viewBox `0 0 500 120`, full tight box `(10,10)`–`(482,102)`; compact tight box `(10,10)`–`(398.78,102)`):
 - V body strokes: `(10,24) (40,24) (68,100) (38,100)` and `(40,100) (70,100) (95,34) (65,34)`.
 - V cap: `(67,28) (97,28) (105,10) (75,10)`. It sits above the right arm with a gap of 6 units.
 - Y, R and O are the paths in the files. R and O have counters (holes).
@@ -24,7 +26,7 @@ Colours:
 - The logo cap is not the UI accent. The UI lime `#B8F36B` (dark) and `#4A741A` (light) in `brand/tokens/tokens.json` are unchanged.
 
 In the app (`lib/app/theme/vyro_chrome.dart`, `vyro_shell.dart`):
-- `VyroWordmarkPainter` paints the full lettering from the path data above. `VyroWordmark` (header, height 22 px) uses it.
+- `VyroWordmarkPainter` paints the full lettering from the path data above, with the spacing of `VyroWordmarkLayout`. The app uses `VyroWordmarkLayout.b` (the compact lettering, see `vyro-wordmark-compact*.svg`). `VyroWordmark` (header, height 22 px) uses it, so it is 92.97 px wide. The `source/` files and `vyro-wordmark.svg` remain the master lettering with the original spacing. To compare layouts, switch `VyroWordmarkLayout.active` to `a`, `b`, `c` or `current`.
 - `VyroMarkPainter` paints the V monogram, with the animated `progress` used by the splash (body strokes draw top-down, then the cap slides in).
 - `VyroBrandTile` is the monogram tile (splash, onboarding).
 - `android/app/src/main/res/drawable/vyro_mark.xml` is the same V for the home-screen widgets.

@@ -1,0 +1,736 @@
+{
+  "_about": "Nutrition5k ingredient name (lower case, as in dish_metadata) -> VYRO foods.json key. key null = no DB equivalent (scored as neither hit nor miss). any_of = alternative keys that also count as a hit. optional = not scored when absent from the photo. reviewed = a human checked this entry. See eval/datasets/README.md for the rules.",
+  "ingredients": {
+    "almonds": {
+      "key": "almonds",
+      "reviewed": true
+    },
+    "apple": {
+      "key": "apple_raw",
+      "reviewed": true
+    },
+    "artichokes": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "arugula": {
+      "key": "arugula_raw",
+      "any_of": [
+        "green_salad",
+        "lettuce_raw"
+      ],
+      "note": "arugula (Ciqual roquette)"
+    },
+    "avocado": {
+      "key": "avocado_raw",
+      "reviewed": true
+    },
+    "bacon": {
+      "key": "bacon_cooked",
+      "note": "cooked bacon (pan-fried)"
+    },
+    "bagels": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "basil": {
+      "key": null,
+      "optional": true,
+      "note": "herb; no DB key",
+      "reviewed": true
+    },
+    "beef": {
+      "key": "beef_sirloin_broiled",
+      "any_of": [
+        "beef_steak_fried"
+      ],
+      "note": "generic beef",
+      "reviewed": true
+    },
+    "beets": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "bell peppers": {
+      "key": "pepper_red_raw",
+      "note": "approximation (bell pepper)",
+      "reviewed": true
+    },
+    "berries": {
+      "key": null,
+      "note": "generic; no DB key",
+      "reviewed": true
+    },
+    "blackberries": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "blueberries": {
+      "key": "blueberries_raw"
+    },
+    "bok choy": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "brisket": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "broccoli": {
+      "key": "broccoli_cooked",
+      "reviewed": true
+    },
+    "brown rice": {
+      "key": "rice_brown_cooked",
+      "reviewed": true
+    },
+    "brown sugar": {
+      "key": "sugar",
+      "optional": true,
+      "reviewed": true
+    },
+    "brussels sprouts": {
+      "key": "brussels_cooked",
+      "note": "cooked (boiled, no salt)"
+    },
+    "butter": {
+      "key": "butter_salted",
+      "optional": true,
+      "reviewed": true
+    },
+    "cabbage": {
+      "key": "cabbage_raw",
+      "reviewed": true
+    },
+    "caesar dressing": {
+      "key": null,
+      "optional": true,
+      "note": "dressing; no DB key",
+      "reviewed": true
+    },
+    "caesar salad": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "cantaloupe": {
+      "key": "melon_raw",
+      "note": "approximation (melon)",
+      "reviewed": true
+    },
+    "carrot": {
+      "key": "carrot_raw",
+      "reviewed": true
+    },
+    "cauliflower": {
+      "key": "cauliflower_cooked",
+      "reviewed": true
+    },
+    "celery": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "chard": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "cheese pizza": {
+      "key": "pizza_cheese",
+      "any_of": [
+        "pizza_cheese_whole"
+      ],
+      "note": "slice vs whole",
+      "reviewed": true
+    },
+    "cherry tomatoes": {
+      "key": "tomato_raw",
+      "note": "approximation (tomato)",
+      "reviewed": true
+    },
+    "chia seeds": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "chicken": {
+      "key": "chicken_breast_roasted",
+      "any_of": [
+        "chicken_thigh_roasted"
+      ],
+      "reviewed": true
+    },
+    "chicken thighs": {
+      "key": "chicken_thigh_roasted",
+      "reviewed": true
+    },
+    "chickpeas": {
+      "key": "chickpeas_cooked",
+      "reviewed": true
+    },
+    "chili": {
+      "key": null,
+      "optional": true,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "chive": {
+      "key": null,
+      "optional": true,
+      "note": "herb; no DB key",
+      "reviewed": true
+    },
+    "cilantro": {
+      "key": null,
+      "optional": true,
+      "note": "herb; no DB key",
+      "reviewed": true
+    },
+    "cod": {
+      "key": "cod_cooked",
+      "reviewed": true
+    },
+    "corn on the cob": {
+      "key": "corn_canned",
+      "note": "approximation (sweet corn)",
+      "reviewed": true
+    },
+    "cream": {
+      "key": "cooking_cream",
+      "optional": true,
+      "reviewed": true
+    },
+    "cream cheese": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "croutons": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "cucumbers": {
+      "key": "cucumber_raw",
+      "reviewed": true
+    },
+    "deprecated": {
+      "key": null,
+      "optional": true,
+      "note": "N5K placeholder name; no DB key",
+      "reviewed": true
+    },
+    "dried cranberries": {
+      "key": "cranberries_dried"
+    },
+    "dried fruit": {
+      "key": "dried_fruit_raisins",
+      "note": "approximation (raisins as dried fruit)"
+    },
+    "dumplings": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "egg whites": {
+      "key": "egg_white"
+    },
+    "eggplant": {
+      "key": "eggplant_cooked",
+      "note": "cooked (boiled); grilled/roasted approximated"
+    },
+    "eggs": {
+      "key": "egg_fried",
+      "any_of": [
+        "egg_boiled",
+        "omelette"
+      ],
+      "note": "generic eggs",
+      "reviewed": true
+    },
+    "feta cheese": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "fish": {
+      "key": "cod_cooked",
+      "any_of": [
+        "salmon_cooked",
+        "hake_steamed",
+        "sea_bass_baked"
+      ],
+      "note": "generic fish",
+      "reviewed": true
+    },
+    "fried rice": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "garden salad": {
+      "key": "green_salad",
+      "note": "approximation (mixed salad)",
+      "reviewed": true
+    },
+    "garlic": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "ginger": {
+      "key": null,
+      "optional": true,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "goat cheese": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "granola": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "grapes": {
+      "key": "grapes_raw",
+      "reviewed": true
+    },
+    "greek yogurt": {
+      "key": "yogurt_greek_nonfat",
+      "reviewed": true
+    },
+    "green beans": {
+      "key": "green_beans_cooked",
+      "reviewed": true
+    },
+    "green bell pepper": {
+      "key": "green_pepper_raw"
+    },
+    "green onions": {
+      "key": "spring_onion_raw",
+      "note": "spring onion / scallion"
+    },
+    "grilled chicken": {
+      "key": "chicken_breast_roasted",
+      "any_of": [
+        "chicken_thigh_roasted"
+      ],
+      "reviewed": true
+    },
+    "ground turkey": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "hash browns": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "honeydew melon": {
+      "key": "honeydew_raw"
+    },
+    "honeydew melons": {
+      "key": "honeydew_raw"
+    },
+    "jalapenos": {
+      "key": null,
+      "optional": true,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "kale": {
+      "key": "kale_raw",
+      "any_of": [
+        "kale_cooked"
+      ],
+      "note": "raw kale; cooked counts as hit"
+    },
+    "lemon": {
+      "key": "lemon_raw",
+      "note": "lemon flesh per 20 g wedge"
+    },
+    "lemon juice": {
+      "key": "lemon_juice",
+      "optional": true,
+      "note": "lemon juice (pure juice)"
+    },
+    "lettuce": {
+      "key": "lettuce_raw",
+      "reviewed": true
+    },
+    "lime": {
+      "key": null,
+      "optional": true,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "mandarin oranges": {
+      "key": "tangerine_raw",
+      "note": "approximation (tangerine)",
+      "reviewed": true
+    },
+    "mashed potatoes": {
+      "key": "mashed_potato",
+      "note": "mashed potato (Ciqual purée, aliment moyen)"
+    },
+    "mayonnaise": {
+      "key": "mayonnaise",
+      "optional": true,
+      "reviewed": true
+    },
+    "milk": {
+      "key": "milk_whole",
+      "reviewed": true
+    },
+    "millet": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "mixed greens": {
+      "key": "green_salad",
+      "any_of": [
+        "lettuce_raw"
+      ],
+      "reviewed": true
+    },
+    "mushroom": {
+      "key": "mushrooms_raw",
+      "reviewed": true
+    },
+    "mustard": {
+      "key": "mustard",
+      "optional": true,
+      "reviewed": true
+    },
+    "mustard greens": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "oatmeal": {
+      "key": null,
+      "note": "no DB key for cooked oatmeal",
+      "reviewed": true
+    },
+    "olive oil": {
+      "key": "olive_oil",
+      "optional": true,
+      "reviewed": true
+    },
+    "olives": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "onions": {
+      "key": "onion_raw",
+      "reviewed": true
+    },
+    "orange": {
+      "key": "orange_raw",
+      "reviewed": true
+    },
+    "orange juice": {
+      "key": "orange_juice",
+      "reviewed": true
+    },
+    "oregano": {
+      "key": null,
+      "optional": true,
+      "note": "herb; no DB key",
+      "reviewed": true
+    },
+    "parmesan cheese": {
+      "key": "parmesan_grated",
+      "reviewed": true
+    },
+    "parsley": {
+      "key": null,
+      "optional": true,
+      "note": "herb; no DB key",
+      "reviewed": true
+    },
+    "pasta": {
+      "key": "pasta_cooked",
+      "reviewed": true
+    },
+    "pears": {
+      "key": "pear_raw",
+      "reviewed": true
+    },
+    "pecan": {
+      "key": "pecan_nuts"
+    },
+    "pecans": {
+      "key": "pecan_nuts"
+    },
+    "pepper": {
+      "key": null,
+      "optional": true,
+      "note": "black pepper seasoning; no DB key",
+      "reviewed": true
+    },
+    "pepperoni pizza": {
+      "key": "pizza_pepperoni",
+      "any_of": [
+        "pizza_pepperoni_whole"
+      ],
+      "note": "slice vs whole",
+      "reviewed": true
+    },
+    "pineapple": {
+      "key": "pineapple_raw",
+      "reviewed": true
+    },
+    "pizza": {
+      "key": "pizza_cheese",
+      "any_of": [
+        "pizza_cheese_whole",
+        "pizza_pepperoni"
+      ],
+      "note": "generic pizza",
+      "reviewed": true
+    },
+    "plantain": {
+      "key": "plantain_cooked",
+      "note": "cooked plantain (Ciqual banane plantain, cuite)"
+    },
+    "pomelo": {
+      "key": "pomelo_raw",
+      "note": "approximation (grapefruit, pink and red)"
+    },
+    "pork": {
+      "key": "pork_loin_broiled",
+      "any_of": [
+        "pork_tenderloin_cooked"
+      ],
+      "note": "generic pork",
+      "reviewed": true
+    },
+    "pumpkin seeds": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "quinoa": {
+      "key": "quinoa_cooked",
+      "reviewed": true
+    },
+    "radishes": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "raisins": {
+      "key": "dried_fruit_raisins",
+      "note": "dark raisins"
+    },
+    "raspberries": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "roasted potatoes": {
+      "key": "potato_boiled",
+      "any_of": [
+        "potato_fries_oven"
+      ],
+      "note": "approximation (roasted potato)",
+      "reviewed": true
+    },
+    "rosemary": {
+      "key": null,
+      "optional": true,
+      "note": "herb; no DB key",
+      "reviewed": true
+    },
+    "salmon": {
+      "key": "salmon_cooked",
+      "reviewed": true
+    },
+    "salsa": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "salt": {
+      "key": null,
+      "optional": true,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "sandwiches": {
+      "key": null,
+      "note": "generic; no DB key",
+      "reviewed": true
+    },
+    "sausage": {
+      "key": "linguica_grilled",
+      "any_of": [
+        "chorizo"
+      ],
+      "note": "approximation (sausage)",
+      "reviewed": true
+    },
+    "scrambled eggs": {
+      "key": "egg_scrambled",
+      "any_of": [
+        "omelette"
+      ],
+      "note": "scrambled eggs; omelette counts as hit"
+    },
+    "shallots": {
+      "key": "onion_raw",
+      "optional": true,
+      "note": "approximation (onion family)",
+      "reviewed": true
+    },
+    "snow peas": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "sour cream": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "soy sauce": {
+      "key": "soy_sauce",
+      "optional": true,
+      "reviewed": true
+    },
+    "spinach (cooked)": {
+      "key": "spinach_cooked",
+      "reviewed": true
+    },
+    "spinach (raw)": {
+      "key": "spinach_raw"
+    },
+    "squash": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "steak": {
+      "key": "beef_sirloin_broiled",
+      "any_of": [
+        "beef_steak_fried"
+      ],
+      "note": "generic steak",
+      "reviewed": true
+    },
+    "strawberries": {
+      "key": "strawberries_raw",
+      "reviewed": true
+    },
+    "sugar": {
+      "key": "sugar",
+      "optional": true,
+      "reviewed": true
+    },
+    "sun dried tomatoes": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "sweet potato": {
+      "key": "sweet_potato_baked",
+      "reviewed": true
+    },
+    "tatsoi": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "thyme": {
+      "key": null,
+      "optional": true,
+      "note": "herb; no DB key",
+      "reviewed": true
+    },
+    "tomatoes": {
+      "key": "tomato_raw",
+      "reviewed": true
+    },
+    "tuna salad": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "turnips": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "vinaigrette": {
+      "key": null,
+      "optional": true,
+      "note": "dressing; no DB key",
+      "reviewed": true
+    },
+    "vinegar": {
+      "key": null,
+      "optional": true,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "walnuts": {
+      "key": "walnuts",
+      "reviewed": true
+    },
+    "watermelon": {
+      "key": "watermelon_raw",
+      "reviewed": true
+    },
+    "wheat berry": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "white beans": {
+      "key": "beans_white_cooked",
+      "reviewed": true
+    },
+    "white rice": {
+      "key": "rice_white_cooked",
+      "reviewed": true
+    },
+    "white sauce": {
+      "key": "white_sauce_bechamel",
+      "note": "bechamel (home-made, with butter)"
+    },
+    "white wine": {
+      "key": null,
+      "note": "no DB key (DB has red wine only)",
+      "reviewed": true
+    },
+    "wine": {
+      "key": "red_wine",
+      "optional": true,
+      "note": "approximation (drink; colour may differ)",
+      "reviewed": true
+    },
+    "yam": {
+      "key": null,
+      "note": "no DB key",
+      "reviewed": true
+    },
+    "zucchini": {
+      "key": "zucchini_cooked",
+      "reviewed": true
+    }
+  }
+}

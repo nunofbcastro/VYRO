@@ -309,3 +309,46 @@ FoodVisionResult fuseVisionResults(
     ].join('\n'),
   );
 }
+
+/// Note set on an offline result when the non-food gate found no food.
+const offlineNoFoodNote = 'offlineNoFood';
+
+/// The offline result used when the phone's model gave no usable answer.
+/// Offline foods are hypotheses only: they move to [FoodVisionResult.suggestions]
+/// ("Outras hipóteses") and never reach the main list or the totals. Reason:
+/// the offline eval on 50 Nutrition5k photos (regions only) had precision 0.28,
+/// recall 0.06 and 21 false positives. The AIY classifier always guesses a dish,
+/// so a photo with no food (e.g. a wooden ball) came back as "Alface".
+FoodVisionResult offlineHypothesesOnly(
+  FoodVisionResult offline, {
+  required VisionFailure failure,
+  bool systemFailed = false,
+  String? detail,
+}) {
+  final suggestions = <DetectedFood>[];
+  final keys = <String>{};
+  for (final candidate in [...offline.foods, ...offline.suggestions]) {
+    if (keys.add(candidate.food?.key ?? candidate.label.toLowerCase())) {
+      suggestions.add(candidate);
+    }
+  }
+  final details = [
+    if (detail != null && detail.isNotEmpty) detail,
+    if (offline.detail != null && offline.detail!.isNotEmpty) offline.detail!,
+  ];
+  final notes = [
+    if (systemFailed) 'systemFailed',
+    if (offline.notes.contains(offlineNoFoodNote)) offlineNoFoodNote,
+  ];
+  return FoodVisionResult(
+    foods: const [],
+    source: offline.source,
+    dishGuess: offline.dishGuess,
+    note: notes.isEmpty ? null : notes.join(','),
+    detail: details.isEmpty ? null : details.join('\n'),
+    suggestions: suggestions,
+    failure: failure,
+    stage: offline.stage,
+    timings: offline.timings,
+  );
+}

@@ -8,6 +8,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import '../../../app/app_services.dart';
 import '../../../app/l10n/strings.dart';
 import '../../../core/ai/on_device_llm.dart';
+import '../../../core/platform/orientation_lock.dart';
 import '../../../core/ui/vyro_ui.dart';
 import '../exercise_analysis/exercise_analysis_engine.dart';
 import '../exercise_registry/exercise_analysis_registry.dart';
@@ -128,10 +129,14 @@ class _MotionCoachPageState extends State<MotionCoachPage>
   bool? _tipsOpen;
   Duration _setOffset = Duration.zero;
 
+  // True while this page holds the landscape allowance; see OrientationLock.
+  bool _holdsOrientation = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _acquireOrientation();
     _tts.setCompletionHandler(_onSpeechEnded);
     _tts.setCancelHandler(_onSpeechEnded);
     _tts.setErrorHandler((_) => _onSpeechEnded());
@@ -175,9 +180,25 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     }
   }
 
+  void _acquireOrientation() {
+    if (_holdsOrientation) return;
+    _holdsOrientation = true;
+    // Best effort: a failed orientation request must not break the camera.
+    unawaited(OrientationLock.allowAllOrientations().catchError((Object _) {}));
+  }
+
+  void _releaseOrientation() {
+    if (!_holdsOrientation) return;
+    _holdsOrientation = false;
+    unawaited(
+      OrientationLock.releaseAllOrientations().catchError((Object _) {}),
+    );
+  }
+
   @override
   void dispose() {
     _runId++;
+    _releaseOrientation();
     WidgetsBinding.instance.removeObserver(this);
     _ticker?.cancel();
     unawaited(_releaseCamera());

@@ -443,6 +443,52 @@ void main() {
     expect(find.text('a confirmar'), findsOneWidget);
   });
 
+  // v0.6.8: the phone AI failed, so offline guesses are suggestions only. The
+  // main list is empty, the card says they must be confirmed, and the CTA is 0.
+  testWidgets('system AI failed: offline guesses are suggestions, CTA is 0', (
+    tester,
+  ) async {
+    vision.result = Future.value(
+      offlineHypothesesOnly(
+        FoodVisionResult(
+          source: VisionSource.regionClassifier,
+          foods: [
+            DetectedFood(
+              food: db.byKey('lettuce_raw'),
+              label: 'Alface',
+              grams: 50,
+              source: VisionSource.regionClassifier,
+            ),
+          ],
+        ),
+        failure: VisionFailure.other,
+        systemFailed: true,
+        detail: 'LlmException: generation_failed',
+      ),
+    );
+    await open(tester);
+    await choose(tester, first: true);
+    await tester.pumpAndSettle();
+    expect(
+      find.text(
+        'A IA do telemóvel não conseguiu analisar a foto. Sugestões do reconhecimento offline abaixo (pouco fiável) — confirma antes de adicionar.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Reconhecimento offline (pouco fiável)'), findsOneWidget);
+    expect(find.text('Tentar de novo'), findsOneWidget);
+    expect(find.text('Adicionar 0 ao diário'), findsOneWidget);
+    expect(find.text('Adicionar 1 ao diário'), findsNothing);
+    await tester.scrollUntilVisible(
+      find.text('Outras hipóteses'),
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Outras hipóteses'), findsOneWidget);
+    expect(find.text(db.byKey('lettuce_raw')!.namePt), findsOneWidget);
+    expect(await tester.runAsync(savedNames), isEmpty);
+  });
+
   testWidgets('meal chips stay on one row', (tester) async {
     vision.result = Future.value(meal(['espresso']));
     await open(tester);

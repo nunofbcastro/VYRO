@@ -1,3 +1,5 @@
+import '../../assistant/domain/meal_proposal.dart' show foodTokens;
+import '../data/food_database.dart';
 import 'food_screening.dart' show normaliseFoodName;
 
 /// Names the photo model may answer in English, mapped to a Portuguese name
@@ -180,3 +182,73 @@ List<String> foodNameCandidates(String raw) {
   }
   return out;
 }
+
+/// English spellings to try for a model name, the name first, then its
+/// singular/plural forms ("almond" → "almonds", "berries" → "berry",
+/// "peaches" → "peach"). Only the last word changes.
+List<String> englishNameVariants(String normalised) {
+  final words = normalised.split(' ').where((w) => w.isNotEmpty).toList();
+  if (words.isEmpty) return const [];
+  final last = words.last;
+  final options = <String>{last};
+  if (last.endsWith('ies') && last.length > 4) {
+    options.add('${last.substring(0, last.length - 3)}y');
+  } else if (last.endsWith('es') && last.length > 3) {
+    options.add(last.substring(0, last.length - 2));
+    options.add(last.substring(0, last.length - 1));
+  } else if (last.endsWith('s') && last.length > 3) {
+    options.add(last.substring(0, last.length - 1));
+  } else if (last.length > 2) {
+    options.add('${last}s');
+    if (RegExp(r'(x|ch|sh)$').hasMatch(last)) options.add('${last}es');
+    if (RegExp(r'[^aeiou]y$').hasMatch(last)) {
+      options.add('${last.substring(0, last.length - 1)}ies');
+    }
+  }
+  final head = words.take(words.length - 1).toList();
+  return [
+    for (final o in options) [...head, o].join(' '),
+  ];
+}
+
+/// The database food whose English name or English alias best matches one of
+/// [names] (with their English singular/plural variants). The Portuguese name
+/// of a food is not compared here. Null when nothing matches.
+FoodRef? matchEnglishFoodName(FoodDatabase db, Iterable<String> names) {
+  final queries = <Set<String>>[];
+  for (final name in names) {
+    for (final variant in englishNameVariants(normaliseFoodName(name))) {
+      final tokens = foodTokens(variant);
+      if (tokens.isNotEmpty && !queries.any((q) => _sameTokens(q, tokens))) {
+        queries.add(tokens);
+      }
+    }
+  }
+  if (queries.isEmpty) return null;
+  FoodRef? best;
+  var bestScore = 0.0;
+  for (final food in db.foods) {
+    for (final phrase in [food.nameEn, ...food.aliases]) {
+      final tokens = foodTokens(phrase);
+      if (tokens.isEmpty) continue;
+      for (final query in queries) {
+        final shared = query.intersection(tokens).length;
+        if (shared == 0) continue;
+        // Every word of the shorter phrase must be present.
+        final smaller = query.length < tokens.length
+            ? query.length
+            : tokens.length;
+        if (shared < smaller) continue;
+        final score = shared / (query.length + tokens.length - shared);
+        if (score > bestScore) {
+          bestScore = score;
+          best = food;
+        }
+      }
+    }
+  }
+  return best;
+}
+
+bool _sameTokens(Set<String> a, Set<String> b) =>
+    a.length == b.length && a.containsAll(b);

@@ -16,7 +16,7 @@ VYRO never invents calories. Every food in the app comes from
 1. A curated list, `tool/nutrition/foods_pt.tsv`, has one row per VYRO food:
    `key, name_pt, name_en, source, source_ref, region, category, portion_g,
    portion_pt, portion_en, aliases, vision_labels, portion_units` (lists
-   separated by `|`). `portion_units` is optional (82 of 168 rows): the number
+   separated by `|`). `portion_units` is optional (85 of 191 rows): the number
    of pieces that `portion_g` represents (3 sardines = 120 g ⇒ `3`). Leave it
    empty for foods that are not counted in pieces (rice, soups, sauces); the app
    then ignores piece counts for that food. The build copies it to
@@ -63,14 +63,23 @@ VYRO never invents calories. Every food in the app comes from
    alias with a generic word captures that word: "mostarda de mesa" made the
    table name "Mesa" match mustard, which broke a non-food test. Keep aliases
    specific and run `test/system_food_vision_test.dart` after adding one.
+   Matching uses word sets after accent removal, and `de/do/da/com/sem/e/o/a/em`
+   and one-letter words are dropped. So "fatia de pizza" and "fatia pizza" are
+   the same alias, and "creme de leite" equals "leite-creme". The test "no name
+   or alias maps to two different foods" fails on any such clash. A bare
+   "refrigerante" must not match: do not add "refrigerante de X" aliases, since
+   they contain the word. Singular and plural are different words ("fatia" vs
+   "fatias", "pizza slice" vs "pizza slices"): add both.
 3. Rebuild and verify:
    ```bash
    python -I tool/nutrition/build_food_db.py
    python -I tool/nutrition/build_food_db.py --check
    flutter test test/food_database_test.dart
    ```
-   On Windows without pypdf: install it in a separate folder and point
-   `PYTHONPATH` at it (TACO rows need it).
+   TACO rows need pypdf. `-I` ignores `PYTHONPATH`, so install pypdf into a
+   scratch folder and add it to `sys.path` in a wrapper that runs the builder
+   with `runpy` (the build itself is unchanged). The eval builder
+   (`tool/eval_data/build_nutrition5k.py`) needs Pillow, which the eval venv has.
 4. Sanity-check the new values against the source (kcal plausible, Atwater
    test passes) and commit the TSV **and** the regenerated `foods.json`
    together. Never edit `foods.json` by hand.
