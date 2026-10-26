@@ -6,6 +6,9 @@ import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
 import '../../core/database/app_database.dart';
 import '../nutrition/domain/food_product.dart';
+import '../nutrition/domain/nutrition_targets_rules.dart';
+import '../nutrition/nutrition_targets_page.dart';
+import '../../app/app.dart';
 import 'body_weight_sheet.dart';
 import 'domain/body_weight.dart';
 import 'line_chart.dart';
@@ -384,6 +387,7 @@ class _ProgressPageState extends State<ProgressPage> {
       now: DateTime.now(),
       original: existing?.measuredAt,
     );
+    final before = await TargetsState.load(database);
     try {
       await database.saveBodyWeight(
         id: existing?.id,
@@ -401,6 +405,32 @@ class _ProgressPageState extends State<ProgressPage> {
         replaceSameDay: true,
       );
     }
+    if (!mounted) return;
+    await _afterTargetsMayChange(context, database, before);
+  }
+
+  /// Refreshes the profile the screens read, then tells the user when the
+  /// weight change moved the targets.
+  Future<void> _afterTargetsMayChange(
+    BuildContext context,
+    AppDatabase database,
+    TargetsState before,
+  ) async {
+    final settings = SettingsScope.maybeOf(context);
+    await settings?.refreshProfile();
+    if (!mounted) return;
+    final after = await TargetsState.load(database);
+    if (!mounted) return;
+    showWeightTargetsFeedback(
+      context,
+      t: stringsOf(context),
+      before: before,
+      after: after,
+      onRecalculate: () async {
+        await database.useAutomaticTargets();
+        await settings?.refreshProfile();
+      },
+    );
   }
 
   Future<bool> _confirmReplace(
@@ -449,6 +479,8 @@ class _ProgressPageState extends State<ProgressPage> {
     setState(() => _dismissedIds.add(entry.id));
     await database.deleteBodyWeight(entry.id);
     if (!mounted) return;
+    await SettingsScope.maybeOf(context)?.refreshProfile();
+    if (!mounted) return;
     final messenger = ScaffoldMessenger.maybeOf(context);
     messenger
       ?..hideCurrentSnackBar()
@@ -471,6 +503,8 @@ class _ProgressPageState extends State<ProgressPage> {
     final t = stringsOf(context);
     setState(() => _dismissedIds.remove(entry.id));
     final restored = await database.restoreBodyWeight(entry);
+    if (!mounted) return;
+    await SettingsScope.maybeOf(context)?.refreshProfile();
     if (!mounted || restored) return;
     ScaffoldMessenger.maybeOf(
       context,

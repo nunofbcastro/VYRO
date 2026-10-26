@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 import 'tables.dart';
+import '../../features/onboarding/domain/nutrition_targets.dart';
 import '../ai/local_data_validation.dart';
 
 part 'app_database.g.dart';
@@ -226,25 +227,34 @@ class AppDatabase extends _$AppDatabase {
         bodyMeasurements,
       )..where((row) => row.id.equals(other.id))).go();
     }
+    final int savedId;
     if (id == null) {
-      return into(bodyMeasurements).insert(
+      savedId = await into(bodyMeasurements).insert(
         BodyMeasurementsCompanion.insert(
           measuredAt: Value(measuredAt),
           weightKg: weightKg,
         ),
       );
+    } else {
+      await (update(bodyMeasurements)..where((row) => row.id.equals(id))).write(
+        BodyMeasurementsCompanion(
+          measuredAt: Value(measuredAt),
+          weightKg: Value(weightKg),
+        ),
+      );
+      savedId = id;
     }
-    await (update(bodyMeasurements)..where((row) => row.id.equals(id))).write(
-      BodyMeasurementsCompanion(
-        measuredAt: Value(measuredAt),
-        weightKg: Value(weightKg),
-      ),
-    );
-    return id;
+    await refreshAutomaticTargets();
+    return savedId;
   });
 
-  Future<int> deleteBodyWeight(int id) =>
-      (delete(bodyMeasurements)..where((row) => row.id.equals(id))).go();
+  Future<int> deleteBodyWeight(int id) => transaction<int>(() async {
+    final removed = await (delete(
+      bodyMeasurements,
+    )..where((row) => row.id.equals(id))).go();
+    await refreshAutomaticTargets();
+    return removed;
+  });
 
   /// Puts back an entry removed by mistake (the "Anular" action). Returns
   /// false, and writes nothing, when another entry now occupies that day.
@@ -252,8 +262,20 @@ class AppDatabase extends _$AppDatabase {
       transaction<bool>(() async {
         if (await bodyWeightOnDay(row.measuredAt) != null) return false;
         await into(bodyMeasurements).insert(row.toCompanion(true));
+        await refreshAutomaticTargets();
         return true;
       });
+
+  /// The entry that drives automatic targets: the latest measurement by
+  /// time, not the most recently typed one. Null when nothing is logged.
+  Future<BodyMeasurement?> latestBodyWeight() =>
+      (select(bodyMeasurements)
+            ..orderBy([
+              (row) => OrderingTerm.desc(row.measuredAt),
+              (row) => OrderingTerm.desc(row.id),
+            ])
+            ..limit(1))
+          .getSingleOrNull();
 
   Future<VyroProfile?> getUserProfile() async {
     final row = await customSelect(
@@ -280,13 +302,71 @@ class AppDatabase extends _$AppDatabase {
     [key, value],
   );
 
+  /// Stores the profile. Automatic targets are resolved first from the
+  /// latest logged weight, so every write path keeps them consistent.
   Future<void> saveUserProfile(VyroProfile profile) async {
+    final latest = await latestBodyWeight();
+    await _writeProfile(
+      profile.withResolvedTargets(latestWeightKg: latest?.weightKg),
+    );
+  }
+
+  Future<void> _writeProfile(VyroProfile profile) async {
     // `customStatement` takes plain values; passing `Variable` objects here
     // breaks the web (wasm) executor with "Unknown db value" and the returned
     // future never completes.
     await customStatement(
       'INSERT OR REPLACE INTO vyro_preferences (key, value) VALUES (?, ?)',
       ['profile', jsonEncode(profile.toJson())],
+    );
+  }
+
+  /// Re-applies the formula to the latest weight. Called after every weight
+  /// change; a no-op without a profile, and manual targets are kept as they are.
+  Future<void> refreshAutomaticTargets() async {
+    final profile = await getUserProfile();
+    if (profile == null || profile.manualTargets) return;
+    await saveUserProfile(profile);
+  }
+
+  /// Switches to manual targets with the given values. The weight they were
+  /// set at is remembered, so a later weight change can be detected.
+  Future<void> saveManualTargets({
+    required double kcal,
+    required double protein,
+    required double carbs,
+    required double fat,
+  }) async {
+    final profile = await getUserProfile() ?? const VyroProfile();
+    final latest = await latestBodyWeight();
+    await _writeProfile(
+      profile.copyWith(
+        targetMode: VyroProfile.modeManual,
+        calorieGoal: kcal,
+        proteinGoal: protein,
+        carbsGoal: carbs,
+        fatGoal: fat,
+        targetsWeightKg: latest?.weightKg ?? profile.weightKg,
+      ),
+    );
+  }
+
+  /// Returns to automatic targets and recomputes them from the latest weight.
+  Future<void> useAutomaticTargets() async {
+    final profile = await getUserProfile() ?? const VyroProfile();
+    await saveUserProfile(
+      profile.copyWith(targetMode: VyroProfile.modeAutomatic),
+    );
+  }
+
+  /// Keeps manual targets and acknowledges the current weight, which hides
+  /// the "weight changed" hint until the weight changes again.
+  Future<void> keepManualTargets() async {
+    final profile = await getUserProfile();
+    if (profile == null || !profile.manualTargets) return;
+    final latest = await latestBodyWeight();
+    await _writeProfile(
+      profile.copyWith(targetsWeightKg: latest?.weightKg ?? profile.weightKg),
     );
   }
 
@@ -501,14 +581,59 @@ class VyroProfile {
     this.heightCm = 175,
     this.weightKg = 75,
     this.onboardingCompleted = false,
+    this.targetMode = modeAutomatic,
+    this.targetsWeightKg,
   });
+
+  /// Targets follow the formula and the latest logged weight.
+  static const modeAutomatic = 'automatic';
+
+  /// Targets were typed by the user and stay until changed.
+  static const modeManual = 'manual';
+
   final String name, goal, locale, theme, sex;
   final String activityLevel, dietaryChoice, workoutExperience;
   final List<String> availableEquipment;
   final int trainingDays, age;
   final double heightCm, weightKg;
+
+  /// The stored targets. In automatic mode they are a cache of the formula
+  /// and are rewritten on every weight or profile change.
   final double calorieGoal, proteinGoal, carbsGoal, fatGoal;
   final bool onboardingCompleted;
+
+  /// [modeAutomatic] or [modeManual].
+  final String targetMode;
+
+  /// Body weight the stored targets were calculated from. Null when unknown
+  /// (profiles saved before this field existed).
+  final double? targetsWeightKg;
+
+  bool get manualTargets => targetMode == modeManual;
+
+  /// The targets this profile should store. Automatic profiles get the
+  /// formula applied to [latestWeightKg], or to the profile weight when no
+  /// weight is logged. Manual profiles are returned unchanged.
+  VyroProfile withResolvedTargets({double? latestWeightKg}) {
+    if (manualTargets) return this;
+    final weight = latestWeightKg ?? weightKg;
+    final targets = NutritionTargets.calculate(
+      sex: sex,
+      age: age,
+      heightCm: heightCm,
+      weightKg: weight,
+      activityLevel: activityLevel,
+      goal: goal,
+    );
+    return copyWith(
+      calorieGoal: targets.kcal,
+      proteinGoal: targets.protein,
+      carbsGoal: targets.carbs,
+      fatGoal: targets.fat,
+      targetsWeightKg: weight,
+    );
+  }
+
   factory VyroProfile.fromJson(Map<String, dynamic> json) {
     double positiveNumber(String key, double fallback) {
       final value = (json[key] as num?)?.toDouble();
@@ -533,7 +658,13 @@ class VyroProfile {
     final diet = json['dietaryChoice'] as String? ?? 'none';
     final experience = json['workoutExperience'] as String? ?? 'beginner';
     final sex = json['sex'] as String? ?? 'unspecified';
+    final basis = (json['targetsWeightKg'] as num?)?.toDouble();
     return VyroProfile(
+      targetMode: json['targetMode'] == modeManual ? modeManual : modeAutomatic,
+      targetsWeightKg:
+          basis != null && basis.isFinite && basis >= 30 && basis <= 300
+          ? basis
+          : null,
       name: json['name'] as String? ?? '',
       goal: const {'strength', 'nutrition', 'routine'}.contains(goal)
           ? goal
@@ -585,6 +716,8 @@ class VyroProfile {
     'heightCm': heightCm,
     'weightKg': weightKg,
     'onboardingCompleted': onboardingCompleted,
+    'targetMode': targetMode,
+    'targetsWeightKg': targetsWeightKg,
   };
   VyroProfile copyWith({
     String? name,
@@ -605,6 +738,8 @@ class VyroProfile {
     double? heightCm,
     double? weightKg,
     bool? onboardingCompleted,
+    String? targetMode,
+    double? targetsWeightKg,
   }) => VyroProfile(
     name: name ?? this.name,
     goal: goal ?? this.goal,
@@ -624,5 +759,7 @@ class VyroProfile {
     heightCm: heightCm ?? this.heightCm,
     weightKg: weightKg ?? this.weightKg,
     onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+    targetMode: targetMode ?? this.targetMode,
+    targetsWeightKg: targetsWeightKg ?? this.targetsWeightKg,
   );
 }

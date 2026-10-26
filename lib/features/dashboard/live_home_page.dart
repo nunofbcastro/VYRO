@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/app.dart';
 import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
 import '../../core/database/app_database.dart';
@@ -8,6 +9,7 @@ import '../../core/ui/vyro_ui.dart';
 import '../nutrition/domain/food_product.dart';
 import '../nutrition/meals.dart';
 import '../nutrition/nutrition_diary_page.dart';
+import '../nutrition/nutrition_targets_page.dart';
 import 'home_shell.dart';
 import '../workouts/data/workout_repository.dart';
 import '../workouts/domain/plan_generator.dart';
@@ -44,10 +46,12 @@ class _LiveHomePageState extends State<LiveHomePage> {
       builder: (context, snapshot) {
         final entries = snapshot.data ?? const <FoodEntryRecord>[];
         final totals = _Totals.from(entries);
-        return FutureBuilder<VyroProfile?>(
-          future: services.database.getUserProfile(),
-          builder: (context, profileSnapshot) {
-            final profile = profileSnapshot.data ?? const VyroProfile();
+        // The profile comes from the shared settings, which are refreshed
+        // after every weight or target change.
+        return Builder(
+          builder: (context) {
+            final profile =
+                SettingsScope.maybeOf(context)?.profile ?? const VyroProfile();
             final calorieGoal = profile.calorieGoal;
             final proteinGoal = profile.proteinGoal;
             final carbsGoal = profile.carbsGoal;
@@ -81,6 +85,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
                     goal: calorieGoal,
                     remaining: remaining,
                   ),
+                  const NutritionTargetsLink(),
                   if (entries.any(
                     (e) =>
                         e.kcalPer100g == null ||

@@ -9,6 +9,7 @@ import '../../core/ui/vyro_ui.dart';
 import '../../core/database/app_database.dart';
 import 'domain/food_product.dart';
 import 'meals.dart';
+import 'nutrition_targets_page.dart';
 import 'portion_labels.dart';
 
 class NutritionDiaryPage extends StatefulWidget {
@@ -69,6 +70,7 @@ class _NutritionDiaryPageState extends State<NutritionDiaryPage> {
               ),
               const SizedBox(height: 14),
               _DailySummary(entries: entries, profile: profile),
+              const NutritionTargetsLink(),
               if (partial) ...[
                 const SizedBox(height: 8),
                 Text(

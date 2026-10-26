@@ -64,6 +64,14 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                   onTap: () => _editProfile(context, services, profile),
                 ),
                 VyroListRow(
+                  icon: Icons.track_changes_rounded,
+                  title: t.get('targetsTitle'),
+                  subtitle:
+                      '${(profile?.manualTargets ?? false) ? t.get('targetsModeManual') : t.get('targetsModeAuto')}'
+                      ' · ${(profile?.calorieGoal ?? 2200).round()} kcal',
+                  onTap: () => _openTargets(context),
+                ),
+                VyroListRow(
                   icon: Icons.chat_bubble_outline_rounded,
                   title: t.get('assistant'),
                   subtitle: t.get('assistantTagline'),
@@ -170,25 +178,19 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
     _ => 'goalRoutine',
   });
 
+  Future<void> _openTargets(BuildContext context) async {
+    await Navigator.pushNamed(context, '/nutrition-targets');
+    if (context.mounted) _reload();
+  }
+
   Future<void> _editProfile(
     BuildContext context,
     AppServices services,
     VyroProfile? profile,
   ) async {
     final t = stringsOf(context);
+    final settings = SettingsScope.maybeOf(context);
     final name = TextEditingController(text: profile?.name ?? '');
-    final kcal = TextEditingController(
-      text: (profile?.calorieGoal ?? 2200).round().toString(),
-    );
-    final protein = TextEditingController(
-      text: (profile?.proteinGoal ?? 140).round().toString(),
-    );
-    final carbs = TextEditingController(
-      text: (profile?.carbsGoal ?? 260).round().toString(),
-    );
-    final fat = TextEditingController(
-      text: (profile?.fatGoal ?? 75).round().toString(),
-    );
     var goal = profile?.goal ?? 'routine';
     var activity = profile?.activityLevel ?? 'moderate';
     var diet = profile?.dietaryChoice ?? 'none';
@@ -319,11 +321,6 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                       )
                       .toList(),
                 ),
-                const SizedBox(height: 12),
-                _numberField(kcal, t.get('calorieTarget'), 'kcal'),
-                _numberField(protein, t.get('protein'), 'g'),
-                _numberField(carbs, t.get('carbs'), 'g'),
-                _numberField(fat, t.get('fat'), 'g'),
               ],
             ),
           ),
@@ -341,13 +338,8 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
       ),
     );
     if (saved == true) {
-      double parse(TextEditingController c, double fallback) {
-        final value = double.tryParse(c.text.trim());
-        return value != null && value.isFinite && value > 0 && value <= 100000
-            ? value
-            : fallback;
-      }
-
+      // Targets are resolved by the database: automatic ones follow the new
+      // goal, activity and body data, manual ones are kept.
       await services.database.saveUserProfile(
         (profile ?? const VyroProfile()).copyWith(
           name: name.text.trim(),
@@ -359,13 +351,10 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
               ? ['bodyweight']
               : equipment.toList(),
           trainingDays: days,
-          calorieGoal: parse(kcal, profile?.calorieGoal ?? 2200),
-          proteinGoal: parse(protein, profile?.proteinGoal ?? 140),
-          carbsGoal: parse(carbs, profile?.carbsGoal ?? 260),
-          fatGoal: parse(fat, profile?.fatGoal ?? 75),
           onboardingCompleted: true,
         ),
       );
+      await settings?.refreshProfile();
       if (context.mounted) {
         _reload();
         ScaffoldMessenger.of(
@@ -374,24 +363,7 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
       }
     }
     name.dispose();
-    kcal.dispose();
-    protein.dispose();
-    carbs.dispose();
-    fat.dispose();
   }
-
-  Widget _numberField(
-    TextEditingController controller,
-    String label,
-    String suffix,
-  ) => Padding(
-    padding: const EdgeInsets.only(top: 10),
-    child: TextField(
-      controller: controller,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(labelText: label, suffixText: suffix),
-    ),
-  );
 
   Future<void> _export(BuildContext context, AppServices services) async {
     final t = stringsOf(context);

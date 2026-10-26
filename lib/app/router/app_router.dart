@@ -10,6 +10,7 @@ import '../../features/design_showcase/design_system_page.dart';
 import '../../features/demo/demo_page.dart';
 import '../../features/nutrition/nutrition_diary_page.dart';
 import '../../features/nutrition/photo_food_page.dart';
+import '../../features/nutrition/nutrition_targets_page.dart';
 import '../../features/onboarding/onboarding_flow.dart';
 import '../../features/onboarding/setup_wizard_page.dart';
 import '../../features/motion_engine/workout_camera/motion_coach_page.dart';
@@ -42,6 +43,10 @@ class VyroRouter {
       case '/nutrition':
         return MaterialPageRoute<void>(
           builder: (_) => const NutritionDiaryPage(),
+        );
+      case '/nutrition-targets':
+        return MaterialPageRoute<void>(
+          builder: (_) => const NutritionTargetsPage(),
         );
       case '/barcode':
         return MaterialPageRoute<void>(

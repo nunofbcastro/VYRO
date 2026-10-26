@@ -36,6 +36,7 @@ import 'package:vyro/features/assistant/local_intelligence_page.dart';
 import 'package:vyro/features/dashboard/live_home_page.dart';
 import 'package:vyro/features/nutrition/domain/food_product.dart';
 import 'package:vyro/features/nutrition/nutrition_diary_page.dart';
+import 'package:vyro/features/nutrition/nutrition_targets_page.dart';
 import 'package:vyro/features/progress/body_weight_sheet.dart';
 import 'package:vyro/features/progress/progress_page.dart';
 import 'package:vyro/features/profile/profile_settings_page.dart';
@@ -763,6 +764,56 @@ void main() {
           await _capture(tester, key, 'weight_sheet_edit_$mode$suffix');
         },
       );
+    }
+
+    for (final size in const [(412.0, 915.0), (360.0, 800.0)]) {
+      final suffix = size.$1 == 360 ? '_w360' : '';
+      for (final manual in [false, true]) {
+        final state = manual ? 'manual' : 'auto';
+        testWidgets(
+          'targets editor ($state, $mode, ${size.$1.toInt()})',
+          skip: !_enabled,
+          (tester) async {
+            await tester.runAsync(() async {
+              await database.saveUserProfile(
+                const VyroProfile(
+                  name: 'Ana',
+                  sex: 'female',
+                  age: 32,
+                  heightCm: 168,
+                  weightKg: 72,
+                  goal: 'routine',
+                  activityLevel: 'moderate',
+                  onboardingCompleted: true,
+                ),
+              );
+              await seedWeights(database);
+              if (manual) {
+                await database.saveManualTargets(
+                  kcal: 1900,
+                  protein: 130,
+                  carbs: 200,
+                  fat: 60,
+                );
+              }
+            });
+            final key = await pumpPhone(
+              tester,
+              const NutritionTargetsPage(),
+              dark: dark,
+              width: size.$1,
+              height: size.$2,
+            );
+            await _settle(tester);
+            await _capture(
+              tester,
+              key,
+              'targets_${state}_$mode$suffix',
+              raw: true,
+            );
+          },
+        );
+      }
     }
 
     testWidgets('assistant chat with meal card ($mode)', skip: !_enabled, (
