@@ -1,4 +1,5 @@
 import '../data/food_database.dart';
+import 'burger_rules.dart';
 import 'food_vision.dart';
 import 'food_screening.dart' show normaliseFoodName;
 import 'portion_estimate.dart';
@@ -17,15 +18,13 @@ class _CompanionRule {
 }
 
 const _companionRules = [
-  // Meat, steak and hamburger: gravy (also the "molho de cerveja" alias),
-  // cream, mayonnaise, ketchup.
+  // Meat and steak: gravy (also the "molho de cerveja" alias), cream,
+  // mayonnaise, ketchup. Burgers have their own rule (_burgerCompanions).
   _CompanionRule(
     {
       'bife',
       'steak',
       'carne',
-      'hamburguer',
-      'hamburger',
       'costeleta',
       'picanha',
       'entrecosto',
@@ -100,21 +99,27 @@ List<DetectedFood> mealCompanions(
       (f.food?.key ?? f.label.toLowerCase()),
   };
   final out = <DetectedFood>[];
+  // A patty with no bun: the bun first, then cheese and burger sauce.
+  for (final wanted in burgerCompanionKeys(foods, taken: taken)) {
+    final food = _companionFood(db, wanted);
+    if (food == null || !taken.add(food.key)) continue;
+    out.add(_suggestion(food));
+  }
   for (final rule in _companionRules) {
     if (!rule.words.any(words.contains)) continue;
     for (final wanted in rule.foods) {
       final food = _companionFood(db, wanted);
       if (food == null || !taken.add(food.key)) continue;
-      out.add(
-        DetectedFood(
-          food: food,
-          label: food.namePt,
-          grams: estimatedGrams(food: food, size: PortionSize.medium),
-          size: PortionSize.medium,
-          source: VisionSource.systemAi,
-        ),
-      );
+      out.add(_suggestion(food));
     }
   }
   return out;
 }
+
+DetectedFood _suggestion(FoodRef food) => DetectedFood(
+  food: food,
+  label: food.namePt,
+  grams: estimatedGrams(food: food, size: PortionSize.medium),
+  size: PortionSize.medium,
+  source: VisionSource.systemAi,
+);

@@ -130,7 +130,7 @@ precisão no dispositivo continua por medir.
 **Sugestões de acompanhamento** (`food_companions.dart`). Depois da verificação,
 os nomes confirmados sugerem molhos e acompanhamentos, sem perguntar ao modelo:
 
-- carne, bife, hambúrguer → molho castanho (gravy; o alias "molho de cerveja" é o
+- carne, bife → molho castanho (gravy; o alias "molho de cerveja" é o
   mesmo registo da base), natas, maionese, ketchup (se existir na base);
 - massa, esparguete, lasanha → natas, molho de tomate e queijo ralado (se existirem);
 - batata frita → ketchup, maionese;
@@ -139,6 +139,23 @@ os nomes confirmados sugerem molhos e acompanhamentos, sem perguntar ao modelo:
 São **sugestões** (`suggestions`), fora dos totais, e só aparecem se existirem na
 base. Não se repetem alimentos já listados nem os cafés duplicados. Na base atual,
 o ketchup, o molho de tomate e o queijo ralado não existem, por isso não aparecem.
+
+**Hambúrgueres** (`burger_rules.dart`, puro Dart, testado em
+`test/burger_rules_test.dart`):
+
+- Em inglês, «hamburger», «burger», «cheeseburger», «big mac» são o hambúrguer
+  completo (`cheeseburger_whole`, com pão). «beef patty» e «patty» são a carne
+  (`beef_ground_patty`).
+- Sanduíche mais pão à parte: o modelo listou um hambúrguer completo e também um
+  pão ou um pão de hambúrguer. O pão já está no sanduíche, por isso o sanduíche
+  passa a carne (120 g por unidade; a contagem mantém-se). O pão não é contado
+  duas vezes.
+- Carne sem pão: a lista principal não tem pão, por isso o pão de hambúrguer
+  (`hamburger_bun`) é sugerido primeiro; depois queijo (`cheese_gouda`) e molho
+  (`burger_sauce`), se ainda não estiverem na lista. São sugestões, fora dos
+  totais.
+- Contagem: «2 hamburgers» são dois hambúrgueres completos, 300 g (150 g
+  por unidade, sem fator de tamanho).
 
 ## Porções e peças — `portion_estimate.dart`
 

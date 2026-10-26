@@ -20,7 +20,7 @@
   }
  },
  "curatedList": "tool/nutrition/foods_pt.tsv",
- "curatedSha256": "dee45daf5e5a52e0fd3ba345d1aa71d7898d2d57b1de824110b2dd57c4510104",
+ "curatedSha256": "2d2cc3ab5153e5d28bb5f7de683913217363635b15672991d51cbbc02109e7a2",
  "portionNote": "Typical portions are VYRO estimates for suggestions; users confirm grams.",
  "foods": [
   {
@@ -847,8 +847,9 @@
    "portionEn": "1 patty",
    "aliases": [
     "hambúrguer",
-    "burger",
     "hambúrguer de vaca",
+    "patty",
+    "patties",
     "beef patty",
     "beef patties",
     "beef burger patty",
@@ -859,8 +860,6 @@
     "hambúrguer grelhado"
    ],
    "visionLabels": [
-    "Hamburger",
-    "Cheeseburger",
     "Meatball",
     "Kofta",
     "Qeema"
@@ -5444,9 +5443,18 @@
     "cheese burger",
     "cheeseburgers",
     "hambúrgueres no pão",
-    "hambúrgueres com queijo"
+    "hambúrgueres com queijo",
+    "hamburger",
+    "hamburgers",
+    "burger",
+    "burgers",
+    "big mac",
+    "double cheeseburger"
    ],
-   "visionLabels": []
+   "visionLabels": [
+    "Hamburger",
+    "Cheeseburger"
+   ]
   },
   {
    "key": "lasagna_meat",

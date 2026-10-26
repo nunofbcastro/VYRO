@@ -7,6 +7,7 @@ import '../../core/ui/vyro_ui.dart';
 import 'data/workout_repository.dart';
 import 'domain/plan_generator.dart';
 import 'domain/week_schedule.dart';
+import 'plan_details_view.dart';
 import 'plan_wizard_page.dart';
 import 'workout_day_page.dart';
 import 'workout_session_page.dart';
@@ -267,6 +268,17 @@ class _TrainingPageState extends State<TrainingPage> {
           ),
           const SizedBox(height: 10),
         ],
+        const SizedBox(height: 18),
+        VyroSectionTitle(label: t.get('aboutPlanTitle')),
+        if (data.details != null)
+          PlanAboutCard(details: data.details!)
+        else
+          VyroCard(
+            child: Text(
+              t.get('aboutPlanLegacy'),
+              style: theme.textTheme.bodyMedium,
+            ),
+          ),
         const SizedBox(height: 6),
         VyroPrimaryButton(
           label: t.get('generateFromGoals'),

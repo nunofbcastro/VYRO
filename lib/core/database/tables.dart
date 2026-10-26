@@ -48,6 +48,11 @@ class WorkoutPlans extends Table {
   TextColumn get goal => text()();
   BoolColumn get active => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  /// JSON from `PlanDetails`: block start and length, warm-ups per day,
+  /// rationale notes, warnings and the optional on-device summary. Null for
+  /// plans saved before schema v6.
+  TextColumn get details => text().nullable()();
 }
 
 class WorkoutDays extends Table {

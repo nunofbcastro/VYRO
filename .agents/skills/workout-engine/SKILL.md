@@ -27,3 +27,18 @@ Voice coach rules: the fixed phrases are deterministic templates. The on-device 
 2. Draft the smallest testable change; prefer real behavior to placeholders.
 3. Implement and add tests for failures, permissions and offline cases.
 4. Run checks where available and report honest results.
+
+## Plan generator (questionnaire v2)
+
+Full rules and the substitution table: `docs/WORKOUT_PLANS.md`. Key code: `lib/features/workouts/domain/` (`plan_preferences.dart`, `exercise_traits.dart`, `plan_generator.dart`, `ai_plan.dart`) and `plan_wizard_page.dart`.
+
+Rules:
+- Generation is deterministic. The on-device model never chooses exercises, sets, reps or rest; `ai_plan.dart` only checks one rephrased summary sentence (no digits beyond the facts, no safety, technique or medical claims, at most 300 characters). The deterministic notes are always shown.
+- Every exercise must pass: equipment (`equipmentCovers`), avoided list, `limitationConflict` (joint levels avoid_impact / avoid_heavy_load / avoid_completely), impact and age rules. Add a property test when a rule changes (`test/plan_constraints_test.dart`).
+- Under 18 is never generated (`PlanPreferences.isBlocked`, `buildPlan` throws `StateError`).
+- A day with fewer than three usable exercises must produce a `GeneratedPlan.warnings` entry, never a silent empty day.
+- Time: warm-up 5 min plus sets × (work + rest); trim accessories first, never the balance exercise for 60+. Supersets only in circuits mode.
+- Block: the last week is a deload (sets × 0.6). Preferences are version 2 JSON; version 1 must keep decoding (`test/plan_preferences_test.dart`).
+- Plan details (block start, warm-ups, rationale, warnings, accepted summary) are version 1 JSON in `workout_plans.details` (schema v6, `domain/plan_details.dart`). Decoding never throws. Schema changes need a drift migration plus a test in `test/app_database_migration_test.dart`.
+- New catalogue exercise: add `exerciseTraits` (equipment, joint loads, impact, timed, accessory) in `exercise_traits.dart`, the row in `_starterExercises` (`data/workout_repository.dart`), and the template slot if it should be picked. Guides are optional.
+- Facts for the user are bilingual `PlanNote(pt, en)`; wizard labels live in `lib/app/l10n/strings.dart` under the `w2` keys.

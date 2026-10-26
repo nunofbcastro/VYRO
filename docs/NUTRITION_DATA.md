@@ -107,6 +107,13 @@ alimento e as gramas.
   mais nada refere-se à pizza inteira; as fatias usam «fatia de pizza».
   Francesinha: não existe na base (ainda sem referência adequada).
 - Molho de hambúrguer (Big Mac, molho especial): Ciqual «Sauce burger».
+- Hambúrguer no pão (`cheeseburger_whole`, 150 g, 1 unidade): USDA «Fast foods,
+  cheeseburger; single, regular patty, with condiments». Recebe o inglês
+  «hamburger», «burger», «cheeseburger», «big mac» e as etiquetas AIY
+  «Hamburger» e «Cheeseburger». Hambúrguer de vaca (`beef_ground_patty`, 120 g,
+  só a carne): «hambúrguer», «hambúrguer de vaca», «patty», «beef patty».
+  O «hambúrguer» português sozinho fica na carne, porque em Portugal costuma
+  ser a carne no prato.
 - Natas para cozinha: USDA «Cream, fluid, light whipping» (creme de leite
   no Brasil tem teor de gordura diferente; a estimativa é aproximada).
 - Croissant misto: Ciqual «Croissant au jambon fromage, fait maison».

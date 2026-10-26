@@ -225,15 +225,18 @@ class _LargeTitleHeader extends StatelessWidget {
                               onPressed: () => Navigator.maybePop(context),
                             )
                           else
-                            const VyroWordmark(),
+                            // Full lettering at the top; the V mark once the
+                            // title sits beside it.
+                            _HeaderBrand(showMark: compact >= 0.5),
+                          if (!canPop) const SizedBox(width: _brandGap),
                           Expanded(
                             child: Opacity(
                               opacity: compact,
-                              child: Text(
-                                title,
-                                textAlign: TextAlign.center,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                              child: _CompactTitle(
+                                text: title,
+                                // Pushed pages keep the centred title; tab
+                                // pages start it right after the brand.
+                                centered: canPop,
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w700,
@@ -608,6 +611,159 @@ class VyroWordmark extends StatelessWidget {
           child: CustomPaint(painter: VyroWordmarkPainter.of(context)),
         ),
       ),
+    );
+  }
+}
+
+/// The V mark alone, drawn at the same ink height as [VyroWordmark] so the two
+/// swap without the header moving. The mark's ink (x 10–105, y 10–100 of the
+/// 110-unit artwork) is cropped to exactly [height].
+class VyroMark extends StatelessWidget {
+  const VyroMark({super.key, this.height = 22});
+
+  final double height;
+
+  static const _inkHeight = 90.0;
+  static const _inkWidth = 95.0;
+  static const _inkLeft = 7.5; // 10 - the artwork origin at x 2.5.
+  static const _inkTop = 10.0;
+  static const _side = 110.0;
+
+  /// Width of the mark drawn at [height].
+  static double widthFor(double height) => _inkWidth * height / _inkHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    final k = height / _inkHeight;
+    return Semantics(
+      label: 'VYRO',
+      child: ExcludeSemantics(
+        child: SizedBox(
+          width: widthFor(height),
+          height: height,
+          child: ClipRect(
+            child: OverflowBox(
+              alignment: Alignment.topLeft,
+              minWidth: 0,
+              maxWidth: _side * k,
+              minHeight: 0,
+              maxHeight: _side * k,
+              child: Transform.translate(
+                offset: Offset(-_inkLeft * k, -_inkTop * k),
+                child: SizedBox.square(
+                  dimension: _side * k,
+                  child: CustomPaint(painter: VyroMarkPainter.of(context)),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Gap between the header brand and the compact title.
+const double _brandGap = 12;
+
+/// Smallest scale the compact title may shrink to before it ellipsises.
+const double _minTitleScale = 0.85;
+
+/// Header brand slot. Its width is the full wordmark's while the lettering
+/// shows and the V mark's once a title sits beside it, so the title starts
+/// right after the mark. Width and cross-fade share [showMark] and duration.
+class _HeaderBrand extends StatelessWidget {
+  const _HeaderBrand({required this.showMark});
+
+  /// True when a title sits beside the brand (collapsed header).
+  final bool showMark;
+
+  static const _height = 22.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final duration = reduceMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 175);
+    return ClipRect(
+      child: AnimatedContainer(
+        duration: duration,
+        curve: Curves.easeOut,
+        width: showMark
+            ? VyroMark.widthFor(_height)
+            : _height * VyroWordmarkPainter.aspectRatio,
+        height: _height,
+        child: OverflowBox(
+          alignment: Alignment.centerLeft,
+          minWidth: 0,
+          maxWidth: double.infinity,
+          child: AnimatedSwitcher(
+            duration: duration,
+            switchInCurve: Curves.easeOut,
+            switchOutCurve: Curves.easeIn,
+            layoutBuilder: (current, previous) => Stack(
+              alignment: Alignment.centerLeft,
+              children: [...previous, if (current != null) current],
+            ),
+            child: showMark
+                ? const VyroMark(key: ValueKey('vyro-mark'), height: _height)
+                : const VyroWordmark(
+                    key: ValueKey('vyro-wordmark'),
+                    height: _height,
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Compact header title. Shrinks a little (to [_minTitleScale] at most) when
+/// the space left is narrower than the text, and only then ellipsises.
+class _CompactTitle extends StatelessWidget {
+  const _CompactTitle({
+    required this.text,
+    required this.centered,
+    required this.style,
+  });
+
+  final String text;
+  final bool centered;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    final base = style ?? const TextStyle(fontSize: 17);
+    final baseSize = base.fontSize ?? 17;
+    final scaler = MediaQuery.textScalerOf(context);
+    final direction = Directionality.of(context);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        var size = baseSize;
+        if (constraints.hasBoundedWidth) {
+          final painter = TextPainter(
+            text: TextSpan(text: text, style: base),
+            maxLines: 1,
+            textDirection: direction,
+            textScaler: scaler,
+          )..layout();
+          final natural = painter.width;
+          painter.dispose();
+          if (natural > constraints.maxWidth) {
+            size =
+                baseSize *
+                (constraints.maxWidth / natural).clamp(_minTitleScale, 1.0);
+          }
+        }
+        return Text(
+          text,
+          textAlign: centered ? TextAlign.center : TextAlign.start,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: base.copyWith(fontSize: size),
+        );
+      },
     );
   }
 }

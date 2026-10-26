@@ -33,11 +33,12 @@ const _equipment = {
 GeneratedPlan _plan(
   int days, {
   String goal = 'routine',
+  String experience = 'beginner',
   Set<String> available = const {'bodyweight', 'dumbbells', 'cable'},
 }) => generatePlan(
   daysPerWeek: days,
   goal: goal,
-  experience: 'beginner',
+  experience: experience,
   available: available,
   equipmentOf: _equipment,
 );
@@ -50,13 +51,23 @@ void main() {
         'Corpo inteiro B',
         'Corpo inteiro C',
       ]);
+      // Beginners stay on whole-body sessions up to four days.
       expect(_plan(4).days.map((d) => d.nameEn), [
+        'Full body A',
+        'Full body B',
+        'Full body C',
+        'Full body B 2',
+      ]);
+      expect(_plan(4, experience: 'six24m').days.map((d) => d.nameEn), [
         'Upper A',
         'Lower A',
         'Upper B',
         'Lower B',
       ]);
-      expect(_plan(6).days.map((d) => d.namePt).toList()[3], 'Empurrar 2');
+      expect(
+        _plan(6, experience: 'over2y').days.map((d) => d.namePt).toList()[3],
+        'Empurrar 2',
+      );
     });
 
     test('weekdays are spread with rest days', () {

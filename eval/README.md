@@ -38,7 +38,7 @@ the best accuracy on our own meal photos.
   "file": "burger.jpg",
   "notes": "free text",
   "foods": [
-    {"name": "hambúrguer de vaca", "key": "beef_ground_patty", "any_of": ["cheeseburger_whole"]},
+    {"name": "hambúrguer no pão", "key": "cheeseburger_whole", "any_of": ["beef_ground_patty"]},
     {"name": "molho de cerveja", "key": "brown_gravy", "optional": true},
     {"name": "croquete de queijo", "text": "croquete de queijo", "optional": true}
   ]

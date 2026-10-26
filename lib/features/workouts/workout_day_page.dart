@@ -7,6 +7,7 @@ import '../motion_engine/exercise_registry/exercise_analysis_registry.dart';
 import '../motion_engine/workout_camera/motion_coach_page.dart';
 import 'domain/exercise_guides.dart';
 import 'domain/plan_generator.dart';
+import 'plan_details_view.dart';
 import 'workout_session_page.dart';
 
 class WorkoutDayPage extends StatefulWidget {
@@ -61,6 +62,15 @@ class _WorkoutDayPageState extends State<WorkoutDayPage> {
                   padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
                   children: [
                     _DaySummary(day: day),
+                    if (day.details != null) ...[
+                      const SizedBox(height: 14),
+                      VyroCard(child: PlanBlockLine(details: day.details!)),
+                    ],
+                    if (day.details?.warmups[day.day.dayNumber]
+                        case final warmup?) ...[
+                      const SizedBox(height: 14),
+                      PlanWarmupCard(note: warmup),
+                    ],
                     const SizedBox(height: 22),
                     VyroSectionTitle(
                       label:
@@ -551,6 +561,47 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                 ),
                 const SizedBox(width: 8),
                 metric('${plan.restSeconds}s', t.get('restLabel')),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.trending_up_rounded,
+                  size: 18,
+                  color: VyroTheme.accentTextOf(context),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        t.get('progressionLabel'),
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        progressionRule(
+                          PlannedSlot(
+                            exerciseKey: plan.exerciseKey,
+                            sets: plan.sets,
+                            reps: plan.repTarget,
+                            restSeconds: plan.restSeconds,
+                          ),
+                          english: english,
+                        ),
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

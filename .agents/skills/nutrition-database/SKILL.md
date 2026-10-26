@@ -105,8 +105,11 @@ under the same name:
   reference of the slice row, so their `sourceKey` is the same; the grams
   make the difference.
 - `cheeseburger_whole` (`hambúrguer no pão`) is a whole dish with
-  `portion_units` 1, so "2 hambúrgueres no pão" counts two. The bare
-  "hambúrguer" alias stays on the raw beef patty row (`beef_ground_patty`).
+  `portion_units` 1, so "2 hambúrgueres no pão" counts two (300 g). English
+  "hamburger", "burger", "cheeseburger", "big mac" and the AIY labels
+  Hamburger/Cheeseburger belong to this row (the photo model answers in
+  English). The bare Portuguese "hambúrguer", "patty" and "beef patty"
+  stay on the raw beef patty row (`beef_ground_patty`).
 - Francesinha is not in the database (no suitable source row yet).
 
 `estimatedGrams` (`lib/features/nutrition/food_vision/portion_estimate.dart`):

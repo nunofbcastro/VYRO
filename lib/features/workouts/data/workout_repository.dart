@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../../../core/database/app_database.dart';
 import '../../nutrition/domain/food_product.dart' show dayKey;
-import '../domain/ai_plan.dart';
+import '../domain/plan_details.dart';
 import '../domain/plan_generator.dart';
 import '../domain/plan_preferences.dart';
 import '../domain/week_schedule.dart';
@@ -36,15 +36,26 @@ class PlannedExercise {
 }
 
 class WorkoutDayData {
-  const WorkoutDayData({required this.day, required this.exercises});
+  const WorkoutDayData({
+    required this.day,
+    required this.exercises,
+    this.details,
+  });
   final WorkoutDay day;
   final List<PlannedExercise> exercises;
+
+  /// The plan's details (block, warm-ups), shared by every day of the plan.
+  final PlanDetails? details;
 }
 
 class WorkoutPlanData {
-  const WorkoutPlanData({required this.plan, required this.days});
+  const WorkoutPlanData({required this.plan, required this.days, this.details});
   final WorkoutPlan plan;
   final List<WorkoutDayData> days;
+
+  /// Block, warm-ups, rationale and warnings. Null for plans saved before
+  /// schema v6 (their details were never stored).
+  final PlanDetails? details;
 }
 
 class WorkoutRepository {
@@ -91,8 +102,10 @@ class WorkoutRepository {
   Future<PlanPreferences> loadPreferences() async {
     final profile = await database.getUserProfile() ?? const VyroProfile();
     final fallback = PlanPreferences(
-      goal: profile.goal,
-      experience: profile.workoutExperience,
+      goal: _goalFromProfile(profile.goal),
+      experience: profile.workoutExperience == 'intermediate'
+          ? 'six24m'
+          : 'under6m',
       weekdays: defaultWeekdays(profile.trainingDays),
       equipment: profile.availableEquipment.toSet(),
     );
@@ -102,6 +115,12 @@ class WorkoutRepository {
     );
   }
 
+  static String _goalFromProfile(String goal) => switch (goal) {
+    'nutrition' => 'fat_loss',
+    'strength' => 'strength',
+    _ => 'health',
+  };
+
   /// Saves the answers and mirrors goal, days, experience and equipment into
   /// the profile so the rest of the app stays consistent.
   Future<void> savePreferences(PlanPreferences prefs) async {
@@ -109,9 +128,14 @@ class WorkoutRepository {
     final profile = await database.getUserProfile() ?? const VyroProfile();
     await database.saveUserProfile(
       profile.copyWith(
-        goal: prefs.goal,
+        goal: switch (prefs.goal) {
+          'fat_loss' => 'nutrition',
+          'strength' || 'muscle' => 'strength',
+          _ => 'routine',
+        },
         trainingDays: prefs.daysPerWeek,
-        workoutExperience: prefs.experience == 'beginner'
+        workoutExperience:
+            prefs.experience == 'never' || prefs.experience == 'under6m'
             ? 'beginner'
             : 'intermediate',
         availableEquipment: prefs.equipment.toList(),
@@ -119,52 +143,28 @@ class WorkoutRepository {
     );
   }
 
-  Future<Map<String, String>> _equipmentOf() async {
+  /// Rule-based plan for the wizard answers. Throws [StateError] for users
+  /// the generator does not support (under 18).
+  Future<GeneratedPlan> rulePlan(PlanPreferences prefs) async {
     await _seedCatalog();
     final rows = await database.select(database.exerciseCatalog).get();
-    return {for (final row in rows) row.exerciseKey: row.equipment};
+    return buildPlan(
+      prefs,
+      {for (final row in rows) row.exerciseKey: row.equipment},
+      namesOf: {
+        for (final row in rows) row.exerciseKey: (row.namePt, row.nameEn),
+      },
+    );
   }
 
-  /// Rule-based plan for the wizard answers.
-  Future<GeneratedPlan> rulePlan(PlanPreferences prefs) async => generatePlan(
-    daysPerWeek: prefs.daysPerWeek,
-    goal: prefs.goal,
-    experience: prefs.experience,
-    available: prefs.equipment,
-    equipmentOf: await _equipmentOf(),
-    weekdays: prefs.weekdays,
-    sessionMinutes: prefs.sessionMinutes,
-    priorities: prefs.priorities,
-  );
-
-  /// Exercises the user's equipment allows, for the AI prompt.
-  Future<List<CatalogChoice>> catalogChoices(
-    PlanPreferences prefs, {
-    required bool english,
+  /// Replaces the active plan with [plan]. History is kept. [summary] is the
+  /// on-device sentence the user saw, when there was one; the block starts
+  /// today.
+  Future<WorkoutPlanData> savePlan(
+    GeneratedPlan plan,
+    String goal, {
+    String? summary,
   }) async {
-    await _seedCatalog();
-    final rows = await database.select(database.exerciseCatalog).get();
-    return [
-      for (final row in rows)
-        if (_allowed(row.equipment, prefs.equipment))
-          CatalogChoice(
-            key: row.exerciseKey,
-            name: english ? row.nameEn : row.namePt,
-            muscleGroup: row.muscleGroup,
-          ),
-    ];
-  }
-
-  static bool _allowed(String equipment, Set<String> available) {
-    final needs = equipment.toLowerCase();
-    return (needs.contains('peso corporal') &&
-            available.contains('bodyweight')) ||
-        (needs.contains('halteres') && available.contains('dumbbells')) ||
-        (needs.contains('cabo') && available.contains('cable'));
-  }
-
-  /// Replaces the active plan with [plan]. History is kept.
-  Future<WorkoutPlanData> savePlan(GeneratedPlan plan, String goal) async {
     await _seedCatalog();
     return database.transaction(() async {
       final current = await database.getActiveWorkoutPlan();
@@ -173,7 +173,7 @@ class WorkoutRepository {
               ..where((row) => row.id.equals(current.id)))
             .write(const WorkoutPlansCompanion(active: Value(false)));
       }
-      return _loadPlan(await _insertPlan(plan, goal));
+      return _loadPlan(await _insertPlan(plan, goal, summary: summary));
     });
   }
 
@@ -370,7 +370,7 @@ class WorkoutRepository {
     final catalog = await database.select(database.exerciseCatalog).get();
     final generated = generatePlan(
       daysPerWeek: profile.trainingDays,
-      goal: profile.goal,
+      goal: _goalFromProfile(profile.goal),
       experience: profile.workoutExperience,
       available: profile.availableEquipment.toSet(),
       equipmentOf: {for (final row in catalog) row.exerciseKey: row.equipment},
@@ -378,10 +378,23 @@ class WorkoutRepository {
     return _insertPlan(generated, profile.goal);
   }
 
-  Future<WorkoutPlan> _insertPlan(GeneratedPlan generated, String goal) {
+  Future<WorkoutPlan> _insertPlan(
+    GeneratedPlan generated,
+    String goal, {
+    String? summary,
+  }) {
+    final details = PlanDetails.fromPlan(
+      generated,
+      startedOn: DateTime.now(),
+      summary: summary,
+    );
     return database.transaction(() async {
       final planId = await database.addWorkoutPlan(
-        WorkoutPlansCompanion.insert(title: generated.titlePt, goal: goal),
+        WorkoutPlansCompanion.insert(
+          title: generated.titlePt,
+          goal: goal,
+          details: Value(details.encode()),
+        ),
       );
       for (var index = 0; index < generated.days.length; index++) {
         final day = generated.days[index];
@@ -540,6 +553,7 @@ class WorkoutRepository {
               ..where((day) => day.planId.equals(plan.id))
               ..orderBy([(day) => OrderingTerm.asc(day.dayNumber)]))
             .get();
+    final details = PlanDetails.decode(plan.details);
     final result = <WorkoutDayData>[];
     for (final day in days) {
       final planExercises =
@@ -564,9 +578,11 @@ class WorkoutRepository {
           );
         }
       }
-      result.add(WorkoutDayData(day: day, exercises: exercises));
+      result.add(
+        WorkoutDayData(day: day, exercises: exercises, details: details),
+      );
     }
-    return WorkoutPlanData(plan: plan, days: result);
+    return WorkoutPlanData(plan: plan, days: result, details: details);
   }
 
   Future<void> _seedCatalog() async {
@@ -851,6 +867,149 @@ const _starterExercises = <ExerciseInfo>[
         'De quatro, estende braço e perna opostos mantendo a anca estável.',
     instructionsEn:
         'On all fours, extend opposite arm and leg keeping the hips steady.',
+    equipment: 'peso corporal',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'kettlebell_squat',
+    namePt: 'Agachamento com kettlebell',
+    nameEn: 'Kettlebell squat',
+    muscleGroup: 'legs',
+    instructionsPt:
+        'Segura o kettlebell junto ao peito e agacha com a coluna neutra.',
+    instructionsEn:
+        'Hold the kettlebell at your chest and squat with a neutral spine.',
+    equipment: 'kettlebell',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'barbell_squat',
+    namePt: 'Agachamento com barra',
+    nameEn: 'Barbell back squat',
+    muscleGroup: 'legs',
+    instructionsPt:
+        'Barra apoiada nas costas, pés firmes e agachamento até uma amplitude confortável.',
+    instructionsEn:
+        'Bar on your upper back, feet planted, squat to a comfortable depth.',
+    equipment: 'barra olímpica + rack',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'box_squat',
+    namePt: 'Agachamento no banco',
+    nameEn: 'Box squat',
+    muscleGroup: 'legs',
+    instructionsPt: 'Senta num banco controlado e levanta sem balançar.',
+    instructionsEn:
+        'Sit back to a box with control and stand up without rocking.',
+    equipment: 'banco',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'leg_press',
+    namePt: 'Prensa de pernas',
+    nameEn: 'Leg press',
+    muscleGroup: 'legs',
+    instructionsPt:
+        'Empurra a plataforma com o pé inteiro sem bloquear os joelhos.',
+    instructionsEn:
+        'Press the platform with the whole foot without locking the knees.',
+    equipment: 'máquinas',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'hip_thrust',
+    namePt: 'Elevação de anca',
+    nameEn: 'Hip thrust',
+    muscleGroup: 'glutes',
+    instructionsPt:
+        'Costas apoiadas no banco, sobe a anca e aperta os glúteos no topo.',
+    instructionsEn:
+        'Upper back on a bench, lift the hips and squeeze the glutes at the top.',
+    equipment: 'banco',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'step_up',
+    namePt: 'Subida ao step',
+    nameEn: 'Step-up',
+    muscleGroup: 'legs',
+    instructionsPt:
+        'Sobe para o step com um pé, empurra com a perna da frente e desce devagar.',
+    instructionsEn:
+        'Step up with one foot, push through that leg and lower slowly.',
+    equipment: 'step ou banco',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'bench_press',
+    namePt: 'Supino com barra',
+    nameEn: 'Barbell bench press',
+    muscleGroup: 'chest',
+    instructionsPt:
+        'Barra à largura dos ombros, desce até ao peito e empurra de volta.',
+    instructionsEn:
+        'Bar at shoulder width, lower to the chest and press back up.',
+    equipment: 'barra olímpica + banco',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'landmine_press',
+    namePt: 'Press na barra landmine',
+    nameEn: 'Landmine press',
+    muscleGroup: 'shoulders',
+    instructionsPt:
+        'Empurra a ponta da barra para cima e para a frente, com o tronco estável.',
+    instructionsEn:
+        'Press the end of the bar up and forward with a steady torso.',
+    equipment: 'barra olímpica',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'band_pull_apart',
+    namePt: 'Abertura com elástico',
+    nameEn: 'Band pull-apart',
+    muscleGroup: 'back',
+    instructionsPt:
+        'Com os braços estendidos, abre o elástico até ao peito sem encolher os ombros.',
+    instructionsEn:
+        'With straight arms, pull the band apart to chest height without shrugging.',
+    equipment: 'elásticos',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'trx_row',
+    namePt: 'Remada no TRX',
+    nameEn: 'TRX row',
+    muscleGroup: 'back',
+    instructionsPt:
+        'Corpo inclinado com os calcanhares no chão; puxa o peito até às alças.',
+    instructionsEn:
+        'Body angled with heels down; pull your chest toward the handles.',
+    equipment: 'trx',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'pull_up',
+    namePt: 'Elevação na barra',
+    nameEn: 'Pull-up',
+    muscleGroup: 'back',
+    instructionsPt:
+        'Pega à largura dos ombros; puxa o queixo acima da barra e desce com controlo.',
+    instructionsEn:
+        'Shoulder-width grip; pull your chin over the bar and lower with control.',
+    equipment: 'barra de elevações',
+    difficulty: 'iniciante',
+  ),
+  ExerciseInfo(
+    key: 'single_leg_balance',
+    namePt: 'Equilíbrio num pé',
+    nameEn: 'Single-leg balance',
+    muscleGroup: 'core',
+    instructionsPt:
+        'Em pé num pé, mantém o joelho ligeiramente fletido e o olhar à frente.',
+    instructionsEn:
+        'Stand on one foot with a slight knee bend and eyes forward.',
     equipment: 'peso corporal',
     difficulty: 'iniciante',
   ),

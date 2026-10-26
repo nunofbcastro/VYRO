@@ -1199,13 +1199,19 @@ class VyroPillChip extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                   ],
-                  Text(
-                    label,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                      color: selected
-                          ? VyroTheme.accentTextOf(context)
-                          : scheme.onSurface,
+                  // Flexible lets long labels wrap inside the pill instead of
+                  // overflowing the Row (a Row gives its children unbounded width).
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: selected
+                            ? FontWeight.w700
+                            : FontWeight.w600,
+                        color: selected
+                            ? VyroTheme.accentTextOf(context)
+                            : scheme.onSurface,
+                      ),
                     ),
                   ),
                 ],

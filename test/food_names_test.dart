@@ -232,4 +232,35 @@ void main() {
       expect(keys.contains('ketchup'), hasKetchup);
     });
   });
+
+  group('English burger names (photo model)', () {
+    test('hamburger, burger and big mac are the whole sandwich', () {
+      for (final name in ['hamburger', 'burger', 'big mac', 'cheeseburger']) {
+        expect(englishFoodName(name), 'hambúrguer no pão', reason: name);
+        expect(
+          matchFoodName(db, foodNameCandidates(name))?.key,
+          'cheeseburger_whole',
+          reason: name,
+        );
+      }
+    });
+
+    test('beef patty and burger patty are the meat patty', () {
+      expect(englishFoodName('beef patty'), 'hambúrguer de vaca');
+      for (final name in ['beef patty', 'burger patty', 'hamburger patty']) {
+        expect(
+          matchFoodName(db, foodNameCandidates(name))?.key,
+          'beef_ground_patty',
+          reason: name,
+        );
+      }
+    });
+
+    test('plural burgers reach the sandwich row', () {
+      expect(
+        matchFoodName(db, foodNameCandidates('hamburgers'))?.key,
+        'cheeseburger_whole',
+      );
+    });
+  });
 }

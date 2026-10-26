@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vyro/features/nutrition/domain/food_recognition_service.dart';
-import 'package:vyro/features/workouts/domain/ai_plan.dart';
 import 'package:vyro/features/workouts/domain/plan_generator.dart';
 import 'package:vyro/features/workouts/domain/plan_preferences.dart';
 
@@ -76,7 +75,8 @@ void main() {
       final groups = day.exercises.map((e) => _group[e.exerciseKey]).toSet();
       expect(groups.intersection({'legs', 'glutes', 'hamstrings'}), isNotEmpty);
       expect(groups.intersection({'chest', 'shoulders', 'back'}), isNotEmpty);
-      expect(day.exercises.length, 6);
+      // The time fit may add accessories to an under-filled 60 min day.
+      expect(day.exercises.length, greaterThanOrEqualTo(6));
     }
   });
 
@@ -90,44 +90,6 @@ void main() {
         '{"priorities":["chest","core","nope"]}',
       ).priorities,
       {'chest', 'core'},
-    );
-  });
-
-  test('AI plans that only train the priority areas are rejected', () {
-    const prefs = PlanPreferences(weekdays: [1, 3], priorities: {'legs'});
-    const fallback = GeneratedPlan(
-      titlePt: 'Rotina · 2 dias',
-      titleEn: 'Routine · 2 days',
-      days: [
-        PlannedDay(namePt: 'A', nameEn: 'A', weekday: 1, exercises: []),
-        PlannedDay(namePt: 'B', nameEn: 'B', weekday: 3, exercises: []),
-      ],
-    );
-    const legsOnly =
-        '{"days":[{"name":"Pernas","exercises":[{"key":"goblet_squat"},{"key":"split_squat"},{"key":"calf_raise"}]},'
-        '{"name":"Pernas 2","exercises":[{"key":"reverse_lunge"},{"key":"goblet_squat"},{"key":"glute_bridge"}]}]}';
-    expect(
-      parseAiPlan(
-        legsOnly,
-        prefs: prefs,
-        allowedKeys: _group.keys.toSet(),
-        fallbackTitles: fallback,
-        muscleGroupOf: _group,
-      ),
-      isNull,
-    );
-    const balanced =
-        '{"days":[{"name":"A","exercises":[{"key":"goblet_squat"},{"key":"push_up"},{"key":"seated_row"}]},'
-        '{"name":"B","exercises":[{"key":"split_squat"},{"key":"shoulder_press"},{"key":"lat_pulldown"}]}]}';
-    expect(
-      parseAiPlan(
-        balanced,
-        prefs: prefs,
-        allowedKeys: _group.keys.toSet(),
-        fallbackTitles: fallback,
-        muscleGroupOf: _group,
-      ),
-      isNotNull,
     );
   });
 

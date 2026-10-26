@@ -8,6 +8,18 @@ import '../ai/local_data_validation.dart';
 
 part 'app_database.g.dart';
 
+/// Thrown when a weight entry would be the second one on the same day.
+class BodyWeightDayConflict implements Exception {
+  const BodyWeightDayConflict(this.existing);
+
+  /// The entry already stored for that day.
+  final BodyMeasurement existing;
+
+  @override
+  String toString() =>
+      'BodyWeightDayConflict: an entry already exists on that day (id ${existing.id})';
+}
+
 @DriftDatabase(
   tables: [
     FoodEntries,
@@ -37,7 +49,7 @@ class AppDatabase extends _$AppDatabase {
       );
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -69,6 +81,10 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 5) {
         await migrator.createTable(motionAnalyses);
+      }
+      if (from < 6) {
+        // Block, warm-up, rationale and warnings of the active plan.
+        await migrator.addColumn(workoutPlans, workoutPlans.details);
       }
     },
     beforeOpen: (_) async {
@@ -169,6 +185,75 @@ class AppDatabase extends _$AppDatabase {
       return removedEntries;
     });
   }
+
+  /// Body weight entries, oldest first.
+  Stream<List<BodyMeasurement>> watchBodyWeights() => (select(
+    bodyMeasurements,
+  )..orderBy([(row) => OrderingTerm.asc(row.measuredAt)])).watch();
+
+  /// The weight entry recorded on the local calendar day of [day], if any.
+  Future<BodyMeasurement?> bodyWeightOnDay(DateTime day, {int? excludingId}) {
+    final start = DateTime(day.year, day.month, day.day);
+    final end = DateTime(day.year, day.month, day.day + 1);
+    return (select(bodyMeasurements)
+          ..where((row) {
+            var condition =
+                row.measuredAt.isBiggerOrEqualValue(start) &
+                row.measuredAt.isSmallerThanValue(end);
+            if (excludingId != null) {
+              condition = condition & row.id.isNotValue(excludingId);
+            }
+            return condition;
+          })
+          ..limit(1))
+        .getSingleOrNull();
+  }
+
+  /// Adds a weight entry ([id] is null) or updates one. VYRO keeps one entry
+  /// per calendar day: when another entry already exists on that day this
+  /// throws [BodyWeightDayConflict], unless [replaceSameDay] is true, in which
+  /// case the other entry is removed in the same transaction.
+  Future<int> saveBodyWeight({
+    int? id,
+    required DateTime measuredAt,
+    required double weightKg,
+    bool replaceSameDay = false,
+  }) => transaction<int>(() async {
+    final other = await bodyWeightOnDay(measuredAt, excludingId: id);
+    if (other != null) {
+      if (!replaceSameDay) throw BodyWeightDayConflict(other);
+      await (delete(
+        bodyMeasurements,
+      )..where((row) => row.id.equals(other.id))).go();
+    }
+    if (id == null) {
+      return into(bodyMeasurements).insert(
+        BodyMeasurementsCompanion.insert(
+          measuredAt: Value(measuredAt),
+          weightKg: weightKg,
+        ),
+      );
+    }
+    await (update(bodyMeasurements)..where((row) => row.id.equals(id))).write(
+      BodyMeasurementsCompanion(
+        measuredAt: Value(measuredAt),
+        weightKg: Value(weightKg),
+      ),
+    );
+    return id;
+  });
+
+  Future<int> deleteBodyWeight(int id) =>
+      (delete(bodyMeasurements)..where((row) => row.id.equals(id))).go();
+
+  /// Puts back an entry removed by mistake (the "Anular" action). Returns
+  /// false, and writes nothing, when another entry now occupies that day.
+  Future<bool> restoreBodyWeight(BodyMeasurement row) =>
+      transaction<bool>(() async {
+        if (await bodyWeightOnDay(row.measuredAt) != null) return false;
+        await into(bodyMeasurements).insert(row.toCompanion(true));
+        return true;
+      });
 
   Future<VyroProfile?> getUserProfile() async {
     final row = await customSelect(

@@ -4,112 +4,83 @@ import 'package:vyro/features/workouts/domain/plan_generator.dart';
 import 'package:vyro/features/workouts/domain/plan_preferences.dart';
 
 void main() {
-  const prefs = PlanPreferences(
-    goal: 'strength',
-    weekdays: [2, 4],
-    sessionMinutes: 45,
-    equipment: {'bodyweight', 'dumbbells'},
-  );
-  const allowed = {
-    'goblet_squat',
-    'push_up',
-    'dumbbell_row',
-    'plank',
-    'hip_hinge',
-    'glute_bridge',
-  };
-  const fallback = GeneratedPlan(
-    titlePt: 'Força · 2 dias',
-    titleEn: 'Strength · 2 days',
-    days: [
-      PlannedDay(
-        namePt: 'Corpo inteiro A',
-        nameEn: 'Full body A',
-        weekday: 2,
-        exercises: [],
-      ),
-      PlannedDay(
-        namePt: 'Corpo inteiro B',
-        nameEn: 'Full body B',
-        weekday: 4,
-        exercises: [],
-      ),
-    ],
-  );
+  const facts = [
+    'Escolhemos treino de corpo inteiro porque treinas 3 dias.',
+    'Cada treino usa 3 séries de 10–12 repetições com 90 s de descanso.',
+  ];
 
-  test('valid JSON becomes a plan with clamped values and user weekdays', () {
-    const raw = '''Here you go:
-{"days":[
- {"name":"Pernas","exercises":[{"key":"goblet_squat","sets":9,"reps":2},{"key":"hip_hinge","sets":3,"reps":8},{"key":"glute_bridge","sets":3,"reps":12},{"key":"leg_press","sets":3,"reps":10}]},
- {"name":"Tronco","exercises":[{"key":"push_up","sets":3,"reps":10},{"key":"dumbbell_row","sets":3,"reps":10},{"key":"plank","sets":3,"reps":30},{"key":"push_up","sets":3,"reps":10}]}
-],"notes":"Foco em técnica."}''';
-    final result = parseAiPlan(
-      raw,
-      prefs: prefs,
-      allowedKeys: allowed,
-      fallbackTitles: fallback,
-    )!;
-    final first = result.plan.days.first;
-    expect(first.namePt, 'Pernas');
-    expect(first.weekday, 2);
-    // Unknown key dropped, sets/reps clamped, rest from the goal.
-    expect(first.exercises.map((e) => e.exerciseKey), [
-      'goblet_squat',
-      'hip_hinge',
-      'glute_bridge',
-    ]);
-    expect(first.exercises.first.sets, 5);
-    expect(first.exercises.first.reps, 5);
-    expect(first.exercises.first.restSeconds, 150);
-    // Duplicate removed, reps capped at 20.
-    final second = result.plan.days[1];
-    expect(second.exercises.length, 3);
-    expect(second.exercises.last.reps, 20);
-    expect(result.notes, 'Foco em técnica.');
-  });
+  group('on-device summary (rationale only)', () {
+    test('the prompt contains only the given facts and the language', () {
+      final prompt = buildRationalePrompt(facts, english: true);
+      expect(prompt, contains('- ${facts.first}'));
+      expect(prompt, contains('English'));
+      expect(prompt, contains('Use ONLY the facts below'));
+    });
 
-  test('wrong number of days or too few valid exercises is rejected', () {
-    expect(
-      parseAiPlan(
-        '{"days":[{"name":"A","exercises":[]}]}',
-        prefs: prefs,
-        allowedKeys: allowed,
-        fallbackTitles: fallback,
-      ),
-      isNull,
-    );
-    expect(
-      parseAiPlan(
-        'not json at all',
-        prefs: prefs,
-        allowedKeys: allowed,
-        fallbackTitles: fallback,
-      ),
-      isNull,
+    test('a clean sentence that uses only the facts is accepted', () {
+      expect(
+        parseRationale(
+          'Treinas 3 dias por semana com 3 séries de 10–12 repetições.',
+          facts,
+        ),
+        'Treinas 3 dias por semana com 3 séries de 10–12 repetições.',
+      );
+    });
+
+    test('digits that are not in the facts are rejected', () {
+      expect(parseRationale('Faz 5 séries de 20 repetições.', facts), isNull);
+    });
+
+    test('safety, technique or medical claims are rejected', () {
+      for (final bad in [
+        'Este plano é seguro para ti.',
+        'A técnica está correta em todos os exercícios.',
+        'Garante resultados rápidos.',
+        'This plan is safe and correct.',
+        'It can cure your knee pain.',
+      ]) {
+        expect(parseRationale(bad, facts), isNull, reason: bad);
+      }
+    });
+
+    test(
+      'empty, overlong or whitespace-only text is rejected and spaces collapse',
+      () {
+        expect(parseRationale('   ', facts), isNull);
+        expect(parseRationale('a' * 301, facts), isNull);
+        expect(
+          parseRationale('  Treinas   3 dias\n\n  com calma.  ', facts),
+          'Treinas 3 dias com calma.',
+        );
+      },
     );
   });
 
-  test('prompt lists only allowed exercises and the chosen days', () {
-    final prompt = buildPlanPrompt(prefs, const [
-      CatalogChoice(key: 'push_up', name: 'Flexão', muscleGroup: 'chest'),
-    ], english: false);
-    expect(prompt, contains('push_up (Flexão, chest)'));
-    expect(prompt, contains('Terça-feira, Quinta-feira'));
-    expect(prompt, contains('exactly 2 items'));
+  group('session length', () {
+    test('session length changes the number of exercises', () {
+      expect(exercisesForMinutes(30), 4);
+      expect(exercisesForMinutes(75), 7);
+    });
   });
 
-  test('session length changes the number of exercises', () {
-    PlanPreferences p(int minutes) => prefs.copyWith(sessionMinutes: minutes);
-    expect(exercisesForMinutes(p(30).sessionMinutes), 4);
-    expect(exercisesForMinutes(p(75).sessionMinutes), 7);
-  });
+  group('preferences round-trip', () {
+    test('encode then decode keeps the answers', () {
+      const prefs = PlanPreferences(
+        goal: 'strength',
+        weekdays: [2, 4],
+        equipment: {'bodyweight', 'dumbbells'},
+      );
+      final decoded = PlanPreferences.decode(prefs.encode());
+      expect(decoded.weekdays, [2, 4]);
+      expect(decoded.goal, 'strength');
+      expect(decoded.equipment, {'bodyweight', 'dumbbells'});
+    });
 
-  test('preferences round-trip and reject bad values', () {
-    final decoded = PlanPreferences.decode(prefs.encode());
-    expect(decoded.weekdays, [2, 4]);
-    expect(decoded.goal, 'strength');
-    final bad = PlanPreferences.decode('{"goal":"x","weekdays":[9]}');
-    expect(bad.goal, 'routine');
-    expect(bad.weekdays, [1, 3, 5]);
+    test('bad values fall back to defaults without throwing', () {
+      final bad = PlanPreferences.decode('{"goal":"x","weekdays":[9]}');
+      expect(bad.goal, 'health');
+      expect(bad.weekdays, [1, 3, 5]);
+      expect(PlanPreferences.decode('not json').goal, 'health');
+    });
   });
 }

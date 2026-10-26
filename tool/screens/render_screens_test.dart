@@ -36,10 +36,88 @@ import 'package:vyro/features/assistant/local_intelligence_page.dart';
 import 'package:vyro/features/dashboard/live_home_page.dart';
 import 'package:vyro/features/nutrition/domain/food_product.dart';
 import 'package:vyro/features/nutrition/nutrition_diary_page.dart';
+import 'package:vyro/features/progress/body_weight_sheet.dart';
+import 'package:vyro/features/progress/progress_page.dart';
 import 'package:vyro/features/profile/profile_settings_page.dart';
 import 'package:vyro/features/workouts/data/workout_repository.dart';
+import 'package:vyro/features/workouts/domain/plan_details.dart';
+import 'package:vyro/features/workouts/domain/plan_preferences.dart';
+import 'package:vyro/features/workouts/plan_wizard_page.dart';
+import 'package:vyro/features/workouts/training_page.dart';
 import 'package:vyro/features/workouts/workout_day_page.dart';
 import 'package:vyro/features/workouts/workout_session_page.dart';
+
+/// Wizard step names in order (14 steps, review last).
+const _wizardSteps = [
+  'goal',
+  'experience',
+  'days',
+  'duration',
+  'location',
+  'equipment',
+  'limits',
+  'focus',
+  'exercises',
+  'cardio',
+  'style',
+  'context',
+  'block',
+  'review',
+];
+
+/// Answers for the training captures: full body, three days, home kit.
+const _renderPrefs = PlanPreferences(
+  goal: 'muscle',
+  experience: 'six24m',
+  weekdays: [1, 3, 5],
+  sessionMinutes: 45,
+  location: 'home',
+  equipment: {'bodyweight', 'dumbbells', 'bands'},
+);
+
+/// Answers that leave days with two exercises, so the preview shows warnings.
+const _warningPrefs = PlanPreferences(
+  goal: 'muscle',
+  experience: 'six24m',
+  weekdays: [1, 3, 5, 6],
+  sessionMinutes: 20,
+  equipment: {'bodyweight', 'bands'},
+  limitAreas: {
+    'wrist_elbow': 'avoid_completely',
+    'knee': 'avoid_completely',
+    'lower_back': 'avoid_completely',
+    'shoulder': 'avoid_completely',
+  },
+);
+
+/// Saves a plan for [answers] and moves the block start to [startedOn], so a
+/// capture can show any week of the block.
+Future<void> _seedPlan(
+  AppDatabase db,
+  WorkoutRepository repo, {
+  required DateTime startedOn,
+  PlanPreferences answers = _renderPrefs,
+}) async {
+  final plan = await repo.rulePlan(answers);
+  await repo.savePreferences(answers);
+  await repo.savePlan(
+    plan,
+    answers.goal,
+    summary: 'Um plano de três dias, com foco em ganhar massa muscular.',
+  );
+  final active = await db.getActiveWorkoutPlan();
+  final details = PlanDetails.decode(active!.details)!;
+  final moved = PlanDetails(
+    startedOn: startedOn,
+    blockWeeks: details.blockWeeks,
+    notes: details.notes,
+    warnings: details.warnings,
+    warmups: details.warmups,
+    summary: details.summary,
+  );
+  await (db.update(db.workoutPlans)..where((row) => row.id.equals(active.id)))
+      .write(WorkoutPlansCompanion(details: Value(moved.encode())));
+}
 
 final _enabled = Platform.environment['VYRO_RENDER_SCREENS'] == '1';
 final _outDir =
@@ -221,7 +299,14 @@ Future<void> _settle(WidgetTester tester) async {
   }
 }
 
-Future<void> _capture(WidgetTester tester, GlobalKey key, String name) async {
+/// [raw] keeps [name] as the whole file name (used by the wizard_ captures).
+Future<void> _capture(
+  WidgetTester tester,
+  GlobalKey key,
+  String name, {
+  bool unmount = true,
+  bool raw = false,
+}) async {
   await tester.runAsync(() async {
     final boundary =
         key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
@@ -229,13 +314,31 @@ Future<void> _capture(WidgetTester tester, GlobalKey key, String name) async {
     final data = await image.toByteData(format: ui.ImageByteFormat.png);
     Directory(_outDir).createSync(recursive: true);
     File(
-      '$_outDir/${_prefix}_$name.png',
+      raw ? '$_outDir/$name.png' : '$_outDir/${_prefix}_$name.png',
     ).writeAsBytesSync(data!.buffer.asUint8List());
     image.dispose();
   });
+  if (!unmount) return;
   // Unmount and drain pending timers, so the test ends cleanly.
   await tester.pumpWidget(const SizedBox());
   await tester.pump(const Duration(seconds: 2));
+}
+
+/// Fake weight log: one entry every third day over the last month.
+Future<void> seedWeights(AppDatabase db) async {
+  const values = [78.2, 77.9, 77.6, 77.8, 77.1, 76.9, 76.5, 76.8, 76.2, 76.0];
+  final today = DateTime.now();
+  for (var i = 0; i < values.length; i++) {
+    final day = DateTime(
+      today.year,
+      today.month,
+      today.day - (values.length - 1 - i) * 3,
+    );
+    await db.saveBodyWeight(
+      measuredAt: DateTime(day.year, day.month, day.day, 12),
+      weightKg: values[i],
+    );
+  }
 }
 
 void main() {
@@ -481,6 +584,28 @@ void main() {
         },
       );
 
+      // Collapsed header: full wordmark at the top, V mark once the title
+      // sits beside it. Run with VYRO_RENDER_PREFIX=header.
+      testWidgets(
+        'header at top and scrolled ($mode, ${size.$1.toInt()})',
+        skip: !_enabled,
+        (tester) async {
+          await tester.runAsync(() => seedToday(database));
+          final key = await pumpPhone(
+            tester,
+            const LiveHomePage(),
+            dark: dark,
+            width: size.$1,
+            height: size.$2,
+          );
+          await _settle(tester);
+          await _capture(tester, key, 'home_top_$mode$suffix', unmount: false);
+          await tester.drag(find.byType(ListView).first, const Offset(0, -500));
+          await _settle(tester);
+          await _capture(tester, key, 'home_scrolled_$mode$suffix');
+        },
+      );
+
       testWidgets('workout day ($mode, ${size.$1.toInt()})', skip: !_enabled, (
         tester,
       ) async {
@@ -564,6 +689,82 @@ void main() {
       );
     }
 
+    for (final size in const [(412.0, 915.0), (360.0, 800.0)]) {
+      final suffix = size.$1 == 360 ? '_w360' : '';
+
+      testWidgets(
+        'progress weight ($mode, ${size.$1.toInt()})',
+        skip: !_enabled,
+        (tester) async {
+          await tester.runAsync(() => seedWeights(database));
+          final key = await pumpPhone(
+            tester,
+            const ProgressPage(),
+            dark: dark,
+            width: size.$1,
+            height: size.$2,
+          );
+          await _settle(tester);
+          await _capture(
+            tester,
+            key,
+            'weight_progress_$mode$suffix',
+            unmount: false,
+          );
+          await tester.ensureVisible(find.text('Histórico'));
+          await _settle(tester);
+          await _capture(tester, key, 'weight_history_$mode$suffix');
+        },
+      );
+
+      testWidgets(
+        'weight sheet add ($mode, ${size.$1.toInt()})',
+        skip: !_enabled,
+        (tester) async {
+          final key = await pumpPhone(
+            tester,
+            const Scaffold(body: SafeArea(child: BodyWeightSheet())),
+            dark: dark,
+            width: size.$1,
+            height: size.$2,
+          );
+          await _settle(tester);
+          await tester.enterText(find.byType(TextField), '75,5');
+          await _settle(tester);
+          await _capture(tester, key, 'weight_sheet_add_$mode$suffix');
+        },
+      );
+
+      testWidgets(
+        'weight sheet edit ($mode, ${size.$1.toInt()})',
+        skip: !_enabled,
+        (tester) async {
+          final key = await pumpPhone(
+            tester,
+            Scaffold(
+              body: SafeArea(
+                child: BodyWeightSheet(
+                  entry: BodyMeasurement(
+                    id: 1,
+                    measuredAt: DateTime.now().subtract(
+                      const Duration(days: 1),
+                    ),
+                    weightKg: 76.5,
+                    note: null,
+                  ),
+                ),
+              ),
+            ),
+            dark: dark,
+            width: size.$1,
+            height: size.$2,
+          );
+          await _settle(tester);
+          await _capture(tester, key, 'weight_sheet_edit_$mode$suffix');
+        },
+      );
+    }
+
     testWidgets('assistant chat with meal card ($mode)', skip: !_enabled, (
       tester,
     ) async {
@@ -578,5 +779,207 @@ void main() {
       }
       await _capture(tester, key, 'assistant_$mode');
     });
+  }
+
+  // Plan wizard, preview, training home and workout day, with the plan
+  // details (block, warm-up, progression, rationale, warnings). Files start
+  // with wizard_ and are written at 412 and 360 dp, dark and light.
+  Future<void> goToReview(WidgetTester tester) async {
+    for (var i = 0; i < _wizardSteps.length - 1; i++) {
+      await tester.tap(find.text('Continuar'));
+      await _settle(tester);
+    }
+  }
+
+  for (final dark in [true, false]) {
+    final mode = dark ? 'dark' : 'light';
+    for (final size in const [(412.0, 915.0), (360.0, 800.0)]) {
+      final dims = '${mode}_w${size.$1.toInt()}';
+
+      testWidgets('wizard steps ($dims)', skip: !_enabled, (tester) async {
+        final key = await pumpPhone(
+          tester,
+          const PlanWizardPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        for (var i = 0; i < _wizardSteps.length; i++) {
+          await _settle(tester);
+          final number = (i + 1).toString().padLeft(2, '0');
+          await _capture(
+            tester,
+            key,
+            'wizard_${number}_${_wizardSteps[i]}_$dims',
+            unmount: false,
+            raw: true,
+          );
+          if (i < _wizardSteps.length - 1) {
+            await tester.tap(find.text('Continuar'));
+            await _settle(tester);
+          }
+        }
+      });
+
+      testWidgets('wizard preview ($dims)', skip: !_enabled, (tester) async {
+        final key = await pumpPhone(
+          tester,
+          const PlanWizardPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        await goToReview(tester);
+        await tester.tap(find.text('Gerar plano'));
+        await _settle(tester);
+        await _capture(
+          tester,
+          key,
+          'wizard_preview_top_$dims',
+          unmount: false,
+          raw: true,
+        );
+        await tester.drag(find.byType(ListView).first, const Offset(0, -900));
+        await _settle(tester);
+        await _capture(tester, key, 'wizard_preview_days_$dims', raw: true);
+      });
+
+      testWidgets('wizard preview with warnings ($dims)', skip: !_enabled, (
+        tester,
+      ) async {
+        await tester.runAsync(
+          () => WorkoutRepository(database).savePreferences(_warningPrefs),
+        );
+        final key = await pumpPhone(
+          tester,
+          const PlanWizardPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        await goToReview(tester);
+        await tester.tap(find.text('Gerar plano'));
+        await _settle(tester);
+        await _capture(tester, key, 'wizard_preview_warnings_$dims', raw: true);
+      });
+
+      testWidgets('wizard training home ($dims)', skip: !_enabled, (
+        tester,
+      ) async {
+        final repo = WorkoutRepository(database);
+        await tester.runAsync(
+          () => _seedPlan(database, repo, startedOn: DateTime.now()),
+        );
+        final key = await pumpPhone(
+          tester,
+          const TrainingPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        await _capture(
+          tester,
+          key,
+          'wizard_training_home_$dims',
+          unmount: false,
+          raw: true,
+        );
+        await tester.ensureVisible(find.text('Sobre este plano'));
+        await _settle(tester);
+        await _capture(tester, key, 'wizard_training_about_$dims', raw: true);
+      });
+
+      testWidgets('wizard training home deload ($dims)', skip: !_enabled, (
+        tester,
+      ) async {
+        final repo = WorkoutRepository(database);
+        // Three weeks in: the last week of a four-week block.
+        await tester.runAsync(
+          () => _seedPlan(
+            database,
+            repo,
+            startedOn: DateTime.now().subtract(const Duration(days: 21)),
+          ),
+        );
+        final key = await pumpPhone(
+          tester,
+          const TrainingPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        await tester.ensureVisible(find.text('Sobre este plano'));
+        await _settle(tester);
+        await _capture(tester, key, 'wizard_training_deload_$dims', raw: true);
+      });
+
+      testWidgets('wizard workout day ($dims)', skip: !_enabled, (
+        tester,
+      ) async {
+        final repo = WorkoutRepository(database);
+        final dayId = await tester.runAsync(() async {
+          await _seedPlan(database, repo, startedOn: DateTime.now());
+          final plan = await repo.reloadPlan();
+          return plan.days.first.day.id;
+        });
+        final key = await pumpPhone(
+          tester,
+          WorkoutDayPage(dayId: dayId!, repository: repo),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        await _capture(
+          tester,
+          key,
+          'wizard_workout_day_$dims',
+          unmount: false,
+          raw: true,
+        );
+        await tester.drag(find.byType(ListView).first, const Offset(0, -520));
+        await _settle(tester);
+        await _capture(
+          tester,
+          key,
+          'wizard_workout_day_progression_$dims',
+          raw: true,
+        );
+      });
+
+      testWidgets('wizard workout day deload ($dims)', skip: !_enabled, (
+        tester,
+      ) async {
+        final repo = WorkoutRepository(database);
+        final dayId = await tester.runAsync(() async {
+          await _seedPlan(
+            database,
+            repo,
+            startedOn: DateTime.now().subtract(const Duration(days: 21)),
+          );
+          final plan = await repo.reloadPlan();
+          return plan.days.first.day.id;
+        });
+        final key = await pumpPhone(
+          tester,
+          WorkoutDayPage(dayId: dayId!, repository: repo),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        await _capture(
+          tester,
+          key,
+          'wizard_workout_day_deload_$dims',
+          raw: true,
+        );
+      });
+    }
   }
 }

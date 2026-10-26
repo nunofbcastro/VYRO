@@ -7,6 +7,7 @@ import 'package:image/image.dart' as img;
 
 import '../../../core/ai/on_device_llm.dart';
 import '../data/food_database.dart';
+import 'burger_rules.dart';
 import 'food_companions.dart';
 import 'food_names.dart';
 import 'food_screening.dart';
@@ -473,7 +474,8 @@ List<DetectedFood> parseFoodPhotoAnswer(String raw, FoodDatabase db) {
       ),
     );
   }
-  return out;
+  // A burger sandwich next to a bun is the patty (no double bun).
+  return reconcileBurgerSandwich(out, db);
 }
 
 /// System model when the phone has it, always combined with the offline

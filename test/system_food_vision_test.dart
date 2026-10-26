@@ -38,6 +38,10 @@ const _companionKeys = {
   "mayonnaise",
   "olive_oil",
   "ketchup",
+  // A patty with no bun (burger_rules.dart): bun, cheese and sauce.
+  "hamburger_bun",
+  "cheese_gouda",
+  "burger_sauce",
 };
 
 /// Suggestions that are not companion foods: duplicate coffees and offline

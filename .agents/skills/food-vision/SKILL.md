@@ -205,6 +205,10 @@ cloud, no paid API, the photo stays in memory. Full details:
   removed ones. No system model: only the final event. Errors arrive as stream
   errors. `detail` ends with a `timing:` line, e.g.
   `timing: first 2.1 s, verify 1.8 s, regions 0.9 s`.
+- Burgers (`burger_rules.dart`): an English "hamburger/burger/big mac" is the
+  sandwich; a sandwich plus a separate bun becomes the patty (no double bun);
+  a patty with no bread suggests `hamburger_bun`, then cheese and burger
+  sauce. Tests: `test/burger_rules_test.dart`.
 - Companion suggestions (`mealCompanions`): sauces and sides implied by the
   verified names go to `suggestions`, never to totals and never asked of the
   model. Keys already in the main list or in the duplicate coffees are not repeated.
