@@ -364,7 +364,7 @@ class VyroSectionTitle extends StatelessWidget {
                 foregroundColor: VyroTheme.accentTextOf(context),
                 minimumSize: const Size(44, 36),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                textStyle: const TextStyle(
+                textStyle: theme.textTheme.labelLarge?.copyWith(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                 ),

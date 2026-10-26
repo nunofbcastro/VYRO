@@ -127,38 +127,81 @@ class PhotoAction {
   final VoidCallback? onPressed;
 }
 
-/// Compact tonal buttons in one line, spread evenly. On narrow screens the
-/// row scrolls sideways instead of wrapping.
+/// One row of equal-width compact buttons: icon above a short label. Each
+/// button is at least 64 dp tall and labels may take two centred lines, so
+/// nothing truncates at 360 dp. Lime is only used for the icon.
 class PhotoActionRow extends StatelessWidget {
   const PhotoActionRow({super.key, required this.actions});
 
   final List<PhotoAction> actions;
 
   @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      for (var i = 0; i < actions.length; i++) ...[
+        if (i > 0) const SizedBox(width: 8),
+        Expanded(child: _PhotoActionButton(action: actions[i])),
+      ],
+    ],
+  );
+}
+
+class _PhotoActionButton extends StatelessWidget {
+  const _PhotoActionButton({required this.action});
+
+  final PhotoAction action;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return LayoutBuilder(
-      builder: (context, box) => SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: box.maxWidth),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              for (final action in actions)
-                FilledButton.tonalIcon(
-                  onPressed: action.onPressed,
-                  icon: Icon(action.icon, size: 18),
-                  label: Text(action.label),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(44, 44),
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    textStyle: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
+    final scheme = theme.colorScheme;
+    final dark = theme.brightness == Brightness.dark;
+    final enabled = action.onPressed != null;
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      label: action.label,
+      child: Material(
+        color: dark ? const Color(0xFF13161B) : Colors.white,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: scheme.outline, width: 0.8),
+        ),
+        child: InkWell(
+          onTap: action.onPressed,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 64),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
+              child: ExcludeSemantics(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      action.icon,
+                      size: 20,
+                      color: enabled
+                          ? VyroTheme.accentTextOf(context)
+                          : scheme.onSurfaceVariant,
                     ),
-                  ),
+                    const SizedBox(height: 4),
+                    Text(
+                      action.label,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontSize: 12.5,
+                        height: 1.2,
+                        fontWeight: FontWeight.w700,
+                        color: enabled
+                            ? scheme.onSurface
+                            : scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
-            ],
+              ),
+            ),
           ),
         ),
       ),

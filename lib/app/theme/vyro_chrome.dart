@@ -73,7 +73,9 @@ class VyroBackdrop extends StatelessWidget {
               ),
             ),
           ),
-          child,
+          // Material (transparent) so ListTile and other ink widgets in the
+          // page have a Material ancestor below this coloured background.
+          Material(type: MaterialType.transparency, child: child),
         ],
       ),
     );

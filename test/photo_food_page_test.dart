@@ -251,6 +251,11 @@ void main() {
     await open(tester);
     await choose(tester, first: true);
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Que bebida?'),
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('Que bebida?'), findsOneWidget);
     expect(find.text('Escolhe o alimento'), findsOneWidget);
     expect(find.text('Escolher'), findsOneWidget);
@@ -383,6 +388,11 @@ void main() {
       staged.draftGate.complete();
       await flush(tester);
       expect(find.text('A confirmar…'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('a confirmar…'),
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('a confirmar…'), findsWidgets);
       expect(find.text(chicken.namePt), findsOneWidget);
       await tester.scrollUntilVisible(
@@ -469,6 +479,13 @@ void main() {
     await open(tester);
     await choose(tester, first: true);
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text(
+        'A IA do telemóvel não conseguiu analisar a foto. Sugestões do reconhecimento offline abaixo (pouco fiável) — confirma antes de adicionar.',
+      ),
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(
       find.text(
         'A IA do telemóvel não conseguiu analisar a foto. Sugestões do reconhecimento offline abaixo (pouco fiável) — confirma antes de adicionar.',

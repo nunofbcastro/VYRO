@@ -259,6 +259,7 @@ class _LocalIntelligencePageState extends State<LocalIntelligencePage> {
                     'Only preferences you added. The assistant never creates memories automatically.',
                   ),
                 ),
+                const SizedBox(height: 8),
                 for (final e in _memory.entries)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -289,6 +290,7 @@ class _LocalIntelligencePageState extends State<LocalIntelligencePage> {
                     'Ingredient nutrients and final cooked weight. Select each ingredient in the state in which you weighed it.',
                   ),
                 ),
+                const SizedBox(height: 8),
                 for (final recipe in _recipes)
                   Card(
                     child: Column(
@@ -320,6 +322,7 @@ class _LocalIntelligencePageState extends State<LocalIntelligencePage> {
                       ],
                     ),
                   ),
+                const SizedBox(height: 8),
                 OutlinedButton.icon(
                   onPressed: () => _recipeEdit(),
                   icon: const Icon(Icons.add),
@@ -413,7 +416,13 @@ class _LocalIntelligencePageState extends State<LocalIntelligencePage> {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(pair.$2),
-                    trailing: Text('${_metrics[pair.$1] ?? 0}'),
+                    trailing: Text(
+                      '${_metrics[pair.$1] ?? 0}',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
                   ),
                 if ((_metrics['photos'] ?? 0) > 0)
                   Text(

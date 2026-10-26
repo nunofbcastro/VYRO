@@ -866,7 +866,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
               source: result?.source,
               onRetake: busy || analysing ? null : _takePhoto,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             PhotoActionRow(
               actions: [
                 PhotoAction(
@@ -908,24 +908,9 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
                 text: t.get(shot.error!),
               ),
             const SizedBox(height: 16),
-            SizedBox(
-              height: 44,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (final meal in mealTypes)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: VyroPillChip(
-                          label: mealLabel(t, meal),
-                          selected: _meal == meal,
-                          onTap: () => setState(() => _meal = meal),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+            MealSlotPicker(
+              value: _meal,
+              onChanged: (meal) => setState(() => _meal = meal),
             ),
             if (items != null) ...[
               const SizedBox(height: 16),
@@ -1376,14 +1361,14 @@ class _Hero extends StatelessWidget {
               icon: Icons.photo_camera_outlined,
               onPressed: onCamera,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
             OutlinedButton.icon(
               onPressed: onGallery,
               icon: const Icon(Icons.photo_library_outlined),
               label: Text(t.get('choosePhoto')),
             ),
           ],
-          const SizedBox(height: 18),
+          const SizedBox(height: 24),
           Row(
             children: [
               Icon(Icons.lock_outline_rounded, size: 16, color: accent),
@@ -1467,24 +1452,29 @@ class _AnalysisDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Theme(
-      data: theme.copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        tilePadding: EdgeInsets.zero,
-        childrenPadding: const EdgeInsets.only(bottom: 8),
-        title: Text(
-          stringsOf(context).get('photoDetail'),
-          style: theme.textTheme.bodySmall,
-        ),
-        children: [
-          SelectableText(
-            detail,
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontFamily: 'monospace',
-              fontSize: 11,
-            ),
+    // Own transparent Material: the page body is a ColoredBox, which would
+    // otherwise hide the tile's ink (and trips ListTile's assertion).
+    return Material(
+      type: MaterialType.transparency,
+      child: Theme(
+        data: theme.copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: const EdgeInsets.only(bottom: 8),
+          title: Text(
+            stringsOf(context).get('photoDetail'),
+            style: theme.textTheme.bodySmall,
           ),
-        ],
+          children: [
+            SelectableText(
+              detail,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontFamily: 'monospace',
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

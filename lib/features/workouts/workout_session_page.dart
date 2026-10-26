@@ -370,7 +370,13 @@ class _SessionExerciseCard extends StatelessWidget {
                     : theme.textTheme.bodySmall?.color,
               ),
               const SizedBox(width: 10),
-              Expanded(child: Text(name, style: theme.textTheme.titleMedium)),
+              Expanded(
+                child: Text(
+                  name,
+                  style: theme.textTheme.titleMedium,
+                  softWrap: true,
+                ),
+              ),
               if (_registry.canAnalyse(exerciseKey))
                 IconButton(
                   tooltip: t.get('maOpen'),
@@ -389,14 +395,17 @@ class _SessionExerciseCard extends StatelessWidget {
                     color: VyroTheme.accentTextOf(context),
                   ),
                 ),
-              if (guide != null)
-                TextButton.icon(
-                  onPressed: () => _showGuide(context, name, guide),
-                  icon: const Icon(Icons.menu_book_outlined, size: 16),
-                  label: Text(t.get('howTo')),
-                ),
             ],
           ),
+          if (guide != null)
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                onPressed: () => _showGuide(context, name, guide),
+                icon: const Icon(Icons.menu_book_outlined, size: 16),
+                label: Text(t.get('howTo')),
+              ),
+            ),
           const SizedBox(height: 6),
           for (final set in sets)
             InkWell(
