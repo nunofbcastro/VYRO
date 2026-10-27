@@ -64,10 +64,10 @@ const englishFoodNames = <String, String>{
   'beef': 'carne de vaca',
   'pork': 'porco',
   // A bare English burger in a photo is the whole sandwich, not the patty.
+  // "big mac" has no entry here: the branded row carries it as an alias.
   'hamburger': 'hambúrguer no pão',
   'burger': 'hambúrguer no pão',
   'cheeseburger': 'hambúrguer no pão',
-  'big mac': 'hambúrguer no pão',
   'patty': 'hambúrguer de vaca',
   'beef patty': 'hambúrguer de vaca',
   'ham': 'fiambre',

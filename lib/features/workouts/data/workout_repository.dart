@@ -62,20 +62,17 @@ class WorkoutRepository {
   WorkoutRepository(this.database);
   final AppDatabase database;
 
-  Future<WorkoutPlanData> loadOrCreatePlan() async {
-    await _seedCatalog();
-    var plan = await database.getActiveWorkoutPlan();
-    if (plan == null) {
-      plan = await _createStarterPlan();
-    }
+  /// The active plan, or null when the user has none yet. Never creates a
+  /// plan: plans are created only by the user (plan wizard or setup choice).
+  Future<WorkoutPlanData?> reloadPlan() async {
+    final plan = await database.getActiveWorkoutPlan();
+    if (plan == null) return null;
     return _loadPlan(plan);
   }
 
-  Future<WorkoutPlanData> reloadPlan() async {
-    final plan = await database.getActiveWorkoutPlan();
-    if (plan == null) return loadOrCreatePlan();
-    return _loadPlan(plan);
-  }
+  /// True when the user has an active workout plan.
+  Future<bool> hasActivePlan() async =>
+      (await database.getActiveWorkoutPlan()) != null;
 
   Future<WorkoutPlanData> createPlanFromProfile() async {
     await _seedCatalog();
@@ -179,6 +176,7 @@ class WorkoutRepository {
 
   Future<WorkoutDayData?> loadDay(int dayId) async {
     final plan = await reloadPlan();
+    if (plan == null) return null;
     for (final day in plan.days) {
       if (day.day.id == dayId) return day;
     }
@@ -360,11 +358,6 @@ class WorkoutRepository {
       )
       .watchSingle()
       .map((row) => row.read<double>('volume'));
-
-  Future<WorkoutPlan> _createStarterPlan() async {
-    final profile = await database.getUserProfile() ?? const VyroProfile();
-    return _createPlan(profile);
-  }
 
   Future<WorkoutPlan> _createPlan(VyroProfile profile) async {
     final catalog = await database.select(database.exerciseCatalog).get();

@@ -73,10 +73,15 @@ LocalAssistantAnswer? answerLocally(
   ).hasMatch(q))
     return LocalAssistantAnswer(
       c.nextWorkout == null
-          ? text(
-              'Não há próximo treino agendado.',
-              'No next workout is scheduled.',
-            )
+          ? c.planTitle == null
+                ? text(
+                    'Ainda não tens plano de treino. Cria um no separador Treino.',
+                    'You have no training plan yet. Create one in the Training tab.',
+                  )
+                : text(
+                    'Não há próximo treino agendado.',
+                    'No next workout is scheduled.',
+                  )
           : '${text("Próximo treino registado", "Next scheduled workout")}: ${c.nextWorkout}${c.nextWorkoutDay == null ? "" : " (${c.nextWorkoutDay})"}\n${c.nextExercises.join("\n")}',
     );
   if (RegExp(

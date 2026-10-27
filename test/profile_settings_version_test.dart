@@ -122,19 +122,13 @@ void main() {
     expect(find.text('Versão copiada'), findsOneWidget);
   });
 
-  testWidgets('GitHub row copies the releases link without any network call', (
-    tester,
-  ) async {
+  testWidgets('settings has no GitHub releases row', (tester) async {
     await pumpSettings(tester);
 
-    final githubRow = find.text('Ver versões no GitHub');
-    await scrollToAbout(tester, githubRow);
-    expect(find.text('Copia a ligação; cola-a no browser'), findsOneWidget);
-    await tester.tap(githubRow);
-    await settle(tester);
-
-    expect(copied, ['https://github.com/nunofbcastro/VYRO/releases']);
-    expect(find.text('Ligação copiada'), findsOneWidget);
+    expect(find.text('Ver versões no GitHub'), findsNothing);
+    expect(find.text('View versions on GitHub'), findsNothing);
+    expect(find.byKey(const ValueKey('github-releases-row')), findsNothing);
+    expect(find.textContaining('github'), findsNothing);
   });
 
   testWidgets('shows an unknown version and disables copying on failure', (

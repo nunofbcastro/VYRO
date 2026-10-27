@@ -234,8 +234,13 @@ void main() {
   });
 
   group('English burger names (photo model)', () {
-    test('hamburger, burger and big mac are the whole sandwich', () {
-      for (final name in ['hamburger', 'burger', 'big mac', 'cheeseburger']) {
+    test('big mac is the branded Big Mac row, not the generic sandwich', () {
+      expect(englishFoodName('big mac'), isNull);
+      expect(matchFoodName(db, foodNameCandidates('big mac'))?.key, 'big_mac');
+    });
+
+    test('hamburger, burger and cheeseburger are the whole sandwich', () {
+      for (final name in ['hamburger', 'burger', 'cheeseburger']) {
         expect(englishFoodName(name), 'hambúrguer no pão', reason: name);
         expect(
           matchFoodName(db, foodNameCandidates(name))?.key,

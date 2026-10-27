@@ -95,14 +95,14 @@ class _AssistantPageState extends State<AssistantPage> {
     final plan = await repository.reloadPlan();
     final week = buildWeek(
       today: DateTime.now(),
-      slots: WorkoutRepository.slotsOf(plan),
+      slots: plan == null ? const [] : WorkoutRepository.slotsOf(plan),
       done: await repository.watchDoneDays().first,
       skipped: await repository.watchSkippedDays().first,
     );
     final next = nextWorkout(week);
     final progress = weekProgress(week);
     WorkoutDayData? nextDay;
-    for (final day in plan.days) {
+    for (final day in plan?.days ?? const <WorkoutDayData>[]) {
       if (day.day.id == next?.slot?.dayId) nextDay = day;
     }
     final yesterday = await services.database
@@ -161,7 +161,7 @@ class _AssistantPageState extends State<AssistantPage> {
       foodsToday: [
         for (final e in entries) '${e.name} (${e.quantityGrams.round()} g)',
       ],
-      planTitle: plan.plan.title,
+      planTitle: plan?.plan.title,
       nextWorkout: next?.slot == null
           ? null
           : (t.isEnglish ? next!.slot!.nameEn : next!.slot!.namePt),

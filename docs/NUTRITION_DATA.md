@@ -114,16 +114,31 @@ alimento e as gramas.
   «filete de frango panado».
 - Sandes de frango panado (`chicken_sandwich`, 150 g, 1 sandes, estimativa):
   USDA «Fast foods, chicken fillet sandwich, plain with pickles» (FDC 170295,
-  250 kcal/100 g). A linha McDonald's «McCHICKEN Sandwich» (173305, 273 kcal/100 g)
-  ficou de fora por ser de marca. Recebe «chicken burger», «chicken sandwich»,
-  «mcchicken», «hambúrguer de frango» e a etiqueta AIY «Chicken sandwich» (que
-  antes ia para o peito grelhado). Frango «grelhado» e «peito de frango» ficam
+  250 kcal/100 g). Recebe «chicken burger», «chicken sandwich», «hambúrguer de
+  frango» e a etiqueta AIY «Chicken sandwich» (que antes ia para o peito grelhado);
+  «mcchicken» e «burger king chicken sandwich» vão para as linhas de marca abaixo. Frango «grelhado» e «peito de frango» ficam
   na linha grelhada.
 - Molho de hambúrguer (Big Mac, molho especial): Ciqual «Sauce burger».
+- Sanduíches de marca (sanduíche inteira, uma unidade, sem separar pão e carne;
+  USDA SR Legacy 2018-04, CC0; porção = peso da unidade em «food_portion.csv»,
+  `portion_units` 1, categoria `pratos`). Ficam com o nome da marca e não
+  entram na regra «sanduíche + pão» como sanduíche genérica:
+  - `big_mac`, 219 g, «McDONALD'S, BIG MAC» (170720), 257 kcal/100 g.
+  - `mcdonalds_cheeseburger`, 119 g, «McDONALD'S, Cheeseburger» (170320), 263 kcal/100 g.
+  - `mcdonalds_hamburger`, 95 g, «McDONALD'S, Hamburger» (170717), 264 kcal/100 g.
+  - `quarter_pounder_cheese`, 199 g, «McDONALD'S, QUARTER POUNDER with Cheese» (170719), 258 kcal/100 g.
+  - `filet_o_fish`, 134 g, «McDONALD'S, FILET-O-FISH» (170319), 282 kcal/100 g (peixe, não é hambúrguer nem frango).
+  - `mcchicken`, 131 g, «McDONALD'S, McCHICKEN Sandwich» (173305), 273 kcal/100 g.
+  - `whopper`, 291 g, «BURGER KING, WHOPPER, no cheese» (170727), 233 kcal/100 g.
+  - `whopper_cheese`, 316 g, «BURGER KING, WHOPPER, with cheese» (170728), 250 kcal/100 g.
+  - `bk_chicken_sandwich`, 199 g, «BURGER KING, Original Chicken Sandwich» (170331), 286 kcal/100 g.
+  Recebem os nomes de marca em inglês e português («big mac», «mcchicken»,
+  «quarter pounder», «whopper», «hambúrguer do mcdonald's», «burger king chicken
+  sandwich», etc.). A entrada genérica «hambúrguer no pão» mantém «hamburger» e «burger».
 - Hambúrguer no pão (`cheeseburger_whole`, 150 g, 1 unidade): USDA «Fast foods,
   cheeseburger; single, regular patty, with condiments». Recebe o inglês
-  «hamburger», «burger», «cheeseburger», «big mac» e as etiquetas AIY
-  «Hamburger» e «Cheeseburger». Hambúrguer de vaca (`beef_ground_patty`, 120 g,
+  «hamburger», «burger», «cheeseburger» e as etiquetas AIY «Hamburger» e
+  «Cheeseburger» (o «big mac» é a linha de marca abaixo). Hambúrguer de vaca (`beef_ground_patty`, 120 g,
   só a carne): «hambúrguer», «hambúrguer de vaca», «patty», «beef patty».
   O «hambúrguer» português sozinho fica na carne, porque em Portugal costuma
   ser a carne no prato.

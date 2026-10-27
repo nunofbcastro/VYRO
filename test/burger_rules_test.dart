@@ -36,7 +36,6 @@ void main() {
       'burger',
       'cheeseburger',
       'cheese burger',
-      'big mac',
       'double cheeseburger',
     ]) {
       test('"$name" is cheeseburger_whole (150 g, one item)', () {
@@ -46,6 +45,45 @@ void main() {
         expect(food.grams, 150);
       });
     }
+
+    test('"big mac" is the branded Big Mac, not the generic sandwich', () {
+      final food = parse([('big mac', 1)]).single;
+      expect(food.food?.key, 'big_mac');
+      expect(food.grams, 219);
+      expect(isBurgerSandwich(food), isTrue);
+      expect(matchFoodName(db, foodNameCandidates('Big Mac'))?.key, 'big_mac');
+    });
+
+    test('"2 big macs" are two sandwiches of 219 g: 438 g, count 2', () {
+      final food = parse([('big mac', 2)]).single;
+      expect(food.food?.key, 'big_mac');
+      expect(food.count, 2);
+      expect(food.grams, 438);
+    });
+
+    test('brand names reach their branded row', () {
+      final cases = {
+        'mcdonald\'s cheeseburger': ('mcdonalds_cheeseburger', 119.0),
+        'hambúrguer do mcdonald\'s': ('mcdonalds_hamburger', 95.0),
+        'quarter pounder with cheese': ('quarter_pounder_cheese', 199.0),
+        'whopper': ('whopper', 291.0),
+        'whopper com queijo': ('whopper_cheese', 316.0),
+      };
+      for (final entry in cases.entries) {
+        final food = parse([(entry.key, 1)]).single;
+        expect(food.food?.key, entry.value.$1, reason: entry.key);
+        expect(food.grams, entry.value.$2, reason: entry.key);
+        expect(isBurgerSandwich(food), isTrue, reason: entry.key);
+      }
+    });
+
+    test('branded sandwich plus a separate bun becomes the patty', () {
+      final foods = parse([('big mac', 1), ('hamburger bun', 1)]);
+      final keys = [for (final f in foods) f.food?.key];
+      expect(keys, ['beef_ground_patty', 'hamburger_bun']);
+      expect(foods.first.grams, 120);
+      expect(foods.where(isBurgerSandwich), isEmpty);
+    });
 
     test('English names reach the sandwich through matchFoodName too', () {
       expect(

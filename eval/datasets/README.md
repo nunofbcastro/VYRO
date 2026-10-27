@@ -30,11 +30,25 @@ The VYRO app never downloads these datasets. They are used only by the offline e
 | Source PNG total (not kept on disk) | ~64 MB |
 | JPEG photos (`photos/<dish_id>.jpg`, quality 90) | 150 files, 7.6 MB total |
 
-Mapping coverage (from `eval/datasets/nutrition5k/mapping_stats.json`, 137 distinct names):
+Mapping coverage (from `eval/datasets/nutrition5k/mapping_stats.json`, rebuilt against the current
+`assets/nutrition/foods.json`, 137 distinct names):
 
-- Items mapped to a VYRO key: **482 of 913 (52.8%)**.
-- Grams mapped to a VYRO key: **21,415 of 34,047 g (62.9%)**.
+- Items mapped to a VYRO key: **578 of 913 (63.3%)**.
+- Grams mapped to a VYRO key: **27,238.3 of 34,047 g (80.0%)**.
 - The rest are kept as `key: null, optional: true`. They are not scored.
+
+### Refresh after foods change
+
+When another change adds or renames foods, or edits `nutrition5k_map.json`, run:
+
+```powershell
+.	ool\evalefresh_labels.ps1
+```
+
+It rebuilds `nutrition5k/labels.json` from the cache with `--no-download` (Pillow from the
+`n5k-venv` in `%TEMP%` if present), writes the train and holdout labels for the same files
+(`tool/eval/split_labels.py`, split stored in `nutrition5k/split.json`), then runs
+`test/eval_labels_test.dart` to check every key. Photos are never moved between train and holdout.
 
 ### Rebuild
 

@@ -202,24 +202,24 @@ void main() {
     tearDown(() => database.close());
 
     test('generated plan stores weekdays and goal prescription', () async {
-      final plan = await repository.loadOrCreatePlan();
+      final plan = await repository.createPlanFromProfile();
       expect(plan.plan.title, 'Força · 3 dias');
       expect(plan.days.map((d) => d.day.weekday), [1, 3, 5]);
       expect(plan.days.first.exercises.first.planExercise.repTarget, 8);
     });
 
     test('moving a workout swaps with the one already there', () async {
-      final plan = await repository.loadOrCreatePlan();
+      final plan = await repository.createPlanFromProfile();
       final a = plan.days[0].day;
       final b = plan.days[1].day;
       await repository.setWeekday(dayId: a.id, weekday: b.weekday!);
-      final reloaded = await repository.reloadPlan();
+      final reloaded = (await repository.reloadPlan())!;
       expect(reloaded.days[0].day.weekday, 3);
       expect(reloaded.days[1].day.weekday, 1);
     });
 
     test('skip, unskip and mark as done', () async {
-      await repository.loadOrCreatePlan();
+      await repository.createPlanFromProfile();
       await repository.skipDates(['2026-10-21', '2026-10-23']);
       expect(await repository.watchSkippedDays().first, {
         '2026-10-21',

@@ -146,7 +146,7 @@ void main() {
   ) async {
     final repository = services.workoutRepository;
     final before = await tester.runAsync(() async {
-      final plan = await repository.loadOrCreatePlan();
+      final plan = await repository.createPlanFromProfile();
       final prefs = await repository.loadPreferences();
       return (
         title: plan.plan.title,
@@ -175,7 +175,7 @@ void main() {
     expect(find.text('BASE'), findsOneWidget);
 
     final after = await tester.runAsync(() async {
-      final plan = await repository.reloadPlan();
+      final plan = (await repository.reloadPlan())!;
       final prefs = await repository.loadPreferences();
       return (
         title: plan.plan.title,

@@ -296,7 +296,6 @@ void main() {
       'burgers': 'cheeseburger_whole',
       'cheeseburger': 'cheeseburger_whole',
       'cheese burger': 'cheeseburger_whole',
-      'big mac': 'cheeseburger_whole',
       'double cheeseburger': 'cheeseburger_whole',
       'hambúrguer no pão': 'cheeseburger_whole',
       'hambúrguer com queijo': 'cheeseburger_whole',
@@ -313,6 +312,71 @@ void main() {
 
     test('each English name maps to its food', () {
       for (final entry in expected.entries) {
+        expect(
+          db.match(entry.key)?.key,
+          entry.value,
+          reason: '"${entry.key}" should match ${entry.value}',
+        );
+      }
+    });
+
+    test('brand names map to the branded whole sandwich rows', () {
+      final brands = {
+        'big mac': 'big_mac',
+        'Big Mac': 'big_mac',
+        'bigmac': 'big_mac',
+        'mcdonald\'s big mac': 'big_mac',
+        'mcchicken': 'mcchicken',
+        'mc chicken': 'mcchicken',
+        'McChicken sandwich': 'mcchicken',
+        'quarter pounder': 'quarter_pounder_cheese',
+        'quarterpounder': 'quarter_pounder_cheese',
+        'quarter pounder with cheese': 'quarter_pounder_cheese',
+        'mcdonald\'s cheeseburger': 'mcdonalds_cheeseburger',
+        'hambúrguer do mcdonald\'s': 'mcdonalds_hamburger',
+        'mcdonald\'s hamburger': 'mcdonalds_hamburger',
+        'filet-o-fish': 'filet_o_fish',
+        'filet o fish': 'filet_o_fish',
+        'whopper': 'whopper',
+        'burger king whopper': 'whopper',
+        'whopper com queijo': 'whopper_cheese',
+        'burger king whopper with cheese': 'whopper_cheese',
+        'burger king chicken sandwich': 'bk_chicken_sandwich',
+        'original chicken sandwich': 'bk_chicken_sandwich',
+      };
+      for (final entry in brands.entries) {
+        expect(
+          db.match(entry.key)?.key,
+          entry.value,
+          reason: '"${entry.key}" should match ${entry.value}',
+        );
+      }
+    });
+
+    test('branded rows carry their USDA ref and one-sandwich portion', () {
+      final big = db.byKey('big_mac')!;
+      expect(big.sourceKey, 'usda_170720');
+      expect(big.sourceLabel, "McDONALD'S, BIG MAC");
+      expect(big.portionG, 219);
+      expect(big.portionUnits, 1);
+      expect(big.category, 'pratos');
+      expect(db.byKey('whopper')!.sourceKey, 'usda_170727');
+      expect(db.byKey('whopper')!.portionG, 291);
+      expect(db.byKey('mcchicken')!.sourceKey, 'usda_173305');
+      expect(db.byKey('mcchicken')!.portionG, 131);
+      expect(db.byKey('bk_chicken_sandwich')!.sourceKey, 'usda_170331');
+    });
+
+    test('generic burger and chicken names keep the generic rows', () {
+      final generic = {
+        'cheeseburger': 'cheeseburger_whole',
+        'hamburger': 'cheeseburger_whole',
+        'burger': 'cheeseburger_whole',
+        'chicken sandwich': 'chicken_sandwich',
+        'chicken burger': 'chicken_sandwich',
+        'sandes de frango': 'chicken_sandwich',
+      };
+      for (final entry in generic.entries) {
         expect(
           db.match(entry.key)?.key,
           entry.value,

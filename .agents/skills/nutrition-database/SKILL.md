@@ -106,9 +106,10 @@ under the same name:
   make the difference.
 - `cheeseburger_whole` (`hambúrguer no pão`) is a whole dish with
   `portion_units` 1, so "2 hambúrgueres no pão" counts two (300 g). English
-  "hamburger", "burger", "cheeseburger", "big mac" and the AIY labels
+  "hamburger", "burger", "cheeseburger" and the AIY labels
   Hamburger/Cheeseburger belong to this row (the photo model answers in
-  English). The bare Portuguese "hambúrguer", "patty" and "beef patty"
+  English). Branded whole sandwiches have their own rows (see below), so
+  "big mac" is `big_mac`, not this row. The bare Portuguese "hambúrguer", "patty" and "beef patty"
   stay on the raw beef patty row (`beef_ground_patty`).
 - Chicken: `chicken_fried_patty` (USDA FDC 170718, breaded fried boneless
   pieces, 100 g) and `chicken_sandwich` (USDA FDC 170295, fast-food chicken
@@ -116,6 +117,18 @@ under the same name:
   on `chicken_breast_roasted`; the breaded aliases must not contain
   "chicken fillet" (taken by the grilled row). The vision rule that turns a bare
   "chicken" into the patty or sandwich is in `burger_rules.dart`.
+- Branded whole sandwiches (USDA SR Legacy 2018-04, one sandwich each,
+  `portion_units` 1, `pratos`, portion = the USDA unit weight from
+  `food_portion.csv`): `big_mac` (170720, 219 g), `mcdonalds_cheeseburger`
+  (170320, 119 g), `mcdonalds_hamburger` (170717, 95 g),
+  `quarter_pounder_cheese` (170719, 199 g), `mcchicken` (173305, 131 g),
+  `filet_o_fish` (170319, 134 g, fish: no burger/chicken rule), `whopper`
+  (170727, 291 g), `whopper_cheese` (170728, 316 g), `bk_chicken_sandwich`
+  (170331, 199 g). Brand names (EN and PT) go to these rows; the generic rows
+  keep the unbranded names. A branded sandwich with a separate bun is handled
+  by the same rule as the generic sandwich in `burger_rules.dart`. Alias
+  clashes to avoid: `fillet-o-fish` and `fillet fish` have the same token set
+  as `fish fillet` (cod row), so only `filet` spellings are used.
 - Francesinha is not in the database (no suitable source row yet).
 
 `estimatedGrams` (`lib/features/nutrition/food_vision/portion_estimate.dart`):

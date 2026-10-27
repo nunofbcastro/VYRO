@@ -12,9 +12,25 @@ import 'portion_estimate.dart';
 /// "chicken burger", "chicken sandwich" and "McChicken" are the whole
 /// sandwich (`chicken_sandwich`). A bare "chicken" stays the grilled breast
 /// unless a bun or a sandwich word shows it is a sandwich.
+///
+/// Branded whole sandwiches (USDA SR Legacy, one sandwich each, see
+/// `tool/nutrition/foods_pt.tsv`) are sandwiches too: "Big Mac", "McDonald's
+/// Cheeseburger", "Whopper" count as the burger sandwich, and "McChicken" and
+/// "BK Original Chicken Sandwich" as the chicken sandwich. A branded sandwich
+/// with a separate bun follows the same rule as the generic one.
 
-/// Database key of the whole burger sandwich (bun, patty, cheese, sauce).
+/// Database key of the generic whole burger sandwich (bun, patty, cheese, sauce).
 const burgerSandwichKey = 'cheeseburger_whole';
+
+/// Database keys of the branded whole burger sandwiches (one sandwich each).
+const burgerBrandedSandwichKeys = {
+  'big_mac',
+  'quarter_pounder_cheese',
+  'mcdonalds_cheeseburger',
+  'mcdonalds_hamburger',
+  'whopper',
+  'whopper_cheese',
+};
 
 /// Database key of the raw meat patty only (120 g, no bun).
 const burgerPattyKey = 'beef_ground_patty';
@@ -24,6 +40,9 @@ const burgerBunKey = 'hamburger_bun';
 
 /// Database key of the whole breaded chicken sandwich (bun included).
 const chickenSandwichKey = 'chicken_sandwich';
+
+/// Database keys of the branded whole chicken sandwiches.
+const chickenBrandedSandwichKeys = {'mcchicken', 'bk_chicken_sandwich'};
 
 /// Database key of the breaded fried chicken patty (no bun).
 const chickenPattyKey = 'chicken_fried_patty';
@@ -58,12 +77,17 @@ const _sandwichWords = {
 /// Model names that only say "chicken" (no cut, no cooking method).
 const _genericChickenNames = {'chicken', 'chicken meat', 'frango'};
 
-bool isBurgerSandwich(DetectedFood food) => food.food?.key == burgerSandwichKey;
+bool isBurgerSandwich(DetectedFood food) {
+  final key = food.food?.key;
+  return key == burgerSandwichKey || burgerBrandedSandwichKeys.contains(key);
+}
 
 bool isBurgerPatty(DetectedFood food) => food.food?.key == burgerPattyKey;
 
-bool isChickenSandwich(DetectedFood food) =>
-    food.food?.key == chickenSandwichKey;
+bool isChickenSandwich(DetectedFood food) {
+  final key = food.food?.key;
+  return key == chickenSandwichKey || chickenBrandedSandwichKeys.contains(key);
+}
 
 bool isChickenPatty(DetectedFood food) => food.food?.key == chickenPattyKey;
 

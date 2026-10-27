@@ -13,6 +13,38 @@ the best accuracy on our own meal photos.
   `vyro/on_device_llm` channel calls with a model, and scores the foods that
   come out. It never edits the app.
 
+## Run everything (one command)
+
+```powershell
+.\tool\eval\run_all.ps1
+```
+
+If PowerShell blocks the script, run it as `powershell -ExecutionPolicy Bypass -File .\tool\eval\run_all.ps1`.
+
+The script:
+
+1. Checks Ollama is installed. If `localhost:11434` does not answer, it starts `ollama serve`
+   with `OLLAMA_VULKAN=1` and `OLLAMA_IGPU_ENABLE=1` in a hidden window and waits for `/api/version`.
+2. Checks `gemma3n:e2b` is pulled (offers `ollama pull` if not).
+3. Warns if free RAM is under 4 GB and says how to free it (for example `wsl --shutdown`). You can continue.
+4. Runs one `flutter test` process per strategy and dataset:
+   `legacy_app` and `pipeline` on `eval/datasets/nutrition5k_50` (train) and
+   `eval/datasets/nutrition5k_holdout` (holdout), and `pipeline` on `eval/photos` only when a photo
+   there matches `eval/labels.json`. After each run it prints whether Ollama used the GPU or the CPU (`ollama ps`).
+   A failed run is reported and the next one still runs.
+5. Runs `tool/eval/compare_results.py` and writes **`eval/results_summary.md`**: precision, recall, F1,
+   exact meals, FP per photo and mean latency per dataset and strategy, the legacy_app to pipeline
+   change for train and holdout, and the most frequent unmatched names, false positives and misses.
+
+Expected duration on this PC (Arc iGPU): **about 2 to 3 hours**. Outputs: `eval/results_summary.md`,
+the per-run `.json` and `.md` files in `eval/datasets/<set>/results/` (and `eval/results/` for your own
+photos), and the full console log in `eval/results/run_all_<timestamp>.log`.
+
+Preview without starting anything: `.\tool\eval\run_all.ps1 -DryRun`.
+
+To rebuild the Nutrition5k labels after foods change (the photos and the train/holdout split stay the same):
+`.\tool\eval\refresh_labels.ps1`.
+
 ## What is in this folder
 
 | Path | Committed | What it is |
@@ -210,6 +242,10 @@ app. Host latency is also not phone latency.
 ## Tests
 
 ```bash
-flutter test --no-pub test/eval_scoring_test.dart   # scoring logic and label keys
+flutter test --no-pub test/eval_scoring_test.dart test/eval_variants_test.dart test/eval_labels_test.dart
+py -I -m unittest discover -s tool/eval -p "test_compare_results.py"   # summary script
 flutter analyze --no-pub
 ```
+
+`test/eval_labels_test.dart` checks that every `key` in `eval/labels.json` and in the Nutrition5k
+label files exists in `assets/nutrition/foods.json` (label files that are not on the machine are skipped).

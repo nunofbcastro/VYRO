@@ -296,6 +296,7 @@ class VyroStrings {
     'protein': 'Proteína',
     'carbs': 'Hidratos',
     'fat': 'Gordura',
+    'starterPlan': 'Plano base · 3 dias',
     'nextWorkout': 'Próximo treino',
     'startWorkout': 'Começar treino',
     'week': 'Esta semana',
@@ -406,8 +407,6 @@ class VyroStrings {
     'versionCopyHint':
         'Toca ou mantém premido para copiar para relatórios de erros',
     'versionCopied': 'Versão copiada',
-    'githubReleases': 'Ver versões no GitHub',
-    'githubReleasesSubtitle': 'Copia a ligação; cola-a no browser',
     'linkCopied': 'Ligação copiada',
     'versionUnknown': 'Desconhecida',
     'demoNote': 'Pré-visualização com dados fictícios',
@@ -652,7 +651,6 @@ class VyroStrings {
     'manualOnlyWeb':
         'No navegador, introduz o código manualmente para evitar carregar motores de leitura externos.',
     'plans': 'Plano semanal',
-    'starterPlan': 'Plano base · 3 dias',
     'workoutIntro':
         'Plano determinístico de corpo inteiro para começar. Ajusta exercícios e volume ao teu contexto.',
     'exerciseList': 'Exercícios',
@@ -742,8 +740,14 @@ class VyroStrings {
         'Estimativa inicial com base no perfil. Confirma e ajusta quando quiseres.',
     'setupReviewCaveat':
         'Valores estimados, não aconselhamento médico ou nutricional.',
-    'setupFinish': 'Criar perfil e começar',
-    'setupPlanNow': 'Criar o meu plano de treino agora',
+    'setupPlanNow': 'Criar o meu plano agora',
+    'setupSkipPlan': 'Saltar por agora',
+    'noPlanTitle': 'Ainda não tens plano de treino',
+    'noPlanBody':
+        'Um plano define os teus dias, exercícios e séries. Cria-o em poucos passos e edita-o sempre que quiseres.',
+    'createTrainingPlan': 'Criar plano de treino',
+    'noPlanShort': 'Sem plano de treino',
+    'noPlanTap': 'Toca para criar o plano',
     'setupSaving': 'A preparar o teu perfil…',
     'setupInvalidAge': 'Indica uma idade entre 14 e 100 anos.',
     'setupInvalidHeight': 'Indica uma altura entre 120 e 230 cm.',
@@ -758,7 +762,7 @@ class VyroStrings {
     'setupPrivacyNote':
         'Os teus dados ficam só neste telemóvel. A cópia de segurança do sistema pode incluí-los, sem fotos nem vídeos. A app só usa a rede para pesquisar produtos.',
     'setupPlan':
-        'Vamos criar um plano de treino base editável com os teus dias e equipamento.',
+        'O plano de treino é opcional. Crias-o agora, em 14 passos editáveis, ou mais tarde no separador Treino. Nada é criado sem o guardares.',
     'setupDone': 'Perfil criado. Bom treino!',
     'perDay': 'por dia',
     'kcalUnit': 'kcal',
@@ -1387,6 +1391,7 @@ class VyroStrings {
     'protein': 'Protein',
     'carbs': 'Carbs',
     'fat': 'Fat',
+    'starterPlan': 'Starter plan · 3 days',
     'nextWorkout': 'Next workout',
     'startWorkout': 'Start workout',
     'week': 'This week',
@@ -1492,8 +1497,6 @@ class VyroStrings {
     'versionLabel': 'Version',
     'versionCopyHint': 'Tap or long-press to copy for bug reports',
     'versionCopied': 'Version copied',
-    'githubReleases': 'View versions on GitHub',
-    'githubReleasesSubtitle': 'Copies the link; paste it in the browser',
     'linkCopied': 'Link copied',
     'versionUnknown': 'Unknown',
     'demoNote': 'Preview with sample data',
@@ -1736,7 +1739,6 @@ class VyroStrings {
     'manualOnlyWeb':
         'In a browser, enter the barcode manually so no external scanning engine is loaded.',
     'plans': 'Weekly plan',
-    'starterPlan': 'Starter plan · 3 days',
     'workoutIntro':
         'A deterministic full-body starter plan. Adjust exercises and volume to your context.',
     'exerciseList': 'Exercises',
@@ -1826,8 +1828,14 @@ class VyroStrings {
     'setupReviewBody':
         'Starting estimate based on your profile. Confirm and adjust whenever you want.',
     'setupReviewCaveat': 'Estimated values, not medical or nutritional advice.',
-    'setupFinish': 'Create profile and start',
-    'setupPlanNow': 'Create my training plan now',
+    'setupPlanNow': 'Create my plan now',
+    'setupSkipPlan': 'Skip for now',
+    'noPlanTitle': 'You have no training plan yet',
+    'noPlanBody':
+        'A plan sets your days, exercises and sets. Create it in a few steps and edit it whenever you want.',
+    'createTrainingPlan': 'Create training plan',
+    'noPlanShort': 'No training plan',
+    'noPlanTap': 'Tap to create your plan',
     'setupSaving': 'Preparing your profile…',
     'setupInvalidAge': 'Enter an age between 14 and 100.',
     'setupInvalidHeight': 'Enter a height between 120 and 230 cm.',
@@ -1842,7 +1850,7 @@ class VyroStrings {
     'setupPrivacyNote':
         'Your data stays on this phone. The system backup may include it, never photos or videos. The app only uses the network to look up products.',
     'setupPlan':
-        'We will create an editable starter plan with your days and equipment.',
+        'The training plan is optional. Create it now in 14 editable steps, or later from the Training tab. Nothing is created until you save it.',
     'setupDone': 'Profile created. Enjoy your training!',
     'perDay': 'per day',
     'kcalUnit': 'kcal',

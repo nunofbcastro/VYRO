@@ -630,7 +630,7 @@ void main() {
       ) async {
         final repo = WorkoutRepository(database);
         final dayId = await tester.runAsync(() async {
-          final plan = await repo.loadOrCreatePlan();
+          final plan = await repo.createPlanFromProfile();
           return plan.days.first.day.id;
         });
         final key = await pumpPhone(
@@ -650,7 +650,7 @@ void main() {
         (tester) async {
           final repo = WorkoutRepository(database);
           final (sessionId, title) = (await tester.runAsync(() async {
-            final plan = await repo.loadOrCreatePlan();
+            final plan = await repo.createPlanFromProfile();
             final day = plan.days.first.day;
             final id = await repo.startSession(
               dayId: day.id,
@@ -1010,6 +1010,58 @@ void main() {
         await _capture(tester, key, 'wizard_cancel_dialog_$dims', raw: true);
       });
 
+      testWidgets('setup plan choice ($dims)', skip: !_enabled, (tester) async {
+        final key = await pumpPhone(
+          tester,
+          const SetupWizardPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        for (var i = 0; i < 7; i++) {
+          await tester.tap(find.text('Continuar'));
+          await _settle(tester);
+        }
+        await tester.ensureVisible(find.text('Saltar por agora'));
+        await _settle(tester);
+        await _capture(
+          tester,
+          key,
+          'setup_plan_$dims',
+          unmount: false,
+          raw: true,
+        );
+      });
+
+      testWidgets('training empty state ($dims)', skip: !_enabled, (
+        tester,
+      ) async {
+        final key = await pumpPhone(
+          tester,
+          const TrainingPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        await _capture(tester, key, 'training_empty_$dims', raw: true);
+      });
+
+      testWidgets('settings about ($dims)', skip: !_enabled, (tester) async {
+        final key = await pumpPhone(
+          tester,
+          const ProfileSettingsPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        await tester.ensureVisible(find.text('Sobre a VYRO'));
+        await _settle(tester);
+        await _capture(tester, key, 'settings_about_$dims', raw: true);
+      });
+
       testWidgets('setup review automatic ($dims)', skip: !_enabled, (
         tester,
       ) async {
@@ -1184,7 +1236,7 @@ void main() {
         final repo = WorkoutRepository(database);
         final dayId = await tester.runAsync(() async {
           await _seedPlan(database, repo, startedOn: DateTime.now());
-          final plan = await repo.reloadPlan();
+          final plan = (await repo.reloadPlan())!;
           return plan.days.first.day.id;
         });
         final key = await pumpPhone(
@@ -1222,7 +1274,7 @@ void main() {
             repo,
             startedOn: DateTime.now().subtract(const Duration(days: 21)),
           );
-          final plan = await repo.reloadPlan();
+          final plan = (await repo.reloadPlan())!;
           return plan.days.first.day.id;
         });
         final key = await pumpPhone(

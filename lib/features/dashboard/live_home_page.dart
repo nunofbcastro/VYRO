@@ -24,7 +24,7 @@ class LiveHomePage extends StatefulWidget {
 
 class _LiveHomePageState extends State<LiveHomePage> {
   AppServices? _services;
-  Future<WorkoutPlanData>? _planFuture;
+  Future<WorkoutPlanData?>? _planFuture;
 
   @override
   void didChangeDependencies() {
@@ -155,7 +155,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
                   ),
                   const SizedBox(height: 20),
                   VyroSectionTitle(label: t.get('nextWorkout')),
-                  FutureBuilder<WorkoutPlanData>(
+                  FutureBuilder<WorkoutPlanData?>(
                     future: _planFuture,
                     builder: (context, planSnapshot) {
                       final plan = planSnapshot.data;
@@ -176,16 +176,15 @@ class _LiveHomePageState extends State<LiveHomePage> {
                             final next = nextWorkout(week);
                             final progress = weekProgress(week);
                             final slot = next?.slot;
-                            if (plan != null) {
-                              _publishWidgets(
-                                t: t,
-                                kcal: totals.kcal,
-                                kcalGoal: calorieGoal,
-                                protein: totals.protein,
-                                proteinGoal: proteinGoal,
-                                week: week,
-                              );
-                            }
+                            _publishWidgets(
+                              t: t,
+                              kcal: totals.kcal,
+                              kcalGoal: calorieGoal,
+                              protein: totals.protein,
+                              proteinGoal: proteinGoal,
+                              week: week,
+                              hasPlan: plan != null,
+                            );
                             return ActionCard(
                               icon: Icons.fitness_center_rounded,
                               title: slot == null
@@ -197,11 +196,13 @@ class _LiveHomePageState extends State<LiveHomePage> {
                                       WeekOutcome.paused => 'weekPaused',
                                       _ =>
                                         plan == null
-                                            ? 'starterPlan'
+                                            ? 'noPlanShort'
                                             : 'weekOver',
                                     })
                                   : (t.isEnglish ? slot.nameEn : slot.namePt),
-                              subtitle: next == null
+                              subtitle: plan == null
+                                  ? t.get('noPlanTap')
+                                  : next == null
                                   ? '${progress.done}/${progress.scheduled} ${t.get('workoutsDone')}'
                                   : '${next.status == DayStatus.today ? t.get('todayShort') : weekdayLong(next.date.weekday, english: t.isEnglish)}'
                                         ' · ${progress.done}/${progress.scheduled} ${t.get('workoutsDone')}',
@@ -233,6 +234,7 @@ void _publishWidgets({
   required double protein,
   required double proteinGoal,
   required List<ScheduledDay> week,
+  required bool hasPlan,
 }) {
   if (!VyroHomeWidgets.supported) return;
   final next = nextWorkout(week);
@@ -243,7 +245,9 @@ void _publishWidgets({
     kcalGoal: kcalGoal.round(),
     proteinEaten: protein.round(),
     proteinGoal: proteinGoal.round(),
-    nextWorkout: next?.slot == null
+    nextWorkout: !hasPlan
+        ? t.get('noPlanShort')
+        : next?.slot == null
         ? t.get(switch (outcome) {
             WeekOutcome.allDone => 'weekAllDone',
             WeekOutcome.paused => 'weekPaused',

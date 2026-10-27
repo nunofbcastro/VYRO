@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vyro/features/nutrition/data/food_database.dart';
+import 'package:vyro/features/nutrition/food_vision/burger_rules.dart';
 import 'package:vyro/features/nutrition/food_vision/food_companions.dart';
 import 'package:vyro/features/nutrition/food_vision/food_vision.dart';
 import 'package:vyro/features/nutrition/food_vision/system_food_vision.dart';
@@ -53,7 +54,6 @@ void main() {
     for (final name in [
       'chicken burger',
       'chicken sandwich',
-      'mcchicken',
       'crispy chicken sandwich',
       'hambúrguer de frango',
       'sandes de frango panado',
@@ -64,6 +64,36 @@ void main() {
         expect(food.grams, 150);
       });
     }
+  });
+
+  group('branded chicken sandwiches are the whole sandwich', () {
+    test('"McChicken" is the branded row (131 g, one sandwich)', () {
+      final food = parse([_item('mcchicken')]).single;
+      expect(food.food?.key, 'mcchicken');
+      expect(food.grams, 131);
+      expect(isChickenSandwich(food), isTrue);
+    });
+
+    test('"mc chicken" and "McDonald\'s McChicken" reach the same row', () {
+      for (final name in ['mc chicken', 'McDonald\'s McChicken']) {
+        expect(
+          parse([_item(name)]).single.food?.key,
+          'mcchicken',
+          reason: name,
+        );
+      }
+    });
+
+    test('"Burger King chicken sandwich" is the BK row (199 g)', () {
+      final food = parse([_item('burger king chicken sandwich')]).single;
+      expect(food.food?.key, 'bk_chicken_sandwich');
+      expect(food.grams, 199);
+    });
+
+    test('McChicken plus a separate bun becomes the breaded patty', () {
+      final foods = parse([_item('mcchicken'), _item('hamburger bun')]);
+      expect(keysOf(foods), ['chicken_fried_patty', 'hamburger_bun']);
+    });
   });
 
   group('grilled chicken stays grilled', () {

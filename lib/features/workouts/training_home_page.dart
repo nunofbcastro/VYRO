@@ -22,7 +22,7 @@ class TrainingPage extends StatefulWidget {
 }
 
 class _TrainingPageState extends State<TrainingPage> {
-  Future<WorkoutPlanData>? _planFuture;
+  Future<WorkoutPlanData?>? _planFuture;
   Future<bool>? _personalised;
 
   WorkoutRepository get _repository =>
@@ -37,9 +37,9 @@ class _TrainingPageState extends State<TrainingPage> {
   Widget build(BuildContext context) {
     final t = stringsOf(context);
     final repository = _repository;
-    _planFuture ??= repository.loadOrCreatePlan();
+    _planFuture ??= repository.reloadPlan();
     _personalised ??= repository.hasPreferences();
-    return FutureBuilder<WorkoutPlanData>(
+    return FutureBuilder<WorkoutPlanData?>(
       future: _planFuture,
       builder: (context, snapshot) {
         final data = snapshot.data;
@@ -61,15 +61,17 @@ class _TrainingPageState extends State<TrainingPage> {
                       Text(t.get('error')),
                       TextButton(
                         onPressed: () => setState(
-                          () => _planFuture = repository.loadOrCreatePlan(),
+                          () => _planFuture = repository.reloadPlan(),
                         ),
                         child: Text(t.get('retry')),
                       ),
                     ],
                   ),
                 )
-              : data == null
+              : snapshot.connectionState != ConnectionState.done
               ? const Center(child: CircularProgressIndicator())
+              : data == null
+              ? _NoPlanView(onCreate: _generate)
               : StreamBuilder<Map<String, String>>(
                   stream: repository.watchDoneDays(),
                   builder: (context, doneSnapshot) =>
@@ -717,6 +719,51 @@ class _WeekStrip extends StatelessWidget {
               },
             ),
           ),
+      ],
+    );
+  }
+}
+
+/// Shown on the training tab when the user has no active plan. Nothing is
+/// created until the user finishes the plan wizard.
+class _NoPlanView extends StatelessWidget {
+  const _NoPlanView({required this.onCreate});
+
+  final VoidCallback onCreate;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = stringsOf(context);
+    final theme = Theme.of(context);
+    return VyroPageBody(
+      children: [
+        VyroCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Icon(
+                Icons.fitness_center_rounded,
+                size: 32,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(height: 14),
+              Text(
+                t.get('noPlanTitle'),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(t.get('noPlanBody'), style: theme.textTheme.bodyMedium),
+              const SizedBox(height: 18),
+              VyroPrimaryButton(
+                label: t.get('createTrainingPlan'),
+                icon: Icons.add_rounded,
+                onPressed: onCreate,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

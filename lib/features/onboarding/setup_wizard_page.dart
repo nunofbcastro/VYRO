@@ -263,15 +263,8 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
         locale: settings.locale.languageCode,
         theme: profile.theme,
       ).timeout(const Duration(seconds: 20));
-      // The starter plan is generated from the saved profile. A failure here
-      // must not block onboarding; the user can regenerate it in Profile.
-      try {
-        await services.workoutRepository.createPlanFromProfile().timeout(
-          const Duration(seconds: 25),
-        );
-      } catch (_) {
-        // Plan generation is best-effort at this point.
-      }
+      // No training plan is created here: the plan is optional. It is only
+      // created when the user saves the plan wizard (opened below on request).
       await settings.refreshProfile().timeout(const Duration(seconds: 15));
       if (openPlanWizard) {
         // Setup is saved. The wizard opens on top of the app; the setup route
@@ -424,29 +417,29 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
                                 ],
                               ),
                             ),
-                          VyroPrimaryButton(
-                            label: step == _stepCount - 1
-                                ? t.get('setupFinish')
-                                : t.get('continue'),
-                            loading: saving,
-                            icon: step == _stepCount - 1
-                                ? Icons.check_rounded
-                                : Icons.arrow_forward_rounded,
-                            onPressed: saving ? null : () => _next(),
-                          ),
-                          if (step == _stepCount - 1)
-                            TextButton.icon(
-                              style: TextButton.styleFrom(
-                                minimumSize: const Size(0, 48),
-                              ),
+                          if (step == _stepCount - 1) ...[
+                            VyroPrimaryButton(
+                              label: t.get('setupPlanNow'),
+                              loading: saving,
+                              icon: Icons.fitness_center_rounded,
                               onPressed: saving
                                   ? null
                                   : () => _next(planAfter: true),
-                              icon: const Icon(
-                                Icons.fitness_center_rounded,
-                                size: 18,
+                            ),
+                            const SizedBox(height: 8),
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                minimumSize: const Size(0, 48),
                               ),
-                              label: Text(t.get('setupPlanNow')),
+                              onPressed: saving ? null : () => _next(),
+                              child: Text(t.get('setupSkipPlan')),
+                            ),
+                          ] else
+                            VyroPrimaryButton(
+                              label: t.get('continue'),
+                              loading: saving,
+                              icon: Icons.arrow_forward_rounded,
+                              onPressed: saving ? null : () => _next(),
                             ),
                         ],
                       ),

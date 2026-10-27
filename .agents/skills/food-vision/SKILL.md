@@ -205,10 +205,13 @@ cloud, no paid API, the photo stays in memory. Full details:
   removed ones. No system model: only the final event. Errors arrive as stream
   errors. `detail` ends with a `timing:` line, e.g.
   `timing: first 2.1 s, verify 1.8 s, regions 0.9 s`.
-- Burgers and chicken (`burger_rules.dart`): an English "hamburger/burger/big mac"
-  is the sandwich; "fried/crispy chicken", "chicken patty" is the breaded patty
-  (`chicken_fried_patty`); "chicken burger/sandwich", "mcchicken" is
-  `chicken_sandwich`. A bare "chicken" stays grilled unless bread is listed
+- Burgers and chicken (`burger_rules.dart`): an English "hamburger/burger"
+  is the sandwich (`cheeseburger_whole`); "big mac", "whopper", "mcdonald's
+  cheeseburger" and the other branded sandwiches are their own whole-sandwich
+  rows (`big_mac`, `whopper`, ...) and count as sandwiches in the same rules;
+  "fried/crispy chicken", "chicken patty" is the breaded patty
+  (`chicken_fried_patty`); "chicken burger/sandwich" is `chicken_sandwich`,
+  "mcchicken" and "burger king chicken sandwich" are their branded rows. A bare "chicken" stays grilled unless bread is listed
   (then breaded patty) or its where says burger/sandwich (then sandwich). A
   sandwich plus a separate bun becomes the patty (no double bun); a patty with
   no bread suggests `hamburger_bun`, then bacon, cheese and sauce (mayonnaise

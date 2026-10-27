@@ -184,5 +184,47 @@ void main() {
     expect(find.byType(PlanWizardPage), findsOneWidget);
     final profile = await tester.runAsync(() => database.getUserProfile());
     expect(profile?.onboardingCompleted, isTrue);
+    // Setup never creates the plan: it is created only when the wizard saves.
+    final plan = await tester.runAsync(() => database.getActiveWorkoutPlan());
+    expect(plan, isNull);
+  });
+
+  testWidgets('skipping the plan finishes setup without creating a plan', (
+    tester,
+  ) async {
+    await pumpSetup(tester, LlmStatus.unavailable);
+    await goToReview(tester);
+
+    final skip = find.text(_t.get('setupSkipPlan'));
+    expect(skip, findsOneWidget);
+    expect(find.text(_t.get('setupPlanNow')), findsOneWidget);
+    await tester.ensureVisible(skip);
+    await tester.tap(skip);
+
+    // Saving uses the real database, so let the platform I/O finish.
+    for (
+      var i = 0;
+      i < 100 &&
+          (await tester.runAsync(
+                () => database.getUserProfile(),
+              ))?.onboardingCompleted !=
+              true;
+      i++
+    ) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 20)),
+      );
+      await tester.pump(const Duration(milliseconds: 20));
+    }
+
+    final profile = await tester.runAsync(() => database.getUserProfile());
+    expect(profile?.onboardingCompleted, isTrue);
+    expect(find.byType(PlanWizardPage), findsNothing);
+    final plan = await tester.runAsync(() => database.getActiveWorkoutPlan());
+    expect(plan, isNull);
+    final days = await tester.runAsync(
+      () => database.select(database.workoutDays).get(),
+    );
+    expect(days, isEmpty);
   });
 }

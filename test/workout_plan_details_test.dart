@@ -156,7 +156,7 @@ void main() {
       expect(saved.details!.blockWeeks, 6);
       expect(saved.details!.summary, 'Um resumo curto.');
 
-      final reloaded = await repository.reloadPlan();
+      final reloaded = (await repository.reloadPlan())!;
       expect(reloaded.details, isNotNull);
       expect(reloaded.details!.notes.length, plan.notes.length);
       expect(reloaded.details!.warmups.length, plan.days.length);

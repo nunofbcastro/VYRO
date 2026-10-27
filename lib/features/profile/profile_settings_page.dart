@@ -13,10 +13,6 @@ import '../../core/ui/vyro_ui.dart';
 import '../motion_engine/workout_camera/coach_voice_sheet.dart';
 import '../workouts/plan_wizard_page.dart';
 
-/// Public release page. The app only copies this link; it makes no network
-/// call to check for updates.
-const kVyroReleasesUrl = 'https://github.com/nunofbcastro/VYRO/releases';
-
 class ProfileSettingsPage extends StatefulWidget {
   const ProfileSettingsPage({super.key, this.appVersionLoader});
 
@@ -213,17 +209,6 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                         onTap: version == null
                             ? null
                             : () => _copyVersion(context, version),
-                      ),
-                    ),
-                    VyroListRow(
-                      key: const ValueKey('github-releases-row'),
-                      icon: Icons.open_in_new_rounded,
-                      title: t.get('githubReleases'),
-                      subtitle: t.get('githubReleasesSubtitle'),
-                      onTap: () => _copyText(
-                        context,
-                        kVyroReleasesUrl,
-                        t.get('linkCopied'),
                       ),
                     ),
                   ],
