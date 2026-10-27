@@ -406,6 +406,8 @@ List<DetectedFood> parseFoodPhotoAnswer(String raw, FoodDatabase db) {
   if (items == null) return const [];
   final out = <DetectedFood>[];
   final seen = <String>{};
+  // Items the model named only "chicken": grilled by default, see burger_rules.
+  final genericChicken = Set<DetectedFood>.identity();
   for (final item in items.take(12)) {
     if (item is! Map) continue;
     if (item['name'] is! String) continue;
@@ -459,23 +461,30 @@ List<DetectedFood> parseFoodPhotoAnswer(String raw, FoodDatabase db) {
         needsChoice: prev.needsChoice,
         source: VisionSource.systemAi,
       );
+      if (genericChicken.remove(prev)) genericChicken.add(out[i]);
       continue;
     }
-    out.add(
-      DetectedFood(
-        food: food,
-        label: food?.namePt ?? name,
-        grams: grams,
-        count: count,
-        size: size,
-        where: where,
-        needsChoice: needsChoice,
-        source: VisionSource.systemAi,
-      ),
+    final parsed = DetectedFood(
+      food: food,
+      label: food?.namePt ?? name,
+      grams: grams,
+      count: count,
+      size: size,
+      where: where,
+      needsChoice: needsChoice,
+      source: VisionSource.systemAi,
     );
+    out.add(parsed);
+    if (food?.key == grilledChickenKey && isGenericChickenName(name)) {
+      genericChicken.add(parsed);
+    }
   }
-  // A burger sandwich next to a bun is the patty (no double bun).
-  return reconcileBurgerSandwich(out, db);
+  // A bare "chicken" next to a bun is the breaded patty; a burger sandwich
+  // next to a bun is the patty (no double bun).
+  return reconcileBurgerSandwich(
+    reconcileGenericChicken(out, db, genericChicken),
+    db,
+  );
 }
 
 /// System model when the phone has it, always combined with the offline

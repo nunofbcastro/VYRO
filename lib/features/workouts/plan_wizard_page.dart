@@ -16,6 +16,12 @@ import 'domain/plan_preferences.dart';
 /// The plan itself always comes from the deterministic generator. The
 /// on-device model, when available, may only add one summary sentence built
 /// from the generator's facts.
+///
+/// Drafts: answers in progress live only in this session. The saved
+/// preferences change only when the plan is saved; leaving the wizard (X,
+/// cancel, back on the first step, system back) discards unsaved answers and
+/// never touches the existing plan. Leaving with unsaved answers or an
+/// unsaved preview asks for confirmation first.
 class PlanWizardPage extends StatefulWidget {
   const PlanWizardPage({super.key});
 
@@ -82,6 +88,9 @@ const _goalKeys = <String, String>{
 class _PlanWizardPageState extends State<PlanWizardPage> {
   _Step _step = _Step.goal;
   PlanPreferences? _prefs;
+
+  /// Preferences as loaded when the wizard opened; used to detect changes.
+  PlanPreferences? _initial;
   final _limitations = TextEditingController();
   final _search = TextEditingController();
   final _dumbbellKg = TextEditingController();
@@ -93,6 +102,7 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
   bool _saving = false;
   bool _failed = false;
   bool _started = false;
+  bool _leaving = false;
 
   @override
   void didChangeDependencies() {
@@ -104,6 +114,7 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
       if (!mounted) return;
       setState(() {
         _prefs = prefs;
+        _initial = prefs;
         _limitations.text = prefs.limitations;
         _dumbbellKg.text = prefs.dumbbellMaxKg?.toString() ?? '';
       });
@@ -150,6 +161,57 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
     final index = _step.index;
     if (index > 0) _step = _Step.values[index - 1];
   });
+
+  /// True when an answer differs from the saved preferences or a generated
+  /// preview has not been saved yet.
+  bool get _hasUnsaved {
+    if (_preview != null) return true;
+    final prefs = _prefs;
+    final initial = _initial;
+    if (prefs == null || initial == null) return false;
+    return prefs.encode() != initial.encode();
+  }
+
+  /// Leaves the whole wizard, returning to the page it was opened from. Asks
+  /// first when unsaved answers or a preview would be lost.
+  Future<void> _leave() async {
+    if (_leaving || _saving) return;
+    _leaving = true;
+    try {
+      if (_hasUnsaved) {
+        final t = stringsOf(context);
+        final leave = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            content: Text(t.get('wizExitMsg')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(t.get('wizExitStay')),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(t.get('wizExitLeave')),
+              ),
+            ],
+          ),
+        );
+        if (leave != true || !mounted) return;
+      }
+      if (mounted) Navigator.of(context).pop();
+    } finally {
+      _leaving = false;
+    }
+  }
+
+  /// System back and the header back arrow: previous step, or leave on step 1.
+  void _backOrLeave() {
+    if (_step == _Step.goal) {
+      _leave();
+    } else {
+      _back();
+    }
+  }
 
   /// Skipping an optional step keeps its defaults.
   void _skipAndNext(PlanPreferences prefs) {
@@ -243,12 +305,21 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
     final t = stringsOf(context);
     final prefs = _prefs;
     return PopScope(
-      canPop: _step == _Step.goal,
+      // Never pops by itself: _backOrLeave decides, so each exit pops once.
+      canPop: false,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _back();
+        if (!didPop) _backOrLeave();
       },
       child: VyroSubpageScaffold(
         title: t.get('wizTitle'),
+        actions: [
+          VyroRoundButton(
+            icon: Icons.close_rounded,
+            tooltip: t.get('wizCancel'),
+            size: 48,
+            onPressed: () => _leave(),
+          ),
+        ],
         footer: prefs == null ? null : _footer(t, prefs),
         body: prefs == null
             ? const Center(child: CircularProgressIndicator())
@@ -304,10 +375,22 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
               onPressed: _save,
             ),
             const SizedBox(height: 6),
-            TextButton.icon(
-              onPressed: _busy ? null : _generate,
-              icon: const Icon(Icons.refresh_rounded),
-              label: Text(t.get('wizRegenerate')),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton.icon(
+                    onPressed: _busy ? null : _generate,
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: Text(t.get('wizRegenerate')),
+                  ),
+                ),
+                Expanded(
+                  child: TextButton(
+                    onPressed: _saving ? null : () => _leave(),
+                    child: Text(t.get('wizCancel')),
+                  ),
+                ),
+              ],
             ),
           ],
         );

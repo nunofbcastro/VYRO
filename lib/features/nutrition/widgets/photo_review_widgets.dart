@@ -127,22 +127,60 @@ class PhotoAction {
   final VoidCallback? onPressed;
 }
 
-/// One row of equal-width compact buttons: icon above a short label. Each
-/// button is at least 64 dp tall and labels may take two centred lines, so
-/// nothing truncates at 360 dp. Lime is only used for the icon.
+/// Gap between action tiles, in dp, in both the single row and the 2x2 grid.
+const double kPhotoActionGap = 12;
+
+/// Below this row width (the space the tiles get, after page margins) the four
+/// tiles switch to a 2x2 grid. A 360 dp phone with 16 dp margins gives 328 dp.
+const double _photoActionRowMinWidth = 320;
+
+/// Above this text scale the four tiles switch to a 2x2 grid.
+const double _photoActionMaxRowTextScale = 1.15;
+
+/// One row of compact buttons: icon above a short label. Four tiles sit in one
+/// row with [kPhotoActionGap] between them. At narrow widths or large text
+/// scales they wrap into a 2x2 grid with the same gaps, so labels keep room.
 class PhotoActionRow extends StatelessWidget {
   const PhotoActionRow({super.key, required this.actions});
 
   final List<PhotoAction> actions;
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      for (var i = 0; i < actions.length; i++) ...[
-        if (i > 0) const SizedBox(width: 8),
-        Expanded(child: _PhotoActionButton(action: actions[i])),
+  Widget build(BuildContext context) {
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final oneRow =
+            constraints.maxWidth >= _photoActionRowMinWidth &&
+            textScale <= _photoActionMaxRowTextScale;
+        if (oneRow || actions.length <= 2) {
+          return _tileRow(actions);
+        }
+        final half = (actions.length / 2).ceil();
+        final first = actions.sublist(0, half);
+        final second = actions.sublist(half);
+        return Column(
+          children: [
+            _tileRow(first),
+            if (second.isNotEmpty) ...[
+              const SizedBox(height: kPhotoActionGap),
+              _tileRow(second),
+            ],
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _tileRow(List<PhotoAction> row) => IntrinsicHeight(
+    child: Row(
+      children: [
+        for (var i = 0; i < row.length; i++) ...[
+          if (i > 0) const SizedBox(width: kPhotoActionGap),
+          Expanded(child: _PhotoActionButton(action: row[i])),
+        ],
       ],
-    ],
+    ),
   );
 }
 
@@ -155,32 +193,31 @@ class _PhotoActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final dark = theme.brightness == Brightness.dark;
     final enabled = action.onPressed != null;
     return Semantics(
       button: true,
       enabled: enabled,
       label: action.label,
       child: Material(
-        color: dark ? const Color(0xFF13161B) : Colors.white,
+        color: theme.cardTheme.color ?? scheme.surface,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: scheme.outline, width: 0.8),
+          side: BorderSide(color: scheme.outline),
         ),
         child: InkWell(
           onTap: action.onPressed,
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 64),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
               child: ExcludeSemantics(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       action.icon,
-                      size: 20,
+                      size: 22,
                       color: enabled
                           ? VyroTheme.accentTextOf(context)
                           : scheme.onSurfaceVariant,
@@ -189,8 +226,10 @@ class _PhotoActionButton extends StatelessWidget {
                     Text(
                       action.label,
                       textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        fontSize: 12.5,
+                        fontSize: 12,
                         height: 1.2,
                         fontWeight: FontWeight.w700,
                         color: enabled

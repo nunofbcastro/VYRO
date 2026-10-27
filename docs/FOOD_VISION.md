@@ -154,6 +154,16 @@ o ketchup, o molho de tomate e o queijo ralado não existem, por isso não apare
   (`hamburger_bun`) é sugerido primeiro; depois queijo (`cheese_gouda`) e molho
   (`burger_sauce`), se ainda não estiverem na lista. São sugestões, fora dos
   totais.
+- Frango: «fried chicken», «crispy chicken», «chicken patty» e «frango frito» são
+  o filete panado (`chicken_fried_patty`). «chicken burger», «chicken sandwich»,
+  «mcchicken» são o sanduíche (`chicken_sandwich`, com pão). Um «chicken» genérico
+  fica grelhado (`chicken_breast_roasted`), salvo se houver pão na lista (vira
+  filete panado, o pão é a linha à parte) ou se o campo «where» disser
+  hambúrguer/sanduíche/pão (vira sanduíche). Sanduíche de frango mais pão à parte
+  vira filete panado + pão, como no hambúrguer.
+- Acompanhamentos (só sugestões): carne sem pão → pão, bacon, queijo, molho
+  (maionese no frango), alface e tomate por último. Sanduíche completo → bacon,
+  alface e tomate.
 - Contagem: «2 hamburgers» são dois hambúrgueres completos, 300 g (150 g
   por unidade, sem fator de tamanho).
 

@@ -203,4 +203,109 @@ void main() {
     expect(find.text('parcial'), findsOneWidget);
     expect(find.text('Totais sem 1 por escolher.'), findsOneWidget);
   });
+
+  group('PhotoActionRow', () {
+    const actions = [
+      PhotoAction(icon: Icons.crop, label: 'Zona'),
+      PhotoAction(icon: Icons.add_a_photo_outlined, label: '2.º ângulo'),
+      PhotoAction(icon: Icons.restaurant_menu, label: 'Receita'),
+      PhotoAction(icon: Icons.photo_library_outlined, label: 'Mais fotos'),
+    ];
+
+    Future<void> pumpRow(
+      WidgetTester tester, {
+      required double width,
+      double textScale = 1,
+      bool dark = true,
+    }) async {
+      tester.view.physicalSize = Size(width * 2.625, 900 * 2.625);
+      tester.view.devicePixelRatio = 2.625;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: dark ? VyroTheme.dark : VyroTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(textScale)),
+            child: child!,
+          ),
+          home: const Scaffold(
+            body: const Padding(
+              padding: const EdgeInsets.all(16),
+              child: PhotoActionRow(actions: actions),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+    }
+
+    List<Rect> tileRects(WidgetTester tester) => [
+      for (final element
+          in find
+              .descendant(
+                of: find.byType(PhotoActionRow),
+                matching: find.byType(InkWell),
+              )
+              .evaluate())
+        tester.getRect(find.byWidget(element.widget)),
+    ];
+
+    testWidgets('four tiles in one row keep 12 dp gaps at 412 dp', (
+      tester,
+    ) async {
+      await pumpRow(tester, width: 412);
+      final rects = tileRects(tester);
+      expect(rects, hasLength(4));
+      for (var i = 0; i < 3; i++) {
+        expect(rects[i].top, rects[i + 1].top, reason: 'same row');
+        expect(rects[i + 1].left - rects[i].right, closeTo(12, 0.01));
+      }
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('four tiles stay in one row at 360 dp, text scale 1.0', (
+      tester,
+    ) async {
+      await pumpRow(tester, width: 360);
+      final rects = tileRects(tester);
+      expect(rects.map((r) => r.top).toSet(), hasLength(1));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('a 320 dp screen switches to a 2x2 grid with 12 dp gaps', (
+      tester,
+    ) async {
+      await pumpRow(tester, width: 320);
+      final rects = tileRects(tester);
+      expect(rects, hasLength(4));
+      // Row one: tiles 0 and 1. Row two: tiles 2 and 3.
+      expect(rects[0].top, rects[1].top);
+      expect(rects[2].top, rects[3].top);
+      expect(rects[2].top - rects[0].bottom, closeTo(12, 0.01));
+      expect(rects[1].left - rects[0].right, closeTo(12, 0.01));
+      expect(rects[3].left - rects[2].right, closeTo(12, 0.01));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('text scale 1.3 at 412 dp switches to a 2x2 grid', (
+      tester,
+    ) async {
+      await pumpRow(tester, width: 412, textScale: 1.3);
+      final rects = tileRects(tester);
+      expect(rects[0].top, rects[1].top);
+      expect(rects[2].top, greaterThan(rects[0].bottom));
+      expect(rects[2].top - rects[0].bottom, closeTo(12, 0.01));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('text scale 1.3 at 360 dp lays out without overflow', (
+      tester,
+    ) async {
+      await pumpRow(tester, width: 360, textScale: 1.3, dark: false);
+      expect(tileRects(tester), hasLength(4));
+      expect(tester.takeException(), isNull);
+    });
+  });
 }

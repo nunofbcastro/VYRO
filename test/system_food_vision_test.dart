@@ -42,6 +42,10 @@ const _companionKeys = {
   "hamburger_bun",
   "cheese_gouda",
   "burger_sauce",
+  // Burger and chicken sandwich extras: bacon, lettuce, tomato.
+  "bacon_cooked",
+  "lettuce_raw",
+  "tomato_raw",
 };
 
 /// Suggestions that are not companion foods: duplicate coffees and offline

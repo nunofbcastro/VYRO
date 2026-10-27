@@ -7,6 +7,13 @@ import '../../app/theme/appearance_sheet.dart';
 import '../../app/theme/vyro_chrome.dart';
 import '../../app/theme/vyro_theme.dart';
 import '../../core/database/app_database.dart';
+import '../motion_engine/feedback_engine/coach_llm_phrases.dart';
+import '../motion_engine/feedback_engine/coach_voice_settings.dart';
+import '../motion_engine/workout_camera/motion_coach_page.dart'
+    show kVoiceCoachPreferenceKey;
+import '../nutrition/domain/nutrition_targets_rules.dart';
+import '../workouts/plan_wizard_page.dart';
+import 'domain/setup_save.dart';
 import 'onboarding_draft.dart';
 
 class SetupWizardPage extends StatefulWidget {
@@ -45,13 +52,44 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
   );
   final ScrollController scrollController = ScrollController();
 
+  // Manual target fields are controllers (not initialValue) so the
+  // "Ajustar kcal às macros" action can update the kcal text in place.
+  final TextEditingController manualKcalController = TextEditingController();
+  final TextEditingController manualProteinController = TextEditingController();
+  final TextEditingController manualCarbsController = TextEditingController();
+  final TextEditingController manualFatController = TextEditingController();
+
   int step = 0;
   bool saving = false;
   String? error;
 
+  /// Whether the on-device model can write coach phrases. Null while checking.
+  bool? llmAvailable;
+
   static String _number(double value) => value == value.roundToDouble()
       ? value.round().toString()
       : value.toStringAsFixed(1);
+
+  static String _manualText(double? value) =>
+      value == null ? '' : value.round().toString();
+
+  bool _controllersSynced = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadStored());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // The draft reads SettingsScope, which is only allowed after initState.
+    if (!_controllersSynced) {
+      _controllersSynced = true;
+      _syncManualControllers();
+    }
+  }
 
   @override
   void dispose() {
@@ -60,7 +98,46 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
     heightController.dispose();
     weightController.dispose();
     scrollController.dispose();
+    manualKcalController.dispose();
+    manualProteinController.dispose();
+    manualCarbsController.dispose();
+    manualFatController.dispose();
     super.dispose();
+  }
+
+  void _syncManualControllers() {
+    manualKcalController.text = _manualText(draft.manualKcal);
+    manualProteinController.text = _manualText(draft.manualProtein);
+    manualCarbsController.text = _manualText(draft.manualCarbs);
+    manualFatController.text = _manualText(draft.manualFat);
+  }
+
+  /// Reads the Modo PT switch and the phrase toggle from the same stores the
+  /// coach settings use, and checks whether the on-device model is there.
+  Future<void> _loadStored() async {
+    if (!mounted) return;
+    final services = AppServicesScope.of(context);
+    final database = services.database;
+    var voiceOn = draft.coachVoice;
+    var phrases = draft.llmPhrases;
+    var available = false;
+    try {
+      voiceOn = await database.getPreference(kVoiceCoachPreferenceKey) == 'on';
+      final stored = await CoachVoicePreferences(
+        read: database.getPreference,
+        write: database.setPreference,
+      ).load();
+      phrases = stored.llmPhrases ?? true;
+      available = await CoachLlmPhrases(services.llm).isAvailable();
+    } catch (_) {
+      // Unreadable stores keep the defaults; the phrase toggle stays disabled.
+    }
+    if (!mounted) return;
+    setState(() {
+      draft.coachVoice = voiceOn;
+      draft.llmPhrases = phrases;
+      llmAvailable = available;
+    });
   }
 
   void _syncDraft() {
@@ -98,7 +175,7 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
     scrollController.jumpTo(0);
   }
 
-  void _next() {
+  void _next({bool planAfter = false}) {
     _syncDraft();
     final validation = _validationFor(step);
     if (validation != null) {
@@ -110,7 +187,7 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
       setState(() => step += 1);
       _scrollToTop();
     } else {
-      _finish();
+      _finish(openPlanWizard: planAfter);
     }
   }
 
@@ -130,7 +207,7 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
     _scrollToTop();
   }
 
-  Future<void> _finish() async {
+  Future<void> _finish({bool openPlanWizard = false}) async {
     _syncDraft();
     for (var index = 0; index < _stepCount; index++) {
       final validation = _validationFor(index);
@@ -142,6 +219,14 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
         _scrollToTop();
         return;
       }
+    }
+    if (draft.manualTargetsIssue() != null) {
+      setState(() {
+        step = _stepCount - 1;
+        error = stringsOf(context).get('targetsErrorKcal');
+      });
+      _scrollToTop();
+      return;
     }
     setState(() {
       saving = true;
@@ -158,6 +243,7 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
       },
     );
 
+    final navigator = Navigator.of(context);
     try {
       if (widget.preview) {
         if (!mounted) return;
@@ -171,9 +257,12 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
       }
 
       final services = AppServicesScope.of(context);
-      await services.database
-          .saveUserProfile(profile)
-          .timeout(const Duration(seconds: 20));
+      await saveSetup(
+        services.database,
+        draft,
+        locale: settings.locale.languageCode,
+        theme: profile.theme,
+      ).timeout(const Duration(seconds: 20));
       // The starter plan is generated from the saved profile. A failure here
       // must not block onboarding; the user can regenerate it in Profile.
       try {
@@ -184,9 +273,18 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
         // Plan generation is best-effort at this point.
       }
       await settings.refreshProfile().timeout(const Duration(seconds: 15));
+      if (openPlanWizard) {
+        // Setup is saved. The wizard opens on top of the app; the setup route
+        // is popped first when it was pushed (not when it is the root gate).
+        if (navigator.canPop()) navigator.pop();
+        navigator.push(
+          MaterialPageRoute<void>(builder: (_) => const PlanWizardPage()),
+        );
+        return;
+      }
       if (!mounted) return;
       setState(() => saving = false);
-      if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+      if (navigator.canPop()) navigator.pop();
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -334,8 +432,22 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
                             icon: step == _stepCount - 1
                                 ? Icons.check_rounded
                                 : Icons.arrow_forward_rounded,
-                            onPressed: saving ? null : _next,
+                            onPressed: saving ? null : () => _next(),
                           ),
+                          if (step == _stepCount - 1)
+                            TextButton.icon(
+                              style: TextButton.styleFrom(
+                                minimumSize: const Size(0, 48),
+                              ),
+                              onPressed: saving
+                                  ? null
+                                  : () => _next(planAfter: true),
+                              icon: const Icon(
+                                Icons.fitness_center_rounded,
+                                size: 18,
+                              ),
+                              label: Text(t.get('setupPlanNow')),
+                            ),
                         ],
                       ),
                     ),
@@ -673,6 +785,187 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
   Widget _appearanceStep(VyroStrings t) =>
       const AppearanceChoices(compact: false);
 
+  Widget _targetsModeCard(VyroStrings t) {
+    final scheme = Theme.of(context).colorScheme;
+    final manual = draft.manualTargets;
+    Widget option(String value, String label, IconData icon) {
+      final selected = draft.targetMode == value;
+      return InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: () => setState(() {
+          error = null;
+          if (value == VyroProfile.modeManual) {
+            draft.startManualTargets();
+            _syncManualControllers();
+          } else {
+            draft.useAutomaticTargets();
+          }
+        }),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 52),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: [
+              Icon(
+                selected
+                    ? Icons.radio_button_checked_rounded
+                    : Icons.radio_button_unchecked_rounded,
+                color: selected ? scheme.primary : scheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 12),
+              Icon(icon, size: 20, color: scheme.onSurfaceVariant),
+              const SizedBox(width: 10),
+              Expanded(child: Text(label)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return VyroCard(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          option(
+            VyroProfile.modeAutomatic,
+            t.get('setupTargetsAuto'),
+            Icons.autorenew_rounded,
+          ),
+          option(
+            VyroProfile.modeManual,
+            t.get('setupTargetsManual'),
+            Icons.edit_outlined,
+          ),
+          if (manual) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
+              child: Text(
+                t.get('setupTargetsManualBody'),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+            _manualField(
+              label: t.get('targetsKcal'),
+              controller: manualKcalController,
+              suffix: t.get('kcalUnit'),
+              onChanged: (value) => draft.manualKcal = value,
+            ),
+            _manualField(
+              label: t.get('protein'),
+              controller: manualProteinController,
+              suffix: 'g',
+              onChanged: (value) => draft.manualProtein = value,
+            ),
+            _manualField(
+              label: t.get('carbs'),
+              controller: manualCarbsController,
+              suffix: 'g',
+              onChanged: (value) => draft.manualCarbs = value,
+            ),
+            _manualField(
+              label: t.get('fat'),
+              controller: manualFatController,
+              suffix: 'g',
+              onChanged: (value) => draft.manualFat = value,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _manualField({
+    required String label,
+    required TextEditingController controller,
+    required String suffix,
+    required ValueChanged<double?> onChanged,
+  }) => Padding(
+    padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+    child: TextField(
+      controller: controller,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: InputDecoration(labelText: label, suffixText: suffix),
+      onChanged: (text) => setState(() {
+        error = null;
+        onChanged(TargetsRules.parse(text));
+      }),
+    ),
+  );
+
+  Widget _mismatchCard(VyroStrings t) {
+    final theme = Theme.of(context);
+    return VyroCard(
+      padding: const EdgeInsets.all(16),
+      tint: theme.colorScheme.error.withValues(alpha: 0.08),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            t
+                .get('targetsMacroKcal')
+                .replaceAll('{kcal}', draft.manualMacroKcal.round().toString()),
+            style: theme.textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            t
+                .get('targetsMismatch')
+                .replaceAll('{diff}', draft.manualMismatchPercent.toString()),
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(height: 6),
+          TextButton(
+            onPressed: () => setState(() {
+              draft.adjustManualKcalToMacros();
+              manualKcalController.text = _manualText(draft.manualKcal);
+            }),
+            style: TextButton.styleFrom(minimumSize: const Size(0, 44)),
+            child: Text(t.get('targetsAdjustKcal')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _preferencesCard(VyroStrings t) => VyroCard(
+    padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(t.get('setupVoiceTitle')),
+          subtitle: Text(t.get('setupVoiceBody')),
+          value: draft.coachVoice,
+          onChanged: (value) => setState(() => draft.coachVoice = value),
+        ),
+        if (draft.coachVoice)
+          SwitchListTile(
+            key: const ValueKey('setupLlmPhrases'),
+            contentPadding: EdgeInsets.zero,
+            title: Text(t.get('coachVoiceLlmTitle')),
+            subtitle: llmAvailable == null
+                ? null
+                : Text(
+                    llmAvailable!
+                        ? t.get('coachVoiceLlmSubtitle')
+                        : t.get('coachVoiceLlmUnavailable'),
+                  ),
+            value: llmAvailable == true && draft.llmPhrases,
+            onChanged: llmAvailable == true
+                ? (value) => setState(() => draft.llmPhrases = value)
+                : null,
+          ),
+        const SizedBox(height: 6),
+        Text(
+          t.get('setupPrivacyNote'),
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
+    ),
+  );
+
   Widget _reviewStep(VyroStrings t) {
     final targets = draft.targets;
     final scheme = Theme.of(context).colorScheme;
@@ -733,11 +1026,13 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Text(
-                      '${t.get('kcalUnit')} · ${t.get('perDay')}',
-                      style: Theme.of(context).textTheme.bodySmall,
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Text(
+                        '${t.get('kcalUnit')} · ${t.get('perDay')}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                     ),
                   ),
                 ],
@@ -765,6 +1060,12 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
             ],
           ),
         ),
+        const SizedBox(height: 14),
+        _targetsModeCard(t),
+        if (draft.manualMacrosMismatch) ...[
+          const SizedBox(height: 14),
+          _mismatchCard(t),
+        ],
         const SizedBox(height: 14),
         VyroCard(
           padding: const EdgeInsets.symmetric(vertical: 6),
@@ -812,6 +1113,8 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
             ],
           ),
         ),
+        const SizedBox(height: 14),
+        _preferencesCard(t),
         const SizedBox(height: 18),
         _note(t.get('setupReviewCaveat'), icon: Icons.info_outline_rounded),
         const SizedBox(height: 8),

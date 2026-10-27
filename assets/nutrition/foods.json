@@ -20,7 +20,7 @@
   }
  },
  "curatedList": "tool/nutrition/foods_pt.tsv",
- "curatedSha256": "2d2cc3ab5153e5d28bb5f7de683913217363635b15672991d51cbbc02109e7a2",
+ "curatedSha256": "6b951458eb2fa02ce77375cea651c6e05d9b4102bb31ab4436db1195cbf7cea6",
  "portionNote": "Typical portions are VYRO estimates for suggestions; users confirm grams.",
  "foods": [
   {
@@ -828,6 +828,47 @@
    "visionLabels": []
   },
   {
+   "key": "chicken_fried_patty",
+   "namePt": "Filete de frango panado (frito)",
+   "nameEn": "Breaded fried chicken fillet",
+   "category": "carne",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "170718",
+   "sourceLabel": "Fast foods, chicken, breaded and fried, boneless pieces, plain",
+   "kcal": 307.0,
+   "protein": 15.92,
+   "carbs": 14.93,
+   "fat": 20.36,
+   "fiber": 0.9,
+   "portionG": 100.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 filete panado",
+   "portionEn": "1 breaded fillet",
+   "aliases": [
+    "frango panado",
+    "frango frito",
+    "filete de frango panado",
+    "filete de frango frito",
+    "peito de frango panado",
+    "bife de frango panado",
+    "frango empanado",
+    "chicken patty",
+    "chicken patties",
+    "fried chicken",
+    "fried chicken fillet",
+    "breaded chicken",
+    "breaded chicken fillet",
+    "breaded chicken patty",
+    "crispy chicken",
+    "crispy chicken fillet",
+    "fried chicken patty",
+    "crispy fried chicken",
+    "fried chicken breast"
+   ],
+   "visionLabels": []
+  },
+  {
    "key": "beef_ground_patty",
    "namePt": "Hambúrguer de vaca",
    "nameEn": "Beef burger patty",
@@ -1036,7 +1077,6 @@
    ],
    "visionLabels": [
     "Tandoori chicken",
-    "Chicken sandwich",
     "Churrasco",
     "Chicken fried steak",
     "Patty",
@@ -5607,6 +5647,48 @@
     "frango salpicão"
    ],
    "visionLabels": []
+  },
+  {
+   "key": "chicken_sandwich",
+   "namePt": "Sandes de frango panado",
+   "nameEn": "Breaded chicken sandwich",
+   "category": "pratos",
+   "region": "int",
+   "source": "usda",
+   "sourceRef": "170295",
+   "sourceLabel": "Fast foods, chicken fillet sandwich, plain with pickles",
+   "kcal": 250.0,
+   "protein": 16.28,
+   "carbs": 20.89,
+   "fat": 11.19,
+   "fiber": 1.4,
+   "portionG": 150.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 sandes",
+   "portionEn": "1 sandwich",
+   "aliases": [
+    "sandes de frango",
+    "sandes de frango panado",
+    "sandes de frango no pão",
+    "sanduíche de frango",
+    "sanduiche de frango",
+    "sanduíche de frango panado",
+    "hambúrguer de frango",
+    "hamburguer de frango",
+    "hambúrguer de frango panado",
+    "chicken burger",
+    "chicken burgers",
+    "chicken sandwich",
+    "chicken sandwiches",
+    "crispy chicken sandwich",
+    "mcchicken",
+    "mc chicken",
+    "frango no pão",
+    "hambúrguer de frango no pão"
+   ],
+   "visionLabels": [
+    "Chicken sandwich"
+   ]
   },
   {
    "key": "soup_vegetables",

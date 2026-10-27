@@ -24,13 +24,16 @@ void main() {
 
     expect(find.text('Bem-vindo ao VYRO'), findsOneWidget);
 
-    await tester.tap(find.text('Seguinte'));
-    await tester.pumpAndSettle();
-    expect(find.text('Regista o essencial'), findsOneWidget);
-
-    await tester.tap(find.text('Seguinte'));
-    await tester.pumpAndSettle();
-    expect(find.text('Treina com um plano claro'), findsOneWidget);
+    for (final title in const [
+      'Fotos e refeições',
+      'Metas que acompanham o peso',
+      'Plano de treino com progressão',
+      'Modo PT com voz',
+    ]) {
+      await tester.tap(find.text('Seguinte'));
+      await tester.pumpAndSettle();
+      expect(find.text(title), findsOneWidget);
+    }
 
     await tester.tap(find.text('Seguinte'));
     await tester.pumpAndSettle();
@@ -76,7 +79,7 @@ void main() {
 
     await tester.tap(find.text('Seguinte'));
     await tester.pumpAndSettle();
-    expect(find.text('Regista o essencial'), findsOneWidget);
+    expect(find.text('Fotos e refeições'), findsOneWidget);
 
     await tester.tap(find.text('Anterior'));
     await tester.pumpAndSettle();

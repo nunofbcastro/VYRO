@@ -6,7 +6,12 @@ import 'prose_numbers.dart';
 
 /// An answer from the on-device model, after the app has checked it.
 class ComposedAnswer {
-  const ComposedAnswer({required this.text, this.meal, this.rejected = false});
+  const ComposedAnswer({
+    required this.text,
+    this.meal,
+    this.rejected = false,
+    this.footnote,
+  });
 
   /// Text to show. Empty when nothing in the model text survived the check.
   final String text;
@@ -16,6 +21,10 @@ class ComposedAnswer {
 
   /// The proposal violated the dietary choice and was refused.
   final bool rejected;
+
+  /// One short footnote, only when lines of the model text were removed.
+  /// Shown once, outside the message text (see the assistant page).
+  final String? footnote;
 }
 
 /// Asks the model and composes the answer (see [composeModelAnswer]).
@@ -49,6 +58,7 @@ ComposedAnswer composeModelAnswer(
   final meal = parsed.proposal == null
       ? null
       : resolveMeal(parsed.proposal!, db, diet: diet);
+  final prose = stripProtocolText(parsed.text);
   if (meal != null && meal.hasDietConflict) {
     return ComposedAnswer(
       text: english
@@ -58,22 +68,41 @@ ComposedAnswer composeModelAnswer(
     );
   }
   final check = checkProseNumbers(
-    parsed.text,
+    prose,
     totals: meal != null && meal.complete ? meal.totals : null,
   );
-  final notes = [
-    if (meal != null)
-      english
-          ? 'Values calculated by VYRO from the local database (see the meal card).'
-          : 'Valores calculados pela VYRO a partir da base local (ver o cartão da refeição).',
-    if (check.removedLines > 0)
-      english
-          ? 'Sentences with nutrient numbers were removed from the model text because they do not match the local database.'
-          : 'Frases com números nutricionais foram removidas do texto do modelo, porque não coincidem com a base local.',
-  ];
-  final parts = [
-    if (check.text.isNotEmpty) check.text,
-    for (final note in notes) '*$note*',
-  ];
-  return ComposedAnswer(text: parts.join('\n\n'), meal: meal);
+  return ComposedAnswer(
+    text: check.text,
+    meal: meal,
+    footnote: check.removedLines > 0
+        ? (english
+              ? 'Some sentences were removed: their numbers did not match the local database.'
+              : 'Algumas frases foram retiradas: os números não coincidiam com a base local.')
+        : null,
+  );
+}
+
+/// Removes leftover protocol text from the model reply so it never reaches
+/// the screen: an unclosed meal block (and everything after it), stray block
+/// markers and JSON lines.
+String stripProtocolText(String text) {
+  final kept = <String>[];
+  for (final line in text.split('\n')) {
+    final open = line.indexOf('[[MEAL]]');
+    if (open >= 0) {
+      final before = line.substring(0, open).trim();
+      if (before.isNotEmpty) kept.add(before);
+      break;
+    }
+    final t = line.trim();
+    if (t == '[[/MEAL]]' ||
+        t.startsWith('{') ||
+        t.contains('"items"') ||
+        t.contains('"grams"') ||
+        t.contains('"meal"')) {
+      continue;
+    }
+    kept.add(line);
+  }
+  return kept.join('\n').trim();
 }

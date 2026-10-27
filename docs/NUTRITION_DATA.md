@@ -11,7 +11,7 @@ alimentos descarregadas legalmente.
 foods_pt.tsv (curado à mão: nomes PT/EN, fonte + referência, porção, unidades da porção, aliases, etiquetas de imagem)
         │
         ▼  build_food_db.py  (descarrega/usa build/usda, build/ciqual, build/taco)
-assets/nutrition/foods.json  (191 alimentos, valores por 100 g, fonte de cada um)
+assets/nutrition/foods.json  (193 alimentos, valores por 100 g, fonte de cada um)
         │
         ▼  FoodDatabase.load()  (lib/features/nutrition/data/food_database.dart)
 fotografia, assistente, diário  →  kcal = gramas × kcal/100 g ÷ 100
@@ -60,7 +60,7 @@ polvo, chouriço, queijo de ovelha, pão caseiro…).
   inválidas são rejeitadas, nunca adivinhadas.
 - Porções (`portion_g`, `portion_pt`) são **estimativas do VYRO** para sugerir
   quantidades. O utilizador confirma sempre as gramas.
-- `portion_units` (coluna opcional, última do TSV; preenchida em 85 dos 191
+- `portion_units` (coluna opcional, última do TSV; preenchida em 87 dos 193
   alimentos) indica quantas peças correspondem a `portion_g`: 3 sardinhas = 120 g
   ⇒ `portion_units = 3`. A app escala a contagem de peças por
   `portion_g × peças ÷ portion_units`. Sem valor, a contagem não multiplica a
@@ -106,6 +106,19 @@ alimento e as gramas.
   porção muda). Fatias: 110 g cada (8 fatias ≈ 880 g). O nome «pizza» sem
   mais nada refere-se à pizza inteira; as fatias usam «fatia de pizza».
   Francesinha: não existe na base (ainda sem referência adequada).
+- Frango panado (`chicken_fried_patty`, 100 g, 1 filete): USDA «Fast foods,
+  chicken, breaded and fried, boneless pieces, plain» (FDC 170718, 307 kcal/100 g).
+  Escolhida porque é um filete sem osso e panado. A linha «Chicken, broilers or
+  fryers, breast, meat and skin, cooked, fried, batter» (171475) tem pele e osso.
+  Recebe «fried chicken», «crispy chicken», «chicken patty», «frango frito»,
+  «filete de frango panado».
+- Sandes de frango panado (`chicken_sandwich`, 150 g, 1 sandes, estimativa):
+  USDA «Fast foods, chicken fillet sandwich, plain with pickles» (FDC 170295,
+  250 kcal/100 g). A linha McDonald's «McCHICKEN Sandwich» (173305, 273 kcal/100 g)
+  ficou de fora por ser de marca. Recebe «chicken burger», «chicken sandwich»,
+  «mcchicken», «hambúrguer de frango» e a etiqueta AIY «Chicken sandwich» (que
+  antes ia para o peito grelhado). Frango «grelhado» e «peito de frango» ficam
+  na linha grelhada.
 - Molho de hambúrguer (Big Mac, molho especial): Ciqual «Sauce burger».
 - Hambúrguer no pão (`cheeseburger_whole`, 150 g, 1 unidade): USDA «Fast foods,
   cheeseburger; single, regular patty, with condiments». Recebe o inglês

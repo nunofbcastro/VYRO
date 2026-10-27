@@ -96,8 +96,8 @@ void main() {
         expect(answer.text, isNot(contains('900')));
         expect(answer.text, isNot(contains('80 g')));
         expect(answer.text, isNot(contains('[[MEAL]]')));
-        expect(answer.text, contains('Valores calculados pela VYRO'));
-        expect(answer.text, contains('removidas'));
+        expect(answer.text, isNot(contains('Valores calculados')));
+        expect(answer.footnote, contains('retiradas'));
       },
     );
 

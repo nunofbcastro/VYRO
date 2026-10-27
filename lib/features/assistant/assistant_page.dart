@@ -17,6 +17,7 @@ import '../nutrition/data/food_database.dart';
 import '../nutrition/meals.dart';
 import '../motion_engine/workout_analysis_history/motion_history_repository.dart';
 import 'meal_log_sheet.dart';
+import 'widgets/answer_footnote.dart';
 import 'widgets/chat_message_bubble.dart';
 
 /// Q&A with the operating system's on-device model (Apple Intelligence on
@@ -45,6 +46,7 @@ class _AssistantPageState extends State<AssistantPage> {
   final _resolved = <int, ResolvedMeal>{};
   final _rated = <int>{};
   final _sources = <int, String>{};
+  final _footnotes = <int, String>{};
 
   OnDeviceLlm get _llm => AppServicesScope.of(context).llm;
 
@@ -205,6 +207,7 @@ class _AssistantPageState extends State<AssistantPage> {
           ? 'Calculated from local data'
           : 'Calculado a partir de dados locais';
       ResolvedMeal? card;
+      String? footnote;
       if (answer == null && _status == LlmStatus.available) {
         final prompt = buildAssistantPrompt(
           question: question,
@@ -221,6 +224,7 @@ class _AssistantPageState extends State<AssistantPage> {
             english: t.isEnglish,
           );
           card = composed.meal;
+          footnote = composed.footnote;
           answer = LocalAssistantAnswer(
             composed.text.isEmpty
                 ? localAssistantHelp(t.isEnglish)
@@ -243,6 +247,7 @@ class _AssistantPageState extends State<AssistantPage> {
         final index = _turns.length;
         if (card != null) _resolved[index] = card;
         _sources[index] = source;
+        if (footnote != null) _footnotes[index] = footnote;
         _turns.add(ChatTurn(fromUser: false, text: response.text));
       });
     } catch (_) {
@@ -320,6 +325,7 @@ class _AssistantPageState extends State<AssistantPage> {
               _busy = false;
               _rated.clear();
               _sources.clear();
+              _footnotes.clear();
               _resolved.clear();
               _turns.clear();
             }),
@@ -388,6 +394,8 @@ class _AssistantPageState extends State<AssistantPage> {
                             _sources[i]!,
                             style: Theme.of(context).textTheme.labelSmall,
                           ),
+                        if (_footnotes[i] != null)
+                          AnswerFootnote(text: _footnotes[i]!),
                         if (!_turns[i].fromUser)
                           Row(
                             children: [

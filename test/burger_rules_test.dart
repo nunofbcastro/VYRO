@@ -129,17 +129,21 @@ void main() {
   });
 
   group('missing bun: patty without bread', () {
-    test('a patty alone suggests the bun first, then cheese and sauce', () {
-      final foods = parse([('beef patty', 1)]);
-      final companions = mealCompanions(foods, db);
-      final keys = [for (final c in companions) c.food?.key];
-      expect(keys.take(3).toList(), [
-        'hamburger_bun',
-        'cheese_gouda',
-        'burger_sauce',
-      ]);
-      expect(companions.every((c) => c.food != null), isTrue);
-    });
+    test(
+      'a patty alone suggests the bun first, then bacon, cheese and sauce',
+      () {
+        final foods = parse([('beef patty', 1)]);
+        final companions = mealCompanions(foods, db);
+        final keys = [for (final c in companions) c.food?.key];
+        expect(keys.take(4).toList(), [
+          'hamburger_bun',
+          'bacon_cooked',
+          'cheese_gouda',
+          'burger_sauce',
+        ]);
+        expect(companions.every((c) => c.food != null), isTrue);
+      },
+    );
 
     test('suggestions are never part of the totals', () {
       final foods = parse([('beef patty', 1)]);

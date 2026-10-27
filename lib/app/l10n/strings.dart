@@ -401,6 +401,15 @@ class VyroStrings {
     'privacy': 'Privacidade',
     'localOnly': 'Os teus dados ficam neste dispositivo.',
     'design': 'Sistema de design',
+    'aboutVyro': 'Sobre a VYRO',
+    'versionLabel': 'Versão',
+    'versionCopyHint':
+        'Toca ou mantém premido para copiar para relatórios de erros',
+    'versionCopied': 'Versão copiada',
+    'githubReleases': 'Ver versões no GitHub',
+    'githubReleasesSubtitle': 'Copia a ligação; cola-a no browser',
+    'linkCopied': 'Ligação copiada',
+    'versionUnknown': 'Desconhecida',
     'demoNote': 'Pré-visualização com dados fictícios',
     'screens': 'Ecrãs e estados',
     'components': 'Componentes',
@@ -678,12 +687,18 @@ class VyroStrings {
     'tutorialWelcomeTitle': 'Bem-vindo ao VYRO',
     'tutorialWelcomeBody':
         'Nutrição e treino num só lugar. Sem contas e sem nuvem: os teus dados ficam no teu dispositivo.',
-    'tutorialNutritionTitle': 'Regista o essencial',
+    'tutorialNutritionTitle': 'Fotos e refeições',
     'tutorialNutritionBody':
-        'Refeições, macros e objetivos num diário simples. Confirma sempre os alimentos e as porções.',
-    'tutorialTrainingTitle': 'Treina com um plano claro',
+        'Tira até três fotos a uma refeição, revê os alimentos e as porções e confirma. A foto dá estimativas, não valores exatos.',
+    'tutorialTargetsTitle': 'Metas que acompanham o peso',
+    'tutorialTargetsBody':
+        'Registas o peso e as metas recalculam-se sozinhas. Preferes valores fixos? Ajusta à mão e a app avisa se as macros não batem com as kcal.',
+    'tutorialCoachTitle': 'Modo PT com voz',
+    'tutorialCoachBody':
+        'O treinador diz as repetições em voz alta e explica o posicionamento. As frases geradas pela IA do telemóvel são opcionais.',
+    'tutorialTrainingTitle': 'Plano de treino com progressão',
     'tutorialTrainingBody':
-        'Planos editáveis, sessões e progresso. Regras determinísticas, sem promessas de resultados.',
+        'Responde a umas perguntas e recebes um plano editável, com regras claras e progressão de carga. Sem promessas de resultados.',
     'tutorialPrivacyTitle': 'Privacidade por defeito',
     'tutorialPrivacyBody':
         'A câmara só abre quando pedes. Nada é enviado sem uma ação tua.',
@@ -728,11 +743,20 @@ class VyroStrings {
     'setupReviewCaveat':
         'Valores estimados, não aconselhamento médico ou nutricional.',
     'setupFinish': 'Criar perfil e começar',
+    'setupPlanNow': 'Criar o meu plano de treino agora',
     'setupSaving': 'A preparar o teu perfil…',
     'setupInvalidAge': 'Indica uma idade entre 14 e 100 anos.',
     'setupInvalidHeight': 'Indica uma altura entre 120 e 230 cm.',
     'setupInvalidWeight': 'Indica um peso entre 30 e 300 kg.',
     'setupTargets': 'Objetivos diários estimados',
+    'setupTargetsAuto': 'Automático (acompanha o teu peso)',
+    'setupTargetsManual': 'Ajustar à mão',
+    'setupTargetsManualBody':
+        'Os valores ficam fixos até voltares ao automático. Não mudam com o peso.',
+    'setupVoiceTitle': 'Modo PT (voz no treino)',
+    'setupVoiceBody': 'Diz as repetições em voz alta. Desligado por omissão.',
+    'setupPrivacyNote':
+        'Os teus dados ficam só neste telemóvel. A cópia de segurança do sistema pode incluí-los, sem fotos nem vídeos. A app só usa a rede para pesquisar produtos.',
     'setupPlan':
         'Vamos criar um plano de treino base editável com os teus dias e equipamento.',
     'setupDone': 'Perfil criado. Bom treino!',
@@ -908,6 +932,10 @@ class VyroStrings {
     'wizPreview': 'O teu novo plano',
     'wizSave': 'Guardar plano',
     'wizRegenerate': 'Gerar outra vez',
+    'wizCancel': 'Cancelar',
+    'wizExitMsg': 'Sair sem guardar? As respostas desta sessão perdem-se.',
+    'wizExitStay': 'Continuar a editar',
+    'wizExitLeave': 'Sair',
     'wizAiSource': 'Criado com IA do dispositivo · validado pelas regras',
     'wizRulesSource': 'Criado pelas regras da VYRO',
     'wizAiFailed': 'A IA não devolveu um plano válido; usámos as regras.',
@@ -1460,6 +1488,14 @@ class VyroStrings {
     'privacy': 'Privacy',
     'localOnly': 'Your data stays on this device.',
     'design': 'Design system',
+    'aboutVyro': 'About VYRO',
+    'versionLabel': 'Version',
+    'versionCopyHint': 'Tap or long-press to copy for bug reports',
+    'versionCopied': 'Version copied',
+    'githubReleases': 'View versions on GitHub',
+    'githubReleasesSubtitle': 'Copies the link; paste it in the browser',
+    'linkCopied': 'Link copied',
+    'versionUnknown': 'Unknown',
     'demoNote': 'Preview with sample data',
     'screens': 'Screens and states',
     'components': 'Components',
@@ -1736,12 +1772,18 @@ class VyroStrings {
     'tutorialWelcomeTitle': 'Welcome to VYRO',
     'tutorialWelcomeBody':
         'Nutrition and training in one place. No accounts, no cloud: your data stays on your device.',
-    'tutorialNutritionTitle': 'Log what matters',
+    'tutorialNutritionTitle': 'Photos and meals',
     'tutorialNutritionBody':
-        'Meals, macros and goals in a simple diary. Always confirm foods and portions.',
-    'tutorialTrainingTitle': 'Train with a clear plan',
+        'Take up to three photos of a meal, check the foods and portions, then confirm. A photo gives estimates, not exact values.',
+    'tutorialTargetsTitle': 'Targets that follow your weight',
+    'tutorialTargetsBody':
+        'Log your weight and the targets update on their own. Prefer fixed values? Set them by hand and the app warns when the macros do not match the kcal.',
+    'tutorialCoachTitle': 'PT mode, by voice',
+    'tutorialCoachBody':
+        'The coach says the reps out loud and explains positioning. Phone AI phrases are optional.',
+    'tutorialTrainingTitle': 'Training plan with progression',
     'tutorialTrainingBody':
-        'Editable plans, sessions and progress. Deterministic rules, no promised results.',
+        'Answer a few questions and get an editable plan with clear rules and load progression. No promised results.',
     'tutorialPrivacyTitle': 'Private by default',
     'tutorialPrivacyBody':
         'The camera only opens when you ask. Nothing is sent without your action.',
@@ -1785,11 +1827,20 @@ class VyroStrings {
         'Starting estimate based on your profile. Confirm and adjust whenever you want.',
     'setupReviewCaveat': 'Estimated values, not medical or nutritional advice.',
     'setupFinish': 'Create profile and start',
+    'setupPlanNow': 'Create my training plan now',
     'setupSaving': 'Preparing your profile…',
     'setupInvalidAge': 'Enter an age between 14 and 100.',
     'setupInvalidHeight': 'Enter a height between 120 and 230 cm.',
     'setupInvalidWeight': 'Enter a weight between 30 and 300 kg.',
     'setupTargets': 'Estimated daily targets',
+    'setupTargetsAuto': 'Automatic (follows your weight)',
+    'setupTargetsManual': 'Adjust by hand',
+    'setupTargetsManualBody':
+        'Values stay fixed until you switch back to automatic. They do not change with your weight.',
+    'setupVoiceTitle': 'PT mode (voice during training)',
+    'setupVoiceBody': 'Speaks the reps out loud. Off by default.',
+    'setupPrivacyNote':
+        'Your data stays on this phone. The system backup may include it, never photos or videos. The app only uses the network to look up products.',
     'setupPlan':
         'We will create an editable starter plan with your days and equipment.',
     'setupDone': 'Profile created. Enjoy your training!',
@@ -1964,6 +2015,10 @@ class VyroStrings {
     'wizPreview': 'Your new plan',
     'wizSave': 'Save plan',
     'wizRegenerate': 'Generate again',
+    'wizCancel': 'Cancel',
+    'wizExitMsg': 'Leave without saving? Answers in this session will be lost.',
+    'wizExitStay': 'Keep editing',
+    'wizExitLeave': 'Leave',
     'wizAiSource': 'Created with on-device AI · validated by rules',
     'wizRulesSource': 'Created by VYRO rules',
     'wizAiFailed': 'The AI did not return a valid plan; we used the rules.',

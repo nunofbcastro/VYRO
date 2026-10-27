@@ -16,7 +16,7 @@ VYRO never invents calories. Every food in the app comes from
 1. A curated list, `tool/nutrition/foods_pt.tsv`, has one row per VYRO food:
    `key, name_pt, name_en, source, source_ref, region, category, portion_g,
    portion_pt, portion_en, aliases, vision_labels, portion_units` (lists
-   separated by `|`). `portion_units` is optional (85 of 191 rows): the number
+   separated by `|`). `portion_units` is optional (87 of 193 rows): the number
    of pieces that `portion_g` represents (3 sardines = 120 g ⇒ `3`). Leave it
    empty for foods that are not counted in pieces (rice, soups, sauces); the app
    then ignores piece counts for that food. The build copies it to
@@ -110,6 +110,12 @@ under the same name:
   Hamburger/Cheeseburger belong to this row (the photo model answers in
   English). The bare Portuguese "hambúrguer", "patty" and "beef patty"
   stay on the raw beef patty row (`beef_ground_patty`).
+- Chicken: `chicken_fried_patty` (USDA FDC 170718, breaded fried boneless
+  pieces, 100 g) and `chicken_sandwich` (USDA FDC 170295, fast-food chicken
+  fillet sandwich, 150 g, `pratos`). Bare "chicken" and "grilled chicken" stay
+  on `chicken_breast_roasted`; the breaded aliases must not contain
+  "chicken fillet" (taken by the grilled row). The vision rule that turns a bare
+  "chicken" into the patty or sandwich is in `burger_rules.dart`.
 - Francesinha is not in the database (no suitable source row yet).
 
 `estimatedGrams` (`lib/features/nutrition/food_vision/portion_estimate.dart`):

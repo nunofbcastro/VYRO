@@ -46,6 +46,8 @@ import 'package:vyro/features/workouts/domain/plan_preferences.dart';
 import 'package:vyro/features/workouts/plan_wizard_page.dart';
 import 'package:vyro/features/workouts/training_page.dart';
 import 'package:vyro/features/workouts/workout_day_page.dart';
+import 'package:vyro/features/onboarding/setup_wizard_page.dart';
+import 'package:vyro/features/onboarding/tutorial_page.dart';
 import 'package:vyro/features/workouts/workout_session_page.dart';
 
 /// Wizard step names in order (14 steps, review last).
@@ -214,6 +216,21 @@ class _FakeLlm implements OnDeviceLlm {
       'Hoje ainda tens margem para jantar leve.';
 }
 
+/// Fake on-device model with a fixed reply, used by the assistant captures.
+class _ScriptedLlm implements OnDeviceLlm {
+  _ScriptedLlm(this.reply);
+  final String reply;
+
+  @override
+  Future<LlmStatus> status() async => LlmStatus.available;
+
+  @override
+  Future<LlmStatus> download() async => LlmStatus.available;
+
+  @override
+  Future<String> generate(String prompt) async => reply;
+}
+
 class _Vision implements MultiPhotoFoodVisionService {
   late Future<FoodVisionResult> result;
 
@@ -372,6 +389,7 @@ void main() {
     required bool dark,
     double width = 412,
     double height = 915,
+    OnDeviceLlm? llm,
   }) async {
     tester.view.physicalSize = Size(width * _dpr, height * _dpr);
     tester.view.devicePixelRatio = _dpr;
@@ -379,7 +397,7 @@ void main() {
     await _loadFonts(tester);
     final key = GlobalKey();
     final theme = dark ? VyroTheme.dark : VyroTheme.light;
-    final services = AppServices(database: database, llm: _FakeLlm());
+    final services = AppServices(database: database, llm: llm ?? _FakeLlm());
     final settings = AppSettings(services);
     await tester.pumpWidget(
       RepaintBoundary(
@@ -830,6 +848,54 @@ void main() {
       }
       await _capture(tester, key, 'assistant_$mode');
     });
+
+    Future<void> askAssistant(WidgetTester tester, String question) async {
+      await tester.enterText(find.byType(TextField).first, question);
+      await _settle(tester);
+      await tester.tap(find.byIcon(Icons.arrow_upward_rounded));
+      for (var i = 0; i < 6; i++) {
+        await _settle(tester);
+      }
+    }
+
+    testWidgets('assistant time answer ($mode)', skip: !_enabled, (
+      tester,
+    ) async {
+      final key = await pumpPhone(tester, const AssistantPage(), dark: dark);
+      await _settle(tester);
+      await askAssistant(tester, 'Que horas são?');
+      await _capture(tester, key, 'time_$mode');
+    });
+
+    testWidgets('assistant out-of-scope reply ($mode)', skip: !_enabled, (
+      tester,
+    ) async {
+      final key = await pumpPhone(tester, const AssistantPage(), dark: dark);
+      await _settle(tester);
+      await askAssistant(tester, 'Qual é a capital de França?');
+      await _capture(tester, key, 'scope_$mode');
+    });
+
+    testWidgets(
+      'assistant meal idea with card and footnote ($mode)',
+      skip: !_enabled,
+      (tester) async {
+        await tester.runAsync(() => seedToday(database));
+        final key = await pumpPhone(
+          tester,
+          const AssistantPage(),
+          dark: dark,
+          llm: _ScriptedLlm(
+            'Um jantar simples e proteico.\n'
+            'Tem cerca de 900 kcal e 80 g de proteína.\n'
+            '[[MEAL]]{"meal":"dinner","items":[{"name":"Peito de frango grelhado","grams":150},{"name":"Arroz branco cozido","grams":120}]}[[/MEAL]]',
+          ),
+        );
+        await _settle(tester);
+        await askAssistant(tester, 'Que refeição me recomendas à noite?');
+        await _capture(tester, key, 'meal_$mode');
+      },
+    );
   }
 
   // Plan wizard, preview, training home and workout day, with the plan
@@ -915,6 +981,149 @@ void main() {
         await tester.tap(find.text('Gerar plano'));
         await _settle(tester);
         await _capture(tester, key, 'wizard_preview_warnings_$dims', raw: true);
+      });
+
+      // Cancel affordance: the header X on a step, and the confirmation
+      // dialog shown after an answer changed. Files start with wizard_cancel_.
+      testWidgets('wizard cancel header and dialog ($dims)', skip: !_enabled, (
+        tester,
+      ) async {
+        final key = await pumpPhone(
+          tester,
+          const PlanWizardPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        await _capture(
+          tester,
+          key,
+          'wizard_cancel_header_$dims',
+          unmount: false,
+          raw: true,
+        );
+        await tester.tap(find.text('Perder gordura').first);
+        await _settle(tester);
+        await tester.tap(find.byTooltip('Cancelar'));
+        await _settle(tester);
+        await _capture(tester, key, 'wizard_cancel_dialog_$dims', raw: true);
+      });
+
+      testWidgets('setup review automatic ($dims)', skip: !_enabled, (
+        tester,
+      ) async {
+        final key = await pumpPhone(
+          tester,
+          const SetupWizardPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        for (var i = 0; i < 7; i++) {
+          await tester.tap(find.text('Continuar'));
+          await _settle(tester);
+        }
+        await _capture(
+          tester,
+          key,
+          'setup_review_automatic_$dims',
+          unmount: false,
+          raw: true,
+        );
+      });
+
+      testWidgets('setup review manual mismatch ($dims)', skip: !_enabled, (
+        tester,
+      ) async {
+        final key = await pumpPhone(
+          tester,
+          const SetupWizardPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        for (var i = 0; i < 7; i++) {
+          await tester.tap(find.text('Continuar'));
+          await _settle(tester);
+        }
+        await tester.tap(find.text('Ajustar à mão'));
+        await _settle(tester);
+        // Kcal far below the macros: the mismatch warning must appear.
+        await tester.ensureVisible(find.byType(TextField).at(0));
+        await tester.enterText(find.byType(TextField).at(0), '1500');
+        await _settle(tester);
+        await tester.drag(
+          find.byType(SingleChildScrollView).first,
+          const Offset(0, -420),
+        );
+        await _settle(tester);
+        await _capture(
+          tester,
+          key,
+          'setup_review_manual_mismatch_$dims',
+          unmount: false,
+          raw: true,
+        );
+      });
+
+      testWidgets('setup review preferences on ($dims)', skip: !_enabled, (
+        tester,
+      ) async {
+        final key = await pumpPhone(
+          tester,
+          const SetupWizardPage(),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        for (var i = 0; i < 7; i++) {
+          await tester.tap(find.text('Continuar'));
+          await _settle(tester);
+        }
+        await tester.ensureVisible(find.text('Modo PT (voz no treino)'));
+        await tester.tap(find.text('Modo PT (voz no treino)'));
+        await _settle(tester);
+        await tester.drag(
+          find.byType(SingleChildScrollView).first,
+          const Offset(0, -900),
+        );
+        await _settle(tester);
+        await _capture(
+          tester,
+          key,
+          'setup_review_preferences_$dims',
+          unmount: false,
+          raw: true,
+        );
+      });
+
+      testWidgets('tutorial slides ($dims)', skip: !_enabled, (tester) async {
+        final key = await pumpPhone(
+          tester,
+          const TutorialPage(preview: true),
+          dark: dark,
+          width: size.$1,
+          height: size.$2,
+        );
+        await _settle(tester);
+        for (var i = 0; i < 6; i++) {
+          final number = (i + 1).toString().padLeft(2, '0');
+          await _capture(
+            tester,
+            key,
+            'tutorial_${number}_$dims',
+            unmount: false,
+            raw: true,
+          );
+          if (i < 5) {
+            await tester.tap(find.text('Seguinte'));
+            await _settle(tester);
+          }
+        }
       });
 
       testWidgets('wizard training home ($dims)', skip: !_enabled, (

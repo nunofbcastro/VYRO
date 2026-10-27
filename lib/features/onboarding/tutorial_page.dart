@@ -29,12 +29,22 @@ class _TutorialPageState extends State<TutorialPage> {
     _Slide(
       title: 'tutorialNutritionTitle',
       body: 'tutorialNutritionBody',
-      graphic: _Graphic.nutrition,
+      graphic: _Graphic.photos,
+    ),
+    _Slide(
+      title: 'tutorialTargetsTitle',
+      body: 'tutorialTargetsBody',
+      graphic: _Graphic.targets,
     ),
     _Slide(
       title: 'tutorialTrainingTitle',
       body: 'tutorialTrainingBody',
       graphic: _Graphic.training,
+    ),
+    _Slide(
+      title: 'tutorialCoachTitle',
+      body: 'tutorialCoachBody',
+      graphic: _Graphic.coach,
     ),
     _Slide(
       title: 'tutorialPrivacyTitle',
@@ -180,7 +190,7 @@ class _Slide {
   final _Graphic graphic;
 }
 
-enum _Graphic { welcome, nutrition, training, privacy }
+enum _Graphic { welcome, photos, targets, training, coach, privacy }
 
 class _SlideView extends StatelessWidget {
   const _SlideView({
@@ -267,7 +277,124 @@ class _GraphicView extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return switch (graphic) {
       _Graphic.welcome => _WelcomeHero(accent: scheme.primary),
-      _Graphic.nutrition => _PreviewHero(
+      _Graphic.photos => _PreviewHero(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                for (final icon in const [
+                  Icons.photo_camera_outlined,
+                  Icons.photo_outlined,
+                  Icons.add_photo_alternate_outlined,
+                ])
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: scheme.primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Icon(icon, color: scheme.primary, size: 22),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            for (var index = 0; index < 2; index++) ...[
+              Row(
+                children: [
+                  Icon(
+                    Icons.check_circle_rounded,
+                    size: 16,
+                    color: scheme.primary,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _Bar(
+                      width: double.infinity,
+                      height: 9,
+                      color: scheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
+          ],
+        ),
+      ),
+      _Graphic.coach => _PreviewHero(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: scheme.primary.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.record_voice_over_rounded,
+                    color: scheme.primary,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(child: _Bar(width: 120, height: 11)),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 56,
+              child: Row(
+                children: [
+                  for (final height in const [
+                    14.0,
+                    28.0,
+                    46.0,
+                    22.0,
+                    56.0,
+                    34.0,
+                    18.0,
+                    40.0,
+                    24.0,
+                  ])
+                    Expanded(
+                      child: Center(
+                        child: Container(
+                          width: 6,
+                          height: height,
+                          decoration: BoxDecoration(
+                            color: scheme.primary.withValues(alpha: 0.8),
+                            borderRadius: BorderRadius.circular(99),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            _Bar(
+              width: double.infinity,
+              height: 9,
+              color: scheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ],
+        ),
+      ),
+      _Graphic.targets => _PreviewHero(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

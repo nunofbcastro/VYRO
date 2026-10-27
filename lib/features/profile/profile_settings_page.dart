@@ -8,12 +8,20 @@ import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
 import '../../app/theme/appearance_sheet.dart';
 import '../../core/database/app_database.dart';
+import '../../core/platform/app_version.dart';
 import '../../core/ui/vyro_ui.dart';
 import '../motion_engine/workout_camera/coach_voice_sheet.dart';
 import '../workouts/plan_wizard_page.dart';
 
+/// Public release page. The app only copies this link; it makes no network
+/// call to check for updates.
+const kVyroReleasesUrl = 'https://github.com/nunofbcastro/VYRO/releases';
+
 class ProfileSettingsPage extends StatefulWidget {
-  const ProfileSettingsPage({super.key});
+  const ProfileSettingsPage({super.key, this.appVersionLoader});
+
+  /// Overrides the platform version lookup (used by tests).
+  final AppVersionLoader? appVersionLoader;
 
   @override
   State<ProfileSettingsPage> createState() => _ProfileSettingsPageState();
@@ -22,6 +30,23 @@ class ProfileSettingsPage extends StatefulWidget {
 class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
   AppServices? _services;
   Future<VyroProfile?>? _profileFuture;
+  late final Future<AppVersion?> _versionFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _versionFuture = _loadVersion();
+  }
+
+  /// Resolves to null when the platform cannot report a version, so the row
+  /// shows "Desconhecida" instead of an unhandled error.
+  Future<AppVersion?> _loadVersion() async {
+    try {
+      return await (widget.appVersionLoader ?? loadAppVersion)();
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -166,10 +191,68 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 24),
+            FutureBuilder<AppVersion?>(
+              future: _versionFuture,
+              builder: (context, versionSnapshot) {
+                final version = versionSnapshot.data;
+                final versionText = version?.label ?? t.get('versionUnknown');
+                return VyroGroupedSection(
+                  header: t.get('aboutVyro'),
+                  footer: t.get('versionCopyHint'),
+                  children: [
+                    GestureDetector(
+                      key: const ValueKey('app-version-row'),
+                      behavior: HitTestBehavior.opaque,
+                      onLongPress: version == null
+                          ? null
+                          : () => _copyVersion(context, version),
+                      child: VyroListRow(
+                        icon: Icons.info_outline_rounded,
+                        title: '${t.get('versionLabel')} $versionText',
+                        onTap: version == null
+                            ? null
+                            : () => _copyVersion(context, version),
+                      ),
+                    ),
+                    VyroListRow(
+                      key: const ValueKey('github-releases-row'),
+                      icon: Icons.open_in_new_rounded,
+                      title: t.get('githubReleases'),
+                      subtitle: t.get('githubReleasesSubtitle'),
+                      onTap: () => _copyText(
+                        context,
+                        kVyroReleasesUrl,
+                        t.get('linkCopied'),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           ],
         );
       },
     );
+  }
+
+  Future<void> _copyVersion(BuildContext context, AppVersion version) =>
+      _copyText(
+        context,
+        version.reportLabel,
+        stringsOf(context).get('versionCopied'),
+      );
+
+  Future<void> _copyText(
+    BuildContext context,
+    String text,
+    String message,
+  ) async {
+    await Clipboard.setData(ClipboardData(text: text));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   String _goalName(VyroStrings t, String goal) => t.get(switch (goal) {

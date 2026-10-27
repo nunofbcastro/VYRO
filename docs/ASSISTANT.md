@@ -32,9 +32,18 @@ com três métodos: `status`, `download` e `generate`. O wrapper é
      filtrada pela opção alimentar. Os valores são calculados a partir da base
      (`resolveMeal`); itens sem correspondência ficam por resolver e os totais
      são marcados como parciais.
+   - **Hora e data**: "Que horas são?" e "Que dia é hoje?" usam o relógio do
+     dispositivo (PT-PT). Não passam pelo modelo.
+   - **Saudação**: "Olá", "Bom dia" e semelhantes recebem uma linha de ajuda.
+   - **Fora do âmbito**: perguntas claramente alheias (capitais, notícias, poemas,
+     código) recebem uma resposta curta com exemplos e não chegam ao modelo.
+     Só se aplica sem palavras de nutrição, treino ou dados da app; perguntas
+     limítrofes seguem para o modelo.
    - Se nada corresponder, a resposta local é `null` e segue para o passo 2.
 2. **Modelo do sistema** — só se `status == available`. Recebe um prompt com
    regras de segurança, o contexto local e as últimas 6 mensagens.
+   As regras pedem respostas breves, sem questionários nem planos de dia
+   completo sem pedido, e só sobre nutrição, treino e dados da app.
 3. **Texto de ajuda** — se o modelo não estiver disponível, falhar ou não houver
    resposta útil.
 
@@ -91,6 +100,10 @@ Regras:
   é mantida. Uma nota diz "Valores calculados pela VYRO a partir da base local" e
   outra diz quando frases foram removidas. Sem números nutricionais, o texto fica
   igual. A remoção é por linha, sem reescrever texto livre.
+- **Texto visível**: `stripProtocolText` remove blocos `[[MEAL]]` não fechados,
+  marcadores soltos e linhas JSON. As notas de validação não são anexadas ao
+  texto: quando frases são retiradas, aparece uma única linha discreta
+  (ícone de informação) abaixo da resposta.
 - Propostas com alimentos que violam a opção alimentar são recusadas com uma
   mensagem a pedir outra sugestão.
 - O registo no diário (`meal_log_sheet.dart`) usa a mesma correspondência do
