@@ -1,15 +1,53 @@
 import 'package:flutter/material.dart';
 
-/// Small, dependency-free localization layer for the Phase 1 demonstration.
-/// Add ARB + gen_l10n when the project adopts a generated localization workflow.
+import 'translations/de.dart';
+import 'translations/fr.dart';
+import 'translations/it.dart';
+import 'translations/pt_br.dart';
+import 'vyro_language.dart';
+
+/// Small, dependency-free localization layer. Each language is one table;
+/// a missing key falls back along `VyroLanguage.fallbackChain` and finally
+/// shows the key itself. Add ARB + gen_l10n when the project adopts a
+/// generated localization workflow.
 class VyroStrings {
-  VyroStrings(this.locale);
-  final Locale locale;
-  bool get isEnglish => locale.languageCode == 'en';
+  VyroStrings(Locale locale) : language = VyroLanguage.fromLocale(locale);
 
-  static const supportedLocales = [Locale('pt', 'PT'), Locale('en')];
+  final VyroLanguage language;
 
-  String get(String key) => (isEnglish ? _en : _pt)[key] ?? key;
+  /// True for every language that is not Portuguese. Call sites that choose
+  /// between a Portuguese and an English-content string use this flag, so
+  /// new languages get the English content until they have their own.
+  bool get isEnglish => !isPortuguese;
+
+  bool get isPortuguese =>
+      language == VyroLanguage.ptPT || language == VyroLanguage.ptBR;
+
+  static List<Locale> get supportedLocales => [
+    for (final language in VyroLanguage.values) language.locale,
+  ];
+
+  String get(String key) {
+    for (final candidate in language.fallbackChain) {
+      final value = _tables[candidate]?[key];
+      if (value != null) return value;
+    }
+    return key;
+  }
+
+  /// The language's own table, without fallbacks. Used by the coverage tests.
+  @visibleForTesting
+  static Map<String, String> tableFor(VyroLanguage language) =>
+      _tables[language] ?? const {};
+
+  static const _tables = <VyroLanguage, Map<String, String>>{
+    VyroLanguage.ptPT: _pt,
+    VyroLanguage.ptBR: vyroStringsPtBR,
+    VyroLanguage.en: _en,
+    VyroLanguage.it: vyroStringsIt,
+    VyroLanguage.fr: vyroStringsFr,
+    VyroLanguage.de: vyroStringsDe,
+  };
 
   static const _pt = <String, String>{
     'w2Skip': "Saltar",
@@ -1114,6 +1152,20 @@ class VyroStrings {
         'Só incentivo (por exemplo, "Boa energia!"). As contagens, o posicionamento e as correções continuam fixos.',
     'coachVoiceLlmUnavailable':
         'Não disponível neste telemóvel. As frases fixas continuam ativas.',
+    'wdShort1': 'Seg',
+    'wdShort2': 'Ter',
+    'wdShort3': 'Qua',
+    'wdShort4': 'Qui',
+    'wdShort5': 'Sex',
+    'wdShort6': 'Sáb',
+    'wdShort7': 'Dom',
+    'wdLong1': 'Segunda-feira',
+    'wdLong2': 'Terça-feira',
+    'wdLong3': 'Quarta-feira',
+    'wdLong4': 'Quinta-feira',
+    'wdLong5': 'Sexta-feira',
+    'wdLong6': 'Sábado',
+    'wdLong7': 'Domingo',
   };
 
   static const _en = <String, String>{
@@ -2200,6 +2252,20 @@ class VyroStrings {
         'Encouragement only (for example, "Good energy!"). Counts, positioning and corrections stay fixed.',
     'coachVoiceLlmUnavailable':
         'Not available on this phone. Fixed phrases stay on.',
+    'wdShort1': 'Mon',
+    'wdShort2': 'Tue',
+    'wdShort3': 'Wed',
+    'wdShort4': 'Thu',
+    'wdShort5': 'Fri',
+    'wdShort6': 'Sat',
+    'wdShort7': 'Sun',
+    'wdLong1': 'Monday',
+    'wdLong2': 'Tuesday',
+    'wdLong3': 'Wednesday',
+    'wdLong4': 'Thursday',
+    'wdLong5': 'Friday',
+    'wdLong6': 'Saturday',
+    'wdLong7': 'Sunday',
   };
 }
 

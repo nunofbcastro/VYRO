@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/app.dart';
 import '../../app/l10n/strings.dart';
+import '../../app/l10n/vyro_language.dart';
 import '../../app/theme/vyro_theme.dart';
 import '../../core/widgets/vyro_widgets.dart';
 import 'kit_showcase.dart';
@@ -143,13 +144,13 @@ class DesignSystemPage extends StatelessWidget {
                     ),
                     OutlinedButton.icon(
                       onPressed: () => settings.setLocale(
-                        settings.locale.languageCode == 'pt'
-                            ? const Locale('en')
-                            : const Locale('pt', 'PT'),
+                        VyroStrings(settings.locale).isPortuguese
+                            ? VyroLanguage.en
+                            : VyroLanguage.ptPT,
                       ),
                       icon: const Icon(Icons.translate_rounded),
                       label: Text(
-                        settings.locale.languageCode == 'pt' ? 'EN' : 'PT',
+                        VyroStrings(settings.locale).isPortuguese ? 'EN' : 'PT',
                       ),
                     ),
                   ],

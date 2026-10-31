@@ -383,7 +383,7 @@ class _DaySummary extends StatelessWidget {
         children: [
           if (weekday != null)
             Text(
-              weekdayLong(weekday, english: t.isEnglish).toUpperCase(),
+              weekdayLong(weekday, t).toUpperCase(),
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w800,

@@ -6,6 +6,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'tables.dart';
 import '../../features/onboarding/domain/nutrition_targets.dart';
 import '../ai/local_data_validation.dart';
+import '../../app/l10n/vyro_language.dart';
 
 part 'app_database.g.dart';
 
@@ -684,7 +685,7 @@ class VyroProfile {
       proteinGoal: positiveNumber('proteinGoal', 140),
       carbsGoal: positiveNumber('carbsGoal', 260),
       fatGoal: positiveNumber('fatGoal', 75),
-      locale: json['locale'] == 'en' ? 'en' : 'pt',
+      locale: VyroLanguage.fromStored(json['locale'] as String?).tag,
       theme: const {'light', 'dark', 'system'}.contains(json['theme'])
           ? json['theme'] as String
           : 'dark',

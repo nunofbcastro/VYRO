@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../../app/app.dart';
 import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
+import '../../app/l10n/vyro_language.dart';
 import '../../app/theme/appearance_sheet.dart';
 import '../../core/database/app_database.dart';
 import '../../core/platform/app_version.dart';
@@ -125,7 +126,7 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                   icon: Icons.language_rounded,
                   iconColor: Theme.of(context).colorScheme.secondary,
                   title: t.get('language'),
-                  value: settings.locale.languageCode == 'en' ? 'EN' : 'PT',
+                  value: VyroLanguage.fromLocale(settings.locale).badge,
                   onTap: () => showAppearanceSheet(context),
                 ),
                 VyroListRow(

@@ -566,7 +566,7 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
           _pills([
             for (var d = 1; d <= 7; d++)
               VyroPillChip(
-                label: weekdayLong(d, english: english),
+                label: weekdayLong(d, t),
                 selected: prefs.weekdays.contains(d),
                 onTap: () {
                   final days = {...prefs.weekdays};
@@ -580,7 +580,7 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
             prefs.weekdays.isEmpty
                 ? t.get('wizPickOneDay')
                 : '${prefs.daysPerWeek} ${t.get('wizSummaryDays')} · '
-                      '${prefs.weekdays.map((d) => weekdayShort(d, english: english)).join(' · ')}',
+                      '${prefs.weekdays.map((d) => weekdayShort(d, t)).join(' · ')}',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleSmall,
           ),
@@ -961,7 +961,6 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
 
   List<Widget> _reviewContent(VyroStrings t, PlanPreferences prefs) {
     final theme = Theme.of(context);
-    final english = t.isEnglish;
     final preview = _preview;
     String goalLabel(String goal) => t.get(_goalKeys[goal] ?? 'w2GoalHealth');
     String experienceLabel(String value) => switch (value) {
@@ -1024,9 +1023,7 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
           ),
           VyroListRow(
             icon: Icons.calendar_month_outlined,
-            title: prefs.weekdays
-                .map((d) => weekdayShort(d, english: english))
-                .join(' · '),
+            title: prefs.weekdays.map((d) => weekdayShort(d, t)).join(' · '),
             onTap: () => setState(() => _step = _Step.days),
           ),
           VyroListRow(
@@ -1215,7 +1212,7 @@ class _PlanWizardPageState extends State<PlanWizardPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        '${weekdayShort(day.weekday, english: english)} · '
+                        '${weekdayShort(day.weekday, t)} · '
                         '${english ? day.nameEn : day.namePt}',
                         style: theme.textTheme.titleMedium,
                       ),

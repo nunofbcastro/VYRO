@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app.dart';
 import '../l10n/strings.dart';
+import '../l10n/vyro_language.dart';
 import 'vyro_chrome.dart';
 
 Future<void> showAppearanceSheet(BuildContext context) {
@@ -97,21 +98,16 @@ class AppearanceChoices extends StatelessWidget {
         SizedBox(height: compact ? 22 : 26),
         Text(t.get('language'), style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(height: 10),
-        VyroChoiceCard(
-          icon: Icons.translate_rounded,
-          title: t.get('languagePt'),
-          selected: settings.locale.languageCode == 'pt',
-          onTap: () => settings.setLocale(const Locale('pt', 'PT')),
-          trailing: const _LocaleTag(label: 'PT'),
-        ),
-        gap(),
-        VyroChoiceCard(
-          icon: Icons.language_rounded,
-          title: t.get('languageEn'),
-          selected: settings.locale.languageCode == 'en',
-          onTap: () => settings.setLocale(const Locale('en')),
-          trailing: const _LocaleTag(label: 'EN'),
-        ),
+        for (final language in VyroLanguage.values) ...[
+          VyroChoiceCard(
+            icon: Icons.translate_rounded,
+            title: language.nativeName,
+            selected: VyroLanguage.fromLocale(settings.locale) == language,
+            onTap: () => settings.setLocale(language),
+            trailing: _LocaleTag(label: language.badge),
+          ),
+          if (language != VyroLanguage.values.last) gap(),
+        ],
       ],
     );
   }

@@ -110,6 +110,16 @@ class _MotionCoachPageState extends State<MotionCoachPage>
   String? _phraseBankKey;
   List<String>? _phraseBank;
   bool _busy = false;
+  // False while the body is absent or partly out of frame: drives the red
+  // verdict colour during a set. Stability (the readiness window) does not
+  // count as not visible.
+  bool _poseUsable = true;
+  // False while the readiness window is still filling: the last verdict is not
+  // current, so the colour is neutral rather than the old status.
+  bool _verdictFresh = true;
+  // Bumped by [_resetLiveState]; a detection that finishes after a reset must
+  // not clear `_busy` for the new session.
+  int _generation = 0;
   Duration _lastFrame = Duration.zero;
   BodyPose? _pose;
   AnalysisUpdate? _update;
@@ -267,9 +277,9 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     final t = stringsOf(context);
     setState(() {
       _error = null;
+      _resetLiveState();
       _stage = _Stage.positioning;
       _framingTracker = FramingTracker(pattern);
-      _framing = null;
       _guideVisible = true;
       _tipsOpen = null;
       _setOffset = Duration.zero;
@@ -335,7 +345,26 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     coach.setEncouragementBank(bank);
   }
 
-  /// Back to setup without counting; releases the camera.
+  /// Clears everything that belongs to the previous camera session: the
+  /// frame timer, the last pose and status, and the pose-readiness gate. Call
+  /// inside a setState when the widget should redraw.
+  void _resetLiveState() {
+    _generation++;
+    _busy = false;
+    _lastFrame = Duration.zero;
+    _poseUsable = true;
+    _verdictFresh = true;
+    _pose = null;
+    _update = null;
+    _message = null;
+    _latencyMs = 0;
+    _readiness.reset();
+    _feedback.reset();
+    _framing = null;
+  }
+
+  /// Back to setup without counting; releases the camera and the detector, so
+  /// the next session starts with a fresh stream-mode tracker.
   Future<void> _cancelPositioning() async {
     if (_stage != _Stage.positioning) return;
     _runId++;
@@ -346,10 +375,12 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     _framingTracker = null;
     if (mounted) {
       setState(() {
+        _resetLiveState();
         _stage = _Stage.setup;
-        _framing = null;
       });
     }
+    unawaited(_detector?.close());
+    _detector = null;
     await _releaseCamera();
   }
 
@@ -506,13 +537,27 @@ class _MotionCoachPageState extends State<MotionCoachPage>
       }
     }
     _clock.start();
-    setState(() => _stage = _Stage.running);
+    setState(() {
+      _lastFrame = Duration.zero;
+      _poseUsable = true;
+      _verdictFresh = true;
+      _pose = null;
+      _stage = _Stage.running;
+    });
   }
 
   Future<void> _flip() async {
     _runId++;
     _engine?.interrupt();
     _readiness.reset();
+    // Keep the rep counts on screen; only the frame timer and stale skeleton
+    // belong to the old camera.
+    setState(() {
+      _lastFrame = Duration.zero;
+      _poseUsable = true;
+      _verdictFresh = true;
+      _pose = null;
+    });
     _framingTracker?.reset();
     _lens = _lens == CameraLensDirection.front
         ? CameraLensDirection.back
@@ -532,6 +577,10 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     if (mounted) setState(() => _stage = _Stage.paused);
     _clock.stop();
     _ticker?.cancel();
+    // In-flight detections are ignored via _runId; the detector is recreated
+    // for the next session.
+    unawaited(_detector?.close());
+    _detector = null;
     await _releaseCamera();
     final engine = _engine;
     if (engine == null || !mounted) {
@@ -613,21 +662,28 @@ class _MotionCoachPageState extends State<MotionCoachPage>
       _skipped++;
       return;
     }
+    final detector = _detector;
+    if (detector == null) return;
     final now = _clock.elapsed;
     final interval = _sampling.interval(
       phase: _update?.phase ?? RepPhase.waitingForStart,
       quality: _update?.detectionQuality ?? 0,
       latencyMs: _latencyMs,
     );
-    if (now - _lastFrame < interval) {
+    if (!MotionSamplingPolicy.shouldSample(
+      now: now,
+      lastFrame: _lastFrame,
+      interval: interval,
+    )) {
       _skipped++;
       return;
     }
     final run = _runId;
+    final generation = _generation;
     _busy = true;
     _lastFrame = now;
     final watch = Stopwatch()..start();
-    _detector!
+    detector
         .detect(image, description, camera.value.deviceOrientation, now)
         .then((pose) {
           watch.stop();
@@ -649,6 +705,8 @@ class _MotionCoachPageState extends State<MotionCoachPage>
             ], now);
             setState(() {
               _pose = pose;
+              _poseUsable = _readiness.lastVisible;
+              _verdictFresh = false;
               if (message != null) _message = message;
             });
             _voice(VoiceObservation(at: now, feedback: message));
@@ -658,6 +716,8 @@ class _MotionCoachPageState extends State<MotionCoachPage>
           final message = _feedback.offer(update.feedback, now);
           setState(() {
             _pose = pose;
+            _poseUsable = true;
+            _verdictFresh = true;
             _update = update;
             if (message != null) _message = message;
           });
@@ -674,7 +734,9 @@ class _MotionCoachPageState extends State<MotionCoachPage>
           if (update.setEnded) unawaited(_finish());
         })
         .catchError((_) {})
-        .whenComplete(() => _busy = false);
+        .whenComplete(() {
+          if (generation == _generation) _busy = false;
+        });
   }
 
   @override
@@ -801,6 +863,24 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     // full height. The preview, top bar and banner stop at the panel edge.
     final sideInset = landscape ? _sidePanelWidth : 0.0;
     final topInset = MediaQuery.paddingOf(context).top;
+    // Live verdict colour: lime when within criteria, red on a possible issue
+    // or an unobservable body; neutral otherwise (and before a set).
+    final scheme = Theme.of(context).colorScheme;
+    // Red when the body is not visible; neutral while it is visible but the
+    // readiness window is still filling; otherwise the live verdict.
+    final analysisColor = _stage != _Stage.running
+        ? null
+        : !_poseUsable
+        ? scheme.error
+        : !_verdictFresh
+        ? null
+        : analysisStatusColor(scheme, update?.status ?? AnalysisStatus.waiting);
+    // Red is the stronger signal: a thicker frame than the soft green one.
+    final frameWidth = analysisColor == null
+        ? 0.0
+        : analysisColor == scheme.error
+        ? 6.0
+        : 4.0;
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -816,8 +896,25 @@ class _MotionCoachPageState extends State<MotionCoachPage>
                         CameraLensDirection.front,
                     guide: _guideVisible ? guide : null,
                     guideAligned: framing?.issues.isEmpty ?? false,
+                    skeletonColor: analysisColor ?? Colors.white,
                   )
                 : const Center(child: CircularProgressIndicator()),
+          ),
+          // Coloured frame around the preview: green glows softly, red is
+          // stronger. Ignores touches so the controls stay usable.
+          Positioned.fill(
+            right: sideInset,
+            child: IgnorePointer(
+              child: AnimatedContainer(
+                duration: VyroMotion.normal,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: analysisColor ?? Colors.transparent,
+                    width: frameWidth,
+                  ),
+                ),
+              ),
+            ),
           ),
           // Top bar.
           Positioned(
@@ -1378,6 +1475,16 @@ class _MotionCoachPageState extends State<MotionCoachPage>
   }
 }
 
+/// Colour for the live verdict: lime when within criteria, red for a possible
+/// issue or a body that cannot be observed, null (neutral) otherwise.
+Color? analysisStatusColor(ColorScheme scheme, AnalysisStatus status) =>
+    switch (status) {
+      AnalysisStatus.withinCriteria => scheme.primary,
+      AnalysisStatus.possibleIssue ||
+      AnalysisStatus.notObservable => scheme.error,
+      AnalysisStatus.waiting || AnalysisStatus.inconclusive => null,
+    };
+
 class _Preview extends StatelessWidget {
   const _Preview({
     required this.camera,
@@ -1385,6 +1492,7 @@ class _Preview extends StatelessWidget {
     required this.mirror,
     this.guide,
     this.guideAligned = false,
+    this.skeletonColor = Colors.white,
   });
   final CameraController camera;
   final BodyPose? pose;
@@ -1393,6 +1501,9 @@ class _Preview extends StatelessWidget {
   /// Ghost positioning guide, drawn in the same box as the image.
   final PositioningGuide? guide;
   final bool guideAligned;
+
+  /// Skeleton colour: the live verdict colour, white when neutral.
+  final Color skeletonColor;
 
   @override
   Widget build(BuildContext context) {
@@ -1432,7 +1543,7 @@ class _Preview extends StatelessWidget {
                 painter: SkeletonPainter(
                   pose: pose,
                   mirror: mirror,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: skeletonColor,
                 ),
               ),
             ],
@@ -1453,7 +1564,7 @@ class _FeedbackBanner extends StatelessWidget {
     final (icon, color) = switch (message.level) {
       FeedbackLevel.success => (Icons.check_circle_rounded, scheme.primary),
       FeedbackLevel.info => (Icons.info_rounded, Colors.white),
-      FeedbackLevel.warning => (Icons.warning_amber_rounded, scheme.tertiary),
+      FeedbackLevel.warning => (Icons.warning_amber_rounded, scheme.error),
       FeedbackLevel.setup => (Icons.videocam_off_rounded, scheme.error),
     };
     return VyroGlass(

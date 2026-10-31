@@ -310,7 +310,7 @@ class _TrainingPageState extends State<TrainingPage> {
         final first = firstSlotNextWeek(WorkoutRepository.slotsOf(data));
         if (first == null) return t.get('weekOver');
         return '${t.get('weekOver')} ${t.get('nextUp')}: '
-            '${weekdayLong(first.weekday, english: t.isEnglish)} · '
+            '${weekdayLong(first.weekday, t)} · '
             '${t.isEnglish ? first.nameEn : first.namePt}';
     }
   }
@@ -353,7 +353,7 @@ class _TrainingPageState extends State<TrainingPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
                 child: Text(
-                  '${weekdayLong(day.date.weekday, english: t.isEnglish)} · '
+                  '${weekdayLong(day.date.weekday, t)} · '
                   '${slot == null ? t.get('statusRest') : _slotName(slot, t)}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
@@ -510,7 +510,7 @@ class _TrainingPageState extends State<TrainingPage> {
                 children: [
                   for (var weekday = 1; weekday <= 7; weekday++)
                     VyroPillChip(
-                      label: weekdayLong(weekday, english: t.isEnglish),
+                      label: weekdayLong(weekday, t),
                       selected: day.day.weekday == weekday,
                       onTap: () => Navigator.pop(context, weekday),
                     ),
@@ -651,8 +651,7 @@ class _WeekStrip extends StatelessWidget {
                 final filled = day.status == DayStatus.done;
                 return Semantics(
                   button: true,
-                  label:
-                      '${weekdayLong(day.date.weekday, english: t.isEnglish)}, ${style.label}',
+                  label: '${weekdayLong(day.date.weekday, t)}, ${style.label}',
                   child: InkWell(
                     borderRadius: BorderRadius.circular(14),
                     onTap: () => onTap(day),
@@ -662,10 +661,7 @@ class _WeekStrip extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              weekdayShort(
-                                day.date.weekday,
-                                english: t.isEnglish,
-                              ).substring(0, 1),
+                              weekdayShort(day.date.weekday, t).substring(0, 1),
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: isToday
                                     ? VyroTheme.accentTextOf(context)
@@ -798,7 +794,7 @@ class _NextWorkoutCard extends StatelessWidget {
     final exercises = planDay?.exercises ?? const <PlannedExercise>[];
     final when = day.status == DayStatus.today
         ? t.get('todayShort')
-        : weekdayLong(day.date.weekday, english: t.isEnglish);
+        : weekdayLong(day.date.weekday, t);
     return VyroCard(
       tint: scheme.primary.withValues(alpha: dark ? 0.07 : 0.09),
       padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
@@ -900,8 +896,7 @@ class _DayRow extends StatelessWidget {
     return VyroListRow(
       icon: style.icon,
       iconColor: style.color,
-      title:
-          '${weekdayShort(day.date.weekday, english: t.isEnglish)} ${day.date.day} · $title',
+      title: '${weekdayShort(day.date.weekday, t)} ${day.date.day} · $title',
       subtitle: slot == null && day.status == DayStatus.done
           ? t.get('extraWorkout')
           : style.label,
@@ -964,11 +959,7 @@ class _PlanDayCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 ActionChip(
                   avatar: const Icon(Icons.event_rounded, size: 16),
-                  label: Text(
-                    weekday == null
-                        ? '—'
-                        : weekdayShort(weekday, english: t.isEnglish),
-                  ),
+                  label: Text(weekday == null ? '—' : weekdayShort(weekday, t)),
                   tooltip: t.get('moveDay'),
                   onPressed: onWeekday,
                 ),

@@ -18,6 +18,7 @@ library;
 
 import 'dart:math' show max;
 
+import '../../../app/l10n/strings.dart';
 import 'exercise_traits.dart';
 import 'plan_preferences.dart';
 
@@ -1314,35 +1315,13 @@ List<PlanNote> _notes({
   return notes;
 }
 
-/// Short weekday name (Seg / Mon).
-String weekdayShort(int weekday, {required bool english}) {
-  const pt = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-  const en = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  return (english ? en : pt)[(weekday - 1).clamp(0, 6)];
-}
+/// Short weekday name (Seg / Mon / Lun / Mo), from the language tables.
+String weekdayShort(int weekday, VyroStrings t) =>
+    t.get('wdShort${weekday.clamp(1, 7)}');
 
-/// Full weekday name (Segunda-feira / Monday).
-String weekdayLong(int weekday, {required bool english}) {
-  const pt = [
-    'Segunda-feira',
-    'Terça-feira',
-    'Quarta-feira',
-    'Quinta-feira',
-    'Sexta-feira',
-    'Sábado',
-    'Domingo',
-  ];
-  const en = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ];
-  return (english ? en : pt)[(weekday - 1).clamp(0, 6)];
-}
+/// Full weekday name (Segunda-feira / Monday / Lunedì / Montag).
+String weekdayLong(int weekday, VyroStrings t) =>
+    t.get('wdLong${weekday.clamp(1, 7)}');
 
 /// Version 1 entry point, kept for existing callers and tests. It maps the
 /// arguments onto [PlanPreferences] and calls [buildPlan].

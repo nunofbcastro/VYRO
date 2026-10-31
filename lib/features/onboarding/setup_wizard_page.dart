@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app.dart';
 import '../../app/app_services.dart';
 import '../../app/l10n/strings.dart';
+import '../../app/l10n/vyro_language.dart';
 import '../../app/theme/appearance_sheet.dart';
 import '../../app/theme/vyro_chrome.dart';
 import '../../app/theme/vyro_theme.dart';
@@ -235,7 +236,7 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
     final t = stringsOf(context);
     final settings = SettingsScope.of(context);
     final profile = draft.toProfile(
-      locale: settings.locale.languageCode,
+      locale: VyroLanguage.fromLocale(settings.locale).tag,
       theme: switch (settings.themeMode) {
         ThemeMode.light => 'light',
         ThemeMode.system => 'system',
@@ -260,7 +261,7 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
       await saveSetup(
         services.database,
         draft,
-        locale: settings.locale.languageCode,
+        locale: VyroLanguage.fromLocale(settings.locale).tag,
         theme: profile.theme,
       ).timeout(const Duration(seconds: 20));
       // No training plan is created here: the plan is optional. It is only
@@ -1100,7 +1101,7 @@ class _SetupWizardPageState extends State<SetupWizardPage> {
                       ThemeMode.light => 'light',
                       ThemeMode.system => 'system',
                       ThemeMode.dark => 'dark',
-                    })} · ${settings.locale.languageCode == 'en' ? 'EN' : 'PT'}',
+                    })} · ${VyroLanguage.fromLocale(settings.locale).badge}',
                 last: true,
               ),
             ],

@@ -204,7 +204,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
                                   ? t.get('noPlanTap')
                                   : next == null
                                   ? '${progress.done}/${progress.scheduled} ${t.get('workoutsDone')}'
-                                  : '${next.status == DayStatus.today ? t.get('todayShort') : weekdayLong(next.date.weekday, english: t.isEnglish)}'
+                                  : '${next.status == DayStatus.today ? t.get('todayShort') : weekdayLong(next.date.weekday, t)}'
                                         ' · ${progress.done}/${progress.scheduled} ${t.get('workoutsDone')}',
                               onTap: () => _openTab(context, 2, '/training'),
                             );
@@ -258,12 +258,11 @@ void _publishWidgets({
         ? ''
         : next.status == DayStatus.today
         ? t.get('todayShort')
-        : weekdayLong(next.date.weekday, english: t.isEnglish),
+        : weekdayLong(next.date.weekday, t),
     weekDone: progress.done,
     weekTotal: progress.scheduled,
     weekLabels: [
-      for (final day in week)
-        weekdayShort(day.date.weekday, english: t.isEnglish).substring(0, 1),
+      for (final day in week) weekdayShort(day.date.weekday, t).substring(0, 1),
     ],
     weekStatus: [for (final day in week) day.status.name],
     labels: {

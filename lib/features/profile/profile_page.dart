@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/app.dart';
 import '../../app/l10n/strings.dart';
+import '../../app/l10n/vyro_language.dart';
 import '../../core/widgets/vyro_widgets.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -81,19 +82,18 @@ class ProfilePage extends StatelessWidget {
                 leading: const Icon(Icons.language),
                 title: Text(t.get('language')),
                 trailing: DropdownButton<String>(
-                  value: settings.locale.languageCode,
+                  value: VyroLanguage.fromLocale(settings.locale).tag,
                   underline: const SizedBox(),
-                  items: const [
-                    DropdownMenuItem(value: 'pt', child: Text('Português')),
-                    DropdownMenuItem(value: 'en', child: Text('English')),
+                  items: [
+                    for (final language in VyroLanguage.values)
+                      DropdownMenuItem(
+                        value: language.tag,
+                        child: Text(language.nativeName),
+                      ),
                   ],
                   onChanged: (value) {
-                    if (value != null)
-                      settings.setLocale(
-                        value == 'pt'
-                            ? const Locale('pt', 'PT')
-                            : const Locale('en'),
-                      );
+                    final language = VyroLanguage.fromStored(value);
+                    if (value != null) settings.setLocale(language);
                   },
                 ),
               ),
