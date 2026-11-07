@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../debug_tools.dart';
 import '../root_gate.dart';
 import '../splash_page.dart';
 import '../../features/dashboard/home_shell.dart';
@@ -22,6 +23,9 @@ import '../../features/workouts/training_home_page.dart';
 
 class VyroRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    if (!DebugTools.enabled && DebugTools.routes.contains(settings.name)) {
+      return _fallback();
+    }
     switch (settings.name) {
       case '/':
         return MaterialPageRoute<void>(builder: (_) => const VyroRoot());
@@ -99,10 +103,17 @@ class VyroRouter {
           builder: (_) => const PrivacyPolicyPage(),
         );
       default:
+        // Demo placeholders are a design-system aid, never a release screen.
+        if (!DebugTools.enabled) return _fallback();
         return MaterialPageRoute<void>(
           settings: settings,
           builder: (_) => DemoPage(screenId: settings.name ?? 'home'),
         );
     }
   }
+
+  static Route<dynamic> _fallback() => MaterialPageRoute<void>(
+    settings: const RouteSettings(name: '/'),
+    builder: (_) => const VyroRoot(),
+  );
 }

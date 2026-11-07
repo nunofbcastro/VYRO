@@ -6,7 +6,7 @@ Every screen is built from a small set of shared components. Import them all wit
 import 'package:vyro/core/ui/vyro_ui.dart';
 ```
 
-The live catalogue is at the `/design-system` route (Perfil → Sistema de design). Each class also has dartdoc with a usage example.
+The live catalogue is at the `/design-system` route (Perfil → Sistema de design, debug builds only; release builds hide the entry and the router sends the route to `/`). Each class also has dartdoc with a usage example.
 
 ## Visual rules (iOS-inspired, VYRO brand)
 

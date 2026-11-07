@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vyro/app/app.dart';
 import 'package:vyro/app/app_services.dart';
+import 'package:vyro/app/debug_tools.dart';
 import 'package:vyro/app/l10n/strings.dart';
 import 'package:vyro/core/database/app_database.dart';
 import 'package:vyro/core/platform/app_version.dart';
@@ -120,6 +121,24 @@ void main() {
 
     expect(copied, ['VYRO 0.6.10 (18)']);
     expect(find.text('Versão copiada'), findsOneWidget);
+  });
+
+  testWidgets('debug tools section is shown only in debug builds', (
+    tester,
+  ) async {
+    final section = find.byKey(const ValueKey('debug-tools-section'));
+    await pumpSettings(tester);
+    await scrollToAbout(tester, section);
+    expect(section, findsOneWidget);
+    expect(find.text('Sistema de design'), findsOneWidget);
+
+    DebugTools.enabled = false;
+    addTearDown(() => DebugTools.enabled = true);
+    await pumpSettings(tester);
+    await scrollToAbout(tester, find.text('Versão 0.6.10 (18)'));
+    expect(section, findsNothing);
+    expect(find.text('Sistema de design'), findsNothing);
+    expect(find.text('Rever introdução e dados base'), findsNothing);
   });
 
   testWidgets('settings has no GitHub releases row', (tester) async {

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../../app/app.dart';
 import '../../app/app_services.dart';
+import '../../app/debug_tools.dart';
 import '../../app/l10n/strings.dart';
 import '../../app/l10n/vyro_language.dart';
 import '../../app/theme/appearance_sheet.dart';
@@ -176,25 +177,28 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            VyroGroupedSection(
-              header: 'VYRO',
-              children: [
-                VyroListRow(
-                  icon: Icons.waving_hand_outlined,
-                  iconColor: Theme.of(context).colorScheme.tertiary,
-                  title: t.get('restartTutorial'),
-                  onTap: () => Navigator.pushNamed(context, '/onboarding'),
-                ),
-                VyroListRow(
-                  icon: Icons.widgets_outlined,
-                  iconColor: Theme.of(context).colorScheme.tertiary,
-                  title: t.get('design'),
-                  subtitle: t.get('designSubtitle'),
-                  onTap: () => Navigator.pushNamed(context, '/design-system'),
-                ),
-              ],
-            ),
+            if (DebugTools.enabled) ...[
+              const SizedBox(height: 24),
+              VyroGroupedSection(
+                key: const ValueKey('debug-tools-section'),
+                header: t.get('debugTools'),
+                children: [
+                  VyroListRow(
+                    icon: Icons.waving_hand_outlined,
+                    iconColor: Theme.of(context).colorScheme.tertiary,
+                    title: t.get('restartTutorial'),
+                    onTap: () => Navigator.pushNamed(context, '/onboarding'),
+                  ),
+                  VyroListRow(
+                    icon: Icons.widgets_outlined,
+                    iconColor: Theme.of(context).colorScheme.tertiary,
+                    title: t.get('design'),
+                    subtitle: t.get('designSubtitle'),
+                    onTap: () => Navigator.pushNamed(context, '/design-system'),
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: 24),
             FutureBuilder<AppVersion?>(
               future: _versionFuture,

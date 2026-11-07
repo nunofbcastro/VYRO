@@ -608,6 +608,7 @@ const Map<String, String> vyroStringsFr = <String, String>{
       "Cette action supprime les données enregistrées localement dans VYRO et ne peut pas être annulée.",
   'nextWorkoutLocal': 'Plan modifiable enregistré sur cet appareil',
   'designSubtitle': 'Tokens, composants et galerie des écrans',
+  'debugTools': 'Outils de développement (debug uniquement)',
   'previewDataCaveat': 'Graphique et métriques avec des valeurs fictives.',
   'weekdays': 'Lun Mar Mer Jeu Ven Sam Dim',
   'volumeSeries': 'Exercices terminés',

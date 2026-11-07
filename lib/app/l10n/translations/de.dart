@@ -607,6 +607,7 @@ const Map<String, String> vyroStringsDe = <String, String>{
       'Diese Aktion löscht die lokal in VYRO gespeicherten Daten und kann nicht rückgängig gemacht werden.',
   'nextWorkoutLocal': 'Bearbeitbarer Plan auf diesem Gerät gespeichert',
   'designSubtitle': 'Tokens, Komponenten und Bildschirmgalerie',
+  'debugTools': 'Entwicklertools (nur Debug)',
   'previewDataCaveat': 'Diagramm und Kennzahlen mit Testwerten.',
   'weekdays': 'Mo Di Mi Do Fr Sa So',
   'volumeSeries': 'Abgeschlossene Übungen',

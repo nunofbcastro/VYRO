@@ -11,7 +11,7 @@ flutter pub get
 flutter run
 ```
 
-O app usa Português (Portugal) por predefinição, permite trocar para inglês e oferece temas escuro, claro ou do sistema. A galeria Sistema de design está disponível em `/design-system` ou no ecrã Perfil.
+O app usa Português (Portugal) por predefinição, permite trocar para inglês e oferece temas escuro, claro ou do sistema. A galeria Sistema de design (`/design-system`), a repetição da introdução e os ecrãs de demonstração só existem em builds de debug, numa secção "Ferramentas de desenvolvimento" do Perfil; em release não aparecem e as rotas voltam ao início.
 
 No primeiro arranque, a app abre com uma introdução de quatro passos e, de seguida, um assistente de dados base. Só depois desse fluxo é que o painel principal é apresentado. O idioma e o tema podem ser alterados durante a introdução e ficam guardados.
 

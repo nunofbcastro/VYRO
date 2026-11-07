@@ -593,6 +593,7 @@ const Map<String, String> vyroStringsPtBR = <String, String>{
       'Esta ação apaga os dados salvos localmente no VYRO e não pode ser desfeita.',
   'nextWorkoutLocal': 'Plano editável salvo neste dispositivo',
   'designSubtitle': 'Tokens, componentes e galeria de telas',
+  'debugTools': 'Ferramentas de desenvolvimento (só debug)',
   'previewDataCaveat': 'Gráfico e métricas com valores fictícios.',
   'weekdays': 'Seg Ter Qua Qui Sex Sáb Dom',
   'volumeSeries': 'Exercícios concluídos',
