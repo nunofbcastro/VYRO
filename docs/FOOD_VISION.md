@@ -193,6 +193,11 @@ o ketchup, o molho de tomate e o queijo ralado não existem, por isso não apare
   `aiy_food_v1_labels.csv`.
 - É um classificador de **pratos** (uma etiqueta por imagem), não um detetor de
   ingredientes. Por isso classifica 26 recortes e soma as evidências.
+- Antes dos recortes, a foto perde a margem exterior (12 %) e, se estiver
+  escura, as sombras são levantadas. O prato fica maior no enquadramento; um
+  copo junto ao prato continua na imagem.
+- Há um recorte quadrado ao centro (72 % do lado menor), além da imagem
+  inteira e das grelhas 3×3 e 4×4.
 - Cada recorte é colocado em letterbox (sem distorcer proporções) antes de
   entrar no modelo.
 - Regras (constantes na classe): etiqueta conta se p ≥ 0,08 (top-5 por região);
@@ -213,8 +218,12 @@ o ketchup, o molho de tomate e o queijo ralado não existem, por isso não apare
   metade dos 26 recortes votar assim (`nonFoodRegionShare` = 0,5, ou seja, ≥ 14),
   a foto não tem alimento reconhecível: o resultado offline fica vazio, sem
   sugestões, com a nota `offlineNoFood` ("Nenhum alimento reconhecido nesta foto").
-  Um empate (13 de 26) não conta como "a maioria". Os limites de sugestão são os
-  mesmos de sempre: pico ≥ 0,14 e ≥ 2 regiões (`minFoodPeak`, `minRegions`).
+  Na análise real só votam os recortes do centro (`centralGateIndexes`: quadrado
+  central, meio da grelha 3×3 e 2×2 interior da 4×4). A mesa à volta do prato
+  deixou de vetar a refeição. Quem chama `interpretRegions` sem índices mantém
+  o voto de todos os recortes (os testes de 26). Um empate não conta como
+  "a maioria". Os limites de sugestão são os mesmos de sempre: pico ≥ 0,14 e
+  ≥ 2 regiões (`minFoodPeak`, `minRegions`).
   Limite: a porta não foi calibrada em fotos sem comida (o conjunto de 50 fotos
   só tem pratos); o efeito real num objeto como uma bola de madeira precisa de
   medição no dispositivo.
@@ -251,7 +260,8 @@ com "Adicionar 1 ao diário". Por isso (0.6.8):
   `generateContentRequest(ImagePart(jpeg), TextPart(prompt))` com temperatura
   0,1 e uma única resposta candidata. Respostas alternativas nunca se concatenam.
   Requer AICore/Gemini Nano (ex.: Pixel 9+, Galaxy S25+). A imagem é reduzida
-  a 768 px e fica só em memória.
+  a 768 px e fica só em memória. Antes disso a foto passa pelo mesmo
+  enquadramento (`focusMealPhoto`: margem de 12 % e levantamento de sombras).
 - Para a 2.ª foto, o pedido envia as duas imagens e instrui o modelo a reconciliar
   identidades sem somar contagens entre vistas.
 - O prompt (inglês desde 0.6.7) pede o nome, o local de cada item ("where"),

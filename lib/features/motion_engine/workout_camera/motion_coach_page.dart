@@ -255,7 +255,7 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     );
     final controller = CameraController(
       description,
-      ResolutionPreset.medium,
+      ResolutionPreset.high,
       enableAudio: false,
       imageFormatGroup: detector.imageFormat,
     );
@@ -510,9 +510,8 @@ class _MotionCoachPageState extends State<MotionCoachPage>
     if (!on) _silence(clearQueue: true);
     if (mounted) setState(() {});
     try {
-      await AppServicesScope.of(
-        context,
-      ).database.setPreference(kVoiceCoachPreferenceKey, on ? 'on' : 'off');
+      await AppServicesScope.of(context).database
+          .setPreference(kVoiceCoachPreferenceKey, on ? 'on' : 'off');
     } catch (_) {
       // The toggle still works for this session.
     }
@@ -636,9 +635,8 @@ class _MotionCoachPageState extends State<MotionCoachPage>
         ? VoiceLanguage.english
         : VoiceLanguage.portuguese;
     unawaited(() async {
-      final text = await CoachLlmPhrases(
-        llm,
-      ).generateCommentary(facts: facts, language: language);
+      final text = await CoachLlmPhrases(llm)
+          .generateCommentary(facts: facts, language: language);
       if (text == null ||
           !mounted ||
           _stage != _Stage.done ||
@@ -1357,9 +1355,8 @@ class _MotionCoachPageState extends State<MotionCoachPage>
         });
     } catch (_) {
       if (mounted)
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(t.get('localError'))));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(t.get('localError'))));
     }
   }
 
@@ -1578,9 +1575,8 @@ class _FeedbackBanner extends StatelessWidget {
             Expanded(
               child: Text(
                 stringsOf(context).get(message.key),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                style: Theme.of(context).textTheme.titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w700),
               ),
             ),
           ],

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vyro/core/database/app_database.dart';
@@ -9,6 +10,7 @@ import 'package:vyro/features/motion_engine/pose_detection/pose_models.dart';
 import 'package:vyro/features/motion_engine/repetition_counter/rep_counter_engine.dart';
 import 'package:vyro/features/motion_engine/workout_camera/motion_sampling_policy.dart';
 import 'package:vyro/features/motion_engine/workout_analysis_history/motion_history_repository.dart';
+
 import 'synthetic_poses.dart';
 
 void main() {
@@ -61,12 +63,18 @@ void main() {
       ),
       true,
     );
-    expect(gate.accept(null, joints, const Duration(milliseconds: 600)), false);
+    // A single missed frame (100 ms) keeps the gate open so the rep continues.
+    expect(gate.accept(null, joints, const Duration(milliseconds: 600)), true);
+    // A dropout longer than the grace closes it; the window starts again.
+    expect(
+      gate.accept(null, joints, const Duration(milliseconds: 1100)),
+      false,
+    );
     expect(
       gate.accept(
-        syntheticPose(at: const Duration(milliseconds: 700)),
+        syntheticPose(at: const Duration(milliseconds: 1200)),
         joints,
-        const Duration(milliseconds: 700),
+        const Duration(milliseconds: 1200),
       ),
       false,
     );

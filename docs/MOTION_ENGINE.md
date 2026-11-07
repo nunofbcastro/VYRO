@@ -6,7 +6,7 @@ Camera-based rep counting and technique feedback built from **reusable movement 
 
 | Layer | Module (`lib/features/motion_engine/`) | Role |
 | --- | --- | --- |
-| 1. Pose detection | `pose_detection/` | `PoseDetectionService` interface. `MlKitPoseDetectionService` uses `google_mlkit_pose_detection` (BlazePose, 33 landmarks, base model, stream mode). It converts NV21 (Android) or BGRA (iOS) frames, applies rotation and lens direction, and outputs `BodyPose` in normalised upright coordinates. |
+| 1. Pose detection | `pose_detection/` | `PoseDetectionService` interface. `MlKitPoseDetectionService` uses `google_mlkit_pose_detection` (BlazePose, 33 landmarks, accurate model by default, stream mode). It converts NV21 (Android) or BGRA (iOS) frames, applies rotation and lens direction, and outputs `BodyPose` in normalised upright coordinates. |
 | 2. Biomechanics | `biomechanics/` | Aspect-corrected geometry (`angleAt`, inclination, line angles) and One Euro filtering per metric. `BiomechanicsEngine` produces knee, hip, elbow and shoulder angles, trunk lean, body line, trunk rotation and wrist height, each with a confidence value. Missing joints are never guessed. |
 | 3. Exercise context | `exercise_registry/` | `ExerciseAnalysisRegistry` maps catalogue keys to a pattern plus variant overrides (thresholds, disabled checks, phase direction, camera view). Configs are versioned (`schemaVersion`), validated (`validate()`) and serialisable to JSON. |
 | 4. Movement analysis | `movement_patterns/`, `repetition_counter/`, `exercise_analysis/` | `PatternLibrary` holds 12 patterns. `RepCounterEngine` is a hysteresis state machine. `ExerciseAnalysisEngine` combines the two with technique checks over time. |
@@ -42,12 +42,12 @@ Each pattern has:
 
 ## Continuity (time gaps)
 - Timestamps that go backwards return `inconclusive` for that frame.
-- A gap longer than 500 ms between analysed samples resets the in-progress rep, the technique timers and the isometric hold timer.
+- A gap longer than 900 ms between analysed samples resets the in-progress rep and the technique timers. The wider gap matches one slow frame of the accurate pose model, so a stutter does not erase the rep.
 - **Hold (isometric) time** adds a step only when both consecutive samples are in range and are less than 500 ms apart. A sample outside the range or without a pose clears the timer, so unobserved intervals are never counted.
 - **Technique checks** are time-based: a violation must persist for about `(minFrames − 1) × 66 ms` of observed time (the old frame count at 15 fps). A check resets when the violation stops, when confidence drops or when the joint is not visible.
 
 ## Framing gate
-`PoseReadinessGate` (`workout_camera/motion_sampling_policy.dart`) requires the pattern's required landmarks to be visible (likelihood ≥ 0.6, inside 2 %–98 % of the frame) for 500 ms before counting starts. Until then the coach shows the "adjust camera" message and counts nothing. This checks visibility only; it does not verify camera angle or distance. The positioning guide below adds a separate framing check before the set.
+`PoseReadinessGate` (`workout_camera/motion_sampling_policy.dart`) requires about 60 % of the pattern's required landmarks to be visible (likelihood ≥ 0.45, allowing a joint a little outside the frame) for 500 ms before counting starts. Until then the coach shows the "adjust camera" message and counts nothing. A side view hides the far leg, so demanding every joint kept the set from ever starting. Once counting has started, a dropout under 400 ms keeps the gate open and the rep in progress is not dropped. A longer loss, or a gap over 1.2 s, closes the gate and the window starts again. This checks visibility only; it does not verify camera angle or distance. The positioning guide below adds a separate framing check before the set. Paired signals (knees, hips, elbows, shoulders) use the side the camera sees best, so the hidden limb does not pull the angle down.
 
 ## Positioning guide (before a set)
 "Preparar posição" opens the camera **before** the set. Nothing is counted in this stage. A ghost silhouette, a dashed target frame and a short setup card show how to stand for the exercise's camera view. The figure button in the top bar shows or hides the guide, also during a set. The guide hides itself once the body is framed and stable. "Começar" starts the set on the already open camera. "Voltar" returns to the setup without counting.
@@ -169,7 +169,7 @@ After a set, **"Corrigir repetições"** lets the user enter complete and partia
 
 ## Performance
 - Adaptive sampling, at most one inference at a time (see above).
-- `ResolutionPreset.medium`, no audio.
+- `ResolutionPreset.high`, no audio. The accurate model needs the extra detail; a device that cannot keep up can still construct the detector with `accurate: false`.
 - The camera is released on finish, on dispose and when the app goes to background.
 - Latency (exponential moving average) is shown next to detection quality. Measure it on real devices; it has not been profiled yet.
 

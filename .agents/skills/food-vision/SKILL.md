@@ -132,8 +132,10 @@ cloud, no paid API, the photo stays in memory. Full details:
   the source badge says "Reconhecimento offline (pouco fiável)", and the card
   says the suggestions must be confirmed. With the system model answering, the
   offline foods remain suggestions or corroboration, as before.
-- Non-food gate for offline: background wins on more than half the 26 regions →
-  no suggestions at all (`offlineNoFood`). Minimum for an offline suggestion:
+- Non-food gate for offline: background wins on more than half the *central*
+  crops (centre square, middle of the 3×3, inner 2×2 of the 4×4) →
+  no suggestions at all (`offlineNoFood`). Edge crops are table and do not vote.
+  `interpretRegions` without indexes still lets every crop vote. Minimum for an offline suggestion:
   peak ≥ 0.14 in ≥ 2 regions. The background gate is not yet calibrated on food-free
   photos. Do not lower these thresholds without the eval.
 - Conflicts and hypotheses: offline foods the system did not name are

@@ -18,6 +18,7 @@ class PrivacyPolicyPage extends StatelessWidget {
           ('policyMediaTitle', 'policyMediaBody'),
           ('policyControlTitle', 'policyControlBody'),
           ('policyBackupTitle', 'policyBackupBody'),
+          ('policyHealthTitle', 'policyHealthBody'),
         ]) ...[
           SectionTitle(t.get(section.$1)),
           Card(

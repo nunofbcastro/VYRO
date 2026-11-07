@@ -155,6 +155,11 @@ class ExerciseAnalysisEngine {
   Duration? _lastHoldTick;
   bool _activeIssue = false;
 
+  /// A gap this long drops the rep in progress. Wider than one slow frame of
+  /// the accurate pose model, so a stutter does not erase the movement.
+  /// Hold time still refuses to bridge more than 500 ms (see below).
+  static const sampleGap = Duration(milliseconds: 900);
+
   static const _visibilityMessages = <BodyLandmark, String>{
     BodyLandmark.leftKnee: 'mfSeeKnees',
     BodyLandmark.rightKnee: 'mfSeeKnees',
@@ -171,8 +176,7 @@ class ExerciseAnalysisEngine {
   AnalysisUpdate process(BodyPose? pose, Duration timestamp) {
     if (_last != null && timestamp < _last!)
       return _result(AnalysisStatus.inconclusive, null, const [], 0);
-    if (_last != null &&
-        timestamp - _last! > const Duration(milliseconds: 500)) {
+    if (_last != null && timestamp - _last! > sampleGap) {
       _lastHoldTick = null;
       _violationsSince.clear();
       counter?.interrupt();

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:vyro/core/ai/on_device_llm.dart';
@@ -92,17 +93,14 @@ void main() {
       expect(result.notes, contains('fusedOffline'));
     },
   );
-  test(
-    'fast offline failure preserves a valid system answer without unhandled errors',
-    () async {
-      final result = await FoodVisionPipeline(
-        llm: _Llm(),
-        system: _Vision(regions),
-        regions: _Vision(regions, fail: true),
-      ).analyse(photo);
-      expect(result.foods.single, coffee);
-    },
-  );
+  test('fast offline failure preserves a valid system answer without unhandled errors', () async {
+    final result = await FoodVisionPipeline(
+      llm: _Llm(),
+      system: _Vision(regions),
+      regions: _Vision(regions, fail: true),
+    ).analyse(photo);
+    expect(result.foods.single, coffee);
+  });
   test('two failures report total failure', () async {
     await expectLater(
       FoodVisionPipeline(
@@ -137,5 +135,31 @@ void main() {
       }
     }
     expect(assessPhoto(image).tooBlurry, true);
+  });
+  test('a dark meal photo is lifted and the empty border is trimmed', () {
+    final dark = img.Image(width: 100, height: 80);
+    for (final p in dark) {
+      p
+        ..r = 30
+        ..g = 30
+        ..b = 30;
+    }
+    final before = meanLuminance(dark);
+    final focused = focusMealPhoto(dark);
+    expect(focused.width, 88);
+    expect(focused.height, 70);
+    // gamma() edits the source, so the comparison uses the value from before.
+    expect(meanLuminance(focused), greaterThan(before + 8));
+
+    final bright = img.Image(width: 100, height: 80);
+    for (final p in bright) {
+      p
+        ..r = 200
+        ..g = 200
+        ..b = 200;
+    }
+    final trimmed = focusMealPhoto(bright);
+    expect(trimmed.width, 88);
+    expect(meanLuminance(trimmed), closeTo(200, 2));
   });
 }

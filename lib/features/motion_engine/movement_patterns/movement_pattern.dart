@@ -205,7 +205,7 @@ class MovementPattern {
     this.checks = const [],
     this.mode = PatternMode.repetitions,
     this.cameraView = CameraView.side,
-    this.minConfidence = 0.55,
+    this.minConfidence = 0.45,
     this.holdMin,
     this.holdMax,
     this.minEccentric,

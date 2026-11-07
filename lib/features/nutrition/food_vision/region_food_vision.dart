@@ -9,6 +9,7 @@ import '../data/food_database.dart';
 import '../domain/food_recognition_service.dart'
     show dequantize, toProbabilities;
 import 'food_vision.dart';
+import 'photo_quality.dart';
 
 /// Offline multi-food estimate built on the bundled single-label dish
 /// classifier (AIY Food V1): it classifies the whole photo plus overlapping
@@ -44,9 +45,17 @@ class RegionFoodVision implements FoodVisionService {
   /// Non-food gate. A region votes "no food" when the background class (index
   /// 0 of the AIY labels) is more probable than the best food label there, or
   /// when no food label reaches [minRegionProbability]. When more than this
-  /// share of the regions vote that way, the photo has no recognisable food and
-  /// the offline pass returns nothing (not even suggestions).
+  /// share of the *voting* regions vote that way, the photo has no
+  /// recognisable food and the offline pass returns nothing.
+  ///
+  /// On a real photo the voting regions are the centre of the frame
+  /// ([centralGateIndexes]). Edge crops of a plate are mostly table and used
+  /// to veto the meal. Callers that do not pass indexes still let every crop
+  /// vote.
   static const nonFoodRegionShare = 0.5;
+
+  /// Side of the centre square, as a fraction of the shorter image side.
+  static const centerCropFraction = 0.72;
 
   /// Index of the "__background__" class in `aiy_food_v1_labels.csv`.
   static const backgroundLabel = 0;
@@ -56,9 +65,8 @@ class RegionFoodVision implements FoodVisionService {
 
   @override
   Future<FoodVisionResult> analyse(Uint8List imageBytes) async {
-    final model = _modelCache ??= (await rootBundle.load(
-      modelAsset,
-    )).buffer.asUint8List();
+    final model = _modelCache ??= (await rootBundle.load(modelAsset)).buffer
+        .asUint8List();
     final labels = await _labels();
     // Decoding, cropping and inferences run off the UI isolate.
     final worker = await (_worker ??= _RegionWorker.start(
@@ -66,39 +74,56 @@ class RegionFoodVision implements FoodVisionService {
       () => _worker = null,
     ));
     final perCrop = await worker.classify(imageBytes);
-    return interpretRegions(database, perCrop, labels);
+    return interpretRegions(
+      database,
+      perCrop,
+      labels,
+      gateIndexes: centralGateIndexes,
+    );
   }
+
+  /// Crops that may vote "no food". Index 0 is the full frame (often table),
+  /// 1 is the centre square, then a 3×3 grid and a 4×4 grid. Only the centre
+  /// square, the middle of the 3×3 and the inner 2×2 of the 4×4 vote.
+  static const centralGateIndexes = <int>[
+    1,
+    2 + 1 * 3 + 1,
+    2 + 0 * 3 + 1,
+    2 + 2 * 3 + 1,
+    2 + 1 * 3 + 0,
+    2 + 1 * 3 + 2,
+    11 + 1 * 4 + 1,
+    11 + 1 * 4 + 2,
+    11 + 2 * 4 + 1,
+    11 + 2 * 4 + 2,
+  ];
 
   /// Multiple labels for one food in the same crop are one observation,
   /// not independent evidence of its presence.
   static FoodVisionResult interpretRegions(
     FoodDatabase database,
     List<List<(int, double)>> perCrop,
-    Map<int, String> labels,
-  ) {
-    // Non-food gate first: background wins on most regions → no food at all.
+    Map<int, String> labels, {
+    List<int>? gateIndexes,
+  }) {
+    // Non-food gate first: background wins on most voting regions → no food.
+    final voters = gateIndexes ?? [for (var i = 0; i < perCrop.length; i++) i];
     var nonFoodRegions = 0;
-    for (final ranked in perCrop) {
-      var background = 0.0;
-      var bestFood = 0.0;
-      for (final (k, p) in ranked) {
-        if (k == backgroundLabel) {
-          background = p;
-        } else if (p > bestFood) {
-          bestFood = p;
-        }
-      }
-      if (background > bestFood) nonFoodRegions++;
+    var voted = 0;
+    for (final index in voters) {
+      if (index < 0 || index >= perCrop.length) continue;
+      voted++;
+      if (_regionIsBackground(perCrop[index])) nonFoodRegions++;
     }
-    if (perCrop.isNotEmpty &&
-        nonFoodRegions > perCrop.length * nonFoodRegionShare) {
+    if (voted > 0 && nonFoodRegions > voted * nonFoodRegionShare) {
+      final where = gateIndexes == null ? 'regions' : 'central regions';
       return FoodVisionResult(
         source: VisionSource.regionClassifier,
         foods: const [],
         note: offlineNoFoodNote,
         detail:
             'offline: background wins in $nonFoodRegions of '
-            '${perCrop.length} regions, no food kept',
+            '$voted $where, no food kept',
       );
     }
     final peak = <String, double>{};
@@ -174,14 +199,17 @@ class RegionFoodVision implements FoodVisionService {
   }) {
     final decoded = img.decodeImage(imageBytes);
     if (decoded == null) throw const FormatException('invalid_image');
-    final upright = img.bakeOrientation(decoded);
+    final upright = focusMealPhoto(img.bakeOrientation(decoded));
     // Letterbox keeps the whole plate; a centre crop used to cut the edges.
+    // The extra centre square is what a phone photo of a plate actually is:
+    // the dish, not the table around it.
     final full = letterboxSquare(upright);
     final interpreter = existingInterpreter ?? Interpreter.fromBuffer(model);
     try {
       return [
         for (final crop in [
           full,
+          centerSquare(upright, centerCropFraction),
           ...regionCrops(upright, 3, 0.55),
           ...regionCrops(upright, 4, 0.42),
         ])
@@ -190,6 +218,32 @@ class RegionFoodVision implements FoodVisionService {
     } finally {
       if (existingInterpreter == null) interpreter.close();
     }
+  }
+
+  static bool _regionIsBackground(List<(int, double)> ranked) {
+    var background = 0.0;
+    var bestFood = 0.0;
+    for (final (k, p) in ranked) {
+      if (k == backgroundLabel) {
+        background = p;
+      } else if (p > bestFood) {
+        bestFood = p;
+      }
+    }
+    return background > bestFood;
+  }
+
+  /// Square window on the middle of the photo, so the plate is the subject.
+  static img.Image centerSquare(img.Image image, double fraction) {
+    final limit = image.width < image.height ? image.width : image.height;
+    final side = (limit * fraction).round().clamp(16, limit);
+    return img.copyCrop(
+      image,
+      x: (image.width - side) ~/ 2,
+      y: (image.height - side) ~/ 2,
+      width: side,
+      height: side,
+    );
   }
 
   /// Pads to a square so the classifier sees the full frame.

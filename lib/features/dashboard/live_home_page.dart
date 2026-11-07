@@ -6,6 +6,7 @@ import '../../app/l10n/strings.dart';
 import '../../core/database/app_database.dart';
 import '../../core/platform/home_widgets.dart';
 import '../../core/ui/vyro_ui.dart';
+import '../health/device_health_page.dart';
 import '../nutrition/domain/food_product.dart';
 import '../nutrition/meals.dart';
 import '../nutrition/nutrition_diary_page.dart';
@@ -135,6 +136,7 @@ class _LiveHomePageState extends State<LiveHomePage> {
                       ),
                     ],
                   ),
+                  const DeviceHealthHomeCard(),
                   const SizedBox(height: 20),
                   VyroSectionTitle(label: t.get('quickAdd')),
                   QuickLogRow(

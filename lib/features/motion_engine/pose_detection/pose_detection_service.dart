@@ -24,10 +24,12 @@ abstract interface class PoseDetectionService {
   Future<void> close();
 }
 
-/// Google ML Kit Pose Detection (BlazePose, 33 landmarks), base model in
-/// stream mode. Fully on-device; frames are never stored or sent.
+/// Google ML Kit Pose Detection (BlazePose, 33 landmarks) in stream mode.
+/// The accurate model is the default: the base model misses limbs often
+/// enough that reps never start. Fully on-device; frames are never stored
+/// or sent. Pass `accurate: false` only when a device cannot keep up.
 class MlKitPoseDetectionService implements PoseDetectionService {
-  MlKitPoseDetectionService({bool accurate = false})
+  MlKitPoseDetectionService({bool accurate = true})
     : _detector = mlkit.PoseDetector(
         options: mlkit.PoseDetectorOptions(
           model: accurate

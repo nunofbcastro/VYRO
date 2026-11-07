@@ -8,6 +8,7 @@ import '../../app/l10n/strings.dart';
 import '../../core/ui/vyro_ui.dart';
 import '../../core/database/app_database.dart';
 import 'domain/food_product.dart';
+import 'domain/meal_repeat.dart';
 import 'meals.dart';
 import 'nutrition_targets_page.dart';
 import 'portion_labels.dart';
@@ -68,7 +69,14 @@ class _NutritionDiaryPageState extends State<NutritionDiaryPage> {
                 day: selectedDay,
                 onChanged: (value) => setState(() => selectedDay = value),
               ),
-              const SizedBox(height: 14),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: () => _repeatYesterday(context, services, entries),
+                  icon: const Icon(Icons.replay_rounded, size: 18),
+                  label: Text(t.get('repeatYesterday')),
+                ),
+              ),
               _DailySummary(entries: entries, profile: profile),
               const NutritionTargetsLink(),
               if (partial) ...[
@@ -123,6 +131,36 @@ class _NutritionDiaryPageState extends State<NutritionDiaryPage> {
   void _openScanner(BuildContext context) =>
       Navigator.pushNamed(context, '/barcode', arguments: selectedDay);
 
+  Future<void> _repeatYesterday(
+    BuildContext context,
+    AppServices services,
+    List<FoodEntryRecord> already,
+  ) async {
+    final t = stringsOf(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final yesterday = dayKey(selectedDay.subtract(const Duration(days: 1)));
+    final source = await services.nutritionRepository.entriesForDay(yesterday);
+    final copies = foodsToRepeat(source: source, destination: already);
+    if (!context.mounted) return;
+    if (copies.isEmpty) {
+      messenger.showSnackBar(SnackBar(content: Text(t.get('repeatNone'))));
+      return;
+    }
+    for (final entry in copies) {
+      await services.nutritionRepository.addEntry(
+        copyEntryToDay(entry, dayKey(selectedDay)),
+      );
+    }
+    if (!context.mounted) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          t.get('repeatDone').replaceAll('{count}', '${copies.length}'),
+        ),
+      ),
+    );
+  }
+
   Future<void> _editEntry(
     BuildContext context,
     AppServices services,
@@ -130,12 +168,17 @@ class _NutritionDiaryPageState extends State<NutritionDiaryPage> {
     String meal,
     FoodEntryRecord? existing,
   ) async {
+    final recent = existing == null
+        ? recentDistinctFoods(await services.database.recentFoodEntries())
+        : const <FoodEntryRecord>[];
+    if (!context.mounted) return;
     final draft = await showModalBottomSheet<_FoodEntryDraft>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       showDragHandle: true,
-      builder: (_) => _FoodEntrySheet(meal: meal, existing: existing),
+      builder: (_) =>
+          _FoodEntrySheet(meal: meal, existing: existing, recent: recent),
     );
     if (draft == null) return;
     if (existing == null) {
@@ -595,9 +638,14 @@ class _EntryRow extends StatelessWidget {
 
 /// Manual entry / edit form, presented as a bottom sheet.
 class _FoodEntrySheet extends StatefulWidget {
-  const _FoodEntrySheet({required this.meal, this.existing});
+  const _FoodEntrySheet({
+    required this.meal,
+    this.existing,
+    this.recent = const [],
+  });
   final String meal;
   final FoodEntryRecord? existing;
+  final List<FoodEntryRecord> recent;
 
   @override
   State<_FoodEntrySheet> createState() => _FoodEntrySheetState();
@@ -679,6 +727,25 @@ class _FoodEntrySheetState extends State<_FoodEntrySheet> {
                 ],
               ),
               const SizedBox(height: 16),
+              if (widget.existing == null && widget.recent.isNotEmpty) ...[
+                Text(t.get('recentFoods'), style: theme.textTheme.titleSmall),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final food in widget.recent)
+                      VyroPillChip(
+                        label: food.name,
+                        selected:
+                            _name.text.trim().toLowerCase() ==
+                            food.name.trim().toLowerCase(),
+                        onTap: () => _applyRecent(food),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+              ],
               _field(_name, t.get('foodName'), required: true),
               const SizedBox(height: 10),
               _field(
@@ -746,6 +813,25 @@ class _FoodEntrySheetState extends State<_FoodEntrySheet> {
         ),
       ),
     );
+  }
+
+  void _applyRecent(FoodEntryRecord food) {
+    setState(() {
+      _name.text = food.name;
+      _quantity.text = food.quantityGrams.toStringAsFixed(0);
+      _kcal.text = _number(food.kcalPer100g);
+      _protein.text = _number(food.proteinPer100g);
+      _carbs.text = _number(food.carbsPer100g);
+      _fat.text = _number(food.fatPer100g);
+      _meal = food.mealType;
+    });
+  }
+
+  String _number(double? value) {
+    if (value == null) return '';
+    return value == value.roundToDouble()
+        ? value.toInt().toString()
+        : value.toStringAsFixed(1);
   }
 
   Widget _field(

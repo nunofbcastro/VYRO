@@ -232,7 +232,7 @@ class SystemFoodVision
 Uint8List _downscale(Uint8List bytes) {
   final decoded = img.decodeImage(bytes);
   if (decoded == null) throw const FormatException('invalid_image');
-  var image = img.bakeOrientation(decoded);
+  var image = focusMealPhoto(img.bakeOrientation(decoded));
   final longest = image.width > image.height ? image.width : image.height;
   if (longest > SystemFoodVision.maxSide) {
     image = image.width >= image.height
@@ -277,9 +277,8 @@ Reply with JSON only, no markdown: $_jsonFormat''';
 /// Partly visible or small items count as visible; only a confident "not in
 /// the photo" is false.
 String buildFoodVerifyPrompt(List<DetectedFood> draft) {
-  final items = [
-    for (var i = 0; i < draft.length; i++) '$i: ${draft[i].label}',
-  ].join('\n');
+  final items = [for (var i = 0; i < draft.length; i++) '$i: ${draft[i].label}']
+      .join('\n');
   return '''
 Look ONLY at the attached photo (any attached view of it). Check each numbered item below.
 Answer "visible": true if that food or drink can be seen in THIS photo, even partly, small or at the edge of the frame.

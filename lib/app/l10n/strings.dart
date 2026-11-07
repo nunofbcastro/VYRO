@@ -340,6 +340,10 @@ class VyroStrings {
     'week': 'Esta semana',
     'meals': 'Refeições de hoje',
     'addMeal': 'Adicionar refeição',
+    'repeatYesterday': 'Repetir ontem',
+    'repeatDone': 'Copiei {count} alimentos.',
+    'repeatNone': 'Ontem não tinha nada de novo para copiar.',
+    'recentFoods': 'Recentes',
     'breakfast': 'Pequeno-almoço',
     'lunch': 'Almoço',
     'dinner': 'Jantar',
@@ -597,6 +601,28 @@ class VyroStrings {
     'policyBackupTitle': 'Cópias do sistema operativo',
     'policyBackupBody':
         'O Android está configurado sem cópia automática dos dados da app. No iOS, as regras de cópia do dispositivo e da conta Apple são controladas pelo sistema operativo; revê as definições de cópia do teu dispositivo.',
+    'policyHealthTitle': 'Passos e atividade',
+    'policyHealthBody':
+        'Se ativares a leitura, o VYRO pede acesso só de leitura ao Health Connect (Android) ou à app Saúde (iOS) para passos, distância, calorias ativas e peso. A última leitura fica nas preferências locais e entra na exportação. A app não escreve dados de saúde nem inicia sessão em contas de relógio.',
+    'healthTitle': 'Passos e atividade',
+    'healthSubtitle': 'Health Connect ou app Saúde, neste telemóvel',
+    'healthBody':
+        'O VYRO lê os passos, a distância, as calorias ativas e o último peso guardados neste telemóvel. Não inicia sessão no Fitbit, Garmin, Polar nem Samsung. Se essas apps já escrevem no Health Connect ou na app Saúde, os números aparecem aqui. Nada é enviado.',
+    'healthEnable': 'Ler neste telemóvel',
+    'healthOnDevice': 'A leitura fica neste telemóvel.',
+    'healthRead': 'Atualizar',
+    'healthSteps': 'passos',
+    'healthDistance': 'Distância',
+    'healthActive': 'Calorias ativas',
+    'healthWeight': 'Peso no telemóvel',
+    'healthEmpty': 'Ainda não há registo para hoje.',
+    'healthUnavailable': 'Este aparelho não tem Health Connect nem a app Saúde.',
+    'healthInstall': 'Instalar o Health Connect',
+    'healthDenied':
+        'Permissão recusada. Podes autorizar nas definições do sistema.',
+    'healthReadFailed': 'Não foi possível ler agora. Tenta outra vez.',
+    'healthNotSent':
+        'Estes números não alteram a meta de calorias da comida. São uma leitura do telemóvel, não uma medição da VYRO.',
     'exportData': 'Exportar dados',
     'exportDataSubtitle': 'Copiar um ficheiro JSON com os teus dados locais',
     'exportCopyInstruction':
@@ -737,7 +763,7 @@ class VyroStrings {
         'Responde a umas perguntas e recebes um plano editável, com regras claras e progressão de carga. Sem promessas de resultados.',
     'tutorialPrivacyTitle': 'Privacidade por defeito',
     'tutorialPrivacyBody':
-        'A câmara só abre quando pedes. Nada é enviado sem uma ação tua.',
+        'A câmara só abre quando pedes. Os passos do telemóvel só são lidos se os ativares nas definições. Nada é enviado sem uma ação tua.',
     'tutorialStart': 'Configurar o meu perfil',
     'tutorialSkip': 'Saltar introdução',
     'tutorialNext': 'Seguinte',
@@ -1449,6 +1475,10 @@ class VyroStrings {
     'week': 'This week',
     'meals': "Today's meals",
     'addMeal': 'Add meal',
+    'repeatYesterday': 'Repeat yesterday',
+    'repeatDone': 'Copied {count} foods.',
+    'repeatNone': 'Nothing new from yesterday to copy.',
+    'recentFoods': 'Recent',
     'breakfast': 'Breakfast',
     'lunch': 'Lunch',
     'dinner': 'Dinner',
@@ -1698,6 +1728,27 @@ class VyroStrings {
     'policyBackupTitle': 'Operating system backups',
     'policyBackupBody':
         'Android app data backup is disabled. On iOS, device and Apple account backup rules are controlled by the operating system; review your device backup settings.',
+    'policyHealthTitle': 'Steps and activity',
+    'policyHealthBody':
+        'If you turn reading on, VYRO asks for read-only access to Health Connect (Android) or the Health app (iOS) for steps, distance, active calories and weight. The latest reading stays in local preferences and is included in an export. The app does not write health data and does not sign in to watch accounts.',
+    'healthTitle': 'Steps and activity',
+    'healthSubtitle': 'Health Connect or the Health app, on this phone',
+    'healthBody':
+        'VYRO reads the steps, distance, active calories and latest weight stored on this phone. It does not sign in to Fitbit, Garmin, Polar or Samsung. If those apps already write to Health Connect or the Health app, their numbers show up here. Nothing is sent.',
+    'healthEnable': 'Read on this phone',
+    'healthOnDevice': 'The reading stays on this phone.',
+    'healthRead': 'Refresh',
+    'healthSteps': 'steps',
+    'healthDistance': 'Distance',
+    'healthActive': 'Active calories',
+    'healthWeight': 'Weight on this phone',
+    'healthEmpty': 'Nothing recorded for today yet.',
+    'healthUnavailable': 'This device has neither Health Connect nor the Health app.',
+    'healthInstall': 'Install Health Connect',
+    'healthDenied': 'Permission refused. You can allow it in system settings.',
+    'healthReadFailed': 'Could not read just now. Try again.',
+    'healthNotSent':
+        'These numbers do not change the food calorie target. They are a reading from the phone, not a VYRO measurement.',
     'exportData': 'Export data',
     'exportDataSubtitle': 'Copy a JSON file containing your local data',
     'exportCopyInstruction':
@@ -1840,7 +1891,7 @@ class VyroStrings {
         'Answer a few questions and get an editable plan with clear rules and load progression. No promised results.',
     'tutorialPrivacyTitle': 'Private by default',
     'tutorialPrivacyBody':
-        'The camera only opens when you ask. Nothing is sent without your action.',
+        'The camera only opens when you ask. Phone steps are read only if you turn that on in settings. Nothing is sent without your action.',
     'tutorialStart': 'Set up my profile',
     'tutorialSkip': 'Skip intro',
     'tutorialNext': 'Next',

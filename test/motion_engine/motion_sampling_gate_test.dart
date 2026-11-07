@@ -98,6 +98,24 @@ void main() {
       expect(gate.lastVisible, isFalse);
     });
 
+    test('one hidden joint of three still counts as visible enough', () {
+      final gate = PoseReadinessGate();
+      const three = [
+        BodyLandmark.leftHip,
+        BodyLandmark.leftKnee,
+        BodyLandmark.leftAnkle,
+      ];
+      final pose = syntheticPose(
+        at: Duration.zero,
+        hidden: const {BodyLandmark.leftAnkle},
+      );
+      gate.accept(pose, three, Duration.zero);
+      expect(
+        gate.accept(pose, three, const Duration(milliseconds: 500)),
+        isTrue,
+      );
+    });
+
     test('a required landmark hidden is not visible', () {
       final gate = PoseReadinessGate();
       final pose = syntheticPose(

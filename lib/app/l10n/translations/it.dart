@@ -292,6 +292,10 @@ const Map<String, String> vyroStringsIt = <String, String>{
   'week': 'Questa settimana',
   'meals': 'Pasti di oggi',
   'addMeal': 'Aggiungi pasto',
+  'repeatYesterday': 'Ripeti ieri',
+  'repeatDone': 'Copiati {count} alimenti.',
+  'repeatNone': 'Niente di nuovo da copiare da ieri.',
+  'recentFoods': 'Recenti',
   'breakfast': 'Colazione',
   'lunch': 'Pranzo',
   'dinner': 'Cena',
@@ -553,6 +557,28 @@ const Map<String, String> vyroStringsIt = <String, String>{
   'policyBackupTitle': 'Backup del sistema operativo',
   'policyBackupBody':
       'Android è configurato senza backup automatico dei dati dell\'app. Su iOS, le regole di backup del dispositivo e dell\'account Apple sono gestite dal sistema operativo; controlla le impostazioni di backup del tuo dispositivo.',
+  'policyHealthTitle': 'Passi e attività',
+  'policyHealthBody':
+      'Se attivi la lettura, VYRO chiede accesso in sola lettura a Health Connect (Android) o all\'app Salute (iOS) per passi, distanza, calorie attive e peso. L\'ultima lettura resta nelle preferenze locali ed entra nell\'esportazione. L\'app non scrive dati di salute e non accede agli account degli orologi.',
+  'healthTitle': 'Passi e attività',
+  'healthSubtitle': 'Health Connect o app Salute, su questo telefono',
+  'healthBody':
+      'VYRO legge i passi, la distanza, le calorie attive e l\'ultimo peso salvati su questo telefono. Non accede a Fitbit, Garmin, Polar né Samsung. Se quelle app scrivono già in Health Connect o nell\'app Salute, i numeri compaiono qui. Nulla viene inviato.',
+  'healthEnable': 'Leggi su questo telefono',
+  'healthOnDevice': 'La lettura resta su questo telefono.',
+  'healthRead': 'Aggiorna',
+  'healthSteps': 'passi',
+  'healthDistance': 'Distanza',
+  'healthActive': 'Calorie attive',
+  'healthWeight': 'Peso sul telefono',
+  'healthEmpty': 'Nessun dato per oggi.',
+  'healthUnavailable': 'Questo dispositivo non ha Health Connect né l\'app Salute.',
+  'healthInstall': 'Installa Health Connect',
+  'healthDenied':
+      'Permesso negato. Puoi autorizzarlo nelle impostazioni di sistema.',
+  'healthReadFailed': 'Lettura non riuscita. Riprova.',
+  'healthNotSent':
+      'Questi numeri non cambiano l\'obiettivo calorico del cibo. Sono una lettura del telefono, non una misura di VYRO.',
   'exportData': 'Esporta dati',
   'exportDataSubtitle': 'Copia un file JSON con i tuoi dati locali',
   'exportCopyInstruction':
@@ -695,7 +721,7 @@ const Map<String, String> vyroStringsIt = <String, String>{
       'Rispondi a qualche domanda e ricevi un piano modificabile, con regole chiare e progressione dei carichi. Nessuna promessa di risultati.',
   'tutorialPrivacyTitle': 'Privacy di default',
   'tutorialPrivacyBody':
-      'La fotocamera si apre solo quando la chiedi. Nulla viene inviato senza una tua azione.',
+      'La fotocamera si apre solo quando la chiedi. I passi del telefono si leggono solo se lo attivi nelle impostazioni. Nulla viene inviato senza una tua azione.',
   'tutorialStart': 'Configura il mio profilo',
   'tutorialSkip': 'Salta introduzione',
   'tutorialNext': 'Avanti',

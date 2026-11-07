@@ -1,6 +1,6 @@
 # VYRO privacy policy
 
-Last updated: 25 October 2026
+Last updated: 7 November 2026
 
 ## Data stored by VYRO
 
@@ -9,6 +9,10 @@ VYRO stores the profile and goals, meals, cached product lookups, workout plans 
 ## Network access
 
 The app connects to Open Food Facts only when the user starts a barcode lookup and the product is not already cached. The request contains the EAN/UPC product identifier and technical request headers. Meal records, profile data, photos, workout videos, and movement landmarks are not sent to Open Food Facts or to an AI service.
+
+## Steps and activity
+
+Reading steps, distance, active calories and weight is off until you turn it on in settings. VYRO then asks the system for read-only access to Health Connect on Android or the Health app on iOS. The latest reading is stored in local preferences, is included in an export, and is removed by "delete all data". VYRO does not write health data and does not sign in to Fitbit, Garmin, Polar, Samsung or any other watch account. Those apps can still show up here if they already record into Health Connect or Apple Health.
 
 ## Camera and photo processing
 

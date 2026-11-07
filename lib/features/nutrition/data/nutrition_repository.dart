@@ -2,6 +2,7 @@ import '../../../core/database/app_database.dart';
 
 abstract interface class NutritionRepository {
   Stream<List<FoodEntryRecord>> watchEntriesForDay(String day);
+  Future<List<FoodEntryRecord>> entriesForDay(String day);
   Future<int> addEntry(FoodEntriesCompanion entry);
   Future<bool> updateEntry(FoodEntryRecord entry);
   Future<int> deleteEntry(int id);
@@ -14,6 +15,10 @@ class DriftNutritionRepository implements NutritionRepository {
   @override
   Stream<List<FoodEntryRecord>> watchEntriesForDay(String day) =>
       database.watchEntriesForDay(day);
+
+  @override
+  Future<List<FoodEntryRecord>> entriesForDay(String day) =>
+      database.entriesForDay(day);
 
   @override
   Future<int> addEntry(FoodEntriesCompanion entry) =>

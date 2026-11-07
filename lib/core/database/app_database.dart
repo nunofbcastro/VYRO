@@ -102,6 +102,12 @@ class AppDatabase extends _$AppDatabase {
             ..orderBy([(entry) => OrderingTerm.asc(entry.createdAt)]))
           .watch();
 
+  Future<List<FoodEntryRecord>> entriesForDay(String day) =>
+      (select(foodEntries)
+            ..where((entry) => entry.day.equals(day))
+            ..orderBy([(entry) => OrderingTerm.asc(entry.createdAt)]))
+          .get();
+
   Stream<List<FoodEntryRecord>> watchEntriesSince(String day) =>
       (select(foodEntries)
             ..where((entry) => entry.day.isBiggerOrEqualValue(day))

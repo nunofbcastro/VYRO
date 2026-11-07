@@ -14,6 +14,7 @@ import '../../features/nutrition/nutrition_targets_page.dart';
 import '../../features/onboarding/onboarding_flow.dart';
 import '../../features/onboarding/setup_wizard_page.dart';
 import '../../features/motion_engine/workout_camera/motion_coach_page.dart';
+import '../../features/health/device_health_page.dart';
 import '../../features/profile/profile_settings_page.dart';
 import '../../features/profile/privacy_policy_page.dart';
 import '../../features/progress/progress_page.dart';
@@ -88,6 +89,10 @@ class VyroRouter {
       case '/profile':
         return MaterialPageRoute<void>(
           builder: (_) => const ProfileSettingsPage(),
+        );
+      case '/device-health':
+        return MaterialPageRoute<void>(
+          builder: (_) => const DeviceHealthPage(),
         );
       case '/privacy':
         return MaterialPageRoute<void>(

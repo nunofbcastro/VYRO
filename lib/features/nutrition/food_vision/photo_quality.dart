@@ -77,3 +77,45 @@ PhotoQuality assessPhoto(img.Image image) {
     tooBlurry: variance < 12,
   );
 }
+
+/// Mean luminance of a small sample (0–255). Used to decide whether a meal
+/// photo is dark enough to lift before recognition.
+double meanLuminance(img.Image image) {
+  final sample = image.width <= 48 ? image : img.copyResize(image, width: 48);
+  var sum = 0.0;
+  var n = 0;
+  for (final p in sample) {
+    sum += 0.299 * p.r + 0.587 * p.g + 0.114 * p.b;
+    n++;
+  }
+  return n == 0 ? 0 : sum / n;
+}
+
+/// Makes the plate larger in the frame and lifts a dark photo.
+///
+/// Phone photos are mostly table around a small plate. Both the on-device
+/// model and the dish classifier then see background. Trimming the outer
+/// 12% keeps food near the edge (a glass beside the plate) and drops the
+/// empty border. A bright photo is not recolored. Never rejects the photo.
+img.Image focusMealPhoto(img.Image source) {
+  // Tiny images are probes and icons. Trimming them below 16 px throws,
+  // and there is no plate border to remove.
+  if (source.width < 32 || source.height < 32) return source;
+  final mean = meanLuminance(source);
+  // gamma < 1 lifts shadows (image package: pow(channel/255, gamma)*255).
+  // Bright and near-black photos are left alone.
+  final lifted = (mean >= 78 || mean < 12)
+      ? source
+      : img.gamma(source, gamma: 0.75);
+  const keep = 0.88;
+  final width = (lifted.width * keep).round();
+  final height = (lifted.height * keep).round();
+  if (width >= lifted.width && height >= lifted.height) return lifted;
+  return img.copyCrop(
+    lifted,
+    x: (lifted.width - width) ~/ 2,
+    y: (lifted.height - height) ~/ 2,
+    width: width,
+    height: height,
+  );
+}

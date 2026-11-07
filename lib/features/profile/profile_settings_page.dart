@@ -136,6 +136,13 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                   subtitle: t.get('coachVoiceSubtitle'),
                   onTap: () => showCoachVoiceSheet(context),
                 ),
+                VyroListRow(
+                  icon: Icons.directions_walk_rounded,
+                  iconColor: Theme.of(context).colorScheme.secondary,
+                  title: t.get('healthTitle'),
+                  subtitle: t.get('healthSubtitle'),
+                  onTap: () => Navigator.pushNamed(context, '/device-health'),
+                ),
               ],
             ),
             const SizedBox(height: 24),

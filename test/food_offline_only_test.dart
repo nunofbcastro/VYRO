@@ -63,6 +63,39 @@ void main() {
       expect(result.detail, contains('background wins in 26 of 26'));
     });
 
+    test('table around a plate does not veto the food in the centre', () {
+      const gate = RegionFoodVision.centralGateIndexes;
+      final perCrop = [
+        for (var i = 0; i < 27; i++)
+          gate.contains(i) ? [(2, 0.4)] : [(0, 0.8), (1, 0.05)],
+      ];
+      final result = RegionFoodVision.interpretRegions(
+        small,
+        perCrop,
+        labels,
+        gateIndexes: gate,
+      );
+      expect(result.foods.single.food?.key, 'rice_white_cooked');
+      expect(result.notes, isEmpty);
+    });
+
+    test('background in the centre still rejects a photo with no food', () {
+      const gate = RegionFoodVision.centralGateIndexes;
+      final perCrop = [
+        for (var i = 0; i < 27; i++)
+          gate.contains(i) ? [(0, 0.7), (1, 0.2)] : [(1, 0.5)],
+      ];
+      final result = RegionFoodVision.interpretRegions(
+        small,
+        perCrop,
+        labels,
+        gateIndexes: gate,
+      );
+      expect(result.foods, isEmpty);
+      expect(result.notes, contains(offlineNoFoodNote));
+      expect(result.detail, contains('central regions'));
+    });
+
     test('background on exactly half the regions still keeps the food', () {
       // 13 of 26 is not "most": the gate needs more than half.
       final perCrop = [
@@ -99,24 +132,21 @@ void main() {
     }) =>
         FoodVisionPipeline(llm: _Llm(status), system: system, regions: regions);
 
-    test(
-      '(a) system fails, offline returns Alface: foods empty, Alface is a suggestion',
-      () async {
-        final result = await pipeline(
-          status: LlmStatus.available,
-          system: _Fixed(error: const LlmException('generation_failed: boom')),
-          regions: _Fixed(value: lettuceOffline()),
-        ).analyse(photo);
-        expect(result.foods, isEmpty);
-        expect(result.suggestions.map((s) => s.food?.key), [lettuce.key]);
-        expect(result.failure, VisionFailure.other);
-        expect(result.notes, contains('systemFailed'));
-        expect(result.source, VisionSource.regionClassifier);
-        expect(result.confirmedEmpty, isFalse);
-        // Nothing in the totals: the CTA stays at zero.
-        expect(kcal(result.foods), 0);
-      },
-    );
+    test('(a) system fails, offline returns Alface: foods empty, Alface is a suggestion', () async {
+      final result = await pipeline(
+        status: LlmStatus.available,
+        system: _Fixed(error: const LlmException('generation_failed: boom')),
+        regions: _Fixed(value: lettuceOffline()),
+      ).analyse(photo);
+      expect(result.foods, isEmpty);
+      expect(result.suggestions.map((s) => s.food?.key), [lettuce.key]);
+      expect(result.failure, VisionFailure.other);
+      expect(result.notes, contains('systemFailed'));
+      expect(result.source, VisionSource.regionClassifier);
+      expect(result.confirmedEmpty, isFalse);
+      // Nothing in the totals: the CTA stays at zero.
+      expect(kcal(result.foods), 0);
+    });
 
     test(
       '(b) system unavailable on the device: same, failure unavailable',
@@ -163,20 +193,17 @@ void main() {
       },
     );
 
-    test(
-      '(c) background wins offline and the system failed: no suggestions, says no food',
-      () async {
-        final result = await pipeline(
-          status: LlmStatus.available,
-          system: _Fixed(error: const LlmException('generation_failed: boom')),
-          regions: _Fixed(value: backgroundOffline()),
-        ).analyse(photo);
-        expect(result.foods, isEmpty);
-        expect(result.suggestions, isEmpty);
-        expect(result.failure, VisionFailure.other);
-        expect(result.notes, containsAll(['systemFailed', offlineNoFoodNote]));
-      },
-    );
+    test('(c) background wins offline and the system failed: no suggestions, says no food', () async {
+      final result = await pipeline(
+        status: LlmStatus.available,
+        system: _Fixed(error: const LlmException('generation_failed: boom')),
+        regions: _Fixed(value: backgroundOffline()),
+      ).analyse(photo);
+      expect(result.foods, isEmpty);
+      expect(result.suggestions, isEmpty);
+      expect(result.failure, VisionFailure.other);
+      expect(result.notes, containsAll(['systemFailed', offlineNoFoodNote]));
+    });
 
     test(
       'two failures still throw, so the page shows the error card',

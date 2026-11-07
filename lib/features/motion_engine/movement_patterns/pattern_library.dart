@@ -34,25 +34,28 @@ class PatternLibrary {
     BodyLandmark.rightHip,
   ];
 
+  // bestSide: a side-on phone hides the far limb. Averaging both sides let
+  // that weak limb pull the angle (and its confidence) below the counting
+  // threshold, so the rep never registered.
   static const _knees = SignalSpec(
     BioMetric.kneeLeft,
     right: BioMetric.kneeRight,
-    side: SignalSide.bilateral,
+    side: SignalSide.bestSide,
   );
   static const _hips = SignalSpec(
     BioMetric.hipLeft,
     right: BioMetric.hipRight,
-    side: SignalSide.bilateral,
+    side: SignalSide.bestSide,
   );
   static const _elbows = SignalSpec(
     BioMetric.elbowLeft,
     right: BioMetric.elbowRight,
-    side: SignalSide.bilateral,
+    side: SignalSide.bestSide,
   );
   static const _shoulders = SignalSpec(
     BioMetric.shoulderLeft,
     right: BioMetric.shoulderRight,
-    side: SignalSide.bilateral,
+    side: SignalSide.bestSide,
   );
   static const _lean = SignalSpec(BioMetric.trunkLean);
   static const _line = SignalSpec(BioMetric.bodyLine);
