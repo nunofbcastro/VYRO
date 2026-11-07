@@ -343,6 +343,11 @@ void main() {
         'burger king whopper with cheese': 'whopper_cheese',
         'burger king chicken sandwich': 'bk_chicken_sandwich',
         'original chicken sandwich': 'bk_chicken_sandwich',
+        'mccrispy': 'mccrispy',
+        'mc crispy': 'mccrispy',
+        'mccrispy hot honey': 'mccrispy_hot_honey',
+        'mc crispy hot honey': 'mccrispy_hot_honey',
+        'hot honey chicken sandwich': 'mccrispy_hot_honey',
       };
       for (final entry in brands.entries) {
         expect(
@@ -364,6 +369,16 @@ void main() {
       expect(db.byKey('whopper')!.portionG, 291);
       expect(db.byKey('mcchicken')!.sourceKey, 'usda_173305');
       expect(db.byKey('mcchicken')!.portionG, 131);
+      final hot = db.byKey('mccrispy_hot_honey')!;
+      expect(hot.sourceKey, 'mcd_pt_mccrispy-hot-honey');
+      expect(hot.portionG, 294);
+      expect(hot.kcal, closeTo(293.2, 0.05));
+      expect(hot.portionG * hot.kcal / 100, closeTo(862, 0.6));
+      expect(db.byKey('mccrispy')!.portionG, 264);
+      expect(
+        db.byKey('mccrispy')!.portionG * db.byKey('mccrispy')!.kcal / 100,
+        closeTo(636, 0.6),
+      );
       expect(db.byKey('bk_chicken_sandwich')!.sourceKey, 'usda_170331');
     });
 

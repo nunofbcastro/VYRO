@@ -184,7 +184,7 @@ const Map<String, String> vyroStringsFr = <String, String>{
   'photoEstimateNote':
       "Les aliments et les grammes sont des estimations à partir de la photo : ajuste avant d'enregistrer. Les calories sont calculées en grammes × kcal/100 g.",
   'nutritionSourcesNote':
-      'Valeurs pour 100 g : USDA FoodData Central, Ciqual 2025 (ANSES) et TACO (NEPA/UNICAMP).',
+      'Valeurs pour 100 g : USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) et, pour le McCrispy, la fiche publiée par McDonald\'s Portugal.',
   'photoSourceSystem': 'IA du téléphone',
   'photoSourceRegions': 'Reconnaissance hors ligne (peu fiable)',
   'offlineNoFood':

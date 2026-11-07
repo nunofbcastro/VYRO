@@ -155,8 +155,13 @@ o ketchup, o molho de tomate e o queijo ralado não existem, por isso não apare
   (`burger_sauce`), se ainda não estiverem na lista. São sugestões, fora dos
   totais.
 - Frango: «fried chicken», «crispy chicken», «chicken patty» e «frango frito» são
-  o filete panado (`chicken_fried_patty`). «chicken burger», «chicken sandwich»,
-  «mcchicken» são o sanduíche (`chicken_sandwich`, com pão). Um «chicken» genérico
+  o filete panado (`chicken_fried_patty`). «chicken burger» e «chicken sandwich»
+  são o sanduíche genérico (`chicken_sandwich`, com pão). «mcchicken», «mccrispy»
+  e «mccrispy hot honey» são as linhas de marca. Quando o classificador offline
+  só vê a sandes genérica, oferece essas marcas (e a do Burger King) como
+  hipóteses, fora dos totais: não distingue o molho Hot Honey. Se a mesma foto
+  pontua sandes de frango e hambúrguer, fica só a sanduíche com maior pontuação.
+  Um «chicken» genérico
   fica grelhado (`chicken_breast_roasted`), salvo se houver pão na lista (vira
   filete panado, o pão é a linha à parte) ou se o campo «where» disser
   hambúrguer/sanduíche/pão (vira sanduíche). Sanduíche de frango mais pão à parte

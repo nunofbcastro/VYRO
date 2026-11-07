@@ -228,7 +228,7 @@ class VyroStrings {
     'photoEstimateNote':
         'Os alimentos e as gramas são estimativas a partir da foto: ajusta antes de guardar. As calorias são calculadas como gramas × kcal/100 g.',
     'nutritionSourcesNote':
-        'Valores por 100 g: USDA FoodData Central, Ciqual 2025 (ANSES) e TACO (NEPA/UNICAMP).',
+        'Valores por 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) e, no McCrispy, a ficha publicada pela McDonald\'s Portugal.',
     'photoSourceSystem': 'IA do telemóvel',
     'photoSourceRegions': 'Reconhecimento offline (pouco fiável)',
     'offlineNoFood':
@@ -616,7 +616,8 @@ class VyroStrings {
     'healthActive': 'Calorias ativas',
     'healthWeight': 'Peso no telemóvel',
     'healthEmpty': 'Ainda não há registo para hoje.',
-    'healthUnavailable': 'Este aparelho não tem Health Connect nem a app Saúde.',
+    'healthUnavailable':
+        'Este aparelho não tem Health Connect nem a app Saúde.',
     'healthInstall': 'Instalar o Health Connect',
     'healthDenied':
         'Permissão recusada. Podes autorizar nas definições do sistema.',
@@ -1368,7 +1369,7 @@ class VyroStrings {
     'photoEstimateNote':
         'Foods and grams are estimates from the photo: adjust before saving. Calories are grams × kcal/100 g.',
     'nutritionSourcesNote':
-        'Values per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES) and TACO (NEPA/UNICAMP).',
+        'Values per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) and, for McCrispy, the label published by McDonald\'s Portugal.',
     'photoSourceSystem': 'Phone AI',
     'photoSourceRegions': 'Offline recognition (low reliability)',
     'offlineNoFood':
@@ -1743,7 +1744,8 @@ class VyroStrings {
     'healthActive': 'Active calories',
     'healthWeight': 'Weight on this phone',
     'healthEmpty': 'Nothing recorded for today yet.',
-    'healthUnavailable': 'This device has neither Health Connect nor the Health app.',
+    'healthUnavailable':
+        'This device has neither Health Connect nor the Health app.',
     'healthInstall': 'Install Health Connect',
     'healthDenied': 'Permission refused. You can allow it in system settings.',
     'healthReadFailed': 'Could not read just now. Try again.',

@@ -5,7 +5,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import '../../assistant/domain/meal_proposal.dart' show foodTokens;
 
 /// One food from the bundled nutrition database (values per 100 g from an
-/// official composition table: USDA, Ciqual or TACO).
+/// official composition table: USDA, Ciqual, TACO, or a cited product label).
 class FoodRef {
   const FoodRef({
     required this.key,
@@ -34,7 +34,7 @@ class FoodRef {
   final String nameEn;
   final String category;
 
-  /// Composition table the values come from: `usda`, `ciqual` or `taco`.
+  /// Composition table the values come from: `usda`, `ciqual`, `taco` or `mcd_pt`.
   final String source;
 
   /// Id of the food in that table (FDC id, Ciqual alim_code, TACO number).
@@ -67,6 +67,7 @@ class FoodRef {
     'usda' => 'USDA',
     'ciqual' => 'Ciqual',
     'taco' => 'TACO',
+    'mcd_pt' => "McDonald's",
     'recipe' => 'VYRO',
     _ => source,
   };
@@ -100,8 +101,9 @@ class FoodRef {
 }
 
 /// Offline nutrition database built by `tool/nutrition/build_food_db.py`
-/// from USDA FoodData Central (CC0), Ciqual 2025 (etalab-2.0) and TACO 4
-/// (cited). Loaded once from assets; see docs/NUTRITION_DATA.md.
+/// from USDA FoodData Central (CC0), Ciqual 2025 (etalab-2.0), TACO 4
+/// (cited) and, for the McCrispy rows, the McDonald's Portugal label.
+/// Loaded once from assets; see docs/NUTRITION_DATA.md.
 class FoodDatabase {
   FoodDatabase(this.foods)
     : _byKey = {for (final f in foods) f.key: f},

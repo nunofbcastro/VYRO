@@ -30,4 +30,20 @@ void main() {
     expect(result.foods.single.confidence, 0.5);
     expect(result.foods.single.count, isNull);
   });
+
+  test('a chicken sandwich drops the weaker hamburger and offers McCrispy', () {
+    const labels = {714: 'Chicken sandwich', 1621: 'Hamburger'};
+    final result = RegionFoodVision.interpretRegions(original, [
+      [(714, 0.4), (1621, 0.2)],
+      [(714, 0.3), (1621, 0.16)],
+    ], labels);
+    final keys = result.foods.map((f) => f.food?.key).toList();
+    expect(keys.first, 'chicken_sandwich');
+    expect(keys, isNot(contains('cheeseburger_whole')));
+    expect(keys, contains('mccrispy_hot_honey'));
+    expect(
+      result.foods.firstWhere((f) => f.food?.key == 'mccrispy_hot_honey').grams,
+      294,
+    );
+  });
 }

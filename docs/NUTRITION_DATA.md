@@ -11,7 +11,7 @@ alimentos descarregadas legalmente.
 foods_pt.tsv (curado à mão: nomes PT/EN, fonte + referência, porção, unidades da porção, aliases, etiquetas de imagem)
         │
         ▼  build_food_db.py  (descarrega/usa build/usda, build/ciqual, build/taco)
-assets/nutrition/foods.json  (193 alimentos, valores por 100 g, fonte de cada um)
+assets/nutrition/foods.json  (204 alimentos, valores por 100 g, fonte de cada um)
         │
         ▼  FoodDatabase.load()  (lib/features/nutrition/data/food_database.dart)
 fotografia, assistente, diário  →  kcal = gramas × kcal/100 g ÷ 100
@@ -28,12 +28,14 @@ ingredientes e do peso final cozinhado. Não entram em `foods.json`.
 | [USDA FoodData Central — SR Legacy 2018-04](https://fdc.nal.usda.gov/) | `int` | Domínio público (CC0 1.0), atribuição pedida | descrição exata do alimento (`food.csv`) |
 | [Ciqual 2025 — ANSES](https://ciqual.anses.fr/) | `pt`, `eu` | Licence Ouverte / etalab-2.0 (atribuição obrigatória) | `alim_code` |
 | [TACO 4.ª edição — NEPA/UNICAMP](https://www.cfn.org.br/wp-content/uploads/2017/03/taco_4_edicao_ampliada_e_revisada.pdf) | `br` | Reprodução permitida desde que citada a fonte | número do alimento na Tabela 1 |
+| [McDonald's Portugal — ficha do produto](https://www.mcdonalds.pt/produtos/informacao-nutricional-alergenios) | `pt` | Valores publicados pelo fabricante, citados com a data de consulta | id em `tool/nutrition/manufacturer_pt.json` |
 
 Citações (também guardadas em `foods.json → sources`):
 
 - U.S. Department of Agriculture, Agricultural Research Service. FoodData Central, SR Legacy (2018).
 - Anses. 2025. Table de composition nutritionnelle des aliments Ciqual. doi:10.57745/RDMHWY
 - NEPA/UNICAMP. Tabela Brasileira de Composição de Alimentos – TACO. 4. ed. Campinas, 2011.
+- McDonald's Portugal. Informação nutricional do McCrispy e do McCrispy Hot Honey, consultada em 7 de novembro de 2026. A fibra não vem na ficha, por isso fica a 0. O peso da porção é o da unidade de consumo publicada.
 
 A app mostra esta atribuição no ecrã de fotografia (`nutritionSourcesNote`)
 e cada registo do diário guarda a origem em `food_entries.source`
@@ -60,7 +62,7 @@ polvo, chouriço, queijo de ovelha, pão caseiro…).
   inválidas são rejeitadas, nunca adivinhadas.
 - Porções (`portion_g`, `portion_pt`) são **estimativas do VYRO** para sugerir
   quantidades. O utilizador confirma sempre as gramas.
-- `portion_units` (coluna opcional, última do TSV; preenchida em 87 dos 193
+- `portion_units` (coluna opcional, última do TSV; preenchida em 98 dos 204
   alimentos) indica quantas peças correspondem a `portion_g`: 3 sardinhas = 120 g
   ⇒ `portion_units = 3`. A app escala a contagem de peças por
   `portion_g × peças ÷ portion_units`. Sem valor, a contagem não multiplica a
@@ -129,6 +131,8 @@ alimento e as gramas.
   - `quarter_pounder_cheese`, 199 g, «McDONALD'S, QUARTER POUNDER with Cheese» (170719), 258 kcal/100 g.
   - `filet_o_fish`, 134 g, «McDONALD'S, FILET-O-FISH» (170319), 282 kcal/100 g (peixe, não é hambúrguer nem frango).
   - `mcchicken`, 131 g, «McDONALD'S, McCHICKEN Sandwich» (173305), 273 kcal/100 g.
+  - `mccrispy`, 264 g, ficha McDonald's Portugal (2026-11-07): 636 kcal, 27 g de proteína, 78 g de hidratos e 23 g de gordura na sandes (240,9 kcal/100 g). Não existe no SR Legacy.
+  - `mccrispy_hot_honey`, 294 g, ficha McDonald's Portugal (2026-11-07): 862 kcal, 34 g de proteína, 86 g de hidratos e 42 g de gordura na sandes (293,2 kcal/100 g). Não existe no SR Legacy.
   - `whopper`, 291 g, «BURGER KING, WHOPPER, no cheese» (170727), 233 kcal/100 g.
   - `whopper_cheese`, 316 g, «BURGER KING, WHOPPER, with cheese» (170728), 250 kcal/100 g.
   - `bk_chicken_sandwich`, 199 g, «BURGER KING, Original Chicken Sandwich» (170331), 286 kcal/100 g.

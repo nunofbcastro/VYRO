@@ -8,6 +8,7 @@ import 'package:image/image.dart' as img;
 import '../data/food_database.dart';
 import '../domain/food_recognition_service.dart'
     show dequantize, toProbabilities;
+import 'burger_rules.dart';
 import 'food_vision.dart';
 import 'photo_quality.dart';
 
@@ -65,8 +66,9 @@ class RegionFoodVision implements FoodVisionService {
 
   @override
   Future<FoodVisionResult> analyse(Uint8List imageBytes) async {
-    final model = _modelCache ??= (await rootBundle.load(modelAsset)).buffer
-        .asUint8List();
+    final model = _modelCache ??= (await rootBundle.load(
+      modelAsset,
+    )).buffer.asUint8List();
     final labels = await _labels();
     // Decoding, cropping and inferences run off the UI isolate.
     final worker = await (_worker ??= _RegionWorker.start(
@@ -173,19 +175,35 @@ class RegionFoodVision implements FoodVisionService {
       if (!exclusiveCategories.contains(category)) return false;
       return !proteins.add(category);
     });
+    // One photo of a single sandwich often scores both "Chicken sandwich"
+    // and "Hamburger". Keep the stronger sandwich and drop the other.
+    final sandwichKeys = {
+      burgerSandwichKey,
+      chickenSandwichKey,
+      ...burgerBrandedSandwichKeys,
+      ...chickenBrandedSandwichKeys,
+    };
+    var keptSandwich = false;
+    keys.removeWhere((k) {
+      if (!sandwichKeys.contains(k)) return false;
+      if (keptSandwich) return true;
+      keptSandwich = true;
+      return false;
+    });
+    final foods = [
+      for (final k in keys.take(6))
+        DetectedFood(
+          food: database.byKey(k),
+          label: database.byKey(k)!.namePt,
+          grams: database.byKey(k)!.portionG,
+          confidence: peak[k],
+          source: VisionSource.regionClassifier,
+        ),
+    ];
     return FoodVisionResult(
       source: VisionSource.regionClassifier,
       dishGuess: dish,
-      foods: [
-        for (final k in keys.take(6))
-          DetectedFood(
-            food: database.byKey(k),
-            label: database.byKey(k)!.namePt,
-            grams: database.byKey(k)!.portionG,
-            confidence: peak[k],
-            source: VisionSource.regionClassifier,
-          ),
-      ],
+      foods: [...foods, ...chickenSandwichLookalikes(foods, database)],
     );
   }
 

@@ -1,0 +1,20 @@
+{
+  "mccrispy": {
+    "label": "McDonald's Portugal, McCrispy (ficha do produto, 2026-11-07)",
+    "url": "https://www.mcdonalds.pt/produtos/mcmenu/sanduiches/mccrispy",
+    "grams": 264,
+    "kcal": 636,
+    "protein": 27,
+    "carbs": 78,
+    "fat": 23
+  },
+  "mccrispy-hot-honey": {
+    "label": "McDonald's Portugal, McCrispy Hot Honey (ficha do produto, 2026-11-07)",
+    "url": "https://www.mcdonalds.pt/produtos/mcmenu/sanduiches/mccrispy-hot-honey",
+    "grams": 294,
+    "kcal": 862,
+    "protein": 34,
+    "carbs": 86,
+    "fat": 42
+  }
+}

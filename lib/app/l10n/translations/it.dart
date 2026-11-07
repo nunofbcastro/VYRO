@@ -179,7 +179,7 @@ const Map<String, String> vyroStringsIt = <String, String>{
   'photoEstimateNote':
       'Alimenti e grammi sono stime dalla foto: correggi prima di salvare. Le calorie sono calcolate come grammi × kcal/100 g.',
   'nutritionSourcesNote':
-      'Valori per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES) e TACO (NEPA/UNICAMP).',
+      'Valori per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) e, per il McCrispy, la scheda pubblicata da McDonald\'s Portugal.',
   'photoSourceSystem': 'IA del telefono',
   'photoSourceRegions': 'Riconoscimento offline (poco affidabile)',
   'offlineNoFood':
@@ -572,7 +572,8 @@ const Map<String, String> vyroStringsIt = <String, String>{
   'healthActive': 'Calorie attive',
   'healthWeight': 'Peso sul telefono',
   'healthEmpty': 'Nessun dato per oggi.',
-  'healthUnavailable': 'Questo dispositivo non ha Health Connect né l\'app Salute.',
+  'healthUnavailable':
+      'Questo dispositivo non ha Health Connect né l\'app Salute.',
   'healthInstall': 'Installa Health Connect',
   'healthDenied':
       'Permesso negato. Puoi autorizzarlo nelle impostazioni di sistema.',

@@ -90,6 +90,20 @@ void main() {
       expect(food.grams, 199);
     });
 
+    test('"McCrispy Hot Honey" is the branded row (294 g, 862 kcal)', () {
+      final food = parse([_item('McCrispy Hot Honey')]).single;
+      expect(food.food?.key, 'mccrispy_hot_honey');
+      expect(food.grams, 294);
+      expect(food.kcal, closeTo(862, 0.6));
+      expect(isChickenSandwich(food), isTrue);
+    });
+
+    test('"McCrispy" alone is not the Hot Honey row', () {
+      final food = parse([_item('McCrispy')]).single;
+      expect(food.food?.key, 'mccrispy');
+      expect(food.grams, 264);
+    });
+
     test('McChicken plus a separate bun becomes the breaded patty', () {
       final foods = parse([_item('mcchicken'), _item('hamburger bun')]);
       expect(keysOf(foods), ['chicken_fried_patty', 'hamburger_bun']);

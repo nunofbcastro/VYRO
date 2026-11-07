@@ -256,7 +256,7 @@ Analyse ONLY the image attached to THIS request. It is a new, independent meal. 
 List only the foods and drinks that are actually in this photo. Include every drink in a glass, cup, bottle or can, and every food on a plate, board or packaging. Food can also be served or photographed in a pan, pot, tray, box, packaging or hand: still list the food, not the container. Never add side dishes, salads, vegetables, legumes, spreads or garnishes that are not clearly visible. Do not infer hidden ingredients, oil, sugar or milk. Do not list non-food objects such as the table, napkins, towels or cutlery.
 One row per food type, with its TOTAL count. A single cup or glass is ONE drink, even with a saucer, handle or shadow. Never list the same coffee twice.
 For each item give:
-- "name": the specific food or drink name in plain English, short, common and singular, e.g. "fried egg", "beer", "white rice", "beef steak". Never a general word such as "drink" or "food" when the kind is visible.
+- "name": the specific food or drink name in plain English, short, common and singular, e.g. "fried egg", "beer", "white rice", "beef steak". Never a general word such as "drink" or "food" when the kind is visible. When one fast-food sandwich fills the photo and a brand name is visible, use that product name. When no brand is visible, use the generic name.
 - "where": short location in the photo in plain English, e.g. "centre of plate" or "top left glass". It helps us check the item; leave it as "" if you cannot tell.
 - "count": number of clearly separate pieces or containers, else 1.
 - "size": small, medium or large compared with a typical single serving. Do not output grams.
@@ -277,8 +277,9 @@ Reply with JSON only, no markdown: $_jsonFormat''';
 /// Partly visible or small items count as visible; only a confident "not in
 /// the photo" is false.
 String buildFoodVerifyPrompt(List<DetectedFood> draft) {
-  final items = [for (var i = 0; i < draft.length; i++) '$i: ${draft[i].label}']
-      .join('\n');
+  final items = [
+    for (var i = 0; i < draft.length; i++) '$i: ${draft[i].label}',
+  ].join('\n');
   return '''
 Look ONLY at the attached photo (any attached view of it). Check each numbered item below.
 Answer "visible": true if that food or drink can be seen in THIS photo, even partly, small or at the edge of the frame.

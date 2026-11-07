@@ -16,7 +16,7 @@ VYRO never invents calories. Every food in the app comes from
 1. A curated list, `tool/nutrition/foods_pt.tsv`, has one row per VYRO food:
    `key, name_pt, name_en, source, source_ref, region, category, portion_g,
    portion_pt, portion_en, aliases, vision_labels, portion_units` (lists
-   separated by `|`). `portion_units` is optional (87 of 193 rows): the number
+   separated by `|`). `portion_units` is optional (98 of 204 rows): the number
    of pieces that `portion_g` represents (3 sardines = 120 g ⇒ `3`). Leave it
    empty for foods that are not counted in pieces (rice, soups, sauces); the app
    then ignores piece counts for that food. The build copies it to
@@ -122,6 +122,8 @@ under the same name:
   `food_portion.csv`): `big_mac` (170720, 219 g), `mcdonalds_cheeseburger`
   (170320, 119 g), `mcdonalds_hamburger` (170717, 95 g),
   `quarter_pounder_cheese` (170719, 199 g), `mcchicken` (173305, 131 g),
+  `mccrispy` and `mccrispy_hot_honey` (McDonald's Portugal label, 2026-11-07,
+  source `mcd_pt`, 264 g / 636 kcal and 294 g / 862 kcal; fibre unpublished = 0),
   `filet_o_fish` (170319, 134 g, fish: no burger/chicken rule), `whopper`
   (170727, 291 g), `whopper_cheese` (170728, 316 g), `bk_chicken_sandwich`
   (170331, 199 g). Brand names (EN and PT) go to these rows; the generic rows

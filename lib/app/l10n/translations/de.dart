@@ -182,7 +182,7 @@ const Map<String, String> vyroStringsDe = <String, String>{
   'photoEstimateNote':
       'Lebensmittel und Gramm sind Schätzungen aus dem Foto: passe sie vor dem Speichern an. Kalorien werden als Gramm × kcal/100 g berechnet.',
   'nutritionSourcesNote':
-      'Werte pro 100 g: USDA FoodData Central, Ciqual 2025 (ANSES) und TACO (NEPA/UNICAMP).',
+      'Werte pro 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) und, beim McCrispy, die Angaben von McDonald\'s Portugal.',
   'photoSourceSystem': 'KI des Telefons',
   'photoSourceRegions': 'Offline-Erkennung (wenig zuverlässig)',
   'offlineNoFood':
@@ -575,7 +575,8 @@ const Map<String, String> vyroStringsDe = <String, String>{
   'healthActive': 'Aktive Kalorien',
   'healthWeight': 'Gewicht auf dem Telefon',
   'healthEmpty': 'Für heute ist noch nichts erfasst.',
-  'healthUnavailable': 'Dieses Gerät hat weder Health Connect noch die Health-App.',
+  'healthUnavailable':
+      'Dieses Gerät hat weder Health Connect noch die Health-App.',
   'healthInstall': 'Health Connect installieren',
   'healthDenied':
       'Zugriff abgelehnt. Du kannst ihn in den Systemeinstellungen erlauben.',

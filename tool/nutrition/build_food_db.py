@@ -19,6 +19,10 @@ Sources (downloaded into build/, never committed):
          ref = alim_code.
   taco   TACO 4.ª edição (NEPA/UNICAMP, Brasil) — reproduction allowed with
          citation. ref = food number. Needs `pip install pypdf` (build only).
+  mcd_pt McDonald's Portugal published nutrition label. The SR Legacy table
+         has no McCrispy. ref = id in tool/nutrition/manufacturer_pt.json.
+         Values are the published sandwich totals, converted to per 100 g.
+         Fibre is not on that label, so it is stored as 0.
 
 Per 100 g: energy (kcal), protein, carbohydrate, fat, fibre. Ciqual "traces"
 → 0, "< x" → x/2 (documented convention); missing energy/macros fail.
@@ -38,6 +42,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from xlsx_reader import read_rows  # noqa: E402
 
 TSV = ROOT / 'tool' / 'nutrition' / 'foods_pt.tsv'
+MANUFACTURER = ROOT / 'tool' / 'nutrition' / 'manufacturer_pt.json'
 OUT = ROOT / 'assets' / 'nutrition' / 'foods.json'
 SCHEMA = 2
 
@@ -61,6 +66,13 @@ SOURCES = {
         'url': 'https://www.cfn.org.br/wp-content/uploads/2017/03/taco_4_edicao_ampliada_e_revisada.pdf',
         'citation': 'NEPA/UNICAMP. Tabela Brasileira de Composição de Alimentos – TACO. 4. ed. Campinas, 2011.',
         'file': ROOT / 'build' / 'taco' / 'taco_4_edicao_ampliada_e_revisada.pdf',
+    },
+    'mcd_pt': {
+        'name': "McDonald's Portugal — informação nutricional publicada",
+        'license': 'Valores publicados pelo fabricante na ficha do produto; citados com a data de consulta',
+        'url': 'https://www.mcdonalds.pt/produtos/informacao-nutricional-alergenios',
+        'citation': "McDonald's Portugal. Informação nutricional do produto, consultada em 2026-11-07.",
+        'file': MANUFACTURER,
     },
 }
 
@@ -191,7 +203,35 @@ def load_taco(refs):
     return out
 
 
-LOADERS = {'usda': load_usda, 'ciqual': load_ciqual, 'taco': load_taco}
+def load_mcd_pt(refs):
+    """Published sandwich totals → per 100 g. portion_g in the TSV must match."""
+    products = json.loads(MANUFACTURER.read_text(encoding='utf-8'))
+    out = {}
+    for ref in refs:
+        row = products.get(ref)
+        if not row:
+            continue
+        grams = float(row['grams'])
+        if grams <= 0:
+            continue
+        per100 = {
+            field: float(row[field]) * 100 / grams
+            for field in ('kcal', 'protein', 'carbs', 'fat')
+        }
+        expected = 4 * per100['protein'] + 4 * per100['carbs'] + 9 * per100['fat']
+        if abs(per100['kcal'] - expected) / per100['kcal'] > 0.08:
+            sys.exit(f'{ref}: published kcal {row["kcal"]} disagrees with Atwater {expected * grams / 100:.0f}')
+        out[ref] = {
+            'id': ref,
+            'label': row['label'],
+            'fiber': 0.0,
+            **per100,
+            'grams': grams,
+        }
+    return out
+
+
+LOADERS = {'usda': load_usda, 'ciqual': load_ciqual, 'taco': load_taco, 'mcd_pt': load_mcd_pt}
 
 
 def build():
@@ -211,6 +251,11 @@ def build():
         missing = [f for f in ('kcal', 'protein', 'carbs', 'fat') if v.get(f) is None]
         if missing:
             problems.append(f"{row['key']}: missing {missing} in {row['source']}")
+            continue
+        if row['source'] == 'mcd_pt' and float(row['portion_g']) != v['grams']:
+            problems.append(
+                f"{row['key']}: portion_g {row['portion_g']} != published grams {v['grams']}"
+            )
             continue
         foods.append({
             'key': row['key'],

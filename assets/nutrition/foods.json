@@ -7,6 +7,12 @@
    "url": "https://entrepot.recherche.data.gouv.fr/api/access/datafile/666260",
    "citation": "Anses. 2025. Table de composition nutritionnelle des aliments Ciqual. doi:10.57745/RDMHWY"
   },
+  "mcd_pt": {
+   "name": "McDonald's Portugal — informação nutricional publicada",
+   "license": "Valores publicados pelo fabricante na ficha do produto; citados com a data de consulta",
+   "url": "https://www.mcdonalds.pt/produtos/informacao-nutricional-alergenios",
+   "citation": "McDonald's Portugal. Informação nutricional do produto, consultada em 2026-11-07."
+  },
   "taco": {
    "name": "TACO 4.ª edição — NEPA/UNICAMP (Brasil)",
    "license": "Reprodução permitida desde que citada a fonte",
@@ -20,7 +26,7 @@
   }
  },
  "curatedList": "tool/nutrition/foods_pt.tsv",
- "curatedSha256": "f51f1b6559726c3cfb3866566860bc55480a7ee38abc61ff46b28f5e3c1ea314",
+ "curatedSha256": "2ddde25270f636d2dc64753c7e15c4b1758fb584e2c27de0b2e851cf45376625",
  "portionNote": "Typical portions are VYRO estimates for suggestions; users confirm grams.",
  "foods": [
   {
@@ -5666,6 +5672,66 @@
     "sanduíche mcchicken",
     "sandes mcchicken",
     "hambúrguer mcchicken"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "mccrispy",
+   "namePt": "McCrispy",
+   "nameEn": "McCrispy",
+   "category": "pratos",
+   "region": "pt",
+   "source": "mcd_pt",
+   "sourceRef": "mccrispy",
+   "sourceLabel": "McDonald's Portugal, McCrispy (ficha do produto, 2026-11-07)",
+   "kcal": 240.9,
+   "protein": 10.23,
+   "carbs": 29.55,
+   "fat": 8.71,
+   "fiber": 0.0,
+   "portionG": 264.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 McCrispy",
+   "portionEn": "1 McCrispy",
+   "aliases": [
+    "mccrispy",
+    "mc crispy",
+    "mc crispy original",
+    "mcdonald's mccrispy",
+    "mcdonalds mccrispy",
+    "sandes mccrispy",
+    "hambúrguer mccrispy",
+    "mccrispy mcdonald's"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "mccrispy_hot_honey",
+   "namePt": "McCrispy Hot Honey",
+   "nameEn": "McCrispy Hot Honey",
+   "category": "pratos",
+   "region": "pt",
+   "source": "mcd_pt",
+   "sourceRef": "mccrispy-hot-honey",
+   "sourceLabel": "McDonald's Portugal, McCrispy Hot Honey (ficha do produto, 2026-11-07)",
+   "kcal": 293.2,
+   "protein": 11.56,
+   "carbs": 29.25,
+   "fat": 14.29,
+   "fiber": 0.0,
+   "portionG": 294.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 McCrispy Hot Honey",
+   "portionEn": "1 McCrispy Hot Honey",
+   "aliases": [
+    "mccrispy hot honey",
+    "mc crispy hot honey",
+    "mcdonald's mccrispy hot honey",
+    "mcdonalds mccrispy hot honey",
+    "sandes mccrispy hot honey",
+    "hambúrguer mccrispy hot honey",
+    "hot honey chicken sandwich",
+    "hot honey crispy chicken"
    ],
    "visionLabels": []
   },
