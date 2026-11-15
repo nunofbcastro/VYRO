@@ -11,7 +11,7 @@ alimentos descarregadas legalmente.
 foods_pt.tsv (curado à mão: nomes PT/EN, fonte + referência, porção, unidades da porção, aliases, etiquetas de imagem)
         │
         ▼  build_food_db.py  (descarrega/usa build/usda, build/ciqual, build/taco)
-assets/nutrition/foods.json  (204 alimentos, valores por 100 g, fonte de cada um)
+assets/nutrition/foods.json  (484 alimentos, valores por 100 g, fonte de cada um)
         │
         ▼  FoodDatabase.load()  (lib/features/nutrition/data/food_database.dart)
 fotografia, assistente, diário  →  kcal = gramas × kcal/100 g ÷ 100
@@ -35,7 +35,8 @@ Citações (também guardadas em `foods.json → sources`):
 - U.S. Department of Agriculture, Agricultural Research Service. FoodData Central, SR Legacy (2018).
 - Anses. 2025. Table de composition nutritionnelle des aliments Ciqual. doi:10.57745/RDMHWY
 - NEPA/UNICAMP. Tabela Brasileira de Composição de Alimentos – TACO. 4. ed. Campinas, 2011.
-- McDonald's Portugal. Informação nutricional do McCrispy e do McCrispy Hot Honey, consultada em 7 de novembro de 2026. A fibra não vem na ficha, por isso fica a 0. O peso da porção é o da unidade de consumo publicada.
+- McDonald's Portugal. PDF do balcão de 27 de outubro de 2026 e fichas de produto consultadas em 14 de novembro de 2026 (Big Mac, Cheeseburger, Hamburger, Double Cheeseburger, Big Tasty Single e Double, CBO, McRoyal Bacon e Double, McCrispy Cheddar Bacon, 10 Chicken McNuggets, McChicken, McCrispy, McCrispy Hot Honey). O Big Tasty vem da ficha de produto: a linha do PDF não reconciliava kJ com kcal. Quando a ficha não traz fibra, fica a 0.
+- KFC Portugal. Tabela nutricional de 15 de abril de 2025 (Clássica Zinger Single e Tower Zinger Single). O peso é o quociente entre a unidade de consumo e os valores por 100 g, arredondado ao grama. A tabela não traz fibra.
 
 A app mostra esta atribuição no ecrã de fotografia (`nutritionSourcesNote`)
 e cada registo do diário guarda a origem em `food_entries.source`
@@ -62,7 +63,7 @@ polvo, chouriço, queijo de ovelha, pão caseiro…).
   inválidas são rejeitadas, nunca adivinhadas.
 - Porções (`portion_g`, `portion_pt`) são **estimativas do VYRO** para sugerir
   quantidades. O utilizador confirma sempre as gramas.
-- `portion_units` (coluna opcional, última do TSV; preenchida em 98 dos 204
+- `portion_units` (coluna opcional, última do TSV; preenchida em 378 dos 484
   alimentos) indica quantas peças correspondem a `portion_g`: 3 sardinhas = 120 g
   ⇒ `portion_units = 3`. A app escala a contagem de peças por
   `portion_g × peças ÷ portion_units`. Sem valor, a contagem não multiplica a
@@ -125,15 +126,27 @@ alimento e as gramas.
   USDA SR Legacy 2018-04, CC0; porção = peso da unidade em «food_portion.csv»,
   `portion_units` 1, categoria `pratos`). Ficam com o nome da marca e não
   entram na regra «sanduíche + pão» como sanduíche genérica:
-  - `big_mac`, 219 g, «McDONALD'S, BIG MAC» (170720), 257 kcal/100 g.
-  - `mcdonalds_cheeseburger`, 119 g, «McDONALD'S, Cheeseburger» (170320), 263 kcal/100 g.
-  - `mcdonalds_hamburger`, 95 g, «McDONALD'S, Hamburger» (170717), 264 kcal/100 g.
+  - `big_mac`, 236 g, ficha McDonald's Portugal (PDF de 2026-10-27): 544 kcal, 27 g de proteína, 42 g de hidratos e 29 g de gordura. Substitui a linha americana do SR Legacy (170720, 219 g).
+  - `mcdonalds_cheeseburger`, 121 g, ficha McDonald's Portugal (PDF de 2026-10-27): 306 kcal. Substitui o SR Legacy (170320, 119 g).
+  - `mcdonalds_hamburger`, 106 g, ficha McDonald's Portugal (PDF de 2026-10-27): 258 kcal. Substitui o SR Legacy (170717, 95 g).
+  - `double_cheeseburger`, 179 g, 445 kcal. O nome «double cheeseburger» deixa de cair no cheeseburger genérico.
+  - `big_tasty`, 282 g, 638 kcal; `big_tasty_double`, 391 g, 957 kcal (fichas de produto, 2026-11-14).
+  - `cbo`, 268 g, 772 kcal; `mcroyal_bacon`, 187 g, 589 kcal; `mcroyal_bacon_double`, 286 g, 875 kcal; `mccrispy_cheddar_bacon`, 268 g, 790 kcal.
+  - `chicken_mcnuggets`, 181 g = 10 peças (437 kcal). A contagem da foto é em peças: 10 peças dão a caixa. «nuggets» sem marca continua na linha genérica.
+  - `kfc_zinger`, 224 g, 474 kcal; `kfc_tower_zinger`, 221 g, 494 kcal, mais o resto do menu de sandes, wraps e acompanhamentos do PDF do KFC Portugal (15 de abril de 2025) cuja linha por unidade concorda com a linha por 100 g e com os kJ.
+  - Burger King Portugal (`bk_pt`, menu do site em 14 de novembro de 2026): `whopper`, 289 g, 643 kcal, no lugar da linha americana (170727, 291 g). Entram também os artigos cuja ficha nutricional é única (Big King, Steakhouse, Long Chicken Spicy, nuggets, asas, batatas). Ficam de fora os artigos em que o site repete o bloco de outro produto — por exemplo o Whopper com queijo, que no menu português tem os mesmos números do Whopper simples e por isso continua na linha USDA (170728, 316 g).
+  - Subway Portugal (`subway_pt`, PDF de janeiro de 2025): subs de 15 cm em que os kJ, as kcal e a coluna por 100 g concordam (almôndegas 306 g / 479 kcal, atum, BLT, B.M.T., frango tikka, e as outras que passam a mesma verificação). Uma Sub30 é o dobro da de 15 cm, como a própria tabela indica.
+  - Pans & Company (`pans_pt`, tabela válida para Portugal, impressa em 12 de novembro de 2026): sandes, empanadas e pastelaria em que o peso calculado a partir das kcal por 100 g fecha com a unidade. Bebidas e linhas com kJ incoerentes ficam de fora.
+  - McDonald's Portugal (`mcd_pt`) passa a cobrir o menu completo do balcão (cerca de 80 linhas): McFlurry e Sundae, McMuffin e padaria, Snack Wrap, McNuggets, saladas, batatas, Big Arch e as opções sem glúten. Os nomes genéricos («batatas fritas», «torrada com manteiga», «panquecas», «croissant simples», «tosta mista») ficam na linha genérica e não levam alias da McDonald's.
+  - Domino's Pizza Portugal (`dominos_pt`, declaração nutricional com última atualização em janeiro de 2020): fatias das gamas Média e Grande (Original e Italiana), mais pão de alho, pão de queijo, batatas rústicas, kickers, tiras, delícias de queijo e três sobremesas. Uma fatia pesa o quociente entre as kcal da porção e as kcal por 100 g. Só entram linhas em que os kJ concordam com as kcal em 3%. A folha de 2023, só por 100 g, não permite pesos e não foi usada.
+  - Pizza Hut Portugal (`pizzahut_pt`, tabela impressa em 2 de novembro de 2026): fatias, pedaços, Super Fatias, PANxPAN e entradas. As saladas chamam-se «Salada <Nome> (Pizza Hut)». Linhas com kJ, kcal, Atwater ou coluna por 100 g discordantes, molhos e doces ficam de fora.
+  - As marcas de pizza não entram nas regras de «sanduíche de marca» (`burger_rules.dart`, `region_food_vision.dart`): uma pizza não é uma sandes e não deve competir com um hambúrguer ou frango na mesma foto.
   - `quarter_pounder_cheese`, 199 g, «McDONALD'S, QUARTER POUNDER with Cheese» (170719), 258 kcal/100 g.
   - `filet_o_fish`, 134 g, «McDONALD'S, FILET-O-FISH» (170319), 282 kcal/100 g (peixe, não é hambúrguer nem frango).
-  - `mcchicken`, 131 g, «McDONALD'S, McCHICKEN Sandwich» (173305), 273 kcal/100 g.
+  - `mcchicken`, 182 g, ficha McDonald's Portugal (2026-11-14): 419 kcal, 19 g de proteína, 41 g de hidratos e 19 g de gordura na sandes (230,2 kcal/100 g). Até à 0.6.15 usava a linha americana do SR Legacy (173305, 131 g, 358 kcal), mais pequena do que a sandes vendida em Portugal.
   - `mccrispy`, 264 g, ficha McDonald's Portugal (2026-11-07): 636 kcal, 27 g de proteína, 78 g de hidratos e 23 g de gordura na sandes (240,9 kcal/100 g). Não existe no SR Legacy.
   - `mccrispy_hot_honey`, 294 g, ficha McDonald's Portugal (2026-11-07): 862 kcal, 34 g de proteína, 86 g de hidratos e 42 g de gordura na sandes (293,2 kcal/100 g). Não existe no SR Legacy.
-  - `whopper`, 291 g, «BURGER KING, WHOPPER, no cheese» (170727), 233 kcal/100 g.
+  - `whopper`, 289 g, ficha Burger King Portugal (14 de novembro de 2026): 643 kcal. Substitui a linha americana do SR Legacy (170727, 291 g).
   - `whopper_cheese`, 316 g, «BURGER KING, WHOPPER, with cheese» (170728), 250 kcal/100 g.
   - `bk_chicken_sandwich`, 199 g, «BURGER KING, Original Chicken Sandwich» (170331), 286 kcal/100 g.
   Recebem os nomes de marca em inglês e português («big mac», «mcchicken»,

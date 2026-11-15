@@ -182,7 +182,7 @@ const Map<String, String> vyroStringsDe = <String, String>{
   'photoEstimateNote':
       'Lebensmittel und Gramm sind Schätzungen aus dem Foto: passe sie vor dem Speichern an. Kalorien werden als Gramm × kcal/100 g berechnet.',
   'nutritionSourcesNote':
-      'Werte pro 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) und, beim McCrispy, die Angaben von McDonald\'s Portugal.',
+      'Werte pro 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) und Angaben von McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s und Pizza Hut in Portugal.',
   'photoSourceSystem': 'KI des Telefons',
   'photoSourceRegions': 'Offline-Erkennung (wenig zuverlässig)',
   'offlineNoFood':
@@ -707,6 +707,16 @@ const Map<String, String> vyroStringsDe = <String, String>{
   'cableMachine': 'Kabelzug',
   'bodyweight': 'Körpergewicht',
   'bodyweightOrDumbbells': 'Körpergewicht oder Kurzhanteln',
+  'coachLastTime': 'Letztes Mal: {sets}',
+  'coachRaiseKg': 'Du hast in jedem Satz {n} geschafft. Probiere heute {kg}.',
+  'coachRaiseNoKg':
+      'Du hast in jedem Satz {n} geschafft. Erhöhe die Last oder mach die Übung schwerer.',
+  'coachKeepKg':
+      'Bleib bei {kg} und versuche eine Wiederholung mehr pro Satz, bis {n}.',
+  'coachKeepNoKg': 'Versuche eine Wiederholung mehr pro Satz, bis {n}.',
+  'coachHoldRaise':
+      'Du hast in jedem Satz {n} s gehalten. Füge 5 s hinzu oder mach die Übung schwerer.',
+  'coachHoldKeep': 'Versuche, in jedem Satz {n} s zu halten.',
   'completeSetsHint':
       'Markiere die abgeschlossenen Sätze, um die Einheit zu beenden.',
   'step': 'Schritt',

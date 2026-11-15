@@ -652,6 +652,23 @@ void main() {
           final (sessionId, title) = (await tester.runAsync(() async {
             final plan = await repo.createPlanFromProfile();
             final day = plan.days.first.day;
+            // An earlier completed session, so the "last time" hints show:
+            // the first exercise reached its target, the others fell short.
+            final before = await repo.startSession(
+              dayId: day.id,
+              workoutName: day.namePt,
+            );
+            final earlier = await repo.watchSets(before).first;
+            for (final set in earlier) {
+              final top = set.exerciseKey == earlier.first.exerciseKey;
+              await repo.updateSet(
+                id: set.id,
+                reps: top ? set.targetReps : set.targetReps - 2,
+                weightKg: top ? 20 : 12.5,
+                completed: true,
+              );
+            }
+            await repo.finishSession(before);
             final id = await repo.startSession(
               dayId: day.id,
               workoutName: day.namePt,

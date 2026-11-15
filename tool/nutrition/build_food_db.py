@@ -19,10 +19,36 @@ Sources (downloaded into build/, never committed):
          ref = alim_code.
   taco   TACO 4.ª edição (NEPA/UNICAMP, Brasil) — reproduction allowed with
          citation. ref = food number. Needs `pip install pypdf` (build only).
-  mcd_pt McDonald's Portugal published nutrition label. The SR Legacy table
-         has no McCrispy. ref = id in tool/nutrition/manufacturer_pt.json.
-         Values are the published sandwich totals, converted to per 100 g.
-         Fibre is not on that label, so it is stored as 0.
+  mcd_pt McDonald's Portugal published nutrition (product page or the
+         counter PDF). ref = id in tool/nutrition/manufacturer_pt.json.
+         Values are the published unit totals, converted to per 100 g.
+         Fibre is stored when the table gives it, otherwise 0.
+  kfc_pt KFC Portugal nutrition PDF (15 Apr 2025), same file and shape.
+         The unit weight is derived from the per-unit row and the per-100 g
+         row (they agree), then rounded to the nearest gram.
+  bk_pt  Burger King Portugal menu nutrition published on burgerking.pt
+         (Sanity dataset prod_bk_pt, consulted 14 Nov 2026). Same file.
+         Rows whose nutrition block is a copy of a different product are
+         left out. The Whopper is the named row (kJ agrees with kcal).
+  subway_pt Subway Portugal PDF (Jan 2025). 15 cm subs include bread,
+         protein, vegetables and the standard sauce. A row is kept only when
+         kJ, kcal and the per-100 g columns agree.
+  pans_pt Pans & Company table for Portugal (vivabem.pt, printed 12 Nov
+         2026). Unit weight is unit kcal / per-100 g kcal. Drinks are not
+         imported. Rows whose kJ and kcal disagree are left out.
+  dominos_pt Domino's Pizza Portugal nutrition declaration (Jan 2020 table,
+         PDF on the official Portuguese market cache). Unit = 1 slice or a
+         sale portion; slice weight = portion kcal / per-100 g kcal. Only rows
+         whose kJ agrees with kcal within 3% are kept (checked when the rows
+         were imported; the kJ column is not stored in the JSON).
+  pizzahut_pt Pizza Hut Portugal "Informação nutricional" table (printed
+         2 Nov 2026, vivabem.pt). Unit = 1 slice, piece, unit or serving;
+         unit weight = portion kcal / per-100 g kcal. Rows whose kJ, kcal,
+         Atwater or per-100 g columns disagree are left out. Salads are
+         named "Salada <Name> (Pizza Hut)".
+
+Brand sources (BRAND_SOURCES) share one shape in manufacturer_pt.json: the
+published unit totals (grams, kcal, macros), converted to per 100 g.
 
 Per 100 g: energy (kcal), protein, carbohydrate, fat, fibre. Ciqual "traces"
 → 0, "< x" → x/2 (documented convention); missing energy/macros fail.
@@ -71,10 +97,56 @@ SOURCES = {
         'name': "McDonald's Portugal — informação nutricional publicada",
         'license': 'Valores publicados pelo fabricante na ficha do produto; citados com a data de consulta',
         'url': 'https://www.mcdonalds.pt/produtos/informacao-nutricional-alergenios',
-        'citation': "McDonald's Portugal. Informação nutricional do produto, consultada em 2026-11-07.",
+        'citation': "McDonald's Portugal. Informação nutricional do balcão (PDF de 27 de outubro de 2026) e fichas de produto consultadas em 14 de novembro de 2026. O Big Tasty vem da ficha de produto: a linha do PDF não reconciliava kJ com kcal.",
+        'file': MANUFACTURER,
+    },
+    'kfc_pt': {
+        'name': 'KFC Portugal — tabela nutricional publicada',
+        'license': 'Valores publicados pelo fabricante; citados com a data da tabela',
+        'url': 'https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf',
+        'citation': 'KFC Portugal. Tabela nutricional de 15 de abril de 2025. O peso da unidade é o quociente entre a linha «por unidade de consumo» e a linha «por 100 g», arredondado ao grama.',
+        'file': MANUFACTURER,
+    },
+    'bk_pt': {
+        'name': 'Burger King Portugal — informação nutricional do menu',
+        'license': 'Valores publicados pelo fabricante no menu do site; citados com a data de consulta',
+        'url': 'https://www.burgerking.pt/',
+        'citation': 'Burger King Portugal. Informação nutricional do menu publicado no site (consultada em 14 de novembro de 2026). Ficaram de fora os artigos cujo bloco nutricional é uma cópia de outro produto. O Whopper é a linha com esse nome: os kJ batem certo com as kcal.',
+        'file': MANUFACTURER,
+    },
+    'subway_pt': {
+        'name': 'Subway Portugal — informação nutricional (janeiro de 2025)',
+        'license': 'Valores publicados pelo fabricante; citados com a data da tabela',
+        'url': 'https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf',
+        'citation': 'Subway Portugal. Informação nutricional de janeiro de 2025. A Sub de 15 cm inclui pão, proteína, vegetais e molhos da receita padrão. Só entram linhas em que os kJ, as kcal e a coluna por 100 g concordam.',
+        'file': MANUFACTURER,
+    },
+    'pizzahut_pt': {
+        'name': 'Pizza Hut Portugal — tabela nutricional',
+        'license': 'Valores publicados para os restaurantes em Portugal; citados com a data de impressão',
+        'url': 'https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf',
+        'citation': 'Pizza Hut Portugal. Informação nutricional, tabela válida para Portugal (impressa em 2 de novembro de 2026, documento PSA IC 001ph.47). O peso da unidade é o quociente entre a energia da porção e a energia por 100 g. Ficaram de fora as linhas em que os kJ, as kcal, o cálculo de Atwater ou a coluna por 100 g não concordam, os molhos e os doces.',
+        'file': MANUFACTURER,
+    },
+    'dominos_pt': {
+        'name': "Domino's Pizza Portugal — declaração nutricional",
+        'license': 'Valores publicados pelo fabricante para o mercado português; citados com a data da tabela',
+        'url': 'https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf',
+        'citation': "Domino's Pizza Portugal. Declaração nutricional, valores médios da receita por 100 g e por porção, última atualização em janeiro de 2020 (consultada em 15 de novembro de 2026). A unidade é a fatia ou a dose de venda; o peso da fatia é o quociente entre as kcal por porção e as kcal por 100 g. Só entram linhas em que os kJ concordam com as kcal em 3%. A tabela de 2023, só por 100 g, não permite pesos por porção e não foi usada.",
+        'file': MANUFACTURER,
+    },
+    'pans_pt': {
+        'name': 'Pans & Company — tabela nutricional para Portugal',
+        'license': 'Valores publicados para os restaurantes em Portugal; citados com a data de impressão',
+        'url': 'https://www.vivabem.pt/tabelas/tabela_pans_company.pdf',
+        'citation': 'Pans & Company. Tabela nutricional válida para Portugal (impressa em 12 de novembro de 2026, documento PSA IC 001pac.56). O peso da unidade é o quociente entre a energia da unidade e a energia por 100 g. Bebidas e linhas em que os kJ não concordam com as kcal ficaram de fora.',
         'file': MANUFACTURER,
     },
 }
+
+
+# Brand chains whose rows are published unit totals (see load_brand_pt).
+BRAND_SOURCES = {'mcd_pt', 'kfc_pt', 'bk_pt', 'subway_pt', 'pans_pt', 'dominos_pt', 'pizzahut_pt'}
 
 
 def download(source):
@@ -203,8 +275,8 @@ def load_taco(refs):
     return out
 
 
-def load_mcd_pt(refs):
-    """Published sandwich totals → per 100 g. portion_g in the TSV must match."""
+def load_brand_pt(refs):
+    """Published unit totals → per 100 g. portion_g in the TSV must match."""
     products = json.loads(MANUFACTURER.read_text(encoding='utf-8'))
     out = {}
     for ref in refs:
@@ -224,14 +296,25 @@ def load_mcd_pt(refs):
         out[ref] = {
             'id': ref,
             'label': row['label'],
-            'fiber': 0.0,
+            'fiber': float(row.get('fiber') or 0) * 100 / grams,
             **per100,
             'grams': grams,
         }
     return out
 
 
-LOADERS = {'usda': load_usda, 'ciqual': load_ciqual, 'taco': load_taco, 'mcd_pt': load_mcd_pt}
+LOADERS = {
+    'usda': load_usda,
+    'ciqual': load_ciqual,
+    'taco': load_taco,
+    'mcd_pt': load_brand_pt,
+    'kfc_pt': load_brand_pt,
+    'bk_pt': load_brand_pt,
+    'subway_pt': load_brand_pt,
+    'pans_pt': load_brand_pt,
+    'dominos_pt': load_brand_pt,
+    'pizzahut_pt': load_brand_pt,
+}
 
 
 def build():
@@ -252,7 +335,7 @@ def build():
         if missing:
             problems.append(f"{row['key']}: missing {missing} in {row['source']}")
             continue
-        if row['source'] == 'mcd_pt' and float(row['portion_g']) != v['grams']:
+        if row['source'] in BRAND_SOURCES and float(row['portion_g']) != v['grams']:
             problems.append(
                 f"{row['key']}: portion_g {row['portion_g']} != published grams {v['grams']}"
             )

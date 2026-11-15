@@ -228,7 +228,7 @@ class VyroStrings {
     'photoEstimateNote':
         'Os alimentos e as gramas são estimativas a partir da foto: ajusta antes de guardar. As calorias são calculadas como gramas × kcal/100 g.',
     'nutritionSourcesNote':
-        'Valores por 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) e, no McCrispy, a ficha publicada pela McDonald\'s Portugal.',
+        'Valores por 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) e fichas publicadas pela McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s e Pizza Hut em Portugal.',
     'photoSourceSystem': 'IA do telemóvel',
     'photoSourceRegions': 'Reconhecimento offline (pouco fiável)',
     'offlineNoFood':
@@ -745,6 +745,15 @@ class VyroStrings {
     'cableMachine': 'Máquina de cabos',
     'bodyweight': 'Peso corporal',
     'bodyweightOrDumbbells': 'Peso corporal ou halteres',
+    'coachLastTime': 'Última vez: {sets}',
+    'coachRaiseKg': 'Chegaste a {n} em todas as séries. Experimenta {kg} hoje.',
+    'coachRaiseNoKg':
+        'Chegaste a {n} em todas as séries. Acrescenta carga ou dificulta o exercício.',
+    'coachKeepKg': 'Mantém {kg} e tenta mais uma repetição por série, até {n}.',
+    'coachKeepNoKg': 'Tenta mais uma repetição por série, até {n}.',
+    'coachHoldRaise':
+        'Seguraste {n} s em todas as séries. Acrescenta 5 s ou dificulta o exercício.',
+    'coachHoldKeep': 'Tenta segurar {n} s em todas as séries.',
     'completeSetsHint': 'Marca as séries concluídas para terminar a sessão.',
     'step': 'Passo',
     'of': 'de',
@@ -1370,7 +1379,7 @@ class VyroStrings {
     'photoEstimateNote':
         'Foods and grams are estimates from the photo: adjust before saving. Calories are grams × kcal/100 g.',
     'nutritionSourcesNote':
-        'Values per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) and, for McCrispy, the label published by McDonald\'s Portugal.',
+        'Values per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) and labels published by McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s and Pizza Hut in Portugal.',
     'photoSourceSystem': 'Phone AI',
     'photoSourceRegions': 'Offline recognition (low reliability)',
     'offlineNoFood':
@@ -1875,6 +1884,15 @@ class VyroStrings {
     'cableMachine': 'Cable machine',
     'bodyweight': 'Bodyweight',
     'bodyweightOrDumbbells': 'Bodyweight or dumbbells',
+    'coachLastTime': 'Last time: {sets}',
+    'coachRaiseKg': 'You reached {n} in every set. Try {kg} today.',
+    'coachRaiseNoKg':
+        'You reached {n} in every set. Add load or make the exercise harder.',
+    'coachKeepKg': 'Keep {kg} and aim for one more rep per set, up to {n}.',
+    'coachKeepNoKg': 'Aim for one more rep per set, up to {n}.',
+    'coachHoldRaise':
+        'You held {n} s in every set. Add 5 s or make the exercise harder.',
+    'coachHoldKeep': 'Aim to hold {n} s in every set.',
     'completeSetsHint': 'Mark each completed set to finish the session.',
     'step': 'Step',
     'of': 'of',

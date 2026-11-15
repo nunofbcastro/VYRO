@@ -1,4 +1,13 @@
 {
+  "mcchicken": {
+    "label": "McDonald's Portugal, McChicken (ficha do produto, 2026-11-14)",
+    "url": "https://www.mcdonalds.pt/produtos/mcmenu/sanduiches/mcchicken",
+    "grams": 182,
+    "kcal": 419,
+    "protein": 19,
+    "carbs": 41,
+    "fat": 19
+  },
   "mccrispy": {
     "label": "McDonald's Portugal, McCrispy (ficha do produto, 2026-11-07)",
     "url": "https://www.mcdonalds.pt/produtos/mcmenu/sanduiches/mccrispy",
@@ -16,5 +25,5041 @@
     "protein": 34,
     "carbs": 86,
     "fat": 42
+  },
+  "big-mac": {
+    "label": "McDonald's Portugal, Big Mac (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 236,
+    "kcal": 544,
+    "protein": 27,
+    "carbs": 42,
+    "fat": 29,
+    "fiber": 4
+  },
+  "mcd-cheeseburger": {
+    "label": "McDonald's Portugal, Cheeseburger (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 121,
+    "kcal": 306,
+    "protein": 16,
+    "carbs": 30,
+    "fat": 13,
+    "fiber": 2.3
+  },
+  "mcd-hamburger": {
+    "label": "McDonald's Portugal, Hamburger (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 106,
+    "kcal": 258,
+    "protein": 13,
+    "carbs": 29,
+    "fat": 9,
+    "fiber": 2.3
+  },
+  "double-cheeseburger": {
+    "label": "McDonald's Portugal, Double Cheeseburger (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/produtos/mcmenu/sanduiches/double-cheeseburger",
+    "grams": 179,
+    "kcal": 445,
+    "protein": 28,
+    "carbs": 31,
+    "fat": 23,
+    "fiber": 2.2
+  },
+  "big-tasty-single": {
+    "label": "McDonald's Portugal, Big Tasty Single (ficha do produto, 2026-11-14)",
+    "url": "https://www.mcdonalds.pt/produtos/mcmenu/sanduiches/big-tasty-single",
+    "grams": 282,
+    "kcal": 638,
+    "protein": 34,
+    "carbs": 45,
+    "fat": 35
+  },
+  "big-tasty-double": {
+    "label": "McDonald's Portugal, Big Tasty Double (ficha do produto, 2026-11-14)",
+    "url": "https://www.mcdonalds.pt/produtos/mcmenu/sanduiches/big-tasty-double",
+    "grams": 391,
+    "kcal": 957,
+    "protein": 57,
+    "carbs": 47,
+    "fat": 59
+  },
+  "cbo": {
+    "label": "McDonald's Portugal, CBO (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/produtos/mcmenu/sanduiches/cbo",
+    "grams": 268,
+    "kcal": 772,
+    "protein": 30,
+    "carbs": 65,
+    "fat": 43,
+    "fiber": 4.4
+  },
+  "mcroyal-bacon": {
+    "label": "McDonald's Portugal, McRoyal Bacon (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 187,
+    "kcal": 589,
+    "protein": 32,
+    "carbs": 34,
+    "fat": 35,
+    "fiber": 2.4
+  },
+  "mcroyal-bacon-double": {
+    "label": "McDonald's Portugal, McRoyal Bacon Double (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 286,
+    "kcal": 875,
+    "protein": 55,
+    "carbs": 35,
+    "fat": 57,
+    "fiber": 2.4
+  },
+  "mccrispy-cheddar-bacon": {
+    "label": "McDonald's Portugal, McCrispy Cheddar Bacon (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 268,
+    "kcal": 790,
+    "protein": 42,
+    "carbs": 66,
+    "fat": 39,
+    "fiber": 3
+  },
+  "chicken-mcnuggets-10": {
+    "label": "McDonald's Portugal, 10 Chicken McNuggets (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/produtos/mcmenu/sanduiches/10-chicken-mcnuggets",
+    "grams": 181,
+    "kcal": 437,
+    "protein": 27,
+    "carbs": 34,
+    "fat": 21,
+    "fiber": 1.6
+  },
+  "kfc-classica-zinger": {
+    "label": "KFC Portugal, Clássica Zinger Single (tabela de 2025-04-15)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 224,
+    "kcal": 474,
+    "protein": 28.5,
+    "carbs": 49.5,
+    "fat": 18.9
+  },
+  "kfc-tower-zinger": {
+    "label": "KFC Portugal, Tower Zinger Single (tabela de 2025-04-15)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 221,
+    "kcal": 494,
+    "protein": 30.7,
+    "carbs": 52,
+    "fat": 18.9
+  },
+  "bk-double-cheese": {
+    "label": "Burger King Portugal, Double Cheese",
+    "url": "https://www.burgerking.pt/",
+    "grams": 152,
+    "kcal": 387.0,
+    "protein": 23.2,
+    "carbs": 24.8,
+    "fat": 21.3,
+    "fiber": 2.2
+  },
+  "bk-whopper": {
+    "label": "Burger King Portugal, Whopper",
+    "url": "https://www.burgerking.pt/",
+    "grams": 289,
+    "kcal": 643.0,
+    "protein": 30.4,
+    "carbs": 48.9,
+    "fat": 36.0,
+    "fiber": 5.2
+  },
+  "bk-cheeseburger": {
+    "label": "Burger King Portugal, Cheeseburger",
+    "url": "https://www.burgerking.pt/",
+    "grams": 111,
+    "kcal": 267.0,
+    "protein": 13.9,
+    "carbs": 24.0,
+    "fat": 12.4,
+    "fiber": 2.1
+  },
+  "bk-burger-sem-gluten": {
+    "label": "Burger King Portugal, Burger Sem Glúten",
+    "url": "https://www.burgerking.pt/",
+    "grams": 165,
+    "kcal": 456.0,
+    "protein": 21.0,
+    "carbs": 45.0,
+    "fat": 21.0,
+    "fiber": 1.9
+  },
+  "bk-whopper-vegetal": {
+    "label": "Burger King Portugal, Whopper Vegetal",
+    "url": "https://www.burgerking.pt/",
+    "grams": 291,
+    "kcal": 578.0,
+    "protein": 26.4,
+    "carbs": 50.7,
+    "fat": 27.8,
+    "fiber": 12.2
+  },
+  "bk-full-flame-crispy-chicken": {
+    "label": "Burger King Portugal, Full Flame Crispy Chicken",
+    "url": "https://www.burgerking.pt/",
+    "grams": 258,
+    "kcal": 839.0,
+    "protein": 33.8,
+    "carbs": 69.6,
+    "fat": 46.8,
+    "fiber": 3.0
+  },
+  "bk-steakhouse": {
+    "label": "Burger King Portugal, Steakhouse",
+    "url": "https://www.burgerking.pt/",
+    "grams": 292,
+    "kcal": 707.0,
+    "protein": 36.2,
+    "carbs": 54.2,
+    "fat": 38.4,
+    "fiber": 5.6
+  },
+  "bk-cbk": {
+    "label": "Burger King Portugal, CBK",
+    "url": "https://www.burgerking.pt/",
+    "grams": 255,
+    "kcal": 787.0,
+    "protein": 29.6,
+    "carbs": 62.7,
+    "fat": 45.2,
+    "fiber": 5.1
+  },
+  "bk-big-king-frango": {
+    "label": "Burger King Portugal, Big King Frango",
+    "url": "https://www.burgerking.pt/",
+    "grams": 255,
+    "kcal": 640.0,
+    "protein": 19.85,
+    "carbs": 57.1,
+    "fat": 36.0,
+    "fiber": 5.1
+  },
+  "bk-nuggets-x6": {
+    "label": "Burger King Portugal, Nuggets x6",
+    "url": "https://www.burgerking.pt/",
+    "grams": 108,
+    "kcal": 271.0,
+    "protein": 15.1,
+    "carbs": 19.4,
+    "fat": 14.0,
+    "fiber": 1.0
+  },
+  "bk-pump-king-crispy-chicken": {
+    "label": "Burger King Portugal, Pump-King Crispy Chicken",
+    "url": "https://www.burgerking.pt/",
+    "grams": 250,
+    "kcal": 874.0,
+    "protein": 37.3,
+    "carbs": 66.3,
+    "fat": 51.1,
+    "fiber": 3.5
+  },
+  "bk-bucket-nuggets-vegetal-x24": {
+    "label": "Burger King Portugal, Bucket Nuggets Vegetal x24",
+    "url": "https://www.burgerking.pt/",
+    "grams": 507,
+    "kcal": 1186.0,
+    "protein": 32.18,
+    "carbs": 99.4,
+    "fat": 68.64,
+    "fiber": 21.17
+  },
+  "bk-crispy-chicken": {
+    "label": "Burger King Portugal, Crispy Chicken",
+    "url": "https://www.burgerking.pt/",
+    "grams": 184,
+    "kcal": 506.0,
+    "protein": 16.0,
+    "carbs": 36.1,
+    "fat": 32.3,
+    "fiber": 3.3
+  },
+  "bk-double-whopper-spicy": {
+    "label": "Burger King Portugal, Double Whopper Spicy",
+    "url": "https://www.burgerking.pt/",
+    "grams": 393,
+    "kcal": 895.0,
+    "protein": 53.8,
+    "carbs": 57.0,
+    "fat": 53.4,
+    "fiber": 7.2
+  },
+  "bk-big-king-xxl": {
+    "label": "Burger King Portugal, Big King XXL",
+    "url": "https://www.burgerking.pt/",
+    "grams": 379,
+    "kcal": 980.0,
+    "protein": 59.4,
+    "carbs": 50.7,
+    "fat": 60.2,
+    "fiber": 5.2
+  },
+  "bk-asas-de-frango-x3": {
+    "label": "Burger King Portugal, Asas de Frango x3",
+    "url": "https://www.burgerking.pt/",
+    "grams": 117,
+    "kcal": 238.0,
+    "protein": 24.8,
+    "carbs": 1.4,
+    "fat": 15.0,
+    "fiber": 0.6
+  },
+  "bk-nuggets-x5": {
+    "label": "Burger King Portugal, Nuggets x5",
+    "url": "https://www.burgerking.pt/",
+    "grams": 72,
+    "kcal": 181.0,
+    "protein": 10.1,
+    "carbs": 13.0,
+    "fat": 9.4,
+    "fiber": 0.6
+  },
+  "bk-full-flame": {
+    "label": "Burger King Portugal, Full Flame",
+    "url": "https://www.burgerking.pt/",
+    "grams": 258,
+    "kcal": 875.0,
+    "protein": 42.4,
+    "carbs": 57.8,
+    "fat": 52.9,
+    "fiber": 2.1
+  },
+  "bk-long-vegetal": {
+    "label": "Burger King Portugal, Long Vegetal",
+    "url": "https://www.burgerking.pt/",
+    "grams": 212,
+    "kcal": 612.0,
+    "protein": 16.5,
+    "carbs": 53.2,
+    "fat": 35.1,
+    "fiber": 7.8
+  },
+  "bk-long-chicken-spicy": {
+    "label": "Burger King Portugal, Long Chicken Spicy",
+    "url": "https://www.burgerking.pt/",
+    "grams": 217,
+    "kcal": 540.0,
+    "protein": 23.4,
+    "carbs": 54.6,
+    "fat": 25.1,
+    "fiber": 2.0
+  },
+  "bk-western-xxl": {
+    "label": "Burger King Portugal, Western XXL",
+    "url": "https://www.burgerking.pt/",
+    "grams": 210,
+    "kcal": 584.0,
+    "protein": 30.6,
+    "carbs": 42.2,
+    "fat": 31.1,
+    "fiber": 3.4
+  },
+  "bk-bucket-nuggets-x24": {
+    "label": "Burger King Portugal, Bucket Nuggets x24",
+    "url": "https://www.burgerking.pt/",
+    "grams": 483,
+    "kcal": 1201.19,
+    "protein": 49.61,
+    "carbs": 99.02,
+    "fat": 66.07,
+    "fiber": 3.95
+  },
+  "bk-whopper-spicy-vegetal": {
+    "label": "Burger King Portugal, Whopper Spicy Vegetal",
+    "url": "https://www.burgerking.pt/",
+    "grams": 305,
+    "kcal": 579.0,
+    "protein": 28.3,
+    "carbs": 58.4,
+    "fat": 26.5,
+    "fiber": 14.3
+  },
+  "bk-whopper-spicy": {
+    "label": "Burger King Portugal, Whopper Spicy",
+    "url": "https://www.burgerking.pt/",
+    "grams": 304,
+    "kcal": 645.0,
+    "protein": 32.4,
+    "carbs": 56.6,
+    "fat": 34.7,
+    "fiber": 7.2
+  },
+  "bk-double-full-flame": {
+    "label": "Burger King Portugal, Double Full Flame",
+    "url": "https://www.burgerking.pt/",
+    "grams": 347,
+    "kcal": 1125.0,
+    "protein": 63.7,
+    "carbs": 58.3,
+    "fat": 71.6,
+    "fiber": 2.1
+  },
+  "bk-double-cheese-bacon-xxl": {
+    "label": "Burger King Portugal, Double Cheese Bacon XXL",
+    "url": "https://www.burgerking.pt/",
+    "grams": 362,
+    "kcal": 968.0,
+    "protein": 64.6,
+    "carbs": 49.5,
+    "fat": 56.9,
+    "fiber": 5.1
+  },
+  "bk-cheeseburger-sem-gluten": {
+    "label": "Burger King Portugal, Cheeseburger Sem Glúten",
+    "url": "https://www.burgerking.pt/",
+    "grams": 187,
+    "kcal": 531.0,
+    "protein": 25.0,
+    "carbs": 46.0,
+    "fat": 27.0,
+    "fiber": 2.1
+  },
+  "bk-chicken-wrap": {
+    "label": "Burger King Portugal, Chicken Wrap",
+    "url": "https://www.burgerking.pt/",
+    "grams": 210,
+    "kcal": 548.0,
+    "protein": 18.0,
+    "carbs": 47.0,
+    "fat": 31.0,
+    "fiber": 3.1
+  },
+  "bk-king-nuggets-x9": {
+    "label": "Burger King Portugal, King Nuggets x9",
+    "url": "https://www.burgerking.pt/",
+    "grams": 162,
+    "kcal": 407.0,
+    "protein": 22.7,
+    "carbs": 29.2,
+    "fat": 21.1,
+    "fiber": 1.5
+  },
+  "bk-nuggets-x3": {
+    "label": "Burger King Portugal, Nuggets x3",
+    "url": "https://www.burgerking.pt/",
+    "grams": 54,
+    "kcal": 136.0,
+    "protein": 7.6,
+    "carbs": 9.7,
+    "fat": 7.0,
+    "fiber": 0.5
+  },
+  "bk-double-full-flame-crispy-chicken": {
+    "label": "Burger King Portugal, Double Full Flame Crispy Chicken",
+    "url": "https://www.burgerking.pt/",
+    "grams": 346,
+    "kcal": 1052.0,
+    "protein": 46.4,
+    "carbs": 81.8,
+    "fat": 59.4,
+    "fiber": 3.8
+  },
+  "bk-big-king-bacon-frango": {
+    "label": "Burger King Portugal, Big King Bacon Frango",
+    "url": "https://www.burgerking.pt/",
+    "grams": 262,
+    "kcal": 670.0,
+    "protein": 22.45,
+    "carbs": 57.4,
+    "fat": 38.0,
+    "fiber": 5.1
+  },
+  "bk-asas-de-frango-x6": {
+    "label": "Burger King Portugal, Asas de Frango x6",
+    "url": "https://www.burgerking.pt/",
+    "grams": 234,
+    "kcal": 478.0,
+    "protein": 49.5,
+    "carbs": 2.9,
+    "fat": 30.0,
+    "fiber": 1.2
+  },
+  "bk-double-whopper": {
+    "label": "Burger King Portugal, Double Whopper",
+    "url": "https://www.burgerking.pt/",
+    "grams": 378,
+    "kcal": 893.0,
+    "protein": 51.7,
+    "carbs": 49.3,
+    "fat": 54.7,
+    "fiber": 5.2
+  },
+  "bk-aros-de-cebola-x7": {
+    "label": "Burger King Portugal, Aros de Cebola x7",
+    "url": "https://www.burgerking.pt/",
+    "grams": 59,
+    "kcal": 142.0,
+    "protein": 2.3,
+    "carbs": 18.0,
+    "fat": 6.8,
+    "fiber": 0.5
+  },
+  "bk-aros-de-cebola-x13": {
+    "label": "Burger King Portugal, Aros de Cebola x13",
+    "url": "https://www.burgerking.pt/",
+    "grams": 153,
+    "kcal": 370.0,
+    "protein": 6.0,
+    "carbs": 46.0,
+    "fat": 18.0,
+    "fiber": 0.8
+  },
+  "bk-aros-de-cebola-x10": {
+    "label": "Burger King Portugal, Aros de Cebola x10",
+    "url": "https://www.burgerking.pt/",
+    "grams": 82,
+    "kcal": 199.0,
+    "protein": 3.2,
+    "carbs": 25.0,
+    "fat": 9.6,
+    "fiber": 0.5
+  },
+  "bk-triple-whopper": {
+    "label": "Burger King Portugal, Triple Whopper",
+    "url": "https://www.burgerking.pt/",
+    "grams": 467,
+    "kcal": 1143.0,
+    "protein": 73.0,
+    "carbs": 49.8,
+    "fat": 73.3,
+    "fiber": 5.2
+  },
+  "bk-double-cheeseburger-bbq": {
+    "label": "Burger King Portugal, Double Cheeseburger BBQ",
+    "url": "https://www.burgerking.pt/",
+    "grams": 151,
+    "kcal": 390.0,
+    "protein": 23.0,
+    "carbs": 26.1,
+    "fat": 21.3,
+    "fiber": 2.1
+  },
+  "bk-chicken-burger": {
+    "label": "Burger King Portugal, Chicken Burger",
+    "url": "https://www.burgerking.pt/",
+    "grams": 144,
+    "kcal": 443.0,
+    "protein": 10.8,
+    "carbs": 34.3,
+    "fat": 28.7,
+    "fiber": 2.7
+  },
+  "bk-batata-supreme-gigante": {
+    "label": "Burger King Portugal, Batata Supreme Gigante",
+    "url": "https://www.burgerking.pt/",
+    "grams": 289,
+    "kcal": 636.21,
+    "protein": 8.09,
+    "carbs": 65.2,
+    "fat": 36.04,
+    "fiber": 7.96
+  },
+  "bk-bucket-6-chili-bites-6-nuggets-4-asas-de-frango": {
+    "label": "Burger King Portugal, Bucket 6 Chili Bites + 6 Nuggets + 4 Asas de Frango",
+    "url": "https://www.burgerking.pt/",
+    "grams": 516.66,
+    "kcal": 1237.0,
+    "protein": 71.31,
+    "carbs": 67.0,
+    "fat": 74.87,
+    "fiber": 4.21
+  },
+  "bk-king-fries-queijo-bacon": {
+    "label": "Burger King Portugal, King Fries Queijo + Bacon",
+    "url": "https://www.burgerking.pt/",
+    "grams": 199,
+    "kcal": 488.43,
+    "protein": 12.05,
+    "carbs": 56.07,
+    "fat": 22.82,
+    "fiber": 5.6
+  },
+  "bk-king-fries-queijo-cebola": {
+    "label": "Burger King Portugal, King Fries Queijo + Cebola",
+    "url": "https://www.burgerking.pt/",
+    "grams": 199,
+    "kcal": 505.85,
+    "protein": 8.99,
+    "carbs": 59.87,
+    "fat": 24.42,
+    "fiber": 6.0
+  },
+  "bk-bucket-batata-classica": {
+    "label": "Burger King Portugal, Bucket Batata Clássica",
+    "url": "https://www.burgerking.pt/",
+    "grams": 455,
+    "kcal": 1116.32,
+    "protein": 13.75,
+    "carbs": 140.92,
+    "fat": 52.38,
+    "fiber": 13.35
+  },
+  "bk-bucket-batata-supreme": {
+    "label": "Burger King Portugal, Bucket Batata Supreme",
+    "url": "https://www.burgerking.pt/",
+    "grams": 475,
+    "kcal": 1026.0,
+    "protein": 12.64,
+    "carbs": 109.43,
+    "fat": 56.43,
+    "fiber": 12.43
+  },
+  "bk-cbk-double": {
+    "label": "Burger King Portugal, CBK Double",
+    "url": "https://www.burgerking.pt/",
+    "grams": 341,
+    "kcal": 1023.0,
+    "protein": 40.8,
+    "carbs": 76.5,
+    "fat": 59.8,
+    "fiber": 6.3
+  },
+  "bk-big-king-bacon": {
+    "label": "Burger King Portugal, Big King Bacon",
+    "url": "https://www.burgerking.pt/",
+    "grams": 203,
+    "kcal": 489.0,
+    "protein": 24.9,
+    "carbs": 32.1,
+    "fat": 28.0,
+    "fiber": 3.6
+  },
+  "bk-double-western-xxl": {
+    "label": "Burger King Portugal, Double Western XXL",
+    "url": "https://www.burgerking.pt/",
+    "grams": 210,
+    "kcal": 868.0,
+    "protein": 50.9,
+    "carbs": 43.9,
+    "fat": 52.2,
+    "fiber": 3.6
+  },
+  "bk-triple-western-xxl": {
+    "label": "Burger King Portugal, Triple Western XXL",
+    "url": "https://www.burgerking.pt/",
+    "grams": 426,
+    "kcal": 1226.0,
+    "protein": 75.4,
+    "carbs": 47.2,
+    "fat": 79.1,
+    "fiber": 4.0
+  },
+  "kfc-bbq-bacon-boxmaster-original": {
+    "label": "KFC Portugal, BBQ Bacon Boxmaster Original",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 380,
+    "kcal": 809.0,
+    "protein": 55.6,
+    "carbs": 71.2,
+    "fat": 33.1
+  },
+  "kfc-bbq-bacon-boxmaster-zinger": {
+    "label": "KFC Portugal, BBQ Bacon Boxmaster Zinger",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 380,
+    "kcal": 809.0,
+    "protein": 55.6,
+    "carbs": 71.2,
+    "fat": 33.1
+  },
+  "kfc-boxmaster-original": {
+    "label": "KFC Portugal, BoxMaster Original",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 369,
+    "kcal": 808.0,
+    "protein": 53.1,
+    "carbs": 67.7,
+    "fat": 35.6
+  },
+  "kfc-boxmaster-zinger": {
+    "label": "KFC Portugal, BoxMaster Zinger",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 369,
+    "kcal": 808.0,
+    "protein": 53.1,
+    "carbs": 67.7,
+    "fat": 35.6
+  },
+  "kfc-burguer-junior": {
+    "label": "KFC Portugal, Burguer Junior",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 126,
+    "kcal": 303.0,
+    "protein": 17.5,
+    "carbs": 36.8,
+    "fat": 9.2
+  },
+  "kfc-classica-original-single": {
+    "label": "KFC Portugal, Clássica Original Single",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 224,
+    "kcal": 474.0,
+    "protein": 29.0,
+    "carbs": 50.5,
+    "fat": 18.0
+  },
+  "kfc-classica-original-double": {
+    "label": "KFC Portugal, Clássica Original Double",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 319,
+    "kcal": 679.0,
+    "protein": 51.1,
+    "carbs": 60.9,
+    "fat": 26.4
+  },
+  "kfc-classica-zinger-double": {
+    "label": "KFC Portugal, Clássica Zinger Double",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 319,
+    "kcal": 679.0,
+    "protein": 50.2,
+    "carbs": 59.0,
+    "fat": 28.1
+  },
+  "kfc-coronel-original-single": {
+    "label": "KFC Portugal, Coronel Original Single",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 232,
+    "kcal": 505.0,
+    "protein": 31.0,
+    "carbs": 48.2,
+    "fat": 20.3
+  },
+  "kfc-coronel-original-double": {
+    "label": "KFC Portugal, Coronel Original Double",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 326,
+    "kcal": 711.0,
+    "protein": 53.2,
+    "carbs": 58.7,
+    "fat": 28.7
+  },
+  "kfc-coronel-zinger-single": {
+    "label": "KFC Portugal, Coronel Zinger Single",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 232,
+    "kcal": 505.0,
+    "protein": 30.5,
+    "carbs": 47.3,
+    "fat": 21.2
+  },
+  "kfc-coronel-zinger-double": {
+    "label": "KFC Portugal, Coronel Zinger Double",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 326,
+    "kcal": 711.0,
+    "protein": 52.2,
+    "carbs": 56.8,
+    "fat": 30.4
+  },
+  "kfc-double-krunch": {
+    "label": "KFC Portugal, Double Krunch",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 180,
+    "kcal": 405.0,
+    "protein": 25.9,
+    "carbs": 38.0,
+    "fat": 16.4
+  },
+  "kfc-double-krunch-bacon": {
+    "label": "KFC Portugal, Double Krunch Bacon",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 188,
+    "kcal": 398.0,
+    "protein": 28.4,
+    "carbs": 41.3,
+    "fat": 13.1
+  },
+  "kfc-double-krunch-bbc": {
+    "label": "KFC Portugal, Double Krunch BBC",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 190,
+    "kcal": 467.0,
+    "protein": 30.8,
+    "carbs": 43.8,
+    "fat": 18.1
+  },
+  "kfc-double-krunch-queijo": {
+    "label": "KFC Portugal, Double Krunch Queijo",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 191,
+    "kcal": 404.0,
+    "protein": 28.2,
+    "carbs": 41.7,
+    "fat": 13.5
+  },
+  "kfc-hot-wings": {
+    "label": "KFC Portugal, Hot Wings",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 30,
+    "kcal": 66.0,
+    "protein": 6.8,
+    "carbs": 3.0,
+    "fat": 2.9
+  },
+  "kfc-kentucky-bbq-original-single": {
+    "label": "KFC Portugal, Kentucky BBQ Original Single",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 228,
+    "kcal": 546.0,
+    "protein": 35.6,
+    "carbs": 49.8,
+    "fat": 22.0
+  },
+  "kfc-kentucky-bbq-original-double": {
+    "label": "KFC Portugal, Kentucky BBQ Original Double",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 335,
+    "kcal": 790.0,
+    "protein": 60.0,
+    "carbs": 60.7,
+    "fat": 33.3
+  },
+  "kfc-kentucky-bbq-zinger-single": {
+    "label": "KFC Portugal, Kentucky BBQ Zinger Single",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 228,
+    "kcal": 546.0,
+    "protein": 35.6,
+    "carbs": 49.8,
+    "fat": 22.0
+  },
+  "kfc-kentucky-bbq-zinger-double": {
+    "label": "KFC Portugal, Kentucky BBQ Zinger Double",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 335,
+    "kcal": 790.0,
+    "protein": 60.0,
+    "carbs": 60.7,
+    "fat": 33.3
+  },
+  "kfc-o-fondue-original-double": {
+    "label": "KFC Portugal, O'fondue Original Double",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 328,
+    "kcal": 854.0,
+    "protein": 56.6,
+    "carbs": 61.3,
+    "fat": 36.1
+  },
+  "kfc-o-fondue-zinger-double": {
+    "label": "KFC Portugal, O'fondue Zinger Double",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 328,
+    "kcal": 854.0,
+    "protein": 56.6,
+    "carbs": 61.3,
+    "fat": 36.1
+  },
+  "kfc-tenders": {
+    "label": "KFC Portugal, Tenders",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 35,
+    "kcal": 76.0,
+    "protein": 8.2,
+    "carbs": 3.9,
+    "fat": 3.1
+  },
+  "kfc-tower-original-single": {
+    "label": "KFC Portugal, Tower Original Single",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 221,
+    "kcal": 494.0,
+    "protein": 31.1,
+    "carbs": 52.9,
+    "fat": 18.0
+  },
+  "kfc-tower-original-double": {
+    "label": "KFC Portugal, Tower Original Double",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 320,
+    "kcal": 714.0,
+    "protein": 53.3,
+    "carbs": 63.7,
+    "fat": 27.8
+  },
+  "kfc-tower-zinger-double": {
+    "label": "KFC Portugal, Tower Zinger Double",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 320,
+    "kcal": 714.0,
+    "protein": 53.3,
+    "carbs": 63.7,
+    "fat": 27.8
+  },
+  "kfc-wrap-classica": {
+    "label": "KFC Portugal, Wrap Clássica",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 223,
+    "kcal": 466.0,
+    "protein": 26.2,
+    "carbs": 45.1,
+    "fat": 20.2
+  },
+  "kfc-wrap-coronel": {
+    "label": "KFC Portugal, Wrap Coronel",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 251,
+    "kcal": 564.0,
+    "protein": 30.7,
+    "carbs": 47.9,
+    "fat": 27.7
+  },
+  "kfc-wrap-extreme": {
+    "label": "KFC Portugal, Wrap Extreme",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 220,
+    "kcal": 562.0,
+    "protein": 34.5,
+    "carbs": 48.5,
+    "fat": 25.4
+  },
+  "kfc-wrap-kentucky-bbq": {
+    "label": "KFC Portugal, Wrap Kentucky BBQ",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 220,
+    "kcal": 564.0,
+    "protein": 34.3,
+    "carbs": 49.5,
+    "fat": 25.3
+  },
+  "kfc-wrap-junior-chesse": {
+    "label": "KFC Portugal, Wrap Junior Chesse",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 106,
+    "kcal": 281.0,
+    "protein": 15.7,
+    "carbs": 28.7,
+    "fat": 11.3
+  },
+  "kfc-wrap-junior-classico": {
+    "label": "KFC Portugal, Wrap Junior Clássico",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 110,
+    "kcal": 263.0,
+    "protein": 13.7,
+    "carbs": 26.5,
+    "fat": 11.3
+  },
+  "kfc-wrap-o-cheddar": {
+    "label": "KFC Portugal, Wrap O' Cheddar",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 210,
+    "kcal": 578.0,
+    "protein": 34.9,
+    "carbs": 45.1,
+    "fat": 28.5
+  },
+  "kfc-zinger-extreme-single-zinger-2025": {
+    "label": "KFC Portugal, Zinger Extreme Single Zinger 2025",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 217,
+    "kcal": 545.0,
+    "protein": 35.0,
+    "carbs": 48.8,
+    "fat": 22.8
+  },
+  "kfc-zinger-extreme-double-zinger-2025": {
+    "label": "KFC Portugal, Zinger Extreme Double Zinger 2025",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 312,
+    "kcal": 750.0,
+    "protein": 56.6,
+    "carbs": 58.3,
+    "fat": 32.0
+  },
+  "kfc-zinger-extreme-single-original-2025": {
+    "label": "KFC Portugal, Zinger Extreme Single Original 2025",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 217,
+    "kcal": 545.0,
+    "protein": 35.0,
+    "carbs": 48.8,
+    "fat": 22.8
+  },
+  "kfc-zinger-extreme-double-original-2025": {
+    "label": "KFC Portugal, Zinger Extreme Double Original 2025",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 312,
+    "kcal": 750.0,
+    "protein": 56.6,
+    "carbs": 58.3,
+    "fat": 32.0
+  },
+  "kfc-salada-veggie-sem-molho": {
+    "label": "KFC Portugal, Salada Veggie (sem molho)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 247,
+    "kcal": 227.0,
+    "protein": 13.4,
+    "carbs": 18.8,
+    "fat": 9.4
+  },
+  "kfc-classica-veggie": {
+    "label": "KFC Portugal, Clássica Veggie",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 216,
+    "kcal": 412.0,
+    "protein": 17.2,
+    "carbs": 49.5,
+    "fat": 16.1
+  },
+  "kfc-tenders-veggie": {
+    "label": "KFC Portugal, Tenders Veggie",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 43,
+    "kcal": 71.0,
+    "protein": 5.2,
+    "carbs": 4.7,
+    "fat": 3.2
+  },
+  "kfc-wrap-junior-cheese-veggie": {
+    "label": "KFC Portugal, Wrap Junior Cheese Veggie",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 104,
+    "kcal": 256.0,
+    "protein": 10.6,
+    "carbs": 29.3,
+    "fat": 10.2
+  },
+  "kfc-wrap-junior-clasico-veggie": {
+    "label": "KFC Portugal, Wrap Junior Clásico Veggie",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 108,
+    "kcal": 237.0,
+    "protein": 8.6,
+    "carbs": 26.7,
+    "fat": 10.1
+  },
+  "kfc-wrap-veggie": {
+    "label": "KFC Portugal, Wrap Veggie",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 220,
+    "kcal": 415.0,
+    "protein": 16.1,
+    "carbs": 45.6,
+    "fat": 18.0
+  },
+  "kfc-salada-coronel-sem-molho": {
+    "label": "KFC Portugal, Salada Coronel (sem molho)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 256,
+    "kcal": 289.0,
+    "protein": 24.7,
+    "carbs": 19.0,
+    "fat": 12.2
+  },
+  "kfc-aros-de-cebola": {
+    "label": "KFC Portugal, Aros de Cebola",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 96,
+    "kcal": 255.0,
+    "protein": 4.6,
+    "carbs": 32.6,
+    "fat": 11.1
+  },
+  "kfc-batatas-temperadas-sem-molhos-tamanho-pequeno": {
+    "label": "KFC Portugal, Batatas temperadas (sem molhos) (tamanho pequeno)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 121,
+    "kcal": 336.0,
+    "protein": 5.9,
+    "carbs": 47.6,
+    "fat": 12.5
+  },
+  "kfc-batatas-temperadas-sem-molhos-tamanho-medio": {
+    "label": "KFC Portugal, Batatas temperadas (sem molhos) (tamanho medio)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 136,
+    "kcal": 378.0,
+    "protein": 6.6,
+    "carbs": 53.5,
+    "fat": 14.1
+  },
+  "kfc-batatas-temperadas-sem-molhos-tamanho-grande": {
+    "label": "KFC Portugal, Batatas temperadas (sem molhos) (tamanho grande)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 157,
+    "kcal": 435.0,
+    "protein": 7.6,
+    "carbs": 61.5,
+    "fat": 16.1
+  },
+  "kfc-batatas-palitos-sem-molhos-tamanho-pequeno": {
+    "label": "KFC Portugal, Batatas Palitos (sem molhos) (tamanho pequeno)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 90,
+    "kcal": 249.0,
+    "protein": 4.3,
+    "carbs": 35.1,
+    "fat": 9.4
+  },
+  "kfc-batatas-palitos-sem-molhos-tamanho-medio": {
+    "label": "KFC Portugal, Batatas Palitos (sem molhos) (tamanho medio)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 116,
+    "kcal": 321.0,
+    "protein": 5.6,
+    "carbs": 45.2,
+    "fat": 12.1
+  },
+  "kfc-batatas-palitos-sem-molhos-tamanho-grande": {
+    "label": "KFC Portugal, Batatas Palitos (sem molhos) (tamanho grande)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 140,
+    "kcal": 388.0,
+    "protein": 6.7,
+    "carbs": 54.6,
+    "fat": 14.6
+  },
+  "kfc-batatas-palitos-sem-molhos-bucket": {
+    "label": "KFC Portugal, Batatas Palitos (sem molhos) (bucket)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 132,
+    "kcal": 366.0,
+    "protein": 6.3,
+    "carbs": 51.5,
+    "fat": 13.7
+  },
+  "kfc-batatas-rusticas-sem-molhos-tamanho-pequeno": {
+    "label": "KFC Portugal, Batatas Rústicas (sem molhos) (tamanho pequeno)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 90,
+    "kcal": 182.0,
+    "protein": 2.4,
+    "carbs": 22.5,
+    "fat": 8.5
+  },
+  "kfc-batatas-rusticas-sem-molhos-tamanho-medio": {
+    "label": "KFC Portugal, Batatas Rústicas (sem molhos) (tamanho medio)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 116,
+    "kcal": 234.0,
+    "protein": 3.1,
+    "carbs": 29.0,
+    "fat": 10.9
+  },
+  "kfc-batatas-rusticas-sem-molhos-tamanho-grande": {
+    "label": "KFC Portugal, Batatas Rústicas (sem molhos) (tamanho grande)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 140,
+    "kcal": 283.0,
+    "protein": 3.8,
+    "carbs": 35.0,
+    "fat": 13.2
+  },
+  "kfc-batatas-rusticas-sem-molhos-bucket": {
+    "label": "KFC Portugal, Batatas Rústicas (sem molhos) (bucket)",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 282,
+    "kcal": 570.0,
+    "protein": 7.6,
+    "carbs": 70.5,
+    "fat": 26.5
+  },
+  "kfc-kentucky-fries-bbq-zinger": {
+    "label": "KFC Portugal, Kentucky Fries BBQ Zinger",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 230,
+    "kcal": 469.0,
+    "protein": 8.6,
+    "carbs": 50.5,
+    "fat": 24.6
+  },
+  "kfc-kentucky-fries-com-molho-barbecue": {
+    "label": "KFC Portugal, Kentucky Fries com Molho Barbecue",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 230,
+    "kcal": 471.0,
+    "protein": 8.4,
+    "carbs": 52.1,
+    "fat": 24.4
+  },
+  "kfc-kentucky-fries-com-molho-salsa-queijo": {
+    "label": "KFC Portugal, Kentucky Fries com Molho Salsa Queijo",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 230,
+    "kcal": 526.0,
+    "protein": 22.1,
+    "carbs": 46.5,
+    "fat": 32.0
+  },
+  "kfc-kentucky-fries-coronel": {
+    "label": "KFC Portugal, Kentucky Fries Coronel",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 230,
+    "kcal": 569.0,
+    "protein": 8.5,
+    "carbs": 46.1,
+    "fat": 37.8
+  },
+  "kfc-kentucky-fries-o-fondue": {
+    "label": "KFC Portugal, Kentucky Fries O'Fondue",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 262,
+    "kcal": 622.0,
+    "protein": 14.7,
+    "carbs": 52.3,
+    "fat": 38.1
+  },
+  "kfc-kream-ball-caramelo": {
+    "label": "KFC Portugal, Kream Ball Caramelo",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 182,
+    "kcal": 355.0,
+    "protein": 5.6,
+    "carbs": 63.1,
+    "fat": 8.8
+  },
+  "kfc-kream-ball-chocolate": {
+    "label": "KFC Portugal, Kream Ball Chocolate",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 182,
+    "kcal": 351.0,
+    "protein": 5.9,
+    "carbs": 57.0,
+    "fat": 10.6
+  },
+  "kfc-kream-ball-conguitos-de-chocolate-branco": {
+    "label": "KFC Portugal, Kream Ball Conguitos de Chocolate Branco",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 167,
+    "kcal": 339.0,
+    "protein": 6.8,
+    "carbs": 44.0,
+    "fat": 14.8
+  },
+  "kfc-kream-ball-limao": {
+    "label": "KFC Portugal, Kream Ball Limão",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 192,
+    "kcal": 376.0,
+    "protein": 5.6,
+    "carbs": 67.0,
+    "fat": 8.8
+  },
+  "kfc-kream-ball-morango": {
+    "label": "KFC Portugal, Kream Ball Morango",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 182,
+    "kcal": 350.0,
+    "protein": 5.5,
+    "carbs": 62.0,
+    "fat": 8.7
+  },
+  "kfc-kream-ball-nocilla": {
+    "label": "KFC Portugal, Kream Ball Nocilla",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 182,
+    "kcal": 390.0,
+    "protein": 6.2,
+    "carbs": 59.9,
+    "fat": 13.6
+  },
+  "kfc-kream-ball-pintalinguas": {
+    "label": "KFC Portugal, Kream Ball Pintalínguas",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 175,
+    "kcal": 330.0,
+    "protein": 3.9,
+    "carbs": 62.6,
+    "fat": 7.0
+  },
+  "kfc-mini-sundae-caramelo": {
+    "label": "KFC Portugal, Mini Sundae Caramelo",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 75,
+    "kcal": 129.0,
+    "protein": 1.9,
+    "carbs": 23.0,
+    "fat": 3.3
+  },
+  "kfc-mini-sundae-chocolate": {
+    "label": "KFC Portugal, Mini Sundae Chocolate",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 75,
+    "kcal": 125.0,
+    "protein": 2.1,
+    "carbs": 21.3,
+    "fat": 3.4
+  },
+  "kfc-mini-sundae-morango": {
+    "label": "KFC Portugal, Mini Sundae Morango",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 80,
+    "kcal": 140.0,
+    "protein": 1.9,
+    "carbs": 25.6,
+    "fat": 3.3
+  },
+  "kfc-mini-sundae-natura": {
+    "label": "KFC Portugal, Mini Sundae Natura",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 65,
+    "kcal": 97.0,
+    "protein": 1.8,
+    "carbs": 15.0,
+    "fat": 3.3
+  },
+  "kfc-mini-sundae-nocilla": {
+    "label": "KFC Portugal, Mini Sundae Nocilla",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 75,
+    "kcal": 152.0,
+    "protein": 2.3,
+    "carbs": 20.7,
+    "fat": 6.6
+  },
+  "kfc-mini-sundae-pintalinguas": {
+    "label": "KFC Portugal, Mini Sundae Pintalínguas",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 88,
+    "kcal": 141.0,
+    "protein": 2.2,
+    "carbs": 23.9,
+    "fat": 4.0
+  },
+  "kfc-sundae-morango": {
+    "label": "KFC Portugal, Sundae Morango",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 145,
+    "kcal": 237.0,
+    "protein": 3.7,
+    "carbs": 40.5,
+    "fat": 6.5
+  },
+  "kfc-sundae-natura": {
+    "label": "KFC Portugal, Sundae Natura",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 130,
+    "kcal": 194.0,
+    "protein": 3.6,
+    "carbs": 29.9,
+    "fat": 6.5
+  },
+  "kfc-sundae-nocilla": {
+    "label": "KFC Portugal, Sundae Nocilla",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 145,
+    "kcal": 276.0,
+    "protein": 4.4,
+    "carbs": 38.5,
+    "fat": 11.5
+  },
+  "kfc-sundae-pintalinguas": {
+    "label": "KFC Portugal, Sundae Pintalínguas",
+    "url": "https://www.kfc.pt/wp-content/uploads/2025/05/44.-INF.NUTRICIONAL-KFC-15.04.2025.pdf",
+    "grams": 135,
+    "kcal": 220.0,
+    "protein": 3.4,
+    "carbs": 38.0,
+    "fat": 6.0
+  },
+  "subway-sub-almondegas": {
+    "label": "Subway Portugal, Sub Almôndegas",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 306,
+    "kcal": 479.0,
+    "protein": 25.0,
+    "carbs": 52.0,
+    "fat": 20.0,
+    "fiber": 13.0
+  },
+  "subway-sub-bbq-pork": {
+    "label": "Subway Portugal, Sub BBQ Pork",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 257,
+    "kcal": 473.0,
+    "protein": 21.0,
+    "carbs": 51.0,
+    "fat": 20.0,
+    "fiber": 17.0
+  },
+  "subway-sub-frango-assado-bbq": {
+    "label": "Subway Portugal, Sub Frango Assado BBQ",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 221,
+    "kcal": 495.0,
+    "protein": 33.0,
+    "carbs": 46.0,
+    "fat": 20.0,
+    "fiber": 2.1
+  },
+  "subway-sub-b-m-t-italiano": {
+    "label": "Subway Portugal, Sub B.M.T Italiano",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 221,
+    "kcal": 398.0,
+    "protein": 21.0,
+    "carbs": 41.0,
+    "fat": 16.0,
+    "fiber": 7.0
+  },
+  "subway-sub-peito-de-frango": {
+    "label": "Subway Portugal, Sub Peito de Frango",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 213,
+    "kcal": 280.0,
+    "protein": 22.0,
+    "carbs": 41.0,
+    "fat": 3.0,
+    "fiber": 7.0
+  },
+  "subway-sub-frango-tikka": {
+    "label": "Subway Portugal, Sub Frango Tikka",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 197,
+    "kcal": 269.0,
+    "protein": 19.0,
+    "carbs": 41.0,
+    "fat": 3.0,
+    "fiber": 6.0
+  },
+  "subway-sub-atum": {
+    "label": "Subway Portugal, Sub Atum",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 231,
+    "kcal": 363.0,
+    "protein": 21.0,
+    "carbs": 42.0,
+    "fat": 12.0,
+    "fiber": 7.0
+  },
+  "subway-sub-hamburguer-vegan": {
+    "label": "Subway Portugal, Sub Hambúrguer Vegan",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 242,
+    "kcal": 369.0,
+    "protein": 21.0,
+    "carbs": 48.0,
+    "fat": 10.0,
+    "fiber": 8.0
+  },
+  "subway-sub-fiambre-e-queijo": {
+    "label": "Subway Portugal, Sub Fiambre e Queijo",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 199,
+    "kcal": 269.0,
+    "protein": 17.0,
+    "carbs": 41.0,
+    "fat": 4.0,
+    "fiber": 7.0
+  },
+  "subway-sub-peru": {
+    "label": "Subway Portugal, Sub Peru",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 214,
+    "kcal": 274.0,
+    "protein": 20.0,
+    "carbs": 40.0,
+    "fat": 3.0,
+    "fiber": 7.0
+  },
+  "subway-sub-frango-teriyaki": {
+    "label": "Subway Portugal, Sub Frango Teriyaki",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 231,
+    "kcal": 299.0,
+    "protein": 22.0,
+    "carbs": 44.0,
+    "fat": 4.0,
+    "fiber": 9.0
+  },
+  "subway-sub-spicy-italian": {
+    "label": "Subway Portugal, Sub Spicy Italian",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 205,
+    "kcal": 412.0,
+    "protein": 18.0,
+    "carbs": 41.0,
+    "fat": 19.0,
+    "fiber": 6.0
+  },
+  "subway-sub-carne-e-queijo": {
+    "label": "Subway Portugal, Sub Carne e Queijo",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 225,
+    "kcal": 333.0,
+    "protein": 21.0,
+    "carbs": 45.0,
+    "fat": 8.0,
+    "fiber": 9.0
+  },
+  "subway-sub-veggie-delite": {
+    "label": "Subway Portugal, Sub Veggie Delite",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 169,
+    "kcal": 260.0,
+    "protein": 11.0,
+    "carbs": 40.0,
+    "fat": 6.0,
+    "fiber": 6.0
+  },
+  "subway-blt": {
+    "label": "Subway Portugal, BLT",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 147,
+    "kcal": 303.0,
+    "protein": 14.0,
+    "carbs": 34.0,
+    "fat": 13.0,
+    "fiber": 7.0
+  },
+  "subway-sub-chipotle-chicken-bites": {
+    "label": "Subway Portugal, Sub Chipotle Chicken Bites",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 72,
+    "kcal": 180.0,
+    "protein": 11.0,
+    "carbs": 14.0,
+    "fat": 8.0,
+    "fiber": 1.0
+  },
+  "subway-salada-caesar": {
+    "label": "Subway Portugal, Salada Caesar",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 179,
+    "kcal": 195.0,
+    "protein": 31.0,
+    "carbs": 3.0,
+    "fat": 6.0,
+    "fiber": 3.0
+  },
+  "subway-chicken-bites": {
+    "label": "Subway Portugal, Chicken Bites",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 72,
+    "kcal": 180.0,
+    "protein": 11.0,
+    "carbs": 14.0,
+    "fat": 8.0,
+    "fiber": 1.0
+  },
+  "subway-croissant-misto": {
+    "label": "Subway Portugal, Croissant Misto",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 102,
+    "kcal": 319.0,
+    "protein": 15.0,
+    "carbs": 21.0,
+    "fat": 19.0,
+    "fiber": 4.0
+  },
+  "subway-cookies-com-pedacos-de-chocolate": {
+    "label": "Subway Portugal, Cookies com pedaços de chocolate",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 45,
+    "kcal": 214.0,
+    "protein": 2.2,
+    "carbs": 28.0,
+    "fat": 9.8,
+    "fiber": 1.5
+  },
+  "subway-cookies-de-cheesecake-de-framboesa": {
+    "label": "Subway Portugal, Cookies de cheesecake de framboesa",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 45,
+    "kcal": 208.0,
+    "protein": 2.5,
+    "carbs": 27.0,
+    "fat": 9.6,
+    "fiber": 0.2
+  },
+  "subway-cookies-com-chocolate-branco-e-noz": {
+    "label": "Subway Portugal, Cookies com chocolate branco e noz",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 45,
+    "kcal": 215.0,
+    "protein": 2.3,
+    "carbs": 27.0,
+    "fat": 10.0,
+    "fiber": 0.5
+  },
+  "subway-cookies-vegan-duplo-chocolate": {
+    "label": "Subway Portugal, Cookies vegan duplo chocolate",
+    "url": "https://subwaypt.com/pdf/portugal_nutritional_information_2025.pdf",
+    "grams": 46,
+    "kcal": 220.0,
+    "protein": 2.0,
+    "carbs": 27.0,
+    "fat": 11.0,
+    "fiber": 2.2
+  },
+  "pans-sande-francesa": {
+    "label": "Pans & Company Portugal, Sande Francesa",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 185,
+    "kcal": 548.0,
+    "protein": 28.4,
+    "carbs": 59.0,
+    "fat": 21.6
+  },
+  "pans-sande-frango": {
+    "label": "Pans & Company Portugal, Sande Frango",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 250,
+    "kcal": 423.0,
+    "protein": 27.0,
+    "carbs": 61.5,
+    "fat": 6.7
+  },
+  "pans-sande-frango-crocante": {
+    "label": "Pans & Company Portugal, Sande Frango Crocante",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 320,
+    "kcal": 746.0,
+    "protein": 27.8,
+    "carbs": 87.4,
+    "fat": 31.3
+  },
+  "pans-sande-inglesa": {
+    "label": "Pans & Company Portugal, Sande Inglesa",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 185,
+    "kcal": 549.0,
+    "protein": 24.1,
+    "carbs": 59.7,
+    "fat": 23.2
+  },
+  "pans-sande-lombo-queijo-e-bacon": {
+    "label": "Pans & Company Portugal, Sande Lombo Queijo e Bacon",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 220,
+    "kcal": 528.0,
+    "protein": 35.3,
+    "carbs": 60.1,
+    "fat": 15.9
+  },
+  "pans-sande-queijo-fresco": {
+    "label": "Pans & Company Portugal, Sande Queijo Fresco",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 225,
+    "kcal": 450.0,
+    "protein": 17.2,
+    "carbs": 62.7,
+    "fat": 15.2
+  },
+  "pans-sande-tradicional": {
+    "label": "Pans & Company Portugal, Sande Tradicional",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 172,
+    "kcal": 456.0,
+    "protein": 21.5,
+    "carbs": 61.9,
+    "fat": 13.1
+  },
+  "pans-sande-pulled-pork-bbq": {
+    "label": "Pans & Company Portugal, Sande Pulled Pork BBQ",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 282,
+    "kcal": 773.0,
+    "protein": 32.0,
+    "carbs": 94.0,
+    "fat": 28.9
+  },
+  "pans-sande-supremo-de-frango": {
+    "label": "Pans & Company Portugal, Sande Supremo de Frango",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 282,
+    "kcal": 673.0,
+    "protein": 34.0,
+    "carbs": 87.2,
+    "fat": 19.7
+  },
+  "pans-sande-americana": {
+    "label": "Pans & Company Portugal, Sande Americana",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 289,
+    "kcal": 540.0,
+    "protein": 27.4,
+    "carbs": 66.2,
+    "fat": 17.8
+  },
+  "pans-sande-presunto": {
+    "label": "Pans & Company Portugal, Sande Presunto",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 155,
+    "kcal": 424.0,
+    "protein": 24.6,
+    "carbs": 58.4,
+    "fat": 9.8
+  },
+  "pans-sande-heura-classic": {
+    "label": "Pans & Company Portugal, Sande Heura Classic",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 254,
+    "kcal": 562.0,
+    "protein": 22.7,
+    "carbs": 62.8,
+    "fat": 22.7
+  },
+  "pans-sande-heura-crocante": {
+    "label": "Pans & Company Portugal, Sande Heura Crocante",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 293,
+    "kcal": 723.0,
+    "protein": 20.3,
+    "carbs": 84.9,
+    "fat": 32.2
+  },
+  "pans-sande-pasta-de-atum": {
+    "label": "Pans & Company Portugal, Sande Pasta de Atum",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 284,
+    "kcal": 536.0,
+    "protein": 22.2,
+    "carbs": 64.3,
+    "fat": 19.9
+  },
+  "pans-sande-pasta-de-delicias": {
+    "label": "Pans & Company Portugal, Sande Pasta de Delicias",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 294,
+    "kcal": 506.0,
+    "protein": 17.9,
+    "carbs": 69.3,
+    "fat": 16.5
+  },
+  "pans-sande-presunto-brie": {
+    "label": "Pans & Company Portugal, Sande Presunto Brie",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 179,
+    "kcal": 512.0,
+    "protein": 25.1,
+    "carbs": 59.0,
+    "fat": 19.1
+  },
+  "pans-sande-de-frango-brie-trufada": {
+    "label": "Pans & Company Portugal, Sande de Frango Brie Trufada",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 301,
+    "kcal": 671.0,
+    "protein": 39.6,
+    "carbs": 70.5,
+    "fat": 24.9
+  },
+  "pans-sande-de-heura-trufada": {
+    "label": "Pans & Company Portugal, Sande de Heura Trufada",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 290,
+    "kcal": 646.0,
+    "protein": 25.4,
+    "carbs": 73.7,
+    "fat": 25.3
+  },
+  "pans-sande-de-lombo-raclette": {
+    "label": "Pans & Company Portugal, Sande de Lombo Raclette",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 314,
+    "kcal": 803.0,
+    "protein": 40.3,
+    "carbs": 75.9,
+    "fat": 36.6
+  },
+  "pans-sande-de-presunto-iberico": {
+    "label": "Pans & Company Portugal, Sande de Presunto Ibérico",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 236,
+    "kcal": 636.0,
+    "protein": 26.5,
+    "carbs": 69.4,
+    "fat": 27.4
+  },
+  "pans-sande-club": {
+    "label": "Pans & Company Portugal, Sande Club",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 346,
+    "kcal": 667.0,
+    "protein": 42.6,
+    "carbs": 66.2,
+    "fat": 22.7
+  },
+  "pans-sandes-de-frango-crispy-bbq": {
+    "label": "Pans & Company Portugal, Sandes de Frango Crispy BBQ",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 320,
+    "kcal": 849.0,
+    "protein": 32.7,
+    "carbs": 73.0,
+    "fat": 46.7
+  },
+  "pans-sandes-de-hummus-beterraba": {
+    "label": "Pans & Company Portugal, Sandes de Hummus Beterraba",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 328,
+    "kcal": 558.0,
+    "protein": 18.0,
+    "carbs": 71.8,
+    "fat": 20.5
+  },
+  "pans-sande-mozzarella-pesto": {
+    "label": "Pans & Company Portugal, Sande Mozzarella Pesto",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 215,
+    "kcal": 569.0,
+    "protein": 24.5,
+    "carbs": 42.7,
+    "fat": 32.8
+  },
+  "pans-sande-salmao-abacate": {
+    "label": "Pans & Company Portugal, Sande Salmão Abacate",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 250,
+    "kcal": 621.0,
+    "protein": 22.7,
+    "carbs": 48.1,
+    "fat": 36.3
+  },
+  "pans-mini-pans-fiambre": {
+    "label": "Pans & Company Portugal, Mini Pans Fiambre",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 78,
+    "kcal": 189.0,
+    "protein": 7.7,
+    "carbs": 30.8,
+    "fat": 3.6
+  },
+  "pans-mini-pans-manteiga": {
+    "label": "Pans & Company Portugal, Mini Pans Manteiga",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 56,
+    "kcal": 185.0,
+    "protein": 4.8,
+    "carbs": 29.0,
+    "fat": 5.2
+  },
+  "pans-mini-pans-queijo": {
+    "label": "Pans & Company Portugal, Mini Pans Queijo",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 73,
+    "kcal": 229.0,
+    "protein": 9.8,
+    "carbs": 29.8,
+    "fat": 7.6
+  },
+  "pans-bola-rustica-fiambre": {
+    "label": "Pans & Company Portugal, Bola Rústica Fiambre",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 125,
+    "kcal": 278.0,
+    "protein": 10.7,
+    "carbs": 46.9,
+    "fat": 4.6
+  },
+  "pans-bola-rustica-manteiga": {
+    "label": "Pans & Company Portugal, Bola Rústica Manteiga",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 95,
+    "kcal": 291.0,
+    "protein": 6.4,
+    "carbs": 44.3,
+    "fat": 9.1
+  },
+  "pans-bola-rustica-mista": {
+    "label": "Pans & Company Portugal, Bola Rústica Mista",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 143,
+    "kcal": 365.0,
+    "protein": 16.8,
+    "carbs": 47.2,
+    "fat": 11.4
+  },
+  "pans-bola-rustica-queijo": {
+    "label": "Pans & Company Portugal, Bola Rústica Queijo",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 118,
+    "kcal": 339.0,
+    "protein": 13.9,
+    "carbs": 45.4,
+    "fat": 10.7
+  },
+  "pans-sande-crocante": {
+    "label": "Pans & Company Portugal, Sande Crocante",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 220,
+    "kcal": 486.0,
+    "protein": 20.6,
+    "carbs": 48.8,
+    "fat": 22.7
+  },
+  "pans-sande-de-presunto-e-mozzarella": {
+    "label": "Pans & Company Portugal, Sande de Presunto e Mozzarella",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 134,
+    "kcal": 365.0,
+    "protein": 17.8,
+    "carbs": 28.8,
+    "fat": 19.4
+  },
+  "pans-frango-brie-gluten-free": {
+    "label": "Pans & Company Portugal, Frango Brie Gluten Free",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 200,
+    "kcal": 466.0,
+    "protein": 31.2,
+    "carbs": 44.6,
+    "fat": 18.0
+  },
+  "pans-inglesa-gluten-free": {
+    "label": "Pans & Company Portugal, Inglesa Gluten Free",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 200,
+    "kcal": 584.0,
+    "protein": 21.8,
+    "carbs": 67.0,
+    "fat": 25.4
+  },
+  "pans-lbq-gluten-free": {
+    "label": "Pans & Company Portugal, LBQ Gluten Free",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 200,
+    "kcal": 492.0,
+    "protein": 29.6,
+    "carbs": 53.2,
+    "fat": 17.8
+  },
+  "pans-pao-cantabrico": {
+    "label": "Pans & Company Portugal, Pão Cantábrico",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 135,
+    "kcal": 350.0,
+    "protein": 12.0,
+    "carbs": 67.5,
+    "fat": 2.6
+  },
+  "pans-pao-cristalino": {
+    "label": "Pans & Company Portugal, Pão Cristalino",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 130,
+    "kcal": 309.0,
+    "protein": 12.4,
+    "carbs": 58.5,
+    "fat": 2.5
+  },
+  "pans-pao-gran-reserva": {
+    "label": "Pans & Company Portugal, Pão Gran Reserva",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 132,
+    "kcal": 391.0,
+    "protein": 13.2,
+    "carbs": 79.2,
+    "fat": 1.8
+  },
+  "pans-pao-rustico": {
+    "label": "Pans & Company Portugal, Pão Rústico",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 85,
+    "kcal": 218.0,
+    "protein": 6.4,
+    "carbs": 44.2,
+    "fat": 1.0
+  },
+  "pans-dip-guacamole": {
+    "label": "Pans & Company Portugal, Dip Guacamole",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 40,
+    "kcal": 75.0,
+    "protein": 1.2,
+    "carbs": 0.5,
+    "fat": 7.1
+  },
+  "pans-dip-maio-bbq": {
+    "label": "Pans & Company Portugal, Dip Maio BBQ",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 40,
+    "kcal": 220.0,
+    "protein": 0.4,
+    "carbs": 3.8,
+    "fat": 22.4
+  },
+  "pans-dip-maio-queijo-curado": {
+    "label": "Pans & Company Portugal, Dip Maio Queijo Curado",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 40,
+    "kcal": 241.0,
+    "protein": 1.0,
+    "carbs": 1.6,
+    "fat": 25.0
+  },
+  "pans-dip-mostarda-e-mel": {
+    "label": "Pans & Company Portugal, Dip Mostarda e Mel",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 40,
+    "kcal": 204.0,
+    "protein": 0.8,
+    "carbs": 5.2,
+    "fat": 20.0
+  },
+  "pans-creme-de-abobora": {
+    "label": "Pans & Company Portugal, Creme de abóbora",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 200,
+    "kcal": 64.0,
+    "protein": 1.4,
+    "carbs": 10.2,
+    "fat": 1.6
+  },
+  "pans-creme-de-agriao": {
+    "label": "Pans & Company Portugal, Creme de agrião",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 203,
+    "kcal": 77.0,
+    "protein": 2.0,
+    "carbs": 9.6,
+    "fat": 2.9
+  },
+  "pans-atum": {
+    "label": "Pans & Company Portugal, Atum",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 60,
+    "kcal": 127.0,
+    "protein": 13.4,
+    "carbs": 0.0,
+    "fat": 7.4
+  },
+  "pans-bulgur-de-pesto": {
+    "label": "Pans & Company Portugal, Bulgur de Pesto",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 90,
+    "kcal": 157.0,
+    "protein": 3.0,
+    "carbs": 19.8,
+    "fat": 7.7
+  },
+  "pans-delicias-do-mar": {
+    "label": "Pans & Company Portugal, Delicias do Mar",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 60,
+    "kcal": 62.0,
+    "protein": 5.0,
+    "carbs": 7.3,
+    "fat": 1.4
+  },
+  "pans-falafel-de-beterraba": {
+    "label": "Pans & Company Portugal, Falafel de Beterraba",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 93,
+    "kcal": 234.0,
+    "protein": 5.5,
+    "carbs": 11.8,
+    "fat": 16.6
+  },
+  "pans-frango-assado": {
+    "label": "Pans & Company Portugal, Frango Assado",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 75,
+    "kcal": 107.0,
+    "protein": 22.2,
+    "carbs": 0.7,
+    "fat": 2.0
+  },
+  "pans-frango-crocante": {
+    "label": "Pans & Company Portugal, Frango Crocante",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 110,
+    "kcal": 299.0,
+    "protein": 14.0,
+    "carbs": 17.0,
+    "fat": 19.2
+  },
+  "pans-heura-crocante": {
+    "label": "Pans & Company Portugal, Heura Crocante",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 88,
+    "kcal": 229.0,
+    "protein": 9.1,
+    "carbs": 13.9,
+    "fat": 14.1
+  },
+  "pans-humus": {
+    "label": "Pans & Company Portugal, Húmus",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 50,
+    "kcal": 96.0,
+    "protein": 3.2,
+    "carbs": 5.1,
+    "fat": 6.3
+  },
+  "pans-humus-de-beterraba": {
+    "label": "Pans & Company Portugal, Húmus de Beterraba",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 50,
+    "kcal": 99.0,
+    "protein": 3.3,
+    "carbs": 6.3,
+    "fat": 6.1
+  },
+  "pans-ovo": {
+    "label": "Pans & Company Portugal, Ovo",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 55,
+    "kcal": 73.0,
+    "protein": 6.9,
+    "carbs": 0.6,
+    "fat": 4.7
+  },
+  "pans-queijo-brie": {
+    "label": "Pans & Company Portugal, Queijo Brie",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 40,
+    "kcal": 145.0,
+    "protein": 6.8,
+    "carbs": 0.6,
+    "fat": 12.8
+  },
+  "pans-queijo-mozzarella": {
+    "label": "Pans & Company Portugal, Queijo Mozzarella",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 63,
+    "kcal": 147.0,
+    "protein": 11.3,
+    "carbs": 0.5,
+    "fat": 11.0
+  },
+  "pans-aros-de-cebola": {
+    "label": "Pans & Company Portugal, Aros de Cebola",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 186,
+    "kcal": 549.0,
+    "protein": 5.1,
+    "carbs": 43.4,
+    "fat": 38.6
+  },
+  "pans-croquetas-de-presunto": {
+    "label": "Pans & Company Portugal, Croquetas de Presunto",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 198,
+    "kcal": 474.0,
+    "protein": 14.4,
+    "carbs": 36.0,
+    "fat": 30.6
+  },
+  "pans-fun-fritas-queijo-e-bacon": {
+    "label": "Pans & Company Portugal, Fun Fritas Queijo e Bacon",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 145,
+    "kcal": 419.0,
+    "protein": 4.4,
+    "carbs": 20.9,
+    "fat": 34.7
+  },
+  "pans-fun-fritas-trufadadas": {
+    "label": "Pans & Company Portugal, Fun Fritas Trufadadas",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 146,
+    "kcal": 362.0,
+    "protein": 6.0,
+    "carbs": 21.3,
+    "fat": 27.9
+  },
+  "pans-nuggets-de-heura": {
+    "label": "Pans & Company Portugal, Nuggets de Heura",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 198,
+    "kcal": 514.0,
+    "protein": 20.5,
+    "carbs": 31.3,
+    "fat": 31.7
+  },
+  "pans-pops-de-frango": {
+    "label": "Pans & Company Portugal, Pops de Frango",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 198,
+    "kcal": 597.0,
+    "protein": 29.2,
+    "carbs": 37.6,
+    "fat": 36.2
+  },
+  "pans-strips-de-frango": {
+    "label": "Pans & Company Portugal, Strips de Frango",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 220,
+    "kcal": 542.0,
+    "protein": 35.0,
+    "carbs": 18.8,
+    "fat": 36.0
+  },
+  "pans-tequenos": {
+    "label": "Pans & Company Portugal, Tequeños",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 220,
+    "kcal": 852.0,
+    "protein": 26.2,
+    "carbs": 54.6,
+    "fat": 53.8
+  },
+  "pans-compotas": {
+    "label": "Pans & Company Portugal, Compotas",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 30,
+    "kcal": 64.0,
+    "protein": 0.1,
+    "carbs": 15.6,
+    "fat": 0.1
+  },
+  "pans-bola-de-berlim-com-creme": {
+    "label": "Pans & Company Portugal, Bola de Berlim com Creme",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 121,
+    "kcal": 329.0,
+    "protein": 6.5,
+    "carbs": 50.7,
+    "fat": 10.8
+  },
+  "pans-bolo-de-arroz": {
+    "label": "Pans & Company Portugal, Bolo de Arroz",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 80,
+    "kcal": 320.0,
+    "protein": 3.7,
+    "carbs": 38.4,
+    "fat": 16.0
+  },
+  "pans-brownie-de-caramelo-salgado": {
+    "label": "Pans & Company Portugal, Brownie de Caramelo Salgado",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 33,
+    "kcal": 136.0,
+    "protein": 1.5,
+    "carbs": 16.2,
+    "fat": 7.2
+  },
+  "pans-croissant-de-chocolate-avela": {
+    "label": "Pans & Company Portugal, Croissant de Chocolate Avelã",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 125,
+    "kcal": 554.0,
+    "protein": 6.7,
+    "carbs": 54.8,
+    "fat": 34.6
+  },
+  "pans-croissant-de-pistacho": {
+    "label": "Pans & Company Portugal, Croissant de Pistacho",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 127,
+    "kcal": 572.0,
+    "protein": 7.5,
+    "carbs": 53.6,
+    "fat": 36.1
+  },
+  "pans-croissant-recheado-com-chocolate": {
+    "label": "Pans & Company Portugal, Croissant Recheado com Chocolate",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 79,
+    "kcal": 340.0,
+    "protein": 5.1,
+    "carbs": 34.8,
+    "fat": 19.8
+  },
+  "pans-dot-de-caramelo": {
+    "label": "Pans & Company Portugal, Dot de Caramelo",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 71,
+    "kcal": 268.0,
+    "protein": 3.3,
+    "carbs": 35.5,
+    "fat": 12.1
+  },
+  "pans-dot-de-cheesecake": {
+    "label": "Pans & Company Portugal, Dot de Cheesecake",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 68,
+    "kcal": 233.0,
+    "protein": 3.7,
+    "carbs": 31.3,
+    "fat": 10.2
+  },
+  "pans-dot-de-chocolate": {
+    "label": "Pans & Company Portugal, Dot de Chocolate",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 71,
+    "kcal": 306.0,
+    "protein": 3.6,
+    "carbs": 34.8,
+    "fat": 16.3
+  },
+  "pans-dot-de-chocolate-avela": {
+    "label": "Pans & Company Portugal, Dot de Chocolate Avelã",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 72,
+    "kcal": 313.0,
+    "protein": 4.2,
+    "carbs": 34.6,
+    "fat": 17.3
+  },
+  "pans-dot-de-morango": {
+    "label": "Pans & Company Portugal, Dot de Morango",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 58,
+    "kcal": 233.0,
+    "protein": 2.9,
+    "carbs": 28.4,
+    "fat": 11.6
+  },
+  "pans-fatia-de-bolo-de-ananas": {
+    "label": "Pans & Company Portugal, Fatia de Bolo de Ananás",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 75,
+    "kcal": 299.0,
+    "protein": 3.8,
+    "carbs": 33.5,
+    "fat": 16.4
+  },
+  "pans-fatia-de-bolo-de-marmore": {
+    "label": "Pans & Company Portugal, Fatia de Bolo de Mármore",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 75,
+    "kcal": 264.0,
+    "protein": 3.8,
+    "carbs": 32.2,
+    "fat": 13.1
+  },
+  "pans-jesuita": {
+    "label": "Pans & Company Portugal, Jesuíta",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 101,
+    "kcal": 350.0,
+    "protein": 5.4,
+    "carbs": 33.3,
+    "fat": 21.1
+  },
+  "pans-muffin-de-limao": {
+    "label": "Pans & Company Portugal, Muffin de Limão",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 110,
+    "kcal": 499.0,
+    "protein": 5.3,
+    "carbs": 55.8,
+    "fat": 28.2
+  },
+  "pans-muffin-de-noz": {
+    "label": "Pans & Company Portugal, Muffin de Noz",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 110,
+    "kcal": 479.0,
+    "protein": 6.9,
+    "carbs": 52.1,
+    "fat": 26.4
+  },
+  "pans-muffin-triplo-de-chocolate": {
+    "label": "Pans & Company Portugal, Muffin Triplo de Chocolate",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 110,
+    "kcal": 440.0,
+    "protein": 5.0,
+    "carbs": 53.5,
+    "fat": 22.2
+  },
+  "pans-pao-de-deus": {
+    "label": "Pans & Company Portugal, Pão de Deus",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 100,
+    "kcal": 273.0,
+    "protein": 5.8,
+    "carbs": 43.6,
+    "fat": 7.8
+  },
+  "pans-pastel-de-nata": {
+    "label": "Pans & Company Portugal, Pastel de Nata",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 72,
+    "kcal": 209.0,
+    "protein": 2.9,
+    "carbs": 25.3,
+    "fat": 10.6
+  },
+  "pans-queijada-de-amendoa": {
+    "label": "Pans & Company Portugal, Queijada de Amêndoa",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 60,
+    "kcal": 231.0,
+    "protein": 3.7,
+    "carbs": 25.1,
+    "fat": 12.4
+  },
+  "pans-queijada-de-canela": {
+    "label": "Pans & Company Portugal, Queijada de Canela",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 85,
+    "kcal": 237.0,
+    "protein": 3.1,
+    "carbs": 45.1,
+    "fat": 4.8
+  },
+  "pans-queijada-de-feijao": {
+    "label": "Pans & Company Portugal, Queijada de Feijão",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 60,
+    "kcal": 192.0,
+    "protein": 3.9,
+    "carbs": 27.0,
+    "fat": 7.3
+  },
+  "pans-queijada-de-laranja": {
+    "label": "Pans & Company Portugal, Queijada de Laranja",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 95,
+    "kcal": 219.0,
+    "protein": 5.1,
+    "carbs": 40.4,
+    "fat": 4.1
+  },
+  "pans-queijada-de-leite-e-caramelo": {
+    "label": "Pans & Company Portugal, Queijada de Leite e Caramelo",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 90,
+    "kcal": 210.0,
+    "protein": 3.9,
+    "carbs": 38.9,
+    "fat": 4.3
+  },
+  "pans-queijada-madeirense": {
+    "label": "Pans & Company Portugal, Queijada Madeirense",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 90,
+    "kcal": 297.0,
+    "protein": 11.7,
+    "carbs": 35.9,
+    "fat": 11.8
+  },
+  "pans-rolls-de-canela": {
+    "label": "Pans & Company Portugal, Rolls de Canela",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 110,
+    "kcal": 343.0,
+    "protein": 5.9,
+    "carbs": 47.3,
+    "fat": 14.3
+  },
+  "pans-salame-de-chocolate": {
+    "label": "Pans & Company Portugal, Salame de chocolate",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 75,
+    "kcal": 328.0,
+    "protein": 3.7,
+    "carbs": 43.5,
+    "fat": 15.0
+  },
+  "pans-croissant-com-fiambre": {
+    "label": "Pans & Company Portugal, Croissant com Fiambre",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 140,
+    "kcal": 481.0,
+    "protein": 9.8,
+    "carbs": 44.9,
+    "fat": 29.0
+  },
+  "pans-croissant-com-fiambre-e-ovo": {
+    "label": "Pans & Company Portugal, Croissant com Fiambre e Ovo",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 229,
+    "kcal": 562.0,
+    "protein": 15.2,
+    "carbs": 47.4,
+    "fat": 34.5
+  },
+  "pans-croissant-com-manteiga": {
+    "label": "Pans & Company Portugal, Croissant com Manteiga",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 113,
+    "kcal": 515.0,
+    "protein": 5.5,
+    "carbs": 42.3,
+    "fat": 35.9
+  },
+  "pans-croissant-com-queijo": {
+    "label": "Pans & Company Portugal, Croissant com Queijo",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 133,
+    "kcal": 541.0,
+    "protein": 13.0,
+    "carbs": 43.4,
+    "fat": 35.0
+  },
+  "pans-croissant-misto": {
+    "label": "Pans & Company Portugal, Croissant Misto",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 148,
+    "kcal": 535.0,
+    "protein": 13.4,
+    "carbs": 44.8,
+    "fat": 33.4
+  },
+  "pans-croissant-simples": {
+    "label": "Pans & Company Portugal, Croissant Simples",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 103,
+    "kcal": 442.0,
+    "protein": 5.5,
+    "carbs": 42.2,
+    "fat": 27.8
+  },
+  "pans-chamucas": {
+    "label": "Pans & Company Portugal, Chamuças",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 66,
+    "kcal": 184.0,
+    "protein": 4.6,
+    "carbs": 16.8,
+    "fat": 10.7
+  },
+  "pans-croquete": {
+    "label": "Pans & Company Portugal, Croquete",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 66,
+    "kcal": 152.0,
+    "protein": 6.0,
+    "carbs": 13.2,
+    "fat": 8.3
+  },
+  "pans-empanada-de-atum": {
+    "label": "Pans & Company Portugal, Empanada de Atum",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 135,
+    "kcal": 374.0,
+    "protein": 10.2,
+    "carbs": 52.1,
+    "fat": 13.4
+  },
+  "pans-empanada-caprese": {
+    "label": "Pans & Company Portugal, Empanada Caprese",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 100,
+    "kcal": 235.0,
+    "protein": 7.4,
+    "carbs": 23.5,
+    "fat": 12.3
+  },
+  "pans-empanada-de-espinafres": {
+    "label": "Pans & Company Portugal, Empanada de Espinafres",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 100,
+    "kcal": 221.0,
+    "protein": 8.9,
+    "carbs": 25.5,
+    "fat": 9.3
+  },
+  "pans-empanada-de-frango": {
+    "label": "Pans & Company Portugal, Empanada de Frango",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 100,
+    "kcal": 230.0,
+    "protein": 9.5,
+    "carbs": 27.3,
+    "fat": 9.3
+  },
+  "pans-empanada-de-heura": {
+    "label": "Pans & Company Portugal, Empanada de Heura",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 100,
+    "kcal": 318.0,
+    "protein": 5.6,
+    "carbs": 30.8,
+    "fat": 18.9
+  },
+  "pans-empanada-de-queijo-fiambre": {
+    "label": "Pans & Company Portugal, Empanada de Queijo/Fiambre",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 100,
+    "kcal": 248.0,
+    "protein": 13.0,
+    "carbs": 24.6,
+    "fat": 10.8
+  },
+  "pans-empanada-de-vitela": {
+    "label": "Pans & Company Portugal, Empanada de Vitela",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 100,
+    "kcal": 258.0,
+    "protein": 8.2,
+    "carbs": 27.2,
+    "fat": 12.8
+  },
+  "pans-folhado-de-salsicha": {
+    "label": "Pans & Company Portugal, Folhado de Salsicha",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 130,
+    "kcal": 576.0,
+    "protein": 12.2,
+    "carbs": 31.8,
+    "fat": 44.5
+  },
+  "pans-folhado-misto": {
+    "label": "Pans & Company Portugal, Folhado Misto",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 128,
+    "kcal": 393.0,
+    "protein": 9.2,
+    "carbs": 32.0,
+    "fat": 24.3
+  },
+  "pans-pao-com-chourico": {
+    "label": "Pans & Company Portugal, Pão com Chouriço",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 150,
+    "kcal": 432.0,
+    "protein": 14.6,
+    "carbs": 58.2,
+    "fat": 14.9
+  },
+  "pans-panike-misto": {
+    "label": "Pans & Company Portugal, Panike Misto",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 122,
+    "kcal": 350.0,
+    "protein": 11.4,
+    "carbs": 29.7,
+    "fat": 20.1
+  },
+  "pans-panike-misto-carne": {
+    "label": "Pans & Company Portugal, Panike Misto Carne",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 175,
+    "kcal": 562.0,
+    "protein": 17.1,
+    "carbs": 43.8,
+    "fat": 32.9
+  },
+  "pans-pastel-de-bacalhau": {
+    "label": "Pans & Company Portugal, Pastel de Bacalhau",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 62,
+    "kcal": 88.0,
+    "protein": 5.4,
+    "carbs": 8.0,
+    "fat": 3.6
+  },
+  "pans-pastel-de-carne": {
+    "label": "Pans & Company Portugal, Pastel de Carne",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 65,
+    "kcal": 265.0,
+    "protein": 6.2,
+    "carbs": 43.3,
+    "fat": 7.2
+  },
+  "pans-rissol-de-camarao": {
+    "label": "Pans & Company Portugal, Rissol de camarão",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 81,
+    "kcal": 148.0,
+    "protein": 3.8,
+    "carbs": 21.7,
+    "fat": 4.9
+  },
+  "pans-leite-ucal": {
+    "label": "Pans & Company Portugal, Leite Ucal",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pans_company.pdf",
+    "grams": 250,
+    "kcal": 160.0,
+    "protein": 8.3,
+    "carbs": 25.0,
+    "fat": 3.0
+  },
+  "mcd-bacon-egg-mcmuffin": {
+    "label": "McDonald's Portugal, Bacon & Egg McMuffin (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 134,
+    "kcal": 306,
+    "protein": 17,
+    "carbs": 26,
+    "fat": 15,
+    "fiber": 1.8
+  },
+  "mcd-meia-torrada-com-manteiga": {
+    "label": "McDonald's Portugal, Meia torrada com manteiga (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 66,
+    "kcal": 210,
+    "protein": 5,
+    "carbs": 26,
+    "fat": 9,
+    "fiber": 2.3
+  },
+  "mcd-torrada-com-manteiga": {
+    "label": "McDonald's Portugal, Torrada com manteiga (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 132,
+    "kcal": 420,
+    "protein": 9,
+    "carbs": 53,
+    "fat": 18,
+    "fiber": 4.6
+  },
+  "mcd-tosta-mista": {
+    "label": "McDonald's Portugal, Tosta mista (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 166,
+    "kcal": 427,
+    "protein": 18,
+    "carbs": 55,
+    "fat": 14,
+    "fiber": 4.6
+  },
+  "mcd-croissant-simples": {
+    "label": "McDonald's Portugal, Croissant simples (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 75,
+    "kcal": 278,
+    "protein": 3,
+    "carbs": 29,
+    "fat": 16,
+    "fiber": 0.9
+  },
+  "mcd-croissant-com-fiambre": {
+    "label": "McDonald's Portugal, Croissant com fiambre (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 96,
+    "kcal": 299,
+    "protein": 7,
+    "carbs": 29,
+    "fat": 17,
+    "fiber": 1.0
+  },
+  "mcd-croissant-com-queijo": {
+    "label": "McDonald's Portugal, Croissant com queijo (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 103,
+    "kcal": 376,
+    "protein": 9,
+    "carbs": 31,
+    "fat": 24,
+    "fiber": 0.9
+  },
+  "mcd-croissant-misto": {
+    "label": "McDonald's Portugal, Croissant misto (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 124,
+    "kcal": 397,
+    "protein": 12,
+    "carbs": 31,
+    "fat": 25,
+    "fiber": 1.0
+  },
+  "mcd-croissant-de-chocolate": {
+    "label": "McDonald's Portugal, Croissant de chocolate (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 90,
+    "kcal": 389,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 23,
+    "fiber": 2.7
+  },
+  "mcd-cookie-pepitas-chocolate": {
+    "label": "McDonald's Portugal, Cookie com Pepitas de Chocolate (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 77,
+    "kcal": 365,
+    "protein": 4,
+    "carbs": 46,
+    "fat": 19,
+    "fiber": 1.2
+  },
+  "mcd-panquecas-topping-caramelo": {
+    "label": "McDonald's Portugal, Panquecas com topping caramelo (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 143,
+    "kcal": 361,
+    "protein": 7,
+    "carbs": 71,
+    "fat": 5,
+    "fiber": 1.0
+  },
+  "mcd-panquecas-topping-chocolate": {
+    "label": "McDonald's Portugal, Panquecas com topping chocolate (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 140,
+    "kcal": 351,
+    "protein": 8,
+    "carbs": 63,
+    "fat": 7,
+    "fiber": 2.3
+  },
+  "mcd-panquecas-topping-morango": {
+    "label": "McDonald's Portugal, Panquecas com topping morango (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 139,
+    "kcal": 303,
+    "protein": 7,
+    "carbs": 61,
+    "fat": 3,
+    "fiber": 1.5
+  },
+  "mcd-panquecas-com-xarope": {
+    "label": "McDonald's Portugal, Panquecas com xarope (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 122,
+    "kcal": 290,
+    "protein": 7,
+    "carbs": 58,
+    "fat": 3,
+    "fiber": 1.0
+  },
+  "mcd-panqueca": {
+    "label": "McDonald's Portugal, Panqueca (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 51,
+    "kcal": 114,
+    "protein": 3,
+    "carbs": 21,
+    "fat": 2,
+    "fiber": 0.5
+  },
+  "mcd-chicken-mcnuggets-4": {
+    "label": "McDonald's Portugal, Chicken McNuggets (4) (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 72,
+    "kcal": 175,
+    "protein": 11,
+    "carbs": 14,
+    "fat": 8,
+    "fiber": 0.6
+  },
+  "mcd-chicken-mcnuggets-20": {
+    "label": "McDonald's Portugal, Chicken McNuggets (20) (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 362,
+    "kcal": 873,
+    "protein": 55,
+    "carbs": 68,
+    "fat": 42,
+    "fiber": 3.2
+  },
+  "mcd-veggie-nuggets-4": {
+    "label": "McDonald's Portugal, Veggie Nuggets (4) (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 74,
+    "kcal": 223,
+    "protein": 9,
+    "carbs": 19,
+    "fat": 11,
+    "fiber": 3.4
+  },
+  "mcd-veggie-nuggets-10": {
+    "label": "McDonald's Portugal, Veggie Nuggets (10) (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 184,
+    "kcal": 559,
+    "protein": 22,
+    "carbs": 49,
+    "fat": 29,
+    "fiber": 8.5
+  },
+  "mcd-chicken-wings-3": {
+    "label": "McDonald's Portugal, Chicken Wings (3) (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 96,
+    "kcal": 219,
+    "protein": 22,
+    "carbs": 6,
+    "fat": 12,
+    "fiber": 0
+  },
+  "mcd-chicken-wings-6": {
+    "label": "McDonald's Portugal, Chicken Wings (6) (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 192,
+    "kcal": 438,
+    "protein": 44,
+    "carbs": 12,
+    "fat": 24,
+    "fiber": 0
+  },
+  "mcd-chicken-bacon": {
+    "label": "McDonald's Portugal, Chicken Bacon (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 143,
+    "kcal": 409,
+    "protein": 20,
+    "carbs": 35,
+    "fat": 20,
+    "fiber": 2.2
+  },
+  "mcd-mcroyal-cheese": {
+    "label": "McDonald's Portugal, McRoyal Cheese (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 213,
+    "kcal": 547,
+    "protein": 33,
+    "carbs": 38,
+    "fat": 29,
+    "fiber": 3.0
+  },
+  "mcd-mcroyal-deluxe": {
+    "label": "McDonald's Portugal, McRoyal Deluxe (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 248,
+    "kcal": 559,
+    "protein": 30,
+    "carbs": 35,
+    "fat": 33,
+    "fiber": 3.4
+  },
+  "mcd-big-arch": {
+    "label": "McDonald's Portugal, Big Arch (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 395,
+    "kcal": 1101,
+    "protein": 56,
+    "carbs": 55,
+    "fat": 72,
+    "fiber": 6.2
+  },
+  "mcd-big-arch-bacon": {
+    "label": "McDonald's Portugal, Big Arch Bacon (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 406,
+    "kcal": 1153,
+    "protein": 60,
+    "carbs": 55,
+    "fat": 76,
+    "fiber": 6.2
+  },
+  "mcd-snack-wrap-mayo": {
+    "label": "McDonald's Portugal, Snack WRAP Mayo (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 128,
+    "kcal": 336,
+    "protein": 11,
+    "carbs": 30,
+    "fat": 18,
+    "fiber": 5.1
+  },
+  "mcd-snack-wrap-hot-honey": {
+    "label": "McDonald's Portugal, Snack WRAP Hot Honey (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 138,
+    "kcal": 312,
+    "protein": 13,
+    "carbs": 38,
+    "fat": 11,
+    "fiber": 4.3
+  },
+  "mcd-snack-wrap-cheddar-bacon": {
+    "label": "McDonald's Portugal, Snack WRAP Cheddar & Bacon (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 120,
+    "kcal": 316,
+    "protein": 17,
+    "carbs": 25,
+    "fat": 16,
+    "fiber": 4.0
+  },
+  "mcd-chicken-delights": {
+    "label": "McDonald's Portugal, Chicken Delights (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 98,
+    "kcal": 216,
+    "protein": 14,
+    "carbs": 19,
+    "fat": 9,
+    "fiber": 0.9
+  },
+  "mcd-mcveggie": {
+    "label": "McDonald's Portugal, McVeggie (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 215,
+    "kcal": 454,
+    "protein": 11,
+    "carbs": 50,
+    "fat": 22,
+    "fiber": 4.5
+  },
+  "mcd-veggie-burger": {
+    "label": "McDonald's Portugal, Veggie Burger (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 126,
+    "kcal": 332,
+    "protein": 10,
+    "carbs": 43,
+    "fat": 13,
+    "fiber": 3.0
+  },
+  "mcd-mcveggie-smoky": {
+    "label": "McDonald's Portugal, McVeggie Smoky (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 205,
+    "kcal": 517,
+    "protein": 12,
+    "carbs": 51,
+    "fat": 28,
+    "fiber": 4.5
+  },
+  "mcd-chicken-share-box": {
+    "label": "McDonald's Portugal, Chicken Share Box (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 375,
+    "kcal": 878,
+    "protein": 63,
+    "carbs": 60,
+    "fat": 42,
+    "fiber": 3.8
+  },
+  "mcd-batatas-fritas-pequena": {
+    "label": "McDonald's Portugal, Batatas Fritas (embalagem pequena) (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 80,
+    "kcal": 229,
+    "protein": 3,
+    "carbs": 29,
+    "fat": 11,
+    "fiber": 2.9
+  },
+  "mcd-batatas-fritas-media": {
+    "label": "McDonald's Portugal, Batatas Fritas (embalagem média) (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 114,
+    "kcal": 327,
+    "protein": 4,
+    "carbs": 41,
+    "fat": 15,
+    "fiber": 4.1
+  },
+  "mcd-batatas-fritas-grande": {
+    "label": "McDonald's Portugal, Batatas Fritas (embalagem grande) (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 150,
+    "kcal": 430,
+    "protein": 5,
+    "carbs": 54,
+    "fat": 21,
+    "fiber": 5.4
+  },
+  "mcd-hash-brown": {
+    "label": "McDonald's Portugal, Hash Brown (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 60,
+    "kcal": 143,
+    "protein": 1,
+    "carbs": 15,
+    "fat": 8,
+    "fiber": 1.6
+  },
+  "mcd-salada-caesar-chicken-crispy": {
+    "label": "McDonald's Portugal, Salada Caesar Chicken Crispy (sem molho e sem croutons) (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 271,
+    "kcal": 342,
+    "protein": 19,
+    "carbs": 20,
+    "fat": 20,
+    "fiber": 3.9
+  },
+  "mcd-salada-caesar-chicken-grilled": {
+    "label": "McDonald's Portugal, Salada Caesar Chicken Grilled (sem molho e sem croutons) (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 237,
+    "kcal": 151,
+    "protein": 22,
+    "carbs": 4,
+    "fat": 5,
+    "fiber": 2.9
+  },
+  "mcd-salada-atum-pasta": {
+    "label": "McDonald's Portugal, Salada Atum & Pasta (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 230,
+    "kcal": 244,
+    "protein": 21,
+    "carbs": 22,
+    "fat": 7,
+    "fiber": 3.5
+  },
+  "mcd-salada-feta-pasta": {
+    "label": "McDonald's Portugal, Salada Feta & Pasta (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 215,
+    "kcal": 223,
+    "protein": 7,
+    "carbs": 34,
+    "fat": 5,
+    "fiber": 4.5
+  },
+  "mcd-croutons": {
+    "label": "McDonald's Portugal, Croutons (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 14,
+    "kcal": 61,
+    "protein": 2,
+    "carbs": 11,
+    "fat": 1,
+    "fiber": 0.7
+  },
+  "mcd-polpa-de-fruta": {
+    "label": "McDonald's Portugal, Polpa de Fruta (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 80,
+    "kcal": 50,
+    "protein": 0,
+    "carbs": 10,
+    "fat": 1,
+    "fiber": 1.0
+  },
+  "mcd-tarte-de-maca": {
+    "label": "McDonald's Portugal, Tarte de Maçã (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 80,
+    "kcal": 228,
+    "protein": 1,
+    "carbs": 28,
+    "fat": 12,
+    "fiber": 1.5
+  },
+  "mcd-mini-mcflurry-mms": {
+    "label": "McDonald's Portugal, Mini McFlurry M&M's (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 85,
+    "kcal": 171,
+    "protein": 4,
+    "carbs": 25,
+    "fat": 6,
+    "fiber": 0.6
+  },
+  "mcd-mcflurry-mms": {
+    "label": "McDonald's Portugal, McFlurry M&M's (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 171,
+    "kcal": 342,
+    "protein": 8,
+    "carbs": 49,
+    "fat": 12,
+    "fiber": 1.2
+  },
+  "mcd-mini-mcflurry-kitkat": {
+    "label": "McDonald's Portugal, Mini McFlurry KitKat (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 82,
+    "kcal": 154,
+    "protein": 3,
+    "carbs": 23,
+    "fat": 5,
+    "fiber": 0.3
+  },
+  "mcd-mcflurry-kitkat": {
+    "label": "McDonald's Portugal, McFlurry KitKat (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 165,
+    "kcal": 307,
+    "protein": 6,
+    "carbs": 46,
+    "fat": 11,
+    "fiber": 0.6
+  },
+  "mcd-mini-mcflurry-oreo": {
+    "label": "McDonald's Portugal, Mini McFlurry Oreo (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 79,
+    "kcal": 134,
+    "protein": 3,
+    "carbs": 21,
+    "fat": 4,
+    "fiber": 0.2
+  },
+  "mcd-mcflurry-oreo": {
+    "label": "McDonald's Portugal, McFlurry Oreo (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 158,
+    "kcal": 269,
+    "protein": 6,
+    "carbs": 43,
+    "fat": 8,
+    "fiber": 0.5
+  },
+  "mcd-mini-mcflurry-snickers": {
+    "label": "McDonald's Portugal, Mini McFlurry Snickers (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 96,
+    "kcal": 208,
+    "protein": 5,
+    "carbs": 30,
+    "fat": 8,
+    "fiber": 0.3
+  },
+  "mcd-mcflurry-snickers": {
+    "label": "McDonald's Portugal, McFlurry Snickers (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 188,
+    "kcal": 395,
+    "protein": 9,
+    "carbs": 57,
+    "fat": 15,
+    "fiber": 0.5
+  },
+  "mcd-mcflurry-biscoff-caramel": {
+    "label": "McDonald's Portugal, McFlurry Biscoff & Caramel (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 239,
+    "kcal": 461,
+    "protein": 8,
+    "carbs": 81,
+    "fat": 12,
+    "fiber": 0.2
+  },
+  "mcd-mini-mcflurry-biscoff-caramel": {
+    "label": "McDonald's Portugal, Mini McFlurry Biscoff & Caramel (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 140,
+    "kcal": 298,
+    "protein": 4,
+    "carbs": 55,
+    "fat": 7,
+    "fiber": 0.1
+  },
+  "mcd-sundae-caramelo": {
+    "label": "McDonald's Portugal, Sundae Caramelo (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 154,
+    "kcal": 287,
+    "protein": 5,
+    "carbs": 54,
+    "fat": 6,
+    "fiber": 0
+  },
+  "mcd-sundae-chocolate": {
+    "label": "McDonald's Portugal, Sundae Chocolate (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 151,
+    "kcal": 277,
+    "protein": 5,
+    "carbs": 45,
+    "fat": 8,
+    "fiber": 1.2
+  },
+  "mcd-sundae-morango": {
+    "label": "McDonald's Portugal, Sundae Morango (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 150,
+    "kcal": 229,
+    "protein": 4,
+    "carbs": 44,
+    "fat": 4,
+    "fiber": 0.5
+  },
+  "mcd-sundae-natura": {
+    "label": "McDonald's Portugal, Sundae Natura (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 113,
+    "kcal": 155,
+    "protein": 4,
+    "carbs": 25,
+    "fat": 4,
+    "fiber": 0
+  },
+  "mcd-bolo-aniversario-pao-de-lo": {
+    "label": "McDonald's Portugal, Bolo de Aniversário Pão de Ló (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 125,
+    "kcal": 363,
+    "protein": 7,
+    "carbs": 69,
+    "fat": 7,
+    "fiber": 1.1
+  },
+  "mcd-bolo-aniversario-brigadeiro": {
+    "label": "McDonald's Portugal, Bolo de Aniversário Brigadeiro (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 125,
+    "kcal": 460,
+    "protein": 7,
+    "carbs": 64,
+    "fat": 19,
+    "fiber": 2.9
+  },
+  "mcd-hamburger-sem-gluten": {
+    "label": "McDonald's Portugal, Hamburger sem glúten (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 132,
+    "kcal": 288,
+    "protein": 11,
+    "carbs": 37,
+    "fat": 9,
+    "fiber": 4.5
+  },
+  "mcd-cheeseburger-sem-gluten": {
+    "label": "McDonald's Portugal, Cheeseburger sem glúten (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 146,
+    "kcal": 336,
+    "protein": 14,
+    "carbs": 38,
+    "fat": 13,
+    "fiber": 4.5
+  },
+  "mcd-double-cheeseburger-sem-gluten": {
+    "label": "McDonald's Portugal, Double Cheeseburger sem glúten (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 202,
+    "kcal": 486,
+    "protein": 25,
+    "carbs": 39,
+    "fat": 24,
+    "fiber": 4.6
+  },
+  "mcd-big-mac-sem-gluten": {
+    "label": "McDonald's Portugal, Big Mac sem glúten (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 227,
+    "kcal": 482,
+    "protein": 23,
+    "carbs": 38,
+    "fat": 23,
+    "fiber": 5.1
+  },
+  "mcd-mcroyal-cheese-sem-gluten": {
+    "label": "McDonald's Portugal, McRoyal Cheese sem glúten (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 221,
+    "kcal": 524,
+    "protein": 28,
+    "carbs": 41,
+    "fat": 27,
+    "fiber": 4.6
+  },
+  "mcd-mcroyal-deluxe-sem-gluten": {
+    "label": "McDonald's Portugal, McRoyal Deluxe sem glúten (PDF do balcão, 2026-10-27)",
+    "url": "https://www.mcdonalds.pt/media/11480/17-nutricao-balcao-27_outubro_2026.pdf",
+    "grams": 255,
+    "kcal": 521,
+    "protein": 26,
+    "carbs": 37,
+    "fat": 30,
+    "fiber": 5.1
+  },
+  "dominos-fiambre-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Fiambre Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 58,
+    "kcal": 113,
+    "protein": 6.2,
+    "carbs": 13.7,
+    "fat": 3.6
+  },
+  "dominos-fiambre-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Fiambre Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 95,
+    "kcal": 191,
+    "protein": 9.5,
+    "carbs": 27.3,
+    "fat": 4.7
+  },
+  "dominos-fiambre-media-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Fiambre Média Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 47,
+    "kcal": 90,
+    "protein": 5.4,
+    "carbs": 9.2,
+    "fat": 3.5
+  },
+  "dominos-fiambre-grande-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Fiambre Grande Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 63,
+    "kcal": 123,
+    "protein": 7.3,
+    "carbs": 13.7,
+    "fat": 4.3
+  },
+  "dominos-funghi-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Funghi Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 66,
+    "kcal": 127,
+    "protein": 6.4,
+    "carbs": 13.9,
+    "fat": 4.9
+  },
+  "dominos-funghi-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Funghi Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 108,
+    "kcal": 207,
+    "protein": 9.6,
+    "carbs": 27.9,
+    "fat": 6.2
+  },
+  "dominos-funghi-media-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Funghi Média Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 53,
+    "kcal": 103,
+    "protein": 5.6,
+    "carbs": 9.2,
+    "fat": 4.7
+  },
+  "dominos-fans-de-pepperoni-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Fans de Pepperoni Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 58,
+    "kcal": 135,
+    "protein": 6.3,
+    "carbs": 14.2,
+    "fat": 5.7
+  },
+  "dominos-fans-de-pepperoni-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Fans de Pepperoni Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 99,
+    "kcal": 223,
+    "protein": 9.7,
+    "carbs": 28.3,
+    "fat": 7.6
+  },
+  "dominos-fans-de-pepperoni-media-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Fans de Pepperoni Média Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 45,
+    "kcal": 111,
+    "protein": 5.5,
+    "carbs": 9.5,
+    "fat": 5.6
+  },
+  "dominos-fans-de-pepperoni-grande-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Fans de Pepperoni Grande Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 64,
+    "kcal": 154,
+    "protein": 7.3,
+    "carbs": 14.4,
+    "fat": 7.2
+  },
+  "dominos-bacon-e-fiambre-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Bacon e Fiambre Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 61,
+    "kcal": 124,
+    "protein": 6.5,
+    "carbs": 14.1,
+    "fat": 4.7
+  },
+  "dominos-bacon-e-fiambre-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Bacon e Fiambre Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 102,
+    "kcal": 205,
+    "protein": 9.8,
+    "carbs": 28.0,
+    "fat": 5.9
+  },
+  "dominos-bacon-e-fiambre-media-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Bacon e Fiambre Média Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 48,
+    "kcal": 100,
+    "protein": 5.7,
+    "carbs": 9.3,
+    "fat": 4.5
+  },
+  "dominos-bacon-e-fiambre-grande-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Bacon e Fiambre Grande Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 67,
+    "kcal": 135,
+    "protein": 7.4,
+    "carbs": 14.2,
+    "fat": 5.4
+  },
+  "dominos-carbonara-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Carbonara Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 66,
+    "kcal": 150,
+    "protein": 6.7,
+    "carbs": 14.0,
+    "fat": 7.1
+  },
+  "dominos-carbonara-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Carbonara Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 105,
+    "kcal": 239,
+    "protein": 10.1,
+    "carbs": 27.7,
+    "fat": 9.3
+  },
+  "dominos-carbonara-grande-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Carbonara Grande Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 74,
+    "kcal": 168,
+    "protein": 7.8,
+    "carbs": 14.3,
+    "fat": 8.6
+  },
+  "dominos-frango-bbq-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Frango BBQ Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 65,
+    "kcal": 129,
+    "protein": 6.2,
+    "carbs": 17.6,
+    "fat": 3.4
+  },
+  "dominos-frango-bbq-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Frango BBQ Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 105,
+    "kcal": 214,
+    "protein": 9.7,
+    "carbs": 32.7,
+    "fat": 4.5
+  },
+  "dominos-frango-bbq-grande-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Frango BBQ Grande Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 75,
+    "kcal": 146,
+    "protein": 7.4,
+    "carbs": 18.9,
+    "fat": 4.0
+  },
+  "dominos-tropicaliente-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Tropicaliente Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 67,
+    "kcal": 120,
+    "protein": 5.9,
+    "carbs": 14.9,
+    "fat": 4.0
+  },
+  "dominos-tropicaliente-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Tropicaliente Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 113,
+    "kcal": 204,
+    "protein": 9.2,
+    "carbs": 29.3,
+    "fat": 5.4
+  },
+  "dominos-tropicaliente-media-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Tropicaliente Média Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 54,
+    "kcal": 96,
+    "protein": 5.1,
+    "carbs": 10.1,
+    "fat": 3.9
+  },
+  "dominos-tropicaliente-grande-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Tropicaliente Grande Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 77,
+    "kcal": 134,
+    "protein": 6.8,
+    "carbs": 15.4,
+    "fat": 4.9
+  },
+  "dominos-pepperoni-passion-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Pepperoni Passion Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 69,
+    "kcal": 171,
+    "protein": 8.5,
+    "carbs": 14.5,
+    "fat": 8.6
+  },
+  "dominos-pepperoni-passion-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Pepperoni Passion Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 111,
+    "kcal": 261,
+    "protein": 12.0,
+    "carbs": 28.5,
+    "fat": 10.6
+  },
+  "dominos-pepperoni-passion-media-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Pepperoni Passion Média Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 56,
+    "kcal": 147,
+    "protein": 7.7,
+    "carbs": 9.7,
+    "fat": 8.4
+  },
+  "dominos-pepperoni-passion-grande-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Pepperoni Passion Grande Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 75,
+    "kcal": 191,
+    "protein": 9.7,
+    "carbs": 14.7,
+    "fat": 10.2
+  },
+  "dominos-campestre-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Campestre Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 65,
+    "kcal": 142,
+    "protein": 7.0,
+    "carbs": 17.5,
+    "fat": 4.6
+  },
+  "dominos-campestre-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Campestre Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 107,
+    "kcal": 233,
+    "protein": 10.8,
+    "carbs": 32.7,
+    "fat": 6.1
+  },
+  "dominos-campestre-media-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Campestre Média Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 54,
+    "kcal": 118,
+    "protein": 6.2,
+    "carbs": 12.7,
+    "fat": 4.5
+  },
+  "dominos-campestre-grande-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Campestre Grande Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 77,
+    "kcal": 165,
+    "protein": 8.5,
+    "carbs": 18.9,
+    "fat": 5.7
+  },
+  "dominos-festim-de-queijo-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Festim de Queijo Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 63,
+    "kcal": 164,
+    "protein": 7.5,
+    "carbs": 13.4,
+    "fat": 8.9
+  },
+  "dominos-festim-de-queijo-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Festim de Queijo Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 104,
+    "kcal": 262,
+    "protein": 11.4,
+    "carbs": 27.0,
+    "fat": 11.9
+  },
+  "dominos-festim-de-queijo-media-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Festim de Queijo Média Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 51,
+    "kcal": 135,
+    "protein": 6.7,
+    "carbs": 8.8,
+    "fat": 8.0
+  },
+  "dominos-festim-de-queijo-grande-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Festim de Queijo Grande Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 73,
+    "kcal": 192,
+    "protein": 9.1,
+    "carbs": 13.5,
+    "fat": 11.2
+  },
+  "dominos-extravaganzza-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Extravaganzza Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 87,
+    "kcal": 163,
+    "protein": 8.9,
+    "carbs": 15.2,
+    "fat": 7.0
+  },
+  "dominos-extravaganzza-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Extravaganzza Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 136,
+    "kcal": 256,
+    "protein": 12.6,
+    "carbs": 29.5,
+    "fat": 9.2
+  },
+  "dominos-extravaganzza-media-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Extravaganzza Média Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 74,
+    "kcal": 139,
+    "protein": 8.1,
+    "carbs": 10.5,
+    "fat": 6.9
+  },
+  "dominos-extravaganzza-grande-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Extravaganzza Grande Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 101,
+    "kcal": 186,
+    "protein": 10.3,
+    "carbs": 15.6,
+    "fat": 8.7
+  },
+  "dominos-buffalo-queen-media-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Buffalo Queen Média Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 71,
+    "kcal": 141,
+    "protein": 7.2,
+    "carbs": 14.6,
+    "fat": 5.9
+  },
+  "dominos-buffalo-queen-grande-original-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Buffalo Queen Grande Original 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 116,
+    "kcal": 231,
+    "protein": 11.0,
+    "carbs": 28.7,
+    "fat": 7.9
+  },
+  "dominos-buffalo-queen-media-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Buffalo Queen Média Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 58,
+    "kcal": 115,
+    "protein": 6.3,
+    "carbs": 9.9,
+    "fat": 5.4
+  },
+  "dominos-buffalo-queen-grande-italiana-fatia": {
+    "label": "Domino's Pizza Portugal, Pizza Buffalo Queen Grande Italiana 1 fatia (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 82,
+    "kcal": 158,
+    "protein": 8.6,
+    "carbs": 15.0,
+    "fat": 6.9
+  },
+  "dominos-delicias-de-queijo-meia-dose": {
+    "label": "Domino's Pizza Portugal, Delícias de Queijo 1/2 dose de venda (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 95,
+    "kcal": 242,
+    "protein": 8.3,
+    "carbs": 38.9,
+    "fat": 5.7
+  },
+  "dominos-pao-de-queijo-meia-dose": {
+    "label": "Domino's Pizza Portugal, Pão de Queijo 1/2 dose de venda (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 192,
+    "kcal": 598,
+    "protein": 20.5,
+    "carbs": 58.1,
+    "fat": 31.3
+  },
+  "dominos-pao-de-queijo-com-bacon-e-jalapenos-meia-dose": {
+    "label": "Domino's Pizza Portugal, Pão de Queijo com Bacon e Jalapenos 1/2 dose de venda (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 217,
+    "kcal": 547,
+    "protein": 26.6,
+    "carbs": 54.7,
+    "fat": 24.5
+  },
+  "dominos-pao-de-alho-dose": {
+    "label": "Domino's Pizza Portugal, Pão de Alho 1 dose de venda (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 90,
+    "kcal": 300,
+    "protein": 5.4,
+    "carbs": 36.5,
+    "fat": 14.2
+  },
+  "dominos-pao-de-alho-com-queijo-dose": {
+    "label": "Domino's Pizza Portugal, Pão de Alho com queijo 1 dose de venda (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 120,
+    "kcal": 382,
+    "protein": 11.1,
+    "carbs": 36.8,
+    "fat": 20.6
+  },
+  "dominos-batatas-rusticas-dose": {
+    "label": "Domino's Pizza Portugal, Batatas Rústicas 1 dose de venda (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 220,
+    "kcal": 330,
+    "protein": 5.5,
+    "carbs": 44.0,
+    "fat": 13.4
+  },
+  "dominos-kickers-dose": {
+    "label": "Domino's Pizza Portugal, Kickers 1 dose de venda (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 296,
+    "kcal": 592,
+    "protein": 45.9,
+    "carbs": 42.9,
+    "fat": 26.0
+  },
+  "dominos-tiras-dose": {
+    "label": "Domino's Pizza Portugal, Tiras 1 dose de venda (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 224,
+    "kcal": 495,
+    "protein": 38.3,
+    "carbs": 36.3,
+    "fat": 22.0
+  },
+  "dominos-cinnabites-meia-dose": {
+    "label": "Domino's Pizza Portugal, Cinnabites 1/2 dose de venda (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 99,
+    "kcal": 291,
+    "protein": 6.4,
+    "carbs": 41.5,
+    "fat": 11.1
+  },
+  "dominos-chocopie-meia-dose": {
+    "label": "Domino's Pizza Portugal, Chocopie 1/2 dose de venda (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 108,
+    "kcal": 444,
+    "protein": 5.5,
+    "carbs": 46.9,
+    "fat": 25.6
+  },
+  "dominos-dulcineia-meia-dose": {
+    "label": "Domino's Pizza Portugal, Dulcineia 1/2 dose de venda (Declaração nutricional, valores médios, última actualização Janeiro de 2020)",
+    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
+    "grams": 122,
+    "kcal": 377,
+    "protein": 6.9,
+    "carbs": 60.5,
+    "fat": 12.1
+  },
+  "pizzahut-batatas-chips-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Batatas Chips, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 34,
+    "kcal": 169,
+    "protein": 4.3,
+    "carbs": 14.3,
+    "fat": 10.3
+  },
+  "pizzahut-batatas-country-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Batatas Country, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 210,
+    "kcal": 424,
+    "protein": 5.7,
+    "carbs": 52.5,
+    "fat": 19.7
+  },
+  "pizzahut-batatas-country-com-queijo-e-bacon-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Batatas Country com Queijo e Bacon, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 336,
+    "kcal": 736,
+    "protein": 17.1,
+    "carbs": 71.3,
+    "fat": 40.4
+  },
+  "pizzahut-batatas-rusticas-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Batatas Rústicas, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 160,
+    "kcal": 251,
+    "protein": 3.2,
+    "carbs": 36.8,
+    "fat": 8.8
+  },
+  "pizzahut-batatas-rusticas-com-queijo-e-bacon-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Batatas Rústicas com Queijo e Bacon, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 216,
+    "kcal": 421,
+    "protein": 12.7,
+    "carbs": 38.1,
+    "fat": 22.9
+  },
+  "pizzahut-cheesy-pan-pedaco": {
+    "label": "Pizza Hut Portugal, Cheesy Pan, 1 pedaço (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 16,
+    "kcal": 47,
+    "protein": 1.8,
+    "carbs": 5.6,
+    "fat": 1.9
+  },
+  "pizzahut-cheesy-pan-bacon-pedaco": {
+    "label": "Pizza Hut Portugal, Cheesy Pan Bacon, 1 pedaço (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 18,
+    "kcal": 51,
+    "protein": 2.0,
+    "carbs": 5.6,
+    "fat": 2.2
+  },
+  "pizzahut-cheesy-pops-unidade": {
+    "label": "Pizza Hut Portugal, Cheesy Pops, 1 unidade (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 11,
+    "kcal": 30,
+    "protein": 0.6,
+    "carbs": 3.0,
+    "fat": 1.8
+  },
+  "pizzahut-chicken-fillets-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Chicken Fillets, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 130,
+    "kcal": 248,
+    "protein": 24.3,
+    "carbs": 17.9,
+    "fat": 8.6
+  },
+  "pizzahut-chicken-nuggets-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Chicken Nuggets, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 108,
+    "kcal": 268,
+    "protein": 13.0,
+    "carbs": 19.4,
+    "fat": 15.1
+  },
+  "pizzahut-asas-de-frango-unidade": {
+    "label": "Pizza Hut Portugal, Asas de Frango, 1 unidade (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 339,
+    "kcal": 638,
+    "protein": 42.8,
+    "carbs": 40.4,
+    "fat": 32.2
+  },
+  "pizzahut-filetes-frango-panado-e-batatas-rusticas-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Filetes Frango Panado e Batatas Rústicas, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 291,
+    "kcal": 500,
+    "protein": 27.5,
+    "carbs": 54.7,
+    "fat": 17.4
+  },
+  "pizzahut-pao-de-alho-simples-fatia": {
+    "label": "Pizza Hut Portugal, Pão de Alho Simples, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 35,
+    "kcal": 86,
+    "protein": 2.0,
+    "carbs": 12.0,
+    "fat": 3.3
+  },
+  "pizzahut-pao-de-alho-supremo-fatia": {
+    "label": "Pizza Hut Portugal, Pão de Alho Supremo, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 54,
+    "kcal": 152,
+    "protein": 5.2,
+    "carbs": 12.2,
+    "fat": 8.8
+  },
+  "pizzahut-pao-de-alho-supremo-vegan-fatia": {
+    "label": "Pizza Hut Portugal, Pão de Alho Supremo Vegan, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 52,
+    "kcal": 135,
+    "protein": 2.0,
+    "carbs": 15.6,
+    "fat": 7.4
+  },
+  "pizzahut-pao-de-alho-com-azeitonas-fatia": {
+    "label": "Pizza Hut Portugal, Pão de Alho com Azeitonas, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 64,
+    "kcal": 166,
+    "protein": 5.3,
+    "carbs": 12.2,
+    "fat": 10.2
+  },
+  "pizzahut-pao-de-alho-com-azeitonas-e-tomate-cherry-fatia": {
+    "label": "Pizza Hut Portugal, Pão de Alho com Azeitonas e Tomate Cherry, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 76,
+    "kcal": 173,
+    "protein": 5.6,
+    "carbs": 13.9,
+    "fat": 10.3
+  },
+  "pizzahut-pao-de-alho-com-bacon-fatia": {
+    "label": "Pizza Hut Portugal, Pão de Alho com Bacon, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 61,
+    "kcal": 160,
+    "protein": 6.4,
+    "carbs": 12.3,
+    "fat": 9.1
+  },
+  "pizzahut-pao-de-alho-com-cherry-fatia": {
+    "label": "Pizza Hut Portugal, Pão de Alho com Cherry, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 54,
+    "kcal": 137,
+    "protein": 5.2,
+    "carbs": 12.2,
+    "fat": 7.0
+  },
+  "pizzahut-pao-de-alho-com-chourico-fatia": {
+    "label": "Pizza Hut Portugal, Pão de Alho com Chouriço, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 62,
+    "kcal": 175,
+    "protein": 7.0,
+    "carbs": 12.4,
+    "fat": 10.4
+  },
+  "pizzahut-pao-de-alho-com-pepperoni-fatia": {
+    "label": "Pizza Hut Portugal, Pão de Alho com Pepperoni, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 58,
+    "kcal": 161,
+    "protein": 6.3,
+    "carbs": 12.2,
+    "fat": 9.3
+  },
+  "pizzahut-pao-de-alho-com-tomate-fatia": {
+    "label": "Pizza Hut Portugal, Pão de Alho com Tomate, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 55,
+    "kcal": 137,
+    "protein": 5.2,
+    "carbs": 12.3,
+    "fat": 7.0
+  },
+  "pizzahut-pao-de-alho-3-queijos-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Pão de Alho 3 Queijos, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 53,
+    "kcal": 155,
+    "protein": 5.2,
+    "carbs": 12.5,
+    "fat": 9.3
+  },
+  "pizzahut-batatas-lays-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Batatas Lays, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 45,
+    "kcal": 234,
+    "protein": 2.7,
+    "carbs": 23.9,
+    "fat": 14.0
+  },
+  "pizzahut-breadsticks-chourico-stick": {
+    "label": "Pizza Hut Portugal, Breadsticks Chouriço, 1 stick (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 37,
+    "kcal": 110,
+    "protein": 3.7,
+    "carbs": 14.7,
+    "fat": 3.8
+  },
+  "pizzahut-breadsticks-d-alho-stick": {
+    "label": "Pizza Hut Portugal, Breadsticks D'Alho, 1 stick (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 38,
+    "kcal": 112,
+    "protein": 3.8,
+    "carbs": 14.9,
+    "fat": 3.9
+  },
+  "pizzahut-salsichas-com-molho-bbq-pedaco": {
+    "label": "Pizza Hut Portugal, Salsichas com Molho BBQ, 1 pedaço (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 17,
+    "kcal": 36,
+    "protein": 1.9,
+    "carbs": 0.8,
+    "fat": 2.8
+  },
+  "pizzahut-veggie-rolls-rolo": {
+    "label": "Pizza Hut Portugal, Veggie Rolls, 1 rolo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 38,
+    "kcal": 97,
+    "protein": 5.0,
+    "carbs": 9.9,
+    "fat": 4.9
+  },
+  "pizzahut-base-alface-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Base Alface, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 150,
+    "kcal": 18,
+    "protein": 2.7,
+    "carbs": 1.2,
+    "fat": 0.3
+  },
+  "pizzahut-base-penne-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Base Penne, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 150,
+    "kcal": 260,
+    "protein": 9.0,
+    "carbs": 49.5,
+    "fat": 1.8
+  },
+  "pizzahut-base-penne-e-alface-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Base Penne + Alface, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 251,
+    "kcal": 191,
+    "protein": 8.7,
+    "carbs": 34.2,
+    "fat": 1.5
+  },
+  "pizzahut-caprese-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Caprese, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 394,
+    "kcal": 429,
+    "protein": 12.9,
+    "carbs": 47.8,
+    "fat": 19.5
+  },
+  "pizzahut-chicken-deluxe-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Chicken Deluxe, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 431,
+    "kcal": 634,
+    "protein": 29.1,
+    "carbs": 32.8,
+    "fat": 42.4
+  },
+  "pizzahut-chicken-garden-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Chicken Garden, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 476,
+    "kcal": 443,
+    "protein": 22.1,
+    "carbs": 24.1,
+    "fat": 28.2
+  },
+  "pizzahut-di-capra-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Di Capra, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 394,
+    "kcal": 390,
+    "protein": 15.4,
+    "carbs": 10.2,
+    "fat": 32.3
+  },
+  "pizzahut-do-campo-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Do Campo, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 338,
+    "kcal": 189,
+    "protein": 5.8,
+    "carbs": 12.4,
+    "fat": 12.6
+  },
+  "pizzahut-orange-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Orange, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 465,
+    "kcal": 158,
+    "protein": 6.9,
+    "carbs": 27.1,
+    "fat": 2.7
+  },
+  "pizzahut-salada-portuguesa-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Salada Portuguesa, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 433,
+    "kcal": 247,
+    "protein": 12.6,
+    "carbs": 16.9,
+    "fat": 13.8
+  },
+  "pizzahut-rustica-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Rústica, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 379,
+    "kcal": 292,
+    "protein": 13.8,
+    "carbs": 13.3,
+    "fat": 19.5
+  },
+  "pizzahut-summer-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Summer, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 412,
+    "kcal": 140,
+    "protein": 3.4,
+    "carbs": 29.5,
+    "fat": 1.2
+  },
+  "pizzahut-chicken-fillet-gratin-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Chicken Fillet Gratin, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 482,
+    "kcal": 820,
+    "protein": 33.8,
+    "carbs": 92.9,
+    "fat": 32.2
+  },
+  "pizzahut-funghi-chicken-gratin-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Funghi Chicken Gratin, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 437,
+    "kcal": 796,
+    "protein": 37.2,
+    "carbs": 83.6,
+    "fat": 32.9
+  },
+  "pizzahut-lasanha-de-carne-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Lasanha de Carne, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 479,
+    "kcal": 780,
+    "protein": 32.8,
+    "carbs": 62.6,
+    "fat": 43.7
+  },
+  "pizzahut-calabresa-carbonara-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Calabresa Carbonara Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 127,
+    "kcal": 379,
+    "protein": 15.2,
+    "carbs": 38.0,
+    "fat": 17.5
+  },
+  "pizzahut-carbonara-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Carbonara Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 113,
+    "kcal": 334,
+    "protein": 12.3,
+    "carbs": 38.2,
+    "fat": 13.8
+  },
+  "pizzahut-chicken-carbonara-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Chicken Carbonara Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 128,
+    "kcal": 358,
+    "protein": 14.1,
+    "carbs": 40.7,
+    "fat": 14.6
+  },
+  "pizzahut-hot-chicken-fiesta-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Hot Chicken Fiesta Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 128,
+    "kcal": 285,
+    "protein": 12.1,
+    "carbs": 36.9,
+    "fat": 9.3
+  },
+  "pizzahut-original-hot-e-honey-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Original Hot&Honey Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 112,
+    "kcal": 338,
+    "protein": 13.1,
+    "carbs": 35.9,
+    "fat": 15.1
+  },
+  "pizzahut-burger-lovers-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Burger Lovers Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 112,
+    "kcal": 321,
+    "protein": 11.8,
+    "carbs": 32.9,
+    "fat": 16.0
+  },
+  "pizzahut-crispy-chicken-supreme-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Crispy Chicken Supreme Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 118,
+    "kcal": 299,
+    "protein": 12.5,
+    "carbs": 33.3,
+    "fat": 12.7
+  },
+  "pizzahut-havaiana-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Havaiana Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 116,
+    "kcal": 275,
+    "protein": 13.0,
+    "carbs": 31.4,
+    "fat": 10.1
+  },
+  "pizzahut-cheeseham-media-fatia": {
+    "label": "Pizza Hut Portugal, Cheeseham Média, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 103,
+    "kcal": 286,
+    "protein": 12.6,
+    "carbs": 29.8,
+    "fat": 12.0
+  },
+  "pizzahut-serrana-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Serrana Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 107,
+    "kcal": 290,
+    "protein": 11.1,
+    "carbs": 30.1,
+    "fat": 13.2
+  },
+  "pizzahut-veggie-lovers-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Veggie Lovers Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 110,
+    "kcal": 266,
+    "protein": 9.8,
+    "carbs": 33.4,
+    "fat": 10.9
+  },
+  "pizzahut-bacon-lovers-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Bacon Lovers Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 109,
+    "kcal": 315,
+    "protein": 13.3,
+    "carbs": 29.8,
+    "fat": 14.8
+  },
+  "pizzahut-camponesa-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Camponesa Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 122,
+    "kcal": 290,
+    "protein": 12.9,
+    "carbs": 30.6,
+    "fat": 12.0
+  },
+  "pizzahut-pepperoni-lovers-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Pepperoni Lovers Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 104,
+    "kcal": 316,
+    "protein": 13.1,
+    "carbs": 29.8,
+    "fat": 15.0
+  },
+  "pizzahut-portuguesa-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Portuguesa Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 110,
+    "kcal": 291,
+    "protein": 12.1,
+    "carbs": 30.6,
+    "fat": 12.8
+  },
+  "pizzahut-tropical-media-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Tropical Média (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 109,
+    "kcal": 262,
+    "protein": 10.7,
+    "carbs": 31.7,
+    "fat": 9.6
+  },
+  "pizzahut-bacon-fest-fatia": {
+    "label": "Pizza Hut Portugal, Bacon Fest, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 122,
+    "kcal": 347,
+    "protein": 13.9,
+    "carbs": 39.1,
+    "fat": 14.8
+  },
+  "pizzahut-baviera-fatia": {
+    "label": "Pizza Hut Portugal, Baviera, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 122,
+    "kcal": 333,
+    "protein": 13.0,
+    "carbs": 39.6,
+    "fat": 12.8
+  },
+  "pizzahut-carbonara-massa-pan-fatia": {
+    "label": "Pizza Hut Portugal, Carbonara (Massa Pan), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 134,
+    "kcal": 371,
+    "protein": 13.9,
+    "carbs": 38.8,
+    "fat": 16.8
+  },
+  "pizzahut-chicken-golden-fatia": {
+    "label": "Pizza Hut Portugal, Chicken Golden, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 130,
+    "kcal": 320,
+    "protein": 14.3,
+    "carbs": 38.8,
+    "fat": 11.1
+  },
+  "pizzahut-fromaggi-speciale-fatia": {
+    "label": "Pizza Hut Portugal, Fromaggi Speciale, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 125,
+    "kcal": 327,
+    "protein": 11.8,
+    "carbs": 38.9,
+    "fat": 13.4
+  },
+  "pizzahut-lusitana-fatia": {
+    "label": "Pizza Hut Portugal, Lusitana, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 120,
+    "kcal": 344,
+    "protein": 13.1,
+    "carbs": 38.6,
+    "fat": 14.1
+  },
+  "pizzahut-mediterranea-fatia": {
+    "label": "Pizza Hut Portugal, Mediterrânea, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 122,
+    "kcal": 308,
+    "protein": 11.5,
+    "carbs": 38.7,
+    "fat": 10.9
+  },
+  "pizzahut-pancetta-fatia": {
+    "label": "Pizza Hut Portugal, Pancetta, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 122,
+    "kcal": 338,
+    "protein": 12.5,
+    "carbs": 38.1,
+    "fat": 14.1
+  },
+  "pizzahut-pepperoni-garden-fatia": {
+    "label": "Pizza Hut Portugal, Pepperoni Garden, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 117,
+    "kcal": 330,
+    "protein": 12.3,
+    "carbs": 39.4,
+    "fat": 12.9
+  },
+  "pizzahut-pepperoni-sweet-fatia": {
+    "label": "Pizza Hut Portugal, Pepperoni Sweet, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 122,
+    "kcal": 333,
+    "protein": 12.3,
+    "carbs": 40.2,
+    "fat": 12.9
+  },
+  "pizzahut-pizza-doce-maca-e-canela-fatia": {
+    "label": "Pizza Hut Portugal, Pizza Doce Maçã e Canela, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 90,
+    "kcal": 207,
+    "protein": 5.2,
+    "carbs": 36.1,
+    "fat": 4.4
+  },
+  "pizzahut-super-fatia-bacon-e-ovo-fatia": {
+    "label": "Pizza Hut Portugal, Super Fatia Bacon e Ovo, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 244,
+    "kcal": 674,
+    "protein": 27.3,
+    "carbs": 75.7,
+    "fat": 27.2
+  },
+  "pizzahut-super-fatia-burger-lovers-fatia": {
+    "label": "Pizza Hut Portugal, Super Fatia Burger Lovers, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 272,
+    "kcal": 775,
+    "protein": 28.5,
+    "carbs": 79.9,
+    "fat": 37.1
+  },
+  "pizzahut-super-fatia-crispy-fatia": {
+    "label": "Pizza Hut Portugal, Super Fatia Crispy, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 258,
+    "kcal": 773,
+    "protein": 29.2,
+    "carbs": 80.9,
+    "fat": 35.1
+  },
+  "pizzahut-super-fatia-margarita-fatia": {
+    "label": "Pizza Hut Portugal, Super Fatia Margarita, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 206,
+    "kcal": 601,
+    "protein": 22.5,
+    "carbs": 75.3,
+    "fat": 21.6
+  },
+  "pizzahut-super-fatia-pepperoni-fatia": {
+    "label": "Pizza Hut Portugal, Super Fatia Pepperoni, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 234,
+    "kcal": 669,
+    "protein": 27.2,
+    "carbs": 76.2,
+    "fat": 26.4
+  },
+  "pizzahut-super-fatia-triple-cheeseham-fatia": {
+    "label": "Pizza Hut Portugal, Super Fatia Triple Cheeseham, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 227,
+    "kcal": 642,
+    "protein": 25.8,
+    "carbs": 77.2,
+    "fat": 24.9
+  },
+  "pizzahut-aloha-vegan-media-fatia": {
+    "label": "Pizza Hut Portugal, Aloha Vegan Média, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 118,
+    "kcal": 274,
+    "protein": 6.0,
+    "carbs": 38.1,
+    "fat": 10.8
+  },
+  "pizzahut-iberian-vegan-media-fatia": {
+    "label": "Pizza Hut Portugal, Iberian Vegan Média, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 105,
+    "kcal": 232,
+    "protein": 5.6,
+    "carbs": 33.5,
+    "fat": 8.3
+  },
+  "pizzahut-margarita-vegan-media-fatia": {
+    "label": "Pizza Hut Portugal, Margarita Vegan Média, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 79,
+    "kcal": 248,
+    "protein": 5.2,
+    "carbs": 33.9,
+    "fat": 10.3
+  },
+  "pizzahut-calabresa-carbonara-fatia": {
+    "label": "Pizza Hut Portugal, Calabresa Carbonara, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 118,
+    "kcal": 294,
+    "protein": 14.6,
+    "carbs": 25.6,
+    "fat": 14.0
+  },
+  "pizzahut-carbonara-chessybites-fatia": {
+    "label": "Pizza Hut Portugal, Carbonara (Chessybites), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 104,
+    "kcal": 256,
+    "protein": 12.1,
+    "carbs": 25.8,
+    "fat": 10.9
+  },
+  "pizzahut-chicken-carbonara-fatia": {
+    "label": "Pizza Hut Portugal, Chicken Carbonara, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 119,
+    "kcal": 286,
+    "protein": 14.0,
+    "carbs": 28.5,
+    "fat": 12.3
+  },
+  "pizzahut-hot-chicken-fiesta-fatia": {
+    "label": "Pizza Hut Portugal, Hot Chicken Fiesta, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 166,
+    "kcal": 380,
+    "protein": 20.5,
+    "carbs": 40.8,
+    "fat": 14.0
+  },
+  "pizzahut-original-hot-e-honey-fatia": {
+    "label": "Pizza Hut Portugal, Original Hot&Honey, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 105,
+    "kcal": 310,
+    "protein": 14.2,
+    "carbs": 31.7,
+    "fat": 13.3
+  },
+  "pizzahut-burger-lovers-fatia": {
+    "label": "Pizza Hut Portugal, Burger Lovers, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 107,
+    "kcal": 298,
+    "protein": 13.4,
+    "carbs": 28.0,
+    "fat": 15.0
+  },
+  "pizzahut-crispy-chicken-supreme-fatia": {
+    "label": "Pizza Hut Portugal, Crispy Chicken Supreme, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 114,
+    "kcal": 280,
+    "protein": 14.0,
+    "carbs": 28.6,
+    "fat": 11.9
+  },
+  "pizzahut-havaiana-fatia": {
+    "label": "Pizza Hut Portugal, Havaiana, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 109,
+    "kcal": 252,
+    "protein": 14.4,
+    "carbs": 26.6,
+    "fat": 9.1
+  },
+  "pizzahut-cheeseham-fatia": {
+    "label": "Pizza Hut Portugal, Cheeseham, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 96,
+    "kcal": 260,
+    "protein": 14.0,
+    "carbs": 24.9,
+    "fat": 10.8
+  },
+  "pizzahut-serrana-fatia": {
+    "label": "Pizza Hut Portugal, Serrana, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 98,
+    "kcal": 261,
+    "protein": 12.4,
+    "carbs": 25.2,
+    "fat": 11.6
+  },
+  "pizzahut-veggie-lovers-fatia": {
+    "label": "Pizza Hut Portugal, Veggie Lovers, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 106,
+    "kcal": 243,
+    "protein": 11.4,
+    "carbs": 29.2,
+    "fat": 9.8
+  },
+  "pizzahut-bacon-lovers-fatia": {
+    "label": "Pizza Hut Portugal, Bacon Lovers, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 100,
+    "kcal": 283,
+    "protein": 14.4,
+    "carbs": 24.9,
+    "fat": 13.1
+  },
+  "pizzahut-camponesa-fatia": {
+    "label": "Pizza Hut Portugal, Camponesa, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 115,
+    "kcal": 264,
+    "protein": 14.3,
+    "carbs": 25.7,
+    "fat": 10.8
+  },
+  "pizzahut-pepperoni-lovers-fatia": {
+    "label": "Pizza Hut Portugal, Pepperoni Lovers, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 96,
+    "kcal": 284,
+    "protein": 14.2,
+    "carbs": 24.9,
+    "fat": 13.3
+  },
+  "pizzahut-portuguesa-fatia": {
+    "label": "Pizza Hut Portugal, Portuguesa, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 104,
+    "kcal": 263,
+    "protein": 13.3,
+    "carbs": 25.7,
+    "fat": 11.3
+  },
+  "pizzahut-tropical-fatia": {
+    "label": "Pizza Hut Portugal, Tropical, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 103,
+    "kcal": 240,
+    "protein": 12.3,
+    "carbs": 26.9,
+    "fat": 8.6
+  },
+  "pizzahut-stuffed-crust-double-peppe-fatia": {
+    "label": "Pizza Hut Portugal, Stuffed Crust Double Peppe, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 84,
+    "kcal": 251,
+    "protein": 11.9,
+    "carbs": 24.5,
+    "fat": 10.9
+  },
+  "pizzahut-calabresa-carbonara-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Calabresa Carbonara Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 123,
+    "kcal": 315,
+    "protein": 14.3,
+    "carbs": 31.2,
+    "fat": 14.3
+  },
+  "pizzahut-carbonara-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Carbonara Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 108,
+    "kcal": 270,
+    "protein": 11.4,
+    "carbs": 31.4,
+    "fat": 10.6
+  },
+  "pizzahut-chicken-carbonara-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Chicken Carbonara Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 123,
+    "kcal": 294,
+    "protein": 13.2,
+    "carbs": 33.9,
+    "fat": 11.4
+  },
+  "pizzahut-hot-chicken-fiesta-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Hot Chicken Fiesta Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 123,
+    "kcal": 272,
+    "protein": 12.8,
+    "carbs": 37.7,
+    "fat": 7.6
+  },
+  "pizzahut-original-hot-e-honey-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Original Hot&Honey Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 107,
+    "kcal": 325,
+    "protein": 13.9,
+    "carbs": 36.8,
+    "fat": 13.3
+  },
+  "pizzahut-burger-lovers-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Burger Lovers Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 108,
+    "kcal": 308,
+    "protein": 12.6,
+    "carbs": 33.7,
+    "fat": 14.3
+  },
+  "pizzahut-crispy-chicken-supreme-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Crispy Chicken Supreme Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 113,
+    "kcal": 286,
+    "protein": 13.3,
+    "carbs": 34.1,
+    "fat": 10.9
+  },
+  "pizzahut-havaiana-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Havaiana Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 111,
+    "kcal": 262,
+    "protein": 13.7,
+    "carbs": 32.3,
+    "fat": 8.4
+  },
+  "pizzahut-meat-lovers-media-fatia": {
+    "label": "Pizza Hut Portugal, Meat Lovers Média, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 108,
+    "kcal": 302,
+    "protein": 14.6,
+    "carbs": 32.2,
+    "fat": 13.4
+  },
+  "pizzahut-suprema-media-fatia": {
+    "label": "Pizza Hut Portugal, Suprema Média, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 99,
+    "kcal": 273,
+    "protein": 12.5,
+    "carbs": 32.4,
+    "fat": 10.8
+  },
+  "pizzahut-chicken-curry-media-fatia": {
+    "label": "Pizza Hut Portugal, Chicken Curry Média, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 98,
+    "kcal": 273,
+    "protein": 13.4,
+    "carbs": 30.6,
+    "fat": 10.2
+  },
+  "pizzahut-serrana-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Serrana Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 102,
+    "kcal": 277,
+    "protein": 11.9,
+    "carbs": 30.9,
+    "fat": 11.4
+  },
+  "pizzahut-veggie-lovers-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Veggie Lovers Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 106,
+    "kcal": 253,
+    "protein": 10.6,
+    "carbs": 34.3,
+    "fat": 9.1
+  },
+  "pizzahut-bacon-lovers-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Bacon Lovers Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 104,
+    "kcal": 302,
+    "protein": 14.0,
+    "carbs": 30.7,
+    "fat": 13.0
+  },
+  "pizzahut-camponesa-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Camponesa Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 117,
+    "kcal": 277,
+    "protein": 13.7,
+    "carbs": 31.5,
+    "fat": 10.2
+  },
+  "pizzahut-pepperoni-lovers-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Pepperoni Lovers Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 99,
+    "kcal": 303,
+    "protein": 13.8,
+    "carbs": 30.6,
+    "fat": 13.3
+  },
+  "pizzahut-portuguesa-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Portuguesa Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 106,
+    "kcal": 278,
+    "protein": 12.8,
+    "carbs": 31.4,
+    "fat": 11.0
+  },
+  "pizzahut-tropical-media-sao-francisco-fatia": {
+    "label": "Pizza Hut Portugal, Tropical Média (São Francisco), 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 104,
+    "kcal": 249,
+    "protein": 11.5,
+    "carbs": 32.6,
+    "fat": 7.8
+  },
+  "pizzahut-azeitonas-e-milho-fatia": {
+    "label": "Pizza Hut Portugal, Azeitonas e Milho, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 98,
+    "kcal": 251,
+    "protein": 10.5,
+    "carbs": 34.0,
+    "fat": 8.7
+  },
+  "pizzahut-bacon-e-ananas-fatia": {
+    "label": "Pizza Hut Portugal, Bacon e Ananás, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 97,
+    "kcal": 257,
+    "protein": 11.0,
+    "carbs": 32.3,
+    "fat": 9.0
+  },
+  "pizzahut-chourico-e-mix-vegetais-fatia": {
+    "label": "Pizza Hut Portugal, Chouriço e Mix Vegetais, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 94,
+    "kcal": 266,
+    "protein": 11.7,
+    "carbs": 30.9,
+    "fat": 10.2
+  },
+  "pizzahut-fiambre-e-cogumelos-fatia": {
+    "label": "Pizza Hut Portugal, Fiambre e Cogumelos, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 93,
+    "kcal": 242,
+    "protein": 11.5,
+    "carbs": 30.8,
+    "fat": 7.8
+  },
+  "pizzahut-tomate-e-ananas-fatia": {
+    "label": "Pizza Hut Portugal, Tomate e Ananás, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 103,
+    "kcal": 239,
+    "protein": 10.2,
+    "carbs": 32.8,
+    "fat": 7.3
+  },
+  "pizzahut-double-stuffed-crust-pepperoni-margarita-fatia": {
+    "label": "Pizza Hut Portugal, Double Stuffed Crust Pepperoni Margarita, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 83,
+    "kcal": 245,
+    "protein": 11.7,
+    "carbs": 24.5,
+    "fat": 10.4
+  },
+  "pizzahut-double-stuffed-crust-pepperoni-carbonara-fatia": {
+    "label": "Pizza Hut Portugal, Double Stuffed Crust Pepperoni Carbonara, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 91,
+    "kcal": 258,
+    "protein": 11.9,
+    "carbs": 24.8,
+    "fat": 11.6
+  },
+  "pizzahut-double-stuffed-crust-pepperoni-carbonara-3-queijos-fatia": {
+    "label": "Pizza Hut Portugal, Double Stuffed Crust Pepperoni Carbonara 3 Queijos, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 94,
+    "kcal": 278,
+    "protein": 12.8,
+    "carbs": 25.4,
+    "fat": 13.5
+  },
+  "pizzahut-double-stuffed-crust-pepperoni-ham-fatia": {
+    "label": "Pizza Hut Portugal, Double Stuffed Crust Pepperoni Ham, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 92,
+    "kcal": 254,
+    "protein": 13.1,
+    "carbs": 24.6,
+    "fat": 10.7
+  },
+  "pizzahut-double-stuffed-crust-pepperoni-peppe-fatia": {
+    "label": "Pizza Hut Portugal, Double Stuffed Crust Pepperoni Peppe, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 87,
+    "kcal": 263,
+    "protein": 12.4,
+    "carbs": 24.5,
+    "fat": 12.0
+  },
+  "pizzahut-double-stuffed-crust-pepperoni-veggie-mix-fatia": {
+    "label": "Pizza Hut Portugal, Double Stuffed Crust Pepperoni Veggie Mix, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 92,
+    "kcal": 248,
+    "protein": 11.8,
+    "carbs": 24.8,
+    "fat": 10.4
+  },
+  "pizzahut-double-stuffed-crust-pepperoni-margarita-3-queijos-fatia": {
+    "label": "Pizza Hut Portugal, Double Stuffed Crust Pepperoni Margarita 3 Queijos, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 87,
+    "kcal": 265,
+    "protein": 12.6,
+    "carbs": 25.1,
+    "fat": 12.4
+  },
+  "pizzahut-panxpan-3-cheese-bacon-fatia": {
+    "label": "Pizza Hut Portugal, PANxPAN 3 Cheese Bacon, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 102,
+    "kcal": 278,
+    "protein": 10.5,
+    "carbs": 31.9,
+    "fat": 11.8
+  },
+  "pizzahut-panxpan-3-cheese-farm-fatia": {
+    "label": "Pizza Hut Portugal, PANxPAN 3 Cheese Farm, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 111,
+    "kcal": 266,
+    "protein": 11.1,
+    "carbs": 31.0,
+    "fat": 10.7
+  },
+  "pizzahut-panxpan-chicken-fatia": {
+    "label": "Pizza Hut Portugal, PANxPAN Chicken, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 101,
+    "kcal": 266,
+    "protein": 11.9,
+    "carbs": 32.1,
+    "fat": 9.3
+  },
+  "pizzahut-panxpan-double-peppe-fatia": {
+    "label": "Pizza Hut Portugal, PANxPAN Double Peppe, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 93,
+    "kcal": 284,
+    "protein": 11.0,
+    "carbs": 29.7,
+    "fat": 12.7
+  },
+  "pizzahut-panxpan-munique-fatia": {
+    "label": "Pizza Hut Portugal, PANxPAN Munique, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 112,
+    "kcal": 301,
+    "protein": 13.9,
+    "carbs": 31.5,
+    "fat": 13.5
+  },
+  "pizzahut-panxpan-veggie-fatia": {
+    "label": "Pizza Hut Portugal, PANxPAN Veggie, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 117,
+    "kcal": 251,
+    "protein": 9.7,
+    "carbs": 31.0,
+    "fat": 9.1
+  },
+  "pizzahut-ovo-de-pascoa-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Ovo de Páscoa, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 40,
+    "kcal": 212,
+    "protein": 3.6,
+    "carbs": 22.4,
+    "fat": 11.8
+  },
+  "pizzahut-pan-3-cheeseham-fatia": {
+    "label": "Pizza Hut Portugal, Pan 3 Cheeseham, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 100,
+    "kcal": 267,
+    "protein": 10.7,
+    "carbs": 30.1,
+    "fat": 11.2
+  },
+  "pizzahut-sao-francisco-tuna-fatia": {
+    "label": "Pizza Hut Portugal, São Francisco Tuna, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 98,
+    "kcal": 259,
+    "protein": 13.6,
+    "carbs": 30.6,
+    "fat": 8.9
+  },
+  "pizzahut-sao-francisco-veggie-fatia": {
+    "label": "Pizza Hut Portugal, São Francisco Veggie, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 103,
+    "kcal": 254,
+    "protein": 12.5,
+    "carbs": 32.0,
+    "fat": 8.1
   }
 }

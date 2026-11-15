@@ -23,3 +23,6 @@ eval/results/
 # Only the README is committed; the scripts and tool/eval_data/*_map.json are committed.
 eval/datasets/*
 !eval/datasets/README.md
+
+# Python bytecode caches from tool/ scripts
+__pycache__/

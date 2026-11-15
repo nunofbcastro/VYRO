@@ -26,6 +26,11 @@ const burgerSandwichKey = 'cheeseburger_whole';
 /// Database keys of the branded whole burger sandwiches (one sandwich each).
 const burgerBrandedSandwichKeys = {
   'big_mac',
+  'big_tasty',
+  'big_tasty_double',
+  'double_cheeseburger',
+  'mcroyal_bacon',
+  'mcroyal_bacon_double',
   'quarter_pounder_cheese',
   'mcdonalds_cheeseburger',
   'mcdonalds_hamburger',
@@ -47,17 +52,38 @@ const chickenBrandedSandwichKeys = {
   'mcchicken',
   'mccrispy',
   'mccrispy_hot_honey',
+  'mccrispy_cheddar_bacon',
+  'cbo',
+  'kfc_zinger',
+  'kfc_tower_zinger',
   'bk_chicken_sandwich',
 };
 
 /// Branded chicken sandwiches offered when the photo only resolved to the
-/// generic breaded sandwich. The offline classifier cannot tell a McCrispy
-/// Hot Honey from any other chicken sandwich, so these stay suggestions.
+/// generic breaded sandwich. No model here can tell a McChicken from a
+/// McCrispy, so these stay suggestions. The McChicken comes first: it is the
+/// standard menu item, and the generic row is closest to it.
 const chickenSandwichLookalikeKeys = [
-  'mccrispy_hot_honey',
-  'mccrispy',
   'mcchicken',
+  'mccrispy',
+  'cbo',
+  'kfc_zinger',
+  'mccrispy_hot_honey',
   'bk_chicken_sandwich',
+];
+
+/// Offered when the photo only resolved to the generic burger sandwich. A
+/// small model often calls a breaded chicken sandwich a "burger", so the
+/// chicken sandwiches follow the branded beef ones.
+const burgerSandwichLookalikeKeys = [
+  'big_mac',
+  'big_tasty',
+  'double_cheeseburger',
+  'mcroyal_bacon',
+  'whopper',
+  chickenSandwichKey,
+  'mcchicken',
+  'mccrispy',
 ];
 
 /// Database key of the breaded fried chicken patty (no bun).
@@ -93,17 +119,60 @@ const _sandwichWords = {
 /// Model names that only say "chicken" (no cut, no cooking method).
 const _genericChickenNames = {'chicken', 'chicken meat', 'frango'};
 
+// Sandwich chains only. Pizza sources (dominos_pt, pizzahut_pt) are left out on
+// purpose: a pizza slice is not a sandwich and must not compete with one.
+const _brandedMenuSources = {
+  'mcd_pt',
+  'kfc_pt',
+  'bk_pt',
+  'subway_pt',
+  'pans_pt',
+};
+
+bool _brandedMenuSandwich(FoodRef? food) =>
+    food != null &&
+    food.category == 'pratos' &&
+    _brandedMenuSources.contains(food.source);
+
+bool _chickenMenuName(FoodRef food) {
+  final name = '${food.key} ${food.namePt} ${food.nameEn}'.toLowerCase();
+  const words = [
+    'frango',
+    'chicken',
+    'zinger',
+    'krunch',
+    'boxmaster',
+    'tikka',
+    'crispy',
+    'wrap',
+  ];
+  return words.any(name.contains);
+}
+
 bool isBurgerSandwich(DetectedFood food) {
   final key = food.food?.key;
-  return key == burgerSandwichKey || burgerBrandedSandwichKeys.contains(key);
+  if (key == burgerSandwichKey || burgerBrandedSandwichKeys.contains(key)) {
+    return true;
+  }
+  final ref = food.food;
+  return _brandedMenuSandwich(ref) && !_chickenMenuName(ref!);
 }
 
 bool isBurgerPatty(DetectedFood food) => food.food?.key == burgerPattyKey;
 
 bool isChickenSandwich(DetectedFood food) {
   final key = food.food?.key;
-  return key == chickenSandwichKey || chickenBrandedSandwichKeys.contains(key);
+  if (key == chickenSandwichKey || chickenBrandedSandwichKeys.contains(key)) {
+    return true;
+  }
+  final ref = food.food;
+  return _brandedMenuSandwich(ref) && _chickenMenuName(ref!);
 }
+
+/// A whole sandwich from a chain menu, including rows that are not in the
+/// short lookalike lists.
+bool isWholeSandwichFood(FoodRef? food) =>
+    isWholeSandwichKey(food?.key) || _brandedMenuSandwich(food);
 
 bool isChickenPatty(DetectedFood food) => food.food?.key == chickenPattyKey;
 
@@ -265,19 +334,49 @@ List<DetectedFood> _reconcileSandwich(
   return out;
 }
 
-/// Branded sandwiches to offer beside a generic breaded chicken sandwich.
-/// Empty when that generic row is absent, or when a branded row is already
-/// in [foods]. Never counted: the caller keeps them out of the totals.
-List<DetectedFood> chickenSandwichLookalikes(
-  List<DetectedFood> foods,
-  FoodDatabase db,
-) {
-  if (!foods.any((f) => f.food?.key == chickenSandwichKey)) return const [];
-  if (foods.any((f) => chickenBrandedSandwichKeys.contains(f.food?.key))) {
-    return const [];
+/// Whether [key] is a whole sandwich row (generic or branded, beef or
+/// chicken): one of these in a photo is the same physical sandwich.
+bool isWholeSandwichKey(String? key) =>
+    key == burgerSandwichKey ||
+    key == chickenSandwichKey ||
+    burgerBrandedSandwichKeys.contains(key) ||
+    chickenBrandedSandwichKeys.contains(key);
+
+/// Database keys of the sandwiches to offer beside a generic sandwich row:
+/// the branded chicken ones for the generic chicken sandwich, and the branded
+/// beef ones plus the chicken ones for the generic burger. Empty when no
+/// generic row is in [foods], or when a branded sandwich is already there.
+const _mcnuggetKey = 'chicken_mcnuggets';
+
+List<String> sandwichLookalikeKeys(List<DetectedFood> foods) {
+  final keys = {for (final f in foods) f.food?.key};
+  final nuggets =
+      keys.contains('chicken_nuggets') && !keys.contains(_mcnuggetKey)
+      ? const [_mcnuggetKey]
+      : const <String>[];
+  if (keys.any(burgerBrandedSandwichKeys.contains) ||
+      keys.any(chickenBrandedSandwichKeys.contains)) {
+    return nuggets;
   }
+  if (keys.contains(chickenSandwichKey)) {
+    return [...chickenSandwichLookalikeKeys, ...nuggets];
+  }
+  if (keys.contains(burgerSandwichKey)) {
+    return [...burgerSandwichLookalikeKeys, ...nuggets];
+  }
+  return nuggets;
+}
+
+/// Branded sandwiches to offer beside a generic sandwich (see
+/// [sandwichLookalikeKeys]). Never counted: the caller keeps them out of the
+/// totals, and choosing one replaces the generic row in the review.
+List<DetectedFood> sandwichLookalikes(
+  List<DetectedFood> foods,
+  FoodDatabase db, {
+  VisionSource source = VisionSource.regionClassifier,
+}) {
   final out = <DetectedFood>[];
-  for (final key in chickenSandwichLookalikeKeys) {
+  for (final key in sandwichLookalikeKeys(foods)) {
     final food = db.byKey(key);
     if (food == null) continue;
     out.add(
@@ -285,7 +384,7 @@ List<DetectedFood> chickenSandwichLookalikes(
         food: food,
         label: food.namePt,
         grams: food.portionG,
-        source: VisionSource.regionClassifier,
+        source: source,
       ),
     );
   }

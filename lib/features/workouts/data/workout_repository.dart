@@ -5,6 +5,7 @@ import '../../nutrition/domain/food_product.dart' show dayKey;
 import '../domain/plan_details.dart';
 import '../domain/plan_generator.dart';
 import '../domain/plan_preferences.dart';
+import '../domain/session_coach.dart';
 import '../domain/week_schedule.dart';
 
 class ExerciseInfo {
@@ -262,6 +263,10 @@ class WorkoutRepository {
               ..orderBy([(exercise) => OrderingTerm.asc(exercise.sortOrder)]))
             .get();
 
+    // Loads start from the last time each exercise was logged, so the user
+    // does not retype them every session. They stay editable per set.
+    final previous = await _lastSets({for (final e in planned) e.exerciseKey});
+
     return database.transaction(() async {
       final sessionId = await database
           .into(database.workoutSessions)
@@ -283,12 +288,146 @@ class WorkoutRepository {
                   setNumber: index,
                   targetReps: exercise.repTarget,
                   reps: Value(exercise.repTarget),
+                  weightKg: Value(
+                    _carriedWeight(previous[exercise.exerciseKey], index),
+                  ),
                 ),
               );
         }
       }
       return sessionId;
     });
+  }
+
+  /// The load of set [number] last time, else of the last set logged then.
+  static double? _carriedWeight(List<ExerciseSet>? last, int number) {
+    if (last == null || last.isEmpty) return null;
+    for (final set in last) {
+      if (set.setNumber == number) return set.weightKg;
+    }
+    return last.last.weightKg;
+  }
+
+  /// For each exercise in [keys]: the completed sets of the most recent
+  /// completed session that has any, in set order. [beforeSession] leaves
+  /// that session (and later ones) out.
+  Future<Map<String, List<ExerciseSet>>> _lastSets(
+    Set<String> keys, {
+    int? beforeSession,
+  }) async {
+    if (keys.isEmpty) return const {};
+    final query =
+        database.select(database.exerciseSets).join([
+            innerJoin(
+              database.workoutSessions,
+              database.workoutSessions.id.equalsExp(
+                database.exerciseSets.sessionId,
+              ),
+            ),
+          ])
+          ..where(
+            database.workoutSessions.status.equals('completed') &
+                database.exerciseSets.completed.equals(true) &
+                database.exerciseSets.exerciseKey.isIn(keys),
+          )
+          ..orderBy([
+            OrderingTerm.desc(database.workoutSessions.id),
+            OrderingTerm.asc(database.exerciseSets.setNumber),
+          ]);
+    if (beforeSession != null) {
+      query.where(
+        database.workoutSessions.id.isSmallerThanValue(beforeSession),
+      );
+    }
+    final out = <String, List<ExerciseSet>>{};
+    final sessionOf = <String, int>{};
+    for (final row in await query.get()) {
+      final set = row.readTable(database.exerciseSets);
+      final session = sessionOf.putIfAbsent(
+        set.exerciseKey,
+        () => set.sessionId,
+      );
+      if (session == set.sessionId) {
+        out.putIfAbsent(set.exerciseKey, () => []).add(set);
+      }
+    }
+    return out;
+  }
+
+  /// What each exercise of [sessionId] did last time (see [sessionHint]),
+  /// keyed by exercise. Exercises never logged before are absent.
+  Future<Map<String, List<PastSet>>> lastPerformance(int sessionId) async {
+    final sets = await (database.select(
+      database.exerciseSets,
+    )..where((set) => set.sessionId.equals(sessionId))).get();
+    final last = await _lastSets({
+      for (final set in sets) set.exerciseKey,
+    }, beforeSession: sessionId);
+    return {
+      for (final entry in last.entries)
+        entry.key: [
+          for (final set in entry.value)
+            PastSet(reps: set.reps ?? set.targetReps, weightKg: set.weightKg),
+        ],
+    };
+  }
+
+  /// Planned rest per exercise for a session, from the active plan. The day
+  /// with the session's workout name wins; an exercise only found on another
+  /// day uses that day's rest. Exercises not in the plan are absent.
+  Future<Map<String, int>> plannedRest(int sessionId) async {
+    final session = await (database.select(
+      database.workoutSessions,
+    )..where((s) => s.id.equals(sessionId))).getSingleOrNull();
+    final plan = await database.getActiveWorkoutPlan();
+    if (session == null || plan == null) return const {};
+    final days = await (database.select(
+      database.workoutDays,
+    )..where((day) => day.planId.equals(plan.id))).get();
+    if (days.isEmpty) return const {};
+    final sameDay = {
+      for (final day in days)
+        if (day.namePt == session.workoutName ||
+            day.nameEn == session.workoutName)
+          day.id,
+    };
+    final exercises = await (database.select(
+      database.planExercises,
+    )..where((e) => e.dayId.isIn([for (final day in days) day.id]))).get();
+    final rest = <String, int>{};
+    for (final exercise in exercises) {
+      if (sameDay.contains(exercise.dayId)) continue;
+      rest.putIfAbsent(exercise.exerciseKey, () => exercise.restSeconds);
+    }
+    for (final exercise in exercises) {
+      if (sameDay.contains(exercise.dayId)) {
+        rest[exercise.exerciseKey] = exercise.restSeconds;
+      }
+    }
+    return rest;
+  }
+
+  /// After the load of one set changed from [from] to [to]: the later sets of
+  /// the same exercise that are not done yet and still had the old load (or
+  /// none) get the new one, so a load is typed once per exercise.
+  Future<void> carryWeight(ExerciseSet edited, double? to) async {
+    final from = edited.weightKg;
+    if (to == null || to == from) return;
+    final later =
+        await (database.select(database.exerciseSets)..where(
+              (set) =>
+                  set.sessionId.equals(edited.sessionId) &
+                  set.exerciseKey.equals(edited.exerciseKey) &
+                  set.setNumber.isBiggerThanValue(edited.setNumber) &
+                  set.completed.equals(false),
+            ))
+            .get();
+    for (final set in later) {
+      if (set.weightKg != null && set.weightKg != from) continue;
+      await (database.update(database.exerciseSets)
+            ..where((row) => row.id.equals(set.id)))
+          .write(ExerciseSetsCompanion(weightKg: Value(to)));
+    }
   }
 
   Future<WorkoutSession?> activeSession() =>

@@ -67,10 +67,41 @@ void main() {
   });
 
   group('branded chicken sandwiches are the whole sandwich', () {
-    test('"McChicken" is the branded row (131 g, one sandwich)', () {
+    test(
+      '"mac chicken" and "McDonald\'s chicken sandwich" are the McChicken',
+      () {
+        for (final name in ['mac chicken', 'McDonald\'s chicken sandwich']) {
+          final food = parse([_item(name)]).single;
+          expect(food.food?.key, 'mcchicken', reason: name);
+          expect(food.grams, 182, reason: name);
+        }
+      },
+    );
+
+    test('a generic crispy chicken sandwich stays generic', () {
+      expect(
+        parse([_item('crispy chicken sandwich')]).single.food?.key,
+        'chicken_sandwich',
+      );
+    });
+
+    test('"CBO" and "Zinger" are their branded sandwiches', () {
+      expect(parse([_item('cbo')]).single.food?.key, 'cbo');
+      expect(parse([_item('cbo')]).single.grams, 268);
+      expect(parse([_item('kfc zinger')]).single.food?.key, 'kfc_zinger');
+      expect(
+        parse([_item('tower zinger')]).single.food?.key,
+        'kfc_tower_zinger',
+      );
+      expect(parse([_item('mcnuggets')]).single.food?.key, 'chicken_mcnuggets');
+      expect(parse([_item('mcnuggets', count: 10)]).single.grams, 181);
+    });
+
+    test('"McChicken" is the branded row (182 g, 419 kcal)', () {
       final food = parse([_item('mcchicken')]).single;
       expect(food.food?.key, 'mcchicken');
-      expect(food.grams, 131);
+      expect(food.grams, 182);
+      expect(food.kcal, closeTo(419, 0.6));
       expect(isChickenSandwich(food), isTrue);
     });
 
@@ -210,7 +241,33 @@ void main() {
 
     test('a burger sandwich gets bacon, lettuce and tomato, no bun', () {
       final keys = companionKeys([_item('hamburger')]);
-      expect(keys, ['bacon_cooked', 'lettuce_raw', 'tomato_raw']);
+      expect(keys.where((k) => !burgerSandwichLookalikeKeys.contains(k)), [
+        'bacon_cooked',
+        'lettuce_raw',
+        'tomato_raw',
+      ]);
+      expect(keys, isNot(contains('hamburger_bun')));
+    });
+
+    test('a generic chicken sandwich offers the branded ones, McChicken '
+        'first', () {
+      final keys = companionKeys([_item('chicken burger')]);
+      expect(
+        keys.take(chickenSandwichLookalikeKeys.length),
+        chickenSandwichLookalikeKeys,
+      );
+      expect(keys.first, 'mcchicken');
+    });
+
+    test('a generic "burger" also offers the chicken sandwiches', () {
+      final keys = companionKeys([_item('burger')]);
+      expect(keys.first, 'big_mac');
+      expect(keys, containsAll(['chicken_sandwich', 'mcchicken']));
+    });
+
+    test('a branded sandwich offers no other brand', () {
+      final keys = companionKeys([_item('big mac')]);
+      expect(keys.where(isWholeSandwichKey), isEmpty);
     });
 
     test('a chicken sandwich gets bacon, lettuce and tomato, no bun', () {

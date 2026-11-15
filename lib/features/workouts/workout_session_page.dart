@@ -9,6 +9,8 @@ import 'data/workout_repository.dart';
 import '../motion_engine/exercise_registry/exercise_analysis_registry.dart';
 import '../motion_engine/workout_camera/motion_coach_page.dart';
 import 'domain/exercise_guides.dart';
+import 'domain/exercise_traits.dart';
+import 'domain/session_coach.dart';
 
 class WorkoutSessionPage extends StatefulWidget {
   const WorkoutSessionPage({
@@ -29,6 +31,35 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
   Timer? _restTimer;
   int _secondsLeft = 0;
   bool _saving = false;
+
+  /// Planned rest per exercise (seconds) and what each exercise did last
+  /// time. Both are read once; the page works without them.
+  Map<String, int> _rest = const {};
+  Map<String, List<PastSet>> _last = const {};
+
+  /// Rest used when the plan has none for an exercise (the table default).
+  static const _defaultRest = 90;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCoachData();
+  }
+
+  Future<void> _loadCoachData() async {
+    try {
+      final rest = await widget.repository.plannedRest(widget.sessionId);
+      final last = await widget.repository.lastPerformance(widget.sessionId);
+      if (mounted) {
+        setState(() {
+          _rest = rest;
+          _last = last;
+        });
+      }
+    } catch (_) {
+      // Hints and planned rest are optional: the session still works.
+    }
+  }
 
   @override
   void dispose() {
@@ -78,7 +109,14 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
                     info: info.data,
                     exerciseKey: group.key,
                     sets: group.value,
-                    onToggle: _toggleSet,
+                    hint: _hintFor(group.key, group.value),
+                    onToggle: (set, completed) => _toggleSet(
+                      set,
+                      completed,
+                      lastOpen:
+                          sets.where((s) => !s.completed).length == 1 &&
+                          !set.completed,
+                    ),
                     onEdit: _editSet,
                   ),
                 ),
@@ -99,14 +137,33 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
     );
   }
 
-  Future<void> _toggleSet(ExerciseSet set, bool completed) async {
+  SessionHint? _hintFor(String key, List<ExerciseSet> sets) {
+    final last = _last[key];
+    if (last == null || sets.isEmpty) return null;
+    return sessionHint(
+      last: last,
+      target: sets.first.targetReps,
+      timed: exerciseTraits[key]?.timed ?? false,
+    );
+  }
+
+  /// [lastOpen]: this was the only set left, so no rest follows it.
+  Future<void> _toggleSet(
+    ExerciseSet set,
+    bool completed, {
+    bool lastOpen = false,
+  }) async {
     await widget.repository.updateSet(
       id: set.id,
       reps: set.reps,
       weightKg: set.weightKg,
       completed: completed,
     );
-    if (completed) _startRest();
+    if (completed && !lastOpen) {
+      _startRest(_rest[set.exerciseKey] ?? _defaultRest);
+    } else if (completed) {
+      _stopRest();
+    }
   }
 
   Future<void> _editSet(ExerciseSet set) async {
@@ -121,11 +178,12 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
       weightKg: result.$2,
       completed: set.completed,
     );
+    await widget.repository.carryWeight(set, result.$2);
   }
 
-  void _startRest() {
+  void _startRest(int seconds) {
     _restTimer?.cancel();
-    setState(() => _secondsLeft = 90);
+    setState(() => _secondsLeft = seconds);
     _restTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_secondsLeft <= 1) {
         timer.cancel();
@@ -326,7 +384,14 @@ class _SessionExerciseCard extends StatelessWidget {
     required this.sets,
     required this.onToggle,
     required this.onEdit,
+    this.hint,
   });
+
+  /// What to try today, from the last time this exercise was logged.
+  final SessionHint? hint;
+
+  /// Prescribed in seconds (planks, balance), not repetitions.
+  bool get _timed => exerciseTraits[exerciseKey]?.timed ?? false;
 
   final ExerciseInfo? info;
   final String exerciseKey;
@@ -337,7 +402,7 @@ class _SessionExerciseCard extends StatelessWidget {
   /// Planned reps of the next set (the first not yet completed, else the
   /// first). Holds are timed and have no rep target, so they return null.
   int? get _plannedReps {
-    if (exerciseKey.contains('plank') || sets.isEmpty) return null;
+    if (_timed || sets.isEmpty) return null;
     final next = sets.firstWhere((s) => !s.completed, orElse: () => sets.first);
     return next.targetReps;
   }
@@ -406,6 +471,7 @@ class _SessionExerciseCard extends StatelessWidget {
                 label: Text(t.get('howTo')),
               ),
             ),
+          if (hint != null) _HintBlock(hint: hint!),
           const SizedBox(height: 6),
           for (final set in sets)
             InkWell(
@@ -453,8 +519,9 @@ class _SessionExerciseCard extends StatelessWidget {
                     ),
                     Expanded(
                       child: Text(
-                        '${set.reps ?? set.targetReps} ${t.get('reps').toLowerCase()}'
-                        '${set.weightKg == null ? '' : ' · ${set.weightKg!.toStringAsFixed(1)} kg'}',
+                        '${set.reps ?? set.targetReps} '
+                        '${_timed ? 's' : t.get('reps').toLowerCase()}'
+                        '${set.weightKg == null ? '' : ' · ${formatKg(set.weightKg!, comma: t.isPortuguese)}'}',
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontFeatures: const [FontFeature.tabularFigures()],
                           decoration: set.completed
@@ -522,6 +589,59 @@ class _SessionExerciseCard extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// "Última vez: 12 · 12 · 10 · 20 kg" and one line on what to try today.
+class _HintBlock extends StatelessWidget {
+  const _HintBlock({required this.hint});
+  final SessionHint hint;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = stringsOf(context);
+    final theme = Theme.of(context);
+    final unit = hint.timed ? ' s' : '';
+    final last = [
+      hint.lastReps.map((r) => '$r$unit').join(' · '),
+      if (hint.lastKg != null) formatKg(hint.lastKg!, comma: t.isPortuguese),
+    ].join(' · ');
+    final kg = hint.suggestedKg;
+    final key = hint.timed
+        ? (hint.advice == LoadAdvice.raise ? 'coachHoldRaise' : 'coachHoldKeep')
+        : switch ((hint.advice, kg != null)) {
+            (LoadAdvice.raise, true) => 'coachRaiseKg',
+            (LoadAdvice.raise, false) => 'coachRaiseNoKg',
+            (LoadAdvice.keep, true) => 'coachKeepKg',
+            (LoadAdvice.keep, false) => 'coachKeepNoKg',
+          };
+    final advice = t
+        .get(key)
+        .replaceAll('{n}', '${hint.target}')
+        .replaceAll(
+          '{kg}',
+          kg == null ? '' : formatKg(kg, comma: t.isPortuguese),
+        );
+    return Padding(
+      padding: const EdgeInsets.only(right: 6, top: 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            t.get('coachLastTime').replaceAll('{sets}', last),
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            advice,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: VyroTheme.accentTextOf(context),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

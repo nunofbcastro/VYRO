@@ -213,7 +213,7 @@ cloud, no paid API, the photo stays in memory. Full details:
   rows (`big_mac`, `whopper`, ...) and count as sandwiches in the same rules;
   "fried/crispy chicken", "chicken patty" is the breaded patty
   (`chicken_fried_patty`); "chicken burger/sandwich" is `chicken_sandwich`,
-  "mcchicken" and "burger king chicken sandwich" are their branded rows. A bare "chicken" stays grilled unless bread is listed
+  "mcchicken", "cbo", "zinger" and "burger king chicken sandwich" are their branded rows. Loose spellings ("mac chicken", "mcdonald's chicken sandwich", "bigmac") fold to the menu name in `fast_food_names.dart` before matching. A bare "chicken" stays grilled unless bread is listed
   (then breaded patty) or its where says burger/sandwich (then sandwich). A
   sandwich plus a separate bun becomes the patty (no double bun); a patty with
   no bread suggests `hamburger_bun`, then bacon, cheese and sauce (mayonnaise

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 
 import '../../assistant/domain/meal_proposal.dart' show foodTokens;
+import '../food_vision/fast_food_names.dart';
 
 /// One food from the bundled nutrition database (values per 100 g from an
 /// official composition table: USDA, Ciqual, TACO, or a cited product label).
@@ -34,7 +35,9 @@ class FoodRef {
   final String nameEn;
   final String category;
 
-  /// Composition table the values come from: `usda`, `ciqual`, `taco` or `mcd_pt`.
+  /// Composition table the values come from: `usda`, `ciqual`, `taco`,
+  /// `mcd_pt`, `kfc_pt`, `bk_pt`, `subway_pt`, `pans_pt`, `dominos_pt` or
+  /// `pizzahut_pt`.
   final String source;
 
   /// Id of the food in that table (FDC id, Ciqual alim_code, TACO number).
@@ -68,6 +71,12 @@ class FoodRef {
     'ciqual' => 'Ciqual',
     'taco' => 'TACO',
     'mcd_pt' => "McDonald's",
+    'kfc_pt' => 'KFC',
+    'bk_pt' => 'Burger King',
+    'subway_pt' => 'Subway',
+    'pans_pt' => 'Pans & Company',
+    'dominos_pt' => "Domino's",
+    'pizzahut_pt' => 'Pizza Hut',
     'recipe' => 'VYRO',
     _ => source,
   };
@@ -102,7 +111,7 @@ class FoodRef {
 
 /// Offline nutrition database built by `tool/nutrition/build_food_db.py`
 /// from USDA FoodData Central (CC0), Ciqual 2025 (etalab-2.0), TACO 4
-/// (cited) and, for the McCrispy rows, the McDonald's Portugal label.
+/// (cited) and the published McDonald's Portugal and KFC Portugal labels.
 /// Loaded once from assets; see docs/NUTRITION_DATA.md.
 class FoodDatabase {
   FoodDatabase(this.foods)
@@ -146,7 +155,7 @@ class FoodDatabase {
   /// Best food for a free-text name ("peito de frango grelhado"), using
   /// names and aliases. Returns null instead of guessing.
   FoodRef? match(String name) {
-    final query = foodTokens(name);
+    final query = foodTokens(fastFoodCanonical(name) ?? name);
     if (query.isEmpty) return null;
     FoodRef? best;
     var bestScore = 0.0;

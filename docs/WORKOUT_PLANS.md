@@ -114,10 +114,20 @@ The notes are deterministic facts: split and why, prescription, returning after 
 - No safety or medical certification. Pain means seeing a health professional. The app shows this note in the limitations step and in the plan preview.
 - Exercise catalogue (v1): 34 exercises. Equipment choices with no matching exercise (for example cardio machines, which are not in the catalogue) simply add nothing to the plan. The wizard offers cardio by type instead.
 - Dedicated cardio is a 20-minute finisher, not a separate cardio-only day. A cardio-only day would need a schema change for days without strength exercises.
-- Exercise instructions (`exerciseGuides`) exist for the original 22 exercises. The 12 newer exercises show no step-by-step guide yet.
+- Exercise instructions (`exerciseGuides`) exist for all 34 catalogue exercises (steps, one cue, one common mistake, Portuguese and English). `test/session_coach_test.dart` fails when a catalogue exercise has no guide.
 - Stored with the active plan: exercises, sets, reps, rest and weekdays (`plan_exercises`, `workout_days`), and `workout_plans.details` (schema v6, JSON from `PlanDetails`): block length and start day, warm-up per workout, rationale notes, warnings and the accepted on-device sentence. Progression text is derived from each exercise row by `progressionRule`, so it stays correct after an edit. Plans saved before v6 have no details and show a note instead.
 - The block week shown in the app is counted from the day the plan was saved (`PlanDetails.blockPosition`); the last week is the deload week.
 - Preferences are stored locally in `plan_preferences` (version 2 JSON). Version 1 JSON is migrated on read (`PlanPreferences.decode`).
+
+## During a session (`workout_session_page.dart`, `domain/session_coach.dart`)
+
+- Rest timer: uses the plan's rest for that exercise (`WorkoutRepository.plannedRest`), 90 s when the exercise is not in the plan. No rest starts after the last open set of the session.
+- Loads: a new session starts each set with the load logged the last time that exercise was done (same set number, else the last set). Typing a load on one set copies it to the later sets of that exercise that are not done and still had the old load or none (`carryWeight`).
+- "Última vez" line and one hint per exercise (`sessionHint`), from the completed sets of the most recent completed session with that exercise. It is the same double-progression rule as the plan text:
+  - every set reached today's target → "Experimenta X kg hoje", where X is about 5% more, in 0.5 kg steps, between +0.5 and +2.5 kg (`nextLoad`); without a logged load, "acrescenta carga ou dificulta o exercício";
+  - any set short of the target → keep the load and aim for one more rep per set;
+  - timed holds (`ExerciseTraits.timed`) show seconds, never a heavier load: add 5 s or make it harder.
+- The hint is a suggestion, not a prescription. It does not look at the deload week, at pain or at technique, and it never changes the logged values by itself.
 
 ## Code map
 
@@ -129,6 +139,8 @@ The notes are deterministic facts: split and why, prescription, returning after 
 - `lib/features/workouts/data/workout_repository.dart`: preferences load/save (mirrors goal, days, experience and equipment into the profile), catalogue, `rulePlan`.
 
 ## Tests
+
+- `test/session_coach_test.dart`: load step, raise/keep hint, timed holds, a guide for every catalogue exercise, planned rest, loads carried from the last session and within a session.
 
 - `test/plan_preferences_test.dart`: migration from version 1 JSON, round-trip, bad values, under-18 flag.
 - `test/plan_rules_test.dart`: split, substitutions, avoided and favourite exercises, impact, 60+, prescription and comeback, time fit, circuits, cardio, block and progression.

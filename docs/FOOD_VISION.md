@@ -157,9 +157,18 @@ o ketchup, o molho de tomate e o queijo ralado não existem, por isso não apare
 - Frango: «fried chicken», «crispy chicken», «chicken patty» e «frango frito» são
   o filete panado (`chicken_fried_patty`). «chicken burger» e «chicken sandwich»
   são o sanduíche genérico (`chicken_sandwich`, com pão). «mcchicken», «mccrispy»
-  e «mccrispy hot honey» são as linhas de marca. Quando o classificador offline
-  só vê a sandes genérica, oferece essas marcas (e a do Burger King) como
-  hipóteses, fora dos totais: não distingue o molho Hot Honey. Se a mesma foto
+  e «mccrispy hot honey» são as linhas de marca. Nenhum modelo aqui distingue
+  um McChicken de um McCrispy, por isso, quando a lista só tem a sandes
+  genérica, as marcas aparecem como hipóteses fora dos totais
+  (`sandwichLookalikeKeys`), **nos dois ramos** (modelo do sistema e offline):
+  sandes de frango genérica → McChicken, McCrispy, CBO, Zinger, McCrispy Hot
+  Honey, Burger King; hambúrguer genérico → Big Mac, Big Tasty, Double
+  Cheeseburger, McRoyal Bacon, Whopper e também a sandes de frango e o
+  McChicken (o modelo pequeno chama «burger» a uma sandes de frango).
+  «mac chicken», «mcdonald's chicken sandwich» e «bigmac» resolvem para a
+  linha de marca (`fast_food_names.dart`) antes de empatar com a sandes
+  genérica. Nuggets sem marca sugerem a caixa de 10 Chicken McNuggets. Tocar numa destas hipóteses **substitui** a única
+  sandes da lista (com a porção da marca) em vez de somar uma segunda. Se a mesma foto
   pontua sandes de frango e hambúrguer, fica só a sanduíche com maior pontuação.
   Um «chicken» genérico
   fica grelhado (`chicken_breast_roasted`), salvo se houver pão na lista (vira

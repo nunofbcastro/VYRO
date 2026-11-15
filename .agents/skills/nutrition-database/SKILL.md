@@ -16,7 +16,7 @@ VYRO never invents calories. Every food in the app comes from
 1. A curated list, `tool/nutrition/foods_pt.tsv`, has one row per VYRO food:
    `key, name_pt, name_en, source, source_ref, region, category, portion_g,
    portion_pt, portion_en, aliases, vision_labels, portion_units` (lists
-   separated by `|`). `portion_units` is optional (98 of 204 rows): the number
+   separated by `|`). `portion_units` is optional (378 of 484 rows): the number
    of pieces that `portion_g` represents (3 sardines = 120 g ⇒ `3`). Leave it
    empty for foods that are not counted in pieces (rice, soups, sauces); the app
    then ignores piece counts for that food. The build copies it to
@@ -119,14 +119,41 @@ under the same name:
   "chicken" into the patty or sandwich is in `burger_rules.dart`.
 - Branded whole sandwiches (USDA SR Legacy 2018-04, one sandwich each,
   `portion_units` 1, `pratos`, portion = the USDA unit weight from
-  `food_portion.csv`): `big_mac` (170720, 219 g), `mcdonalds_cheeseburger`
-  (170320, 119 g), `mcdonalds_hamburger` (170717, 95 g),
-  `quarter_pounder_cheese` (170719, 199 g), `mcchicken` (173305, 131 g),
-  `mccrispy` and `mccrispy_hot_honey` (McDonald's Portugal label, 2026-11-07,
-  source `mcd_pt`, 264 g / 636 kcal and 294 g / 862 kcal; fibre unpublished = 0),
-  `filet_o_fish` (170319, 134 g, fish: no burger/chicken rule), `whopper`
-  (170727, 291 g), `whopper_cheese` (170728, 316 g), `bk_chicken_sandwich`
-  (170331, 199 g). Brand names (EN and PT) go to these rows; the generic rows
+  `food_portion.csv`): `quarter_pounder_cheese` (170719, 199 g),
+  `filet_o_fish` (170319, 134 g, fish: no burger/chicken rule),
+  `whopper_cheese` (170728, 316 g; the Portugal menu copies the plain
+  Whopper numbers onto the cheese row, so the US label stays),
+  `bk_chicken_sandwich` (170331, 199 g). Portugal labels
+  (`mcd_pt`, see `manufacturer_pt.json`):
+  `big_mac` (236 g, 544 kcal), `mcdonalds_cheeseburger` (121 g, 306 kcal),
+  `mcdonalds_hamburger` (106 g, 258 kcal), `double_cheeseburger` (179 g),
+  `big_tasty` / `big_tasty_double`, `cbo`, `mcroyal_bacon` and its double,
+  `mcchicken` (182 g, 419 kcal), `mccrispy`, `mccrispy_hot_honey`,
+  `mccrispy_cheddar_bacon`, `chicken_mcnuggets` (181 g = 10 pieces).
+  KFC Portugal (`kfc_pt`, PDF 15 Apr 2025): `kfc_zinger` (224 g),
+  `kfc_tower_zinger` (221 g) and the other sandwiches, wraps and sides whose
+  unit row agrees with the per-100 g row and with kJ. Burger King Portugal
+  (`bk_pt`, site menu 14 Nov 2026): `whopper` (289 g, 643 kcal) plus items
+  whose nutrition block is not a copy of another product. Subway Portugal
+  (`subway_pt`, Jan 2025 PDF): 15 cm subs whose kJ, kcal and per-100 g
+  columns agree. Pans & Company (`pans_pt`, Portugal table printed 12 Nov
+  2026): sandwiches, empanadas and pastries; drinks and rows whose kJ
+  disagree with kcal are left out. McDonald's (`mcd_pt`) now covers the
+  full counter menu (about 80 rows: McFlurry, Sundae, McMuffin and bakery,
+  Snack Wrap, McNuggets, salads, fries, Big Arch and gluten-free rows), with
+  the generic dish names kept on the generic rows. Domino's Pizza Portugal
+  (`dominos_pt`, declaração nutricional, Jan 2020): pizza slices and sale
+  portions, 1 fatia = slice weight from kcal per portion / kcal per 100 g.
+  Pizza Hut Portugal (`pizzahut_pt`, table printed 2 Nov 2026): pizza slices,
+  Super Fatias, PANxPAN, starters and salads (salads named "Salada <Name>
+  (Pizza Hut)"). Pizza is not a sandwich, so both pizza sources stay out of
+  the branded-sandwich rules in `burger_rules.dart` and
+  `region_food_vision.dart`. Bare generic names ("pão de queijo", "pão de
+  alho", "batatas rústicas", "croissant simples", "tosta mista",
+  "panqueca", "sundae") never carry a brand row's alias.
+  Loose photo names ("mac chicken", "bigmac") are folded in
+  `fast_food_names.dart` before the database match. Brand names go to these
+  rows; the generic rows
   keep the unbranded names. A branded sandwich with a separate bun is handled
   by the same rule as the generic sandwich in `burger_rules.dart`. Alias
   clashes to avoid: `fillet-o-fish` and `fillet fish` have the same token set

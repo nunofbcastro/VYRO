@@ -177,6 +177,19 @@ class RegionFoodVision implements FoodVisionService {
     });
     // One photo of a single sandwich often scores both "Chicken sandwich"
     // and "Hamburger". Keep the stronger sandwich and drop the other.
+    bool brandedMenuSandwich(String key) {
+      final food = database.byKey(key);
+      return food != null &&
+          food.category == 'pratos' &&
+          const {
+            'mcd_pt',
+            'kfc_pt',
+            'bk_pt',
+            'subway_pt',
+            'pans_pt',
+          }.contains(food.source);
+    }
+
     final sandwichKeys = {
       burgerSandwichKey,
       chickenSandwichKey,
@@ -185,7 +198,7 @@ class RegionFoodVision implements FoodVisionService {
     };
     var keptSandwich = false;
     keys.removeWhere((k) {
-      if (!sandwichKeys.contains(k)) return false;
+      if (!sandwichKeys.contains(k) && !brandedMenuSandwich(k)) return false;
       if (keptSandwich) return true;
       keptSandwich = true;
       return false;
@@ -203,7 +216,7 @@ class RegionFoodVision implements FoodVisionService {
     return FoodVisionResult(
       source: VisionSource.regionClassifier,
       dishGuess: dish,
-      foods: [...foods, ...chickenSandwichLookalikes(foods, database)],
+      foods: [...foods, ...sandwichLookalikes(foods, database)],
     );
   }
 

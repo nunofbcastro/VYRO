@@ -1,6 +1,9 @@
 import '../../assistant/domain/meal_proposal.dart' show foodTokens;
 import '../data/food_database.dart';
+import 'fast_food_names.dart';
 import 'food_screening.dart' show normaliseFoodName;
+
+export 'fast_food_names.dart';
 
 /// Names the photo model may answer in English, mapped to a Portuguese name
 /// the food database matches. Keys are normalised (lower case, no accents,
@@ -169,8 +172,13 @@ List<String> foodNameCandidates(String raw) {
   }
 
   final trimmed = raw.trim();
-  add(trimmed);
   final base = normaliseFoodName(trimmed);
+  // A menu name ("mcchicken", "big mac") has to be tried before the longer
+  // phrase. Otherwise "mc chicken sandwich" ties the generic sandwich and
+  // the branded row, and the generic one can win.
+  final canonical = fastFoodCanonical(base);
+  if (canonical != null) add(canonical);
+  add(trimmed);
   add(base);
   final translated = englishFoodName(base);
   if (translated != null) add(translated);

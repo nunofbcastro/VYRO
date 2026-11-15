@@ -256,7 +256,7 @@ Analyse ONLY the image attached to THIS request. It is a new, independent meal. 
 List only the foods and drinks that are actually in this photo. Include every drink in a glass, cup, bottle or can, and every food on a plate, board or packaging. Food can also be served or photographed in a pan, pot, tray, box, packaging or hand: still list the food, not the container. Never add side dishes, salads, vegetables, legumes, spreads or garnishes that are not clearly visible. Do not infer hidden ingredients, oil, sugar or milk. Do not list non-food objects such as the table, napkins, towels or cutlery.
 One row per food type, with its TOTAL count. A single cup or glass is ONE drink, even with a saucer, handle or shadow. Never list the same coffee twice.
 For each item give:
-- "name": the specific food or drink name in plain English, short, common and singular, e.g. "fried egg", "beer", "white rice", "beef steak". Never a general word such as "drink" or "food" when the kind is visible. When one fast-food sandwich fills the photo and a brand name is visible, use that product name. When no brand is visible, use the generic name.
+- "name": the specific food or drink name in plain English, short, common and singular, e.g. "fried egg", "beer", "white rice", "beef steak". Never a general word such as "drink" or "food" when the kind is visible. When a fast-food sandwich is recognisable, use its menu name (for example "big mac", "mcchicken", "whopper" or "zinger"). When no brand is visible, use the generic name such as "burger" or "chicken sandwich".
 - "where": short location in the photo in plain English, e.g. "centre of plate" or "top left glass". It helps us check the item; leave it as "" if you cannot tell.
 - "count": number of clearly separate pieces or containers, else 1.
 - "size": small, medium or large compared with a typical single serving. Do not output grams.
@@ -269,7 +269,7 @@ Reply with JSON only, no markdown: $_jsonFormat''';
 /// same as [buildFoodPhotoPrompt]).
 String buildFoodSecondChancePrompt() => '''
 Look again ONLY at the image attached to THIS request. It is a new, independent meal, and a first look found no food. Meal photos are often hard to read: food can be in a pan, pot, tray, box, packaging or on a board, or only partly eaten.
-Name the main food(s) and drink(s) you can see, even if you are not sure of the exact dish. Name the food itself, not the pan, box or packaging around it. Do not list non-food objects such as the table, napkins, towels or cutlery. If you truly see no food or drink, reply {"items":[]}.
+Name the main food(s) and drink(s) you can see, even if you are not sure of the exact dish. Name the food itself, not the pan, box or packaging around it. When a fast-food sandwich is recognisable, use its menu name (for example "big mac" or "mcchicken"). Do not list non-food objects such as the table, napkins, towels or cutlery. If you truly see no food or drink, reply {"items":[]}.
 For each item give "name" (the food name in plain English, short, common and singular, e.g. "fried egg", "beer", "white rice"), "where" (short location in plain English, e.g. "centre of pan", or "" if unsure), "count" (1 if unsure) and "size" (small, medium or large). Do not output grams.
 Reply with JSON only, no markdown: $_jsonFormat''';
 

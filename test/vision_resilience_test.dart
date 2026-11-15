@@ -93,14 +93,17 @@ void main() {
       expect(result.notes, contains('fusedOffline'));
     },
   );
-  test('fast offline failure preserves a valid system answer without unhandled errors', () async {
-    final result = await FoodVisionPipeline(
-      llm: _Llm(),
-      system: _Vision(regions),
-      regions: _Vision(regions, fail: true),
-    ).analyse(photo);
-    expect(result.foods.single, coffee);
-  });
+  test(
+    'fast offline failure preserves a valid system answer without unhandled errors',
+    () async {
+      final result = await FoodVisionPipeline(
+        llm: _Llm(),
+        system: _Vision(regions),
+        regions: _Vision(regions, fail: true),
+      ).analyse(photo);
+      expect(result.foods.single, coffee);
+    },
+  );
   test('two failures report total failure', () async {
     await expectLater(
       FoodVisionPipeline(

@@ -40,6 +40,7 @@ void main() {
     final keys = result.foods.map((f) => f.food?.key).toList();
     expect(keys.first, 'chicken_sandwich');
     expect(keys, isNot(contains('cheeseburger_whole')));
+    expect(keys[1], 'mcchicken');
     expect(keys, contains('mccrispy_hot_honey'));
     expect(
       result.foods.firstWhere((f) => f.food?.key == 'mccrispy_hot_honey').grams,

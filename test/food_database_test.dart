@@ -296,7 +296,7 @@ void main() {
       'burgers': 'cheeseburger_whole',
       'cheeseburger': 'cheeseburger_whole',
       'cheese burger': 'cheeseburger_whole',
-      'double cheeseburger': 'cheeseburger_whole',
+      'double cheeseburger': 'double_cheeseburger',
       'hambúrguer no pão': 'cheeseburger_whole',
       'hambúrguer com queijo': 'cheeseburger_whole',
       'hambúrguer de vaca': 'beef_ground_patty',
@@ -328,7 +328,19 @@ void main() {
         'mcdonald\'s big mac': 'big_mac',
         'mcchicken': 'mcchicken',
         'mc chicken': 'mcchicken',
+        'mac chicken': 'mcchicken',
         'McChicken sandwich': 'mcchicken',
+        'mcdonald\'s chicken sandwich': 'mcchicken',
+        'big tasty': 'big_tasty',
+        'big tasty double': 'big_tasty_double',
+        'cbo': 'cbo',
+        'mcroyal bacon': 'mcroyal_bacon',
+        'double mcroyal bacon': 'mcroyal_bacon_double',
+        'mcnuggets': 'chicken_mcnuggets',
+        'chicken mcnuggets': 'chicken_mcnuggets',
+        'zinger': 'kfc_zinger',
+        'tower zinger': 'kfc_tower_zinger',
+        'mccrispy cheddar bacon': 'mccrispy_cheddar_bacon',
         'quarter pounder': 'quarter_pounder_cheese',
         'quarterpounder': 'quarter_pounder_cheese',
         'quarter pounder with cheese': 'quarter_pounder_cheese',
@@ -348,6 +360,11 @@ void main() {
         'mccrispy hot honey': 'mccrispy_hot_honey',
         'mc crispy hot honey': 'mccrispy_hot_honey',
         'hot honey chicken sandwich': 'mccrispy_hot_honey',
+        'boxmaster': 'kfc_boxmaster_original',
+        'subway atum': 'subway_sub_atum',
+        'subway tuna': 'subway_sub_atum',
+        'sande francesa': 'pans_sande_francesa',
+        'big king xxl': 'bk_big_king_xxl',
       };
       for (final entry in brands.entries) {
         expect(
@@ -356,19 +373,31 @@ void main() {
           reason: '"${entry.key}" should match ${entry.value}',
         );
       }
+      expect(
+        db.match('zinger extreme')?.key,
+        'kfc_zinger_extreme_single_zinger_2025',
+      );
+      expect(db.match('chicken burger')?.key, 'chicken_sandwich');
+      expect(db.match('crispy chicken')?.key, 'chicken_fried_patty');
     });
 
     test('branded rows carry their USDA ref and one-sandwich portion', () {
       final big = db.byKey('big_mac')!;
-      expect(big.sourceKey, 'usda_170720');
-      expect(big.sourceLabel, "McDONALD'S, BIG MAC");
-      expect(big.portionG, 219);
+      expect(big.sourceKey, 'mcd_pt_big-mac');
+      expect(big.portionG, 236);
+      expect(big.portionG * big.kcal / 100, closeTo(544, 0.6));
       expect(big.portionUnits, 1);
       expect(big.category, 'pratos');
-      expect(db.byKey('whopper')!.sourceKey, 'usda_170727');
-      expect(db.byKey('whopper')!.portionG, 291);
-      expect(db.byKey('mcchicken')!.sourceKey, 'usda_173305');
-      expect(db.byKey('mcchicken')!.portionG, 131);
+      final whopper = db.byKey('whopper')!;
+      expect(whopper.sourceKey, 'bk_pt_bk-whopper');
+      expect(whopper.portionG, 289);
+      expect(whopper.portionG * whopper.kcal / 100, closeTo(643, 0.6));
+      // The McChicken is the Portuguese sandwich (182 g, 419 kcal), not the
+      // smaller US one from SR Legacy (131 g, 358 kcal).
+      final mcchicken = db.byKey('mcchicken')!;
+      expect(mcchicken.sourceKey, 'mcd_pt_mcchicken');
+      expect(mcchicken.portionG, 182);
+      expect(mcchicken.portionG * mcchicken.kcal / 100, closeTo(419, 0.6));
       final hot = db.byKey('mccrispy_hot_honey')!;
       expect(hot.sourceKey, 'mcd_pt_mccrispy-hot-honey');
       expect(hot.portionG, 294);
@@ -447,6 +476,59 @@ void main() {
       ]) {
         expect(db.match(name), isNotNull, reason: name);
       }
+    });
+  });
+
+  group("McDonald's full menu, Domino's and Pizza Hut", () {
+    test('McFlurry Oreo and Big Arch use the published unit weights', () {
+      final mcflurry = db.byKey('mcd_mcflurry_oreo')!;
+      expect(mcflurry.sourceKey, 'mcd_pt_mcd-mcflurry-oreo');
+      expect(mcflurry.portionG, 158);
+      expect(mcflurry.portionG * mcflurry.kcal / 100, closeTo(269, 0.6));
+      final arch = db.byKey('mcd_big_arch')!;
+      expect(arch.portionG, 395);
+      expect(arch.portionG * arch.kcal / 100, closeTo(1101, 1));
+      expect(db.match('mcflurry oreo')?.key, 'mcd_mcflurry_oreo');
+      expect(db.match('mc flurry oreo')?.key, 'mcd_mcflurry_oreo');
+      expect(db.match('big arch')?.key, 'mcd_big_arch');
+    });
+
+    test("a Domino's slice is one fatia with its derived weight", () {
+      final slice = db.byKey('dominos_fiambre_media_original_fatia')!;
+      expect(slice.sourceName, "Domino's");
+      expect(slice.portionG, 58);
+      expect(slice.portionPt, '1 fatia');
+      expect(slice.portionG * slice.kcal / 100, closeTo(113, 0.6));
+      expect(
+        db.match('pizza fiambre média original')?.key,
+        'dominos_fiambre_media_original_fatia',
+      );
+    });
+
+    test('a Pizza Hut slice and salad resolve to their own rows', () {
+      final slice = db.byKey('pizzahut_hot_chicken_fiesta_fatia')!;
+      expect(slice.sourceName, 'Pizza Hut');
+      expect(slice.portionG, 166);
+      expect(slice.portionG * slice.kcal / 100, closeTo(380, 0.6));
+      expect(
+        db.match('hot chicken fiesta pizza hut')?.key,
+        'pizzahut_hot_chicken_fiesta_fatia',
+      );
+      final salad = db.byKey('pizzahut_caprese_unidade_consumo')!;
+      expect(salad.namePt, 'Salada Caprese (Pizza Hut)');
+      expect(salad.nameEn, 'Pizza Hut Caprese salad');
+      expect(
+        db.match('salada caprese pizza hut')?.key,
+        'pizzahut_caprese_unidade_consumo',
+      );
+    });
+
+    test('generic dish names still point to the generic rows', () {
+      expect(db.match('batatas fritas')?.key, 'potato_fries_oven');
+      expect(db.match('pão de queijo')?.key, 'pao_de_queijo');
+      expect(db.match('croissant simples')?.key, 'croissant');
+      expect(db.match('tosta mista')?.key, 'sandwich_ham_cheese');
+      expect(db.match('sundae morango')?.key, 'kfc_sundae_morango');
     });
   });
 

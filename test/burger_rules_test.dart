@@ -36,7 +36,6 @@ void main() {
       'burger',
       'cheeseburger',
       'cheese burger',
-      'double cheeseburger',
     ]) {
       test('"$name" is cheeseburger_whole (150 g, one item)', () {
         final food = parse([(name, 1)]).single;
@@ -49,24 +48,30 @@ void main() {
     test('"big mac" is the branded Big Mac, not the generic sandwich', () {
       final food = parse([('big mac', 1)]).single;
       expect(food.food?.key, 'big_mac');
-      expect(food.grams, 219);
+      expect(food.grams, 236);
       expect(isBurgerSandwich(food), isTrue);
       expect(matchFoodName(db, foodNameCandidates('Big Mac'))?.key, 'big_mac');
     });
 
-    test('"2 big macs" are two sandwiches of 219 g: 438 g, count 2', () {
+    test('"2 big macs" are two sandwiches of 236 g: 472 g, count 2', () {
       final food = parse([('big mac', 2)]).single;
       expect(food.food?.key, 'big_mac');
       expect(food.count, 2);
-      expect(food.grams, 438);
+      expect(food.grams, 472);
     });
 
     test('brand names reach their branded row', () {
       final cases = {
-        'mcdonald\'s cheeseburger': ('mcdonalds_cheeseburger', 119.0),
-        'hambúrguer do mcdonald\'s': ('mcdonalds_hamburger', 95.0),
+        'mcdonald\'s cheeseburger': ('mcdonalds_cheeseburger', 121.0),
+        'hambúrguer do mcdonald\'s': ('mcdonalds_hamburger', 106.0),
+        'double cheeseburger': ('double_cheeseburger', 179.0),
+        'big mac burger': ('big_mac', 236.0),
+        'big tasty': ('big_tasty', 282.0),
+        'big tasty double': ('big_tasty_double', 391.0),
+        'mcroyal bacon': ('mcroyal_bacon', 187.0),
+        'double mcroyal bacon': ('mcroyal_bacon_double', 286.0),
         'quarter pounder with cheese': ('quarter_pounder_cheese', 199.0),
-        'whopper': ('whopper', 291.0),
+        'whopper': ('whopper', 289.0),
         'whopper com queijo': ('whopper_cheese', 316.0),
       };
       for (final entry in cases.entries) {

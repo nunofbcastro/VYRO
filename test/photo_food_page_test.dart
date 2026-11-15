@@ -455,6 +455,43 @@ void main() {
 
   // v0.6.8: the phone AI failed, so offline guesses are suggestions only. The
   // main list is empty, the card says they must be confirmed, and the CTA is 0.
+  testWidgets('choosing a branded sandwich replaces the generic one', (
+    tester,
+  ) async {
+    final generic = meal(['chicken_sandwich']);
+    vision.result = Future.value(
+      generic.copyWith(
+        suggestions: [
+          DetectedFood(
+            food: db.byKey('mcchicken'),
+            label: 'McChicken',
+            grams: 182,
+            source: VisionSource.systemAi,
+          ),
+        ],
+      ),
+    );
+    await open(tester);
+    await choose(tester, first: true);
+    await tester.pumpAndSettle();
+    expect(find.text('Adicionar 1 ao diário'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.widgetWithText(ActionChip, 'McChicken'),
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    // The fixed footer can cover the chip in the test viewport: press it
+    // through its callback.
+    tester
+        .widget<ActionChip>(find.widgetWithText(ActionChip, 'McChicken'))
+        .onPressed!();
+    await tester.pumpAndSettle();
+    // Still one line: the McChicken, with its own portion (182 g, 419 kcal).
+    expect(find.text('Adicionar 1 ao diário'), findsOneWidget);
+    expect(find.text(db.byKey('chicken_sandwich')!.namePt), findsNothing);
+    expect(find.text('182 g · 419 kcal'), findsOneWidget);
+  });
+
   testWidgets('system AI failed: offline guesses are suggestions, CTA is 0', (
     tester,
   ) async {

@@ -10,6 +10,7 @@ import '../../core/platform/image_temp_file.dart';
 import '../../core/ui/vyro_ui.dart';
 import 'data/food_database.dart';
 import 'domain/food_product.dart' show dayKey;
+import 'food_vision/burger_rules.dart';
 import 'food_vision/food_vision.dart';
 import 'food_vision/portion_estimate.dart';
 import 'food_vision/region_food_vision.dart';
@@ -419,6 +420,30 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
       ),
     ),
   );
+
+  /// A tapped suggestion. A whole sandwich (McChicken, Big Mac...) replaces
+  /// the one sandwich already in the list, so the meal is not counted twice;
+  /// anything else is added as a new line.
+  void _acceptSuggestion(DetectedFood suggestion) {
+    final food = suggestion.food!;
+    final sandwiches = [
+      for (final item in _shot?.items ?? const <ReviewItem>[])
+        if (!item.removing && !item.pending && isWholeSandwichFood(item.food))
+          item,
+    ];
+    if (!isWholeSandwichFood(food) || sandwiches.length != 1) {
+      return _addFood(food, grams: suggestion.grams);
+    }
+    final item = sandwiches.single;
+    setState(() {
+      item.grams = estimatedGrams(food: food, count: item.detected.count ?? 1);
+      item.detected = item.detected.copyWith(
+        food: food,
+        grams: item.grams,
+        source: VisionSource.user,
+      );
+    });
+  }
 
   void _removeItem(ReviewItem item) {
     _removed++;
@@ -997,7 +1022,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
                     for (final s in suggestions)
                       ActionChip(
                         label: Text(s.food!.name(t.isEnglish)),
-                        onPressed: () => _addFood(s.food!),
+                        onPressed: () => _acceptSuggestion(s),
                       ),
                   ],
                 ),

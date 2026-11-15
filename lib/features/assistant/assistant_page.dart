@@ -165,9 +165,7 @@ class _AssistantPageState extends State<AssistantPage> {
       nextWorkout: next?.slot == null
           ? null
           : (t.isEnglish ? next!.slot!.nameEn : next!.slot!.namePt),
-      nextWorkoutDay: next == null
-          ? null
-          : weekdayLong(next.date.weekday, t),
+      nextWorkoutDay: next == null ? null : weekdayLong(next.date.weekday, t),
       nextExercises: [
         for (final e in nextDay?.exercises ?? const <PlannedExercise>[])
           '${t.isEnglish ? e.info.nameEn : e.info.namePt} '

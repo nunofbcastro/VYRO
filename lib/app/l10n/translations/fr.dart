@@ -184,7 +184,7 @@ const Map<String, String> vyroStringsFr = <String, String>{
   'photoEstimateNote':
       "Les aliments et les grammes sont des estimations à partir de la photo : ajuste avant d'enregistrer. Les calories sont calculées en grammes × kcal/100 g.",
   'nutritionSourcesNote':
-      'Valeurs pour 100 g : USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) et, pour le McCrispy, la fiche publiée par McDonald\'s Portugal.',
+      'Valeurs pour 100 g : USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) et fiches publiées par McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s et Pizza Hut au Portugal.',
   'photoSourceSystem': 'IA du téléphone',
   'photoSourceRegions': 'Reconnaissance hors ligne (peu fiable)',
   'offlineNoFood':
@@ -708,6 +708,16 @@ const Map<String, String> vyroStringsFr = <String, String>{
   'cableMachine': 'Machine à câbles',
   'bodyweight': 'Poids du corps',
   'bodyweightOrDumbbells': 'Poids du corps ou haltères',
+  'coachLastTime': 'Dernière fois : {sets}',
+  'coachRaiseKg': 'Tu as atteint {n} à chaque série. Essaie {kg} aujourd’hui.',
+  'coachRaiseNoKg':
+      'Tu as atteint {n} à chaque série. Ajoute de la charge ou rends l’exercice plus difficile.',
+  'coachKeepKg':
+      'Garde {kg} et vise une répétition de plus par série, jusqu’à {n}.',
+  'coachKeepNoKg': 'Vise une répétition de plus par série, jusqu’à {n}.',
+  'coachHoldRaise':
+      'Tu as tenu {n} s à chaque série. Ajoute 5 s ou rends l’exercice plus difficile.',
+  'coachHoldKeep': 'Essaie de tenir {n} s à chaque série.',
   'completeSetsHint': 'Coche les séries terminées pour finir la séance.',
   'step': 'Étape',
   'of': 'sur',

@@ -99,6 +99,13 @@ List<DetectedFood> mealCompanions(
       (f.food?.key ?? f.label.toLowerCase()),
   };
   final out = <DetectedFood>[];
+  // A generic sandwich: the branded ones first (McChicken, Big Mac...), so
+  // one tap swaps the generic row for the real product and its portion.
+  for (final wanted in sandwichLookalikeKeys(foods)) {
+    final food = db.byKey(wanted);
+    if (food == null || !taken.add(food.key)) continue;
+    out.add(_suggestion(food));
+  }
   // A patty with no bun: the bun first, then cheese and burger sauce.
   for (final wanted in burgerCompanionKeys(foods, taken: taken)) {
     final food = _companionFood(db, wanted);
@@ -116,10 +123,16 @@ List<DetectedFood> mealCompanions(
   return out;
 }
 
-DetectedFood _suggestion(FoodRef food) => DetectedFood(
-  food: food,
-  label: food.namePt,
-  grams: estimatedGrams(food: food, size: PortionSize.medium),
-  size: PortionSize.medium,
-  source: VisionSource.systemAi,
-);
+DetectedFood _suggestion(FoodRef food) {
+  // 10 McNuggets is one box. Count 1 would be a single piece (18 g).
+  final box = food.key == 'chicken_mcnuggets';
+  final count = box ? (food.portionUnits ?? 1).round().clamp(1, 20) : 1;
+  return DetectedFood(
+    food: food,
+    label: food.namePt,
+    grams: estimatedGrams(food: food, count: count, size: PortionSize.medium),
+    count: box ? count : null,
+    size: PortionSize.medium,
+    source: VisionSource.systemAi,
+  );
+}
