@@ -34,5 +34,13 @@ Read `brand/BRAND_GUIDE.md` and `brand/tokens/tokens.json` before implementing U
 ## Agent execution format
 For each task: (1) explain scope and files, (2) implement actual code, (3) add/update tests, (4) run `dart format`, `flutter analyze`, `flutter test` where available, (5) state what is real vs. mocked and list follow-ups. Do not invent test results.
 
+## Releases
+Every version is shipped in full, not just committed:
+1. Bump `pubspec.yaml` (version and build number) and commit as `Release X.Y.Z: <one line>.` with a short prose body.
+2. After `flutter analyze` and `flutter test` pass, build `flutter build apk --release --split-per-abi`, then `flutter build apk --release`.
+3. Push `main`, create the tag `vX.Y.Z` on the release commit and push it.
+4. Publish a GitHub pre-release: `gh release create vX.Y.Z --verify-tag --prerelease --title "VYRO vX.Y.Z (pré-lançamento)"`, Portuguese notes (`## VYRO X.Y.Z (pré-lançamento)`, `###` sections, ending with "Android 8.0+. Build assinada com chave de debug. Compilada neste computador; esta publicação não usa GitHub Actions."), and four assets named `vyro-X.Y.Z-{arm64-v8a,armeabi-v7a,x86_64,universal}.apk`.
+5. Keep only the three most recent GitHub releases, counting the new one (`gh release delete <tag> --yes`); keep the git tags.
+
 ## First task
 Initialize a valid Flutter app in this root while preserving `.agents/`, `brand/`, and `docs/`. Build theme tokens, navigation shell, screen placeholders with real navigation, and a `/design-system` route showing UI components and screens with clearly-labelled demo data. Verify compilation. Then progress to functional nutrition features.
