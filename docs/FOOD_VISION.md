@@ -200,6 +200,27 @@ o ketchup, o molho de tomate e o queijo ralado não existem, por isso não apare
   código não o inventa.
 - Estas gramas são **estimativas editáveis**, não medições.
 
+### Dois pratos iguais (0.6.18)
+
+- **IA do sistema.** O pedido pede `"count": 2` quando há dois pratos, tigelas,
+  chávenas ou doses separadas do **mesmo** prato (ex.: duas francesinhas em
+  dois pratos); um prato cortado ao meio ou em pedaços continua a contar 1.
+  Com `portion_units` 1 (prato inteiro), 2 peças = 2 × as gramas
+  (`estimatedGrams`). Testado em `food_database_test.dart`.
+- **Classificador regional.** Só para pratos inteiros (`isWholeDish`) com
+  `portion_units` 1. Usa a grelha 4×4 (`dish_count.dart`): marca as células em
+  que a etiqueta do prato é a etiqueta alimentar mais provável e o fundo não
+  ganha (`markCellsForFood`), depois conta as manchas de células vizinhas (4
+  vizinhos, sem diagonais) com pelo menos 2 células (`separatePlateCount`).
+  Se houver exatamente 2 ou 3 manchas separadas, propõe 2 ou 3 pratos; caso
+  contrário fica 1. Células isoladas são ruído. Manchas que se tocam são uma só.
+- A proposta é **sempre editável**: a linha mostra «Parece haver 2 — confirma.»
+  (`photoCountHint`), e «Esclarecer alimento ou porção» deixa escolher 1, 2, 3, 4
+  ou 6 peças (isso substitui a proposta).
+- **Heurística, não medida.** Não foi feita nenhuma avaliação em fotos reais
+  com dois pratos. Pode falhar em qualquer sentido: um prato grande pode
+  formar duas manchas, dois pratos juntos podem formar uma só.
+
 ## Fallback offline — `RegionFoodVision`
 
 - Modelo: `assets/models/aiy_food_v1.tflite` (Google AIY Food V1, Apache 2.0,

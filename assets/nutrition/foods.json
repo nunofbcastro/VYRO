@@ -19,6 +19,12 @@
    "url": "https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf",
    "citation": "Domino's Pizza Portugal. Declaração nutricional, valores médios da receita por 100 g e por porção, última atualização em janeiro de 2020 (consultada em 15 de novembro de 2026). A unidade é a fatia ou a dose de venda; o peso da fatia é o quociente entre as kcal por porção e as kcal por 100 g. Só entram linhas em que os kJ concordam com as kcal em 3%. A tabela de 2023, só por 100 g, não permite pesos por porção e não foi usada."
   },
+  "insa": {
+   "name": "INSA — Tabela da Composição de Alimentos (v7.1, 2026)",
+   "license": "Utilização com indicação visível da fonte (termos do INSA)",
+   "url": "https://portfir.insa.min-saude.pt/wp-content/uploads/2025/11/insa_tca.xlsx",
+   "citation": "Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026."
+  },
   "kfc_pt": {
    "name": "KFC Portugal — tabela nutricional publicada",
    "license": "Valores publicados pelo fabricante; citados com a data da tabela",
@@ -62,7 +68,7 @@
   }
  },
  "curatedList": "tool/nutrition/foods_pt.tsv",
- "curatedSha256": "91a90a9fb0d390801dbcd05db66abeea564e8007975be3f0edcd20faae414eff",
+ "curatedSha256": "209554b5d11ddb5f626056620ab1c5e27c8d71160384aa339161640ac713e3e4",
  "portionNote": "Typical portions are VYRO estimates for suggestions; users confirm grams.",
  "foods": [
   {
@@ -6755,6 +6761,60 @@
    "visionLabels": []
   },
   {
+   "key": "bacalhau_a_bras",
+   "namePt": "Bacalhau à Brás",
+   "nameEn": "Bacalhau à Brás",
+   "category": "pratos",
+   "region": "pt",
+   "source": "insa",
+   "sourceRef": "809",
+   "sourceLabel": "Bacalhau à Brás",
+   "kcal": 164.0,
+   "protein": 9.5,
+   "carbs": 8.3,
+   "fat": 10.1,
+   "fiber": 0.8,
+   "portionG": 300.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 prato (estimativa)",
+   "portionEn": "1 plate (estimate)",
+   "aliases": [
+    "bacalhau à brás",
+    "bacalhau a bras",
+    "bacalhau brás"
+   ],
+   "visionLabels": [
+    "Bacalhau à Brás"
+   ]
+  },
+  {
+   "key": "bacalhau_gomes_de_sa",
+   "namePt": "Bacalhau à Gomes de Sá",
+   "nameEn": "Bacalhau à Gomes de Sá",
+   "category": "pratos",
+   "region": "pt",
+   "source": "insa",
+   "sourceRef": "810",
+   "sourceLabel": "Bacalhau à Gomes de Sá",
+   "kcal": 139.0,
+   "protein": 6.7,
+   "carbs": 13.1,
+   "fat": 6.3,
+   "fiber": 1.4,
+   "portionG": 350.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 prato (estimativa)",
+   "portionEn": "1 plate (estimate)",
+   "aliases": [
+    "bacalhau à gomes de sá",
+    "bacalhau a gomes de sa",
+    "bacalhau gomes de sá"
+   ],
+   "visionLabels": [
+    "Bacalhau à Gomes de Sá"
+   ]
+  },
+  {
    "key": "pizzahut_bacon_fest_fatia",
    "namePt": "Bacon Fest, 1 fatia (Pizza Hut)",
    "nameEn": "Pizza Hut Portugal Bacon Fest, 1 slice",
@@ -7741,6 +7801,33 @@
    "visionLabels": []
   },
   {
+   "key": "caldeirada_peixe",
+   "namePt": "Caldeirada de peixe",
+   "nameEn": "Fish stew (caldeirada)",
+   "category": "pratos",
+   "region": "pt",
+   "source": "insa",
+   "sourceRef": "1053",
+   "sourceLabel": "Caldeirada de peixe",
+   "kcal": 84.0,
+   "protein": 7.5,
+   "carbs": 4.4,
+   "fat": 3.5,
+   "fiber": 0.8,
+   "portionG": 400.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 prato (estimativa)",
+   "portionEn": "1 plate (estimate)",
+   "aliases": [
+    "caldeirada",
+    "caldeirada de peixe",
+    "caldeirada de pescado"
+   ],
+   "visionLabels": [
+    "Caldeirada"
+   ]
+  },
+  {
    "key": "pizzahut_camponesa_media_massa_pan_fatia",
    "namePt": "Camponesa Média (Massa Pan), 1 fatia (Pizza Hut)",
    "nameEn": "Pizza Hut Portugal Camponesa Média (Massa Pan), 1 slice",
@@ -7907,6 +7994,33 @@
     "pizza hut carbonara média (são francisco)"
    ],
    "visionLabels": []
+  },
+  {
+   "key": "carne_porco_alentejana",
+   "namePt": "Carne de porco à alentejana",
+   "nameEn": "Pork à alentejana",
+   "category": "pratos",
+   "region": "pt",
+   "source": "insa",
+   "sourceRef": "1030",
+   "sourceLabel": "Carne de porco à alentejana",
+   "kcal": 229.0,
+   "protein": 14.6,
+   "carbs": 1.8,
+   "fat": 16.9,
+   "fiber": 0.3,
+   "portionG": 350.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 prato (estimativa)",
+   "portionEn": "1 plate (estimate)",
+   "aliases": [
+    "carne de porco à alentejana",
+    "porco à alentejana",
+    "carne de porco alentejana"
+   ],
+   "visionLabels": [
+    "Carne de porco à alentejana"
+   ]
   },
   {
    "key": "pans_chamucas",
@@ -8698,6 +8812,33 @@
     "kfc coronel zinger single"
    ],
    "visionLabels": []
+  },
+  {
+   "key": "cozido_portuguesa",
+   "namePt": "Cozido à portuguesa",
+   "nameEn": "Cozido à portuguesa (Portuguese boiled dinner)",
+   "category": "pratos",
+   "region": "pt",
+   "source": "insa",
+   "sourceRef": "1020",
+   "sourceLabel": "Cozido à portuguesa",
+   "kcal": 120.0,
+   "protein": 6.8,
+   "carbs": 6.2,
+   "fat": 7.0,
+   "fiber": 2.5,
+   "portionG": 450.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 prato (estimativa)",
+   "portionEn": "1 plate (estimate)",
+   "aliases": [
+    "cozido à portuguesa",
+    "cozido portugues",
+    "cozido português"
+   ],
+   "visionLabels": [
+    "Cozido à portuguesa"
+   ]
   },
   {
    "key": "pans_creme_de_abobora",
@@ -10234,6 +10375,35 @@
     "pans & company folhado de salsicha"
    ],
    "visionLabels": []
+  },
+  {
+   "key": "francesinha",
+   "namePt": "Francesinha com molho",
+   "nameEn": "Francesinha (with sauce)",
+   "category": "pratos",
+   "region": "pt",
+   "source": "insa",
+   "sourceRef": "1073",
+   "sourceLabel": "Francesinha, com molho",
+   "kcal": 249.0,
+   "protein": 13.3,
+   "carbs": 6.5,
+   "fat": 17.7,
+   "fiber": 0.4,
+   "portionG": 550.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 prato (estimativa)",
+   "portionEn": "1 plate (estimate)",
+   "aliases": [
+    "francesinha",
+    "francesinha com molho",
+    "francesinha do porto",
+    "sandes francesinha"
+   ],
+   "visionLabels": [
+    "Francesinha",
+    "Francesinha poveira"
+   ]
   },
   {
    "key": "pans_frango_assado",
@@ -12128,7 +12298,6 @@
    "portionPt": "1 unidade",
    "portionEn": "1 item",
    "aliases": [
-    "pastel de nata",
     "pastel de nata (pans & company)",
     "pans pastel de nata",
     "pans & company pastel de nata"
@@ -17567,7 +17736,6 @@
    "portionPt": "1 unidade",
    "portionEn": "1 item",
    "aliases": [
-    "bolo de arroz",
     "bolo de arroz (pans & company)",
     "pans bolo de arroz",
     "pans & company bolo de arroz"
@@ -17597,6 +17765,31 @@
     "pizza hut bolo de chocolate"
    ],
    "visionLabels": []
+  },
+  {
+   "key": "bolo_de_arroz",
+   "namePt": "Bolo de arroz",
+   "nameEn": "Bolo de arroz (rice cake)",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "insa",
+   "sourceRef": "473",
+   "sourceLabel": "Bolo de arroz",
+   "kcal": 391.0,
+   "protein": 5.8,
+   "carbs": 48.1,
+   "fat": 19.2,
+   "fiber": 1.5,
+   "portionG": 90.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade (estimativa)",
+   "portionEn": "1 item (estimate)",
+   "aliases": [
+    "bolo de arroz"
+   ],
+   "visionLabels": [
+    "Bolo de arroz"
+   ]
   },
   {
    "key": "pans_brownie_de_caramelo_salgado",
@@ -19013,6 +19206,33 @@
     "pizza hut ovo de páscoa"
    ],
    "visionLabels": []
+  },
+  {
+   "key": "pastel_de_nata",
+   "namePt": "Pastel de nata",
+   "nameEn": "Pastel de nata (custard tart)",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "insa",
+   "sourceRef": "489",
+   "sourceLabel": "Pastel de nata",
+   "kcal": 275.0,
+   "protein": 4.7,
+   "carbs": 38.3,
+   "fat": 10.6,
+   "fiber": 3.8,
+   "portionG": 60.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade (estimativa)",
+   "portionEn": "1 pastry (estimate)",
+   "aliases": [
+    "pastel de nata",
+    "pastéis de nata",
+    "pasteis de nata"
+   ],
+   "visionLabels": [
+    "Pastel de nata"
+   ]
   },
   {
    "key": "pizzahut_pintarolas_tubo_dose",

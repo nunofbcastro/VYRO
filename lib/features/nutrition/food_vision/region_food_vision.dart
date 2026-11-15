@@ -9,8 +9,10 @@ import '../data/food_database.dart';
 import '../domain/food_recognition_service.dart'
     show dequantize, toProbabilities;
 import 'burger_rules.dart';
+import 'dish_count.dart';
 import 'food_vision.dart';
 import 'photo_quality.dart';
+import 'portion_estimate.dart';
 
 /// Offline multi-food estimate built on the bundled single-label dish
 /// classifier (AIY Food V1): it classifies the whole photo plus overlapping
@@ -205,18 +207,56 @@ class RegionFoodVision implements FoodVisionService {
     });
     final foods = [
       for (final k in keys.take(6))
-        DetectedFood(
-          food: database.byKey(k),
-          label: database.byKey(k)!.namePt,
-          grams: database.byKey(k)!.portionG,
-          confidence: peak[k],
-          source: VisionSource.regionClassifier,
+        _withSeparatePlates(
+          DetectedFood(
+            food: database.byKey(k),
+            label: database.byKey(k)!.namePt,
+            grams: database.byKey(k)!.portionG,
+            confidence: peak[k],
+            source: VisionSource.regionClassifier,
+          ),
+          perCrop,
+          labels,
         ),
     ];
     return FoodVisionResult(
       source: VisionSource.regionClassifier,
       dishGuess: dish,
       foods: [...foods, ...sandwichLookalikes(foods, database)],
+    );
+  }
+
+  /// Index of the first 4×4 grid crop in the per-crop list (after the full
+  /// frame, the centre square and the 3×3 grid).
+  static const gridStart = 11;
+
+  /// Proposes two or three plates for a whole dish with one typical portion
+  /// (see [separatePlateCount]). Other foods, and dishes without a single
+  /// portion unit, keep their count. The proposal is marked [countProposed].
+  static DetectedFood _withSeparatePlates(
+    DetectedFood detected,
+    List<List<(int, double)>> perCrop,
+    Map<int, String> labels,
+  ) {
+    final dish = detected.food;
+    if (dish == null || dish.portionUnits != 1 || !isWholeDish(dish)) {
+      return detected;
+    }
+    const end = gridStart + dishGridSide * dishGridSide;
+    if (perCrop.length < end) return detected;
+    final marks = markCellsForFood(
+      cells: perCrop.sublist(gridStart, end),
+      labels: labels,
+      foodLabels: dish.visionLabels.toSet(),
+      backgroundLabel: backgroundLabel,
+      minProbability: minRegionProbability,
+    );
+    final count = separatePlateCount(marks);
+    if (count < 2) return detected;
+    return detected.copyWith(
+      count: count,
+      grams: estimatedGrams(food: dish, count: count),
+      countProposed: true,
     );
   }
 

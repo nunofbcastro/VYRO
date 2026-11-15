@@ -112,6 +112,19 @@ cloud, no paid API, the photo stays in memory. Full details:
 5. Run `dart format`, `flutter analyze`, `flutter test`. Tests for the offline
    fallback: `test/food_offline_only_test.dart`.
 
+## Counting separate dishes (0.6.18)
+
+- System model: `"count": 2` for two separate plates or servings of the same
+  dish (the prompt says so explicitly); one dish cut into pieces is 1. The
+  grams follow `estimatedGrams` (whole dish with `portion_units` 1 → 2 × grams).
+- Region classifier: only `isWholeDish` foods with `portion_units` 1. The
+  rule in `dish_count.dart` (`markCellsForFood`, `separatePlateCount`) marks
+  the 4×4 cells where the dish's label is the top food label and counts
+  4-connected blobs of at least two cells. Exactly 2 or 3 blobs propose 2 or 3
+  (`countProposed`, shown as "Parece haver {n} — confirma."); otherwise 1.
+- Heuristic. Not measured on real multi-plate photos; it can be wrong in both
+  directions. The user always confirms in the review.
+
 ## Rules
 
 - Recognition is probabilistic: show the source (phone AI, offline, both),

@@ -6,7 +6,7 @@ import '../../assistant/domain/meal_proposal.dart' show foodTokens;
 import '../food_vision/fast_food_names.dart';
 
 /// One food from the bundled nutrition database (values per 100 g from an
-/// official composition table: USDA, Ciqual, TACO, or a cited product label).
+/// official composition table: USDA, Ciqual, TACO, INSA, or a cited product label).
 class FoodRef {
   const FoodRef({
     required this.key,
@@ -35,12 +35,12 @@ class FoodRef {
   final String nameEn;
   final String category;
 
-  /// Composition table the values come from: `usda`, `ciqual`, `taco`,
+  /// Composition table the values come from: `usda`, `ciqual`, `taco`, `insa`,
   /// `mcd_pt`, `kfc_pt`, `bk_pt`, `subway_pt`, `pans_pt`, `dominos_pt` or
   /// `pizzahut_pt`.
   final String source;
 
-  /// Id of the food in that table (FDC id, Ciqual alim_code, TACO number).
+  /// Id of the food in that table (FDC id, Ciqual alim_code, TACO number, INSA code).
   final String sourceRef;
 
   /// Original description in the source table (for traceability).
@@ -70,6 +70,7 @@ class FoodRef {
     'usda' => 'USDA',
     'ciqual' => 'Ciqual',
     'taco' => 'TACO',
+    'insa' => 'INSA',
     'mcd_pt' => "McDonald's",
     'kfc_pt' => 'KFC',
     'bk_pt' => 'Burger King',
@@ -111,7 +112,8 @@ class FoodRef {
 
 /// Offline nutrition database built by `tool/nutrition/build_food_db.py`
 /// from USDA FoodData Central (CC0), Ciqual 2025 (etalab-2.0), TACO 4
-/// (cited) and the published McDonald's Portugal and KFC Portugal labels.
+/// (cited), INSA TCA v7.1 (cited, terms apply) and the published McDonald's
+/// Portugal and KFC Portugal labels.
 /// Loaded once from assets; see docs/NUTRITION_DATA.md.
 class FoodDatabase {
   FoodDatabase(this.foods)

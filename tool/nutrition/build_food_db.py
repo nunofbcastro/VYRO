@@ -41,6 +41,14 @@ Sources (downloaded into build/, never committed):
          sale portion; slice weight = portion kcal / per-100 g kcal. Only rows
          whose kJ agrees with kcal within 3% are kept (checked when the rows
          were imported; the kJ column is not stored in the JSON).
+  insa   INSA Tabela da Composição de Alimentos v7.1 (2026, Portugal). Excel
+         file, read with xlsx_reader. ref = INSA food code (column Cod).
+         Values are per 100 g of edible part, as published. The INSA energy
+         includes the fibre term, so the Atwater check uses 2 x fibre too.
+         The terms require the source to be shown wherever the data is shown
+         (see the citation in foods.json and the app's sources screen).
+         Reuse terms are not an open licence: confirm with INSA before a
+         public release. Downloaded to build/insa/ (SHA-256 checked).
   pizzahut_pt Pizza Hut Portugal "Informação nutricional" table (printed
          2 Nov 2026, vivabem.pt). Unit = 1 slice, piece, unit or serving;
          unit weight = portion kcal / per-100 g kcal. Rows whose kJ, kcal,
@@ -127,6 +135,14 @@ SOURCES = {
         'url': 'https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf',
         'citation': 'Pizza Hut Portugal. Informação nutricional, tabela válida para Portugal (impressa em 2 de novembro de 2026, documento PSA IC 001ph.47). O peso da unidade é o quociente entre a energia da porção e a energia por 100 g. Ficaram de fora as linhas em que os kJ, as kcal, o cálculo de Atwater ou a coluna por 100 g não concordam, os molhos e os doces.',
         'file': MANUFACTURER,
+    },
+    'insa': {
+        'name': 'INSA — Tabela da Composição de Alimentos (v7.1, 2026)',
+        'license': 'Utilização com indicação visível da fonte (termos do INSA)',
+        'url': 'https://portfir.insa.min-saude.pt/wp-content/uploads/2025/11/insa_tca.xlsx',
+        'citation': 'Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026.',
+        'file': ROOT / 'build' / 'insa' / 'insa_tca.xlsx',
+        'sha256': '155d233b6e16e21848d766bb9a13c1965b8c990b6cd8e69e3f39f4df75c066ca',
     },
     'dominos_pt': {
         'name': "Domino's Pizza Portugal — declaração nutricional",
@@ -275,6 +291,54 @@ def load_taco(refs):
     return out
 
 
+def load_insa(refs):
+    """INSA TCA v7.1 (Excel). Energy includes 2 x fibre, so Atwater uses it too."""
+    path = download('insa')
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    if digest != SOURCES['insa']['sha256']:
+        sys.exit(f'INSA file hash mismatch: {digest}')
+    rows = read_rows(path)
+    header = None
+    for r in rows:
+        if r and r[0].strip() == 'Cod':
+            header = [_norm(h) for h in r]
+            break
+    if header is None:
+        sys.exit('INSA header row (Cod) not found')
+
+    def col(*parts):
+        for i, h in enumerate(header):
+            if all(p in h for p in parts):
+                return i
+        sys.exit(f'INSA column not found: {parts}')
+
+    c_name = col('nome do alimento')
+    c_kcal = col('energia', 'kcal')
+    c_fat = col('lipidos')
+    c_carb = col('hidratos de carbono')
+    c_fib = col('fibra')
+    c_prot = col('proteinas')
+    out = {}
+    for r in rows:
+        code = r[0].strip() if r else ''
+        if code not in refs:
+            continue
+        cells = r + [''] * (c_prot + 1 - len(r))
+        values = {}
+        for field, i in (('kcal', c_kcal), ('protein', c_prot), ('carbs', c_carb),
+                         ('fat', c_fat), ('fiber', c_fib)):
+            t = cells[i].strip().replace(',', '.')
+            values[field] = float(t) if t not in ('', '-') else None
+        if any(values[f] is None for f in ('kcal', 'protein', 'carbs', 'fat')):
+            continue
+        fibre = values['fiber'] or 0.0
+        expected = 4 * values['protein'] + 4 * values['carbs'] + 9 * values['fat'] + 2 * fibre
+        if abs(values['kcal'] - expected) / values['kcal'] > 0.08:
+            sys.exit(f'INSA {code}: kcal {values["kcal"]} disagrees with Atwater {expected:.0f}')
+        out[code] = dict(values, fiber=fibre, id=code, label=cells[c_name].replace('\n', ' ').strip())
+    return out
+
+
 def load_brand_pt(refs):
     """Published unit totals → per 100 g. portion_g in the TSV must match."""
     products = json.loads(MANUFACTURER.read_text(encoding='utf-8'))
@@ -306,6 +370,7 @@ def load_brand_pt(refs):
 LOADERS = {
     'usda': load_usda,
     'ciqual': load_ciqual,
+    'insa': load_insa,
     'taco': load_taco,
     'mcd_pt': load_brand_pt,
     'kfc_pt': load_brand_pt,

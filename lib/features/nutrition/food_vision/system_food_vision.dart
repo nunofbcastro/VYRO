@@ -258,7 +258,7 @@ One row per food type, with its TOTAL count. A single cup or glass is ONE drink,
 For each item give:
 - "name": the specific food or drink name in plain English, short, common and singular, e.g. "fried egg", "beer", "white rice", "beef steak". Never a general word such as "drink" or "food" when the kind is visible. When a fast-food sandwich is recognisable, use its menu name (for example "big mac", "mcchicken", "whopper" or "zinger"). When no brand is visible, use the generic name such as "burger" or "chicken sandwich".
 - "where": short location in the photo in plain English, e.g. "centre of plate" or "top left glass". It helps us check the item; leave it as "" if you cannot tell.
-- "count": number of clearly separate pieces or containers, else 1.
+- "count": number of clearly separate pieces or containers, else 1. Two separate plates, bowls, cups or servings of the SAME dish are 2 (for example two plates of francesinha). One dish cut into halves or pieces on one plate is still 1.
 - "size": small, medium or large compared with a typical single serving. Do not output grams.
 If no food or drink is visible reply {"items":[]}.
 Reply with JSON only, no markdown: $_jsonFormat''';

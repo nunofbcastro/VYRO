@@ -75,6 +75,7 @@ class DetectedFood {
     this.needsChoice = false,
     this.corroborated = false,
     this.pending = false,
+    this.countProposed = false,
   });
 
   /// Matched database food; null when nothing matched (needs correction).
@@ -91,6 +92,10 @@ class DetectedFood {
 
   /// Pieces counted by the detector (e.g. 2 chicken fillets).
   final int? count;
+
+  /// True when [count] is a proposal from the offline region rule (two
+  /// separate blobs of the same whole dish). The user confirms or changes it.
+  final bool countProposed;
 
   /// Relative portion size used to scale the typical grams.
   final PortionSize? size;
@@ -118,6 +123,7 @@ class DetectedFood {
     bool? needsChoice,
     bool? corroborated,
     bool? pending,
+    bool? countProposed,
   }) => DetectedFood(
     label: food?.namePt ?? label,
     grams: grams ?? this.grams,
@@ -130,6 +136,7 @@ class DetectedFood {
     needsChoice: needsChoice ?? (food == null ? this.needsChoice : false),
     corroborated: corroborated ?? this.corroborated,
     pending: pending ?? this.pending,
+    countProposed: countProposed ?? this.countProposed,
   );
 
   double? get kcal => food == null ? null : food!.kcal * grams / 100;

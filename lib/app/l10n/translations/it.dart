@@ -179,7 +179,7 @@ const Map<String, String> vyroStringsIt = <String, String>{
   'photoEstimateNote':
       'Alimenti e grammi sono stime dalla foto: correggi prima di salvare. Le calorie sono calcolate come grammi × kcal/100 g.',
   'nutritionSourcesNote':
-      'Valori per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) e schede pubblicate da McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s e Pizza Hut in Portogallo.',
+      'Valori per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP), INSA (tabella v7.1, 2026) e schede pubblicate da McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s e Pizza Hut in Portogallo. Citazione INSA: Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026.',
   'photoSourceSystem': 'IA del telefono',
   'photoSourceRegions': 'Riconoscimento offline (poco affidabile)',
   'offlineNoFood':
@@ -238,6 +238,7 @@ const Map<String, String> vyroStringsIt = <String, String>{
   'photoActRecipe': 'Ricetta',
   'photoActMore': 'Altre foto',
   'photoPillConfirm': 'da confermare',
+  'photoCountHint': 'Sembrano {n} — da confermare.',
   'photoPendingFull': 'da confermare…',
   'photoStepIdentify': 'Riconoscimento alimenti…',
   'photoStepConfirm': 'Conferma in corso…',
@@ -998,7 +999,7 @@ const Map<String, String> vyroStringsIt = <String, String>{
   'logMealMissing': 'nessun dato',
   'logMealAdded': 'alimenti aggiunti al diario',
   'logMealProposal': 'Pasto suggerito',
-  'originLocal': 'Database offline (USDA/Ciqual/TACO)',
+  'originLocal': 'Database offline (USDA/Ciqual/TACO/INSA)',
   'originHistory': 'Dal tuo storico',
   'originNone': 'Nessun dato nutrizionale',
   'trainingToday': 'Allenamento di oggi',

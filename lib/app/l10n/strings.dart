@@ -228,7 +228,7 @@ class VyroStrings {
     'photoEstimateNote':
         'Os alimentos e as gramas são estimativas a partir da foto: ajusta antes de guardar. As calorias são calculadas como gramas × kcal/100 g.',
     'nutritionSourcesNote':
-        'Valores por 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) e fichas publicadas pela McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s e Pizza Hut em Portugal.',
+        'Valores por 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP), INSA (tabela v7.1, 2026) e fichas publicadas pela McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s e Pizza Hut em Portugal. Citação INSA: Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026.',
     'photoSourceSystem': 'IA do telemóvel',
     'photoSourceRegions': 'Reconhecimento offline (pouco fiável)',
     'offlineNoFood':
@@ -287,6 +287,7 @@ class VyroStrings {
     'photoActRecipe': 'Receita',
     'photoActMore': 'Mais fotos',
     'photoPillConfirm': 'a confirmar',
+    'photoCountHint': 'Parece haver {n} — confirma.',
     'photoPendingFull': 'a confirmar…',
     'photoStepIdentify': 'A identificar alimentos…',
     'photoStepConfirm': 'A confirmar…',
@@ -1036,7 +1037,7 @@ class VyroStrings {
     'logMealMissing': 'sem dados',
     'logMealAdded': 'alimentos adicionados ao diário',
     'logMealProposal': 'Refeição sugerida',
-    'originLocal': 'Base offline (USDA/Ciqual/TACO)',
+    'originLocal': 'Base offline (USDA/Ciqual/TACO/INSA)',
     'originHistory': 'Do teu histórico',
     'originNone': 'Sem dados nutricionais',
     'trainingToday': 'Treino de hoje',
@@ -1379,7 +1380,7 @@ class VyroStrings {
     'photoEstimateNote':
         'Foods and grams are estimates from the photo: adjust before saving. Calories are grams × kcal/100 g.',
     'nutritionSourcesNote':
-        'Values per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP) and labels published by McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s and Pizza Hut in Portugal.',
+        'Values per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP), INSA (table v7.1, 2026) and labels published by McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s and Pizza Hut in Portugal. INSA citation: Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026.',
     'photoSourceSystem': 'Phone AI',
     'photoSourceRegions': 'Offline recognition (low reliability)',
     'offlineNoFood':
@@ -1433,6 +1434,7 @@ class VyroStrings {
     'photoActRecipe': 'Recipe',
     'photoActMore': 'More photos',
     'photoPillConfirm': 'to confirm',
+    'photoCountHint': 'Looks like {n} — confirm.',
     'photoPendingFull': 'confirming…',
     'photoStepIdentify': 'Identifying foods…',
     'photoStepConfirm': 'Confirming…',
@@ -2173,7 +2175,7 @@ class VyroStrings {
     'logMealMissing': 'without data',
     'logMealAdded': 'foods added to the diary',
     'logMealProposal': 'Suggested meal',
-    'originLocal': 'Offline database (USDA/Ciqual/TACO)',
+    'originLocal': 'Offline database (USDA/Ciqual/TACO/INSA)',
     'originHistory': 'From your history',
     'originNone': 'No nutrition data',
     'trainingToday': "Today's workout",

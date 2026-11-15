@@ -10,8 +10,8 @@ alimentos descarregadas legalmente.
 ```
 foods_pt.tsv (curado à mão: nomes PT/EN, fonte + referência, porção, unidades da porção, aliases, etiquetas de imagem)
         │
-        ▼  build_food_db.py  (descarrega/usa build/usda, build/ciqual, build/taco)
-assets/nutrition/foods.json  (484 alimentos, valores por 100 g, fonte de cada um)
+        ▼  build_food_db.py  (descarrega/usa build/usda, build/ciqual, build/taco, build/insa)
+assets/nutrition/foods.json  (784 alimentos, valores por 100 g, fonte de cada um)
         │
         ▼  FoodDatabase.load()  (lib/features/nutrition/data/food_database.dart)
 fotografia, assistente, diário  →  kcal = gramas × kcal/100 g ÷ 100
@@ -28,6 +28,7 @@ ingredientes e do peso final cozinhado. Não entram em `foods.json`.
 | [USDA FoodData Central — SR Legacy 2018-04](https://fdc.nal.usda.gov/) | `int` | Domínio público (CC0 1.0), atribuição pedida | descrição exata do alimento (`food.csv`) |
 | [Ciqual 2025 — ANSES](https://ciqual.anses.fr/) | `pt`, `eu` | Licence Ouverte / etalab-2.0 (atribuição obrigatória) | `alim_code` |
 | [TACO 4.ª edição — NEPA/UNICAMP](https://www.cfn.org.br/wp-content/uploads/2017/03/taco_4_edicao_ampliada_e_revisada.pdf) | `br` | Reprodução permitida desde que citada a fonte | número do alimento na Tabela 1 |
+| [INSA — Tabela da Composição de Alimentos v7.1 (2026)](https://portfir.insa.min-saude.pt/) | `pt` | Termos do INSA: utilização com indicação visível da fonte (não é licença aberta; confirmar com o INSA antes de uma publicação pública) | código INSA (coluna `Cod`) |
 | [McDonald's Portugal — ficha do produto](https://www.mcdonalds.pt/produtos/informacao-nutricional-alergenios) | `pt` | Valores publicados pelo fabricante, citados com a data de consulta | id em `tool/nutrition/manufacturer_pt.json` |
 
 Citações (também guardadas em `foods.json → sources`):
@@ -37,24 +38,40 @@ Citações (também guardadas em `foods.json → sources`):
 - NEPA/UNICAMP. Tabela Brasileira de Composição de Alimentos – TACO. 4. ed. Campinas, 2011.
 - McDonald's Portugal. PDF do balcão de 27 de outubro de 2026 e fichas de produto consultadas em 14 de novembro de 2026 (Big Mac, Cheeseburger, Hamburger, Double Cheeseburger, Big Tasty Single e Double, CBO, McRoyal Bacon e Double, McCrispy Cheddar Bacon, 10 Chicken McNuggets, McChicken, McCrispy, McCrispy Hot Honey). O Big Tasty vem da ficha de produto: a linha do PDF não reconciliava kJ com kcal. Quando a ficha não traz fibra, fica a 0.
 - KFC Portugal. Tabela nutricional de 15 de abril de 2025 (Clássica Zinger Single e Tower Zinger Single). O peso é o quociente entre a unidade de consumo e os valores por 100 g, arredondado ao grama. A tabela não traz fibra.
+- Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026. (INSA, `insa_tca.xlsx`, descarregado de `https://portfir.insa.min-saude.pt/wp-content/uploads/2025/11/insa_tca.xlsx`, SHA-256 `155d233b…75c066ca`). Os valores por 100 g são os publicados, a energia inclui 2 × fibra (verificado pelo Atwater no build) e as gramas da porção NÃO vêm do INSA (ver abaixo).
 
 A app mostra esta atribuição no ecrã de fotografia (`nutritionSourcesNote`)
 e cada registo do diário guarda a origem em `food_entries.source`
 (`usda_171477`, `ciqual_26024`, `taco_561`).
 
-**Portugal (INSA / PortFIR TCA):** a tabela portuguesa é a referência ideal
-para pratos nacionais, mas as condições de redistribuição não são claras. Não
-está incluída. Para a adicionar: obter autorização escrita do INSA, criar um
-loader `load_insa` em `build_food_db.py` (mesmo formato dos outros), acrescentar
-a fonte a `SOURCES` com a licença e usar `source=insa` no TSV. Até lá, os
-alimentos portugueses usam o equivalente Ciqual (bacalhau, pescada, sardinha,
-polvo, chouriço, queijo de ovelha, pão caseiro…).
+**Portugal (INSA / PortFIR TCA, v7.1 2026):** incluída desde a 0.6.18 para
+oito pratos e sobremesas portuguesas (`source=insa`): francesinha, bacalhau à
+Brás, bacalhau à Gomes de Sá, cozido à portuguesa, caldeirada de peixe, carne
+de porco à alentejana, pastel de nata e bolo de arroz. O loader `load_insa`
+lê o Excel com o `xlsx_reader`, usa o código INSA como referência, confere a
+energia com Atwater (4 P + 4 H + 9 G + 2 × fibra) e falha se uma linha não
+bater certo. O ficheiro é guardado em `build/insa/` (nunca versionado) e o
+build confere o SHA-256.
+
+- **Os termos do INSA não são uma licença aberta.** Descarregar o ficheiro
+  implica aceitar as condições, que exigem a fonte visível onde os dados são
+  mostrados (a citação está em `foods.json → sources.insa`, na app em
+  `nutritionSourcesNote` e na fotografia). Antes de uma publicação pública,
+  confirmar com o INSA (tabela.alimentos@insa.min-saude.pt) se a
+  redistribuição de valores derivados na app é permitida.
+- **As porções dos oito alimentos são estimativas do VYRO, não do INSA.** A
+  tabela não traz gramas por prato. Os `portion_pt` dizem «(estimativa)».
+- A tabela não tem uma francesinha «poveira»: a francesinha normal é a
+  hipótese mais próxima, e as duas etiquetas de imagem apontam para ela.
+
+Os restantes alimentos portugueses usam o equivalente Ciqual (pescada,
+sardinha, polvo, chouriço, queijo de ovelha, pão caseiro…).
 
 ## Convenções
 
 - Energia: kcal por 100 g. USDA usa o nutriente 1008 (fallback 2048/2047 —
   Atwater); Ciqual usa "Energie, Règlement UE N° 1169/2011 (kcal)"; TACO usa a
-  coluna kcal da Tabela 1.
+  coluna kcal da Tabela 1; INSA usa a coluna «Energia [kcal]» (inclui 2 × fibra).
 - Proteína (Ciqual: fator de Jones), hidratos totais, lípidos, fibra.
 - Ciqual: `traces` → 0, `< x` → x/2, `-` → em falta. Energia ou macros em falta
   fazem o build falhar (nunca se inventa um valor).
@@ -62,7 +79,9 @@ polvo, chouriço, queijo de ovelha, pão caseiro…).
   (kJ/kcal entre 4,0 e 4,4 e energia a ±25 % do estimado por Atwater). Linhas
   inválidas são rejeitadas, nunca adivinhadas.
 - Porções (`portion_g`, `portion_pt`) são **estimativas do VYRO** para sugerir
-  quantidades. O utilizador confirma sempre as gramas.
+  quantidades. O utilizador confirma sempre as gramas. Nas fontes de marca e
+  INSA as porções também são do VYRO, salvo quando o próprio fabricante as
+  publica (McDonald's, KFC, Pizza Hut…).
 - `portion_units` (coluna opcional, última do TSV; preenchida em 378 dos 484
   alimentos) indica quantas peças correspondem a `portion_g`: 3 sardinhas = 120 g
   ⇒ `portion_units = 3`. A app escala a contagem de peças por

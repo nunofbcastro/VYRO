@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -725,6 +726,89 @@ void main() {
       expect(db.match('Café com leite')?.key, 'coffee_with_milk');
       expect(db.match('Manteiga')?.key, 'butter_salted');
       expect(db.match('Pão torrado')?.key, 'bread_white_toasted');
+    });
+  });
+
+  group('INSA dishes (VYRO portion estimates)', () {
+    test('francesinha is an INSA row at 249 kcal/100 g', () {
+      final f = db.byKey('francesinha')!;
+      expect(f.source, 'insa');
+      expect(f.sourceRef, '1073');
+      expect(f.kcal, closeTo(249, 0.1));
+      expect(f.portionG, 550);
+      expect(f.portionUnits, 1);
+      expect(f.portionPt, contains('estimativa'));
+      final json =
+          jsonDecode(File('assets/nutrition/foods.json').readAsStringSync())
+              as Map<String, dynamic>;
+      final insa = (json['sources'] as Map)['insa'] as Map;
+      expect(
+        insa['citation'],
+        'Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026.',
+      );
+    });
+
+    test('system model count 2 for a whole francesinha doubles the grams', () {
+      final two = parseFoodPhotoAnswer(
+        '{"items":[{"name":"francesinha","count":2,"size":"medium"}]}',
+        db,
+      );
+      expect(two.single.food?.key, 'francesinha');
+      expect(two.single.count, 2);
+      expect(two.single.grams, 1100);
+      final one = parseFoodPhotoAnswer(
+        '{"items":[{"name":"francesinha","count":1,"size":"medium"}]}',
+        db,
+      );
+      expect(one.single.count, 1);
+      expect(one.single.grams, 550);
+    });
+
+    test('the system prompt says two separate plates count as 2', () {
+      final prompt = buildFoodPhotoPrompt();
+      expect(prompt, contains('SAME dish are 2'));
+      expect(
+        prompt,
+        contains('cut into halves or pieces on one plate is still 1'),
+      );
+    });
+
+    test('francesinha matches both vision labels', () {
+      expect(
+        db.forVisionLabel('Francesinha').map((f) => f.key),
+        contains('francesinha'),
+      );
+      expect(
+        db.forVisionLabel('Francesinha poveira').map((f) => f.key),
+        contains('francesinha'),
+      );
+    });
+
+    test(
+      'every INSA row has a portion estimate and vision labels that exist',
+      () {
+        final labels = File('assets/models/aiy_food_v1_labels.csv')
+            .readAsLinesSync()
+            .skip(1)
+            .map((l) => l.substring(l.indexOf(',') + 1).trim())
+            .toSet();
+        final insa = db.foods.where((f) => f.source == 'insa').toList();
+        expect(insa.length, 8);
+        for (final f in insa) {
+          expect(f.portionPt, contains('estimativa'), reason: f.key);
+          expect(f.portionUnits, 1, reason: f.key);
+          for (final label in f.visionLabels) {
+            expect(labels, contains(label), reason: '${f.key}: "$label"');
+          }
+        }
+      },
+    );
+
+    test('the INSA dish names do not clash with other rows', () {
+      expect(db.match('pastel de nata')?.key, 'pastel_de_nata');
+      expect(db.match('bolo de arroz')?.key, 'bolo_de_arroz');
+      expect(db.match('bacalhau à brás')?.key, 'bacalhau_a_bras');
+      expect(db.match('cozido à portuguesa')?.key, 'cozido_portuguesa');
     });
   });
 

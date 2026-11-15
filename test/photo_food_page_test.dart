@@ -345,7 +345,12 @@ void main() {
       200,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(find.text('Tentar de novo'));
+    // The default alignment (0) parks the button under the app bar; centre it.
+    await Scrollable.ensureVisible(
+      tester.element(find.text('Tentar de novo')),
+      alignment: 0.5,
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Tentar de novo'));
     await tester.pumpAndSettle();
     expect(vision.calls, 2);

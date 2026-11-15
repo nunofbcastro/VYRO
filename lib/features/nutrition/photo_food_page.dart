@@ -410,12 +410,19 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
     setState(() => (shot.items ??= []).add(item));
   }
 
-  void _addFood(FoodRef food, {double? grams}) => _addItem(
+  void _addFood(
+    FoodRef food, {
+    double? grams,
+    int? count,
+    bool countProposed = false,
+  }) => _addItem(
     ReviewItem(
       DetectedFood(
         food: food,
         label: food.namePt,
         grams: grams ?? food.portionG,
+        count: count,
+        countProposed: countProposed,
         source: VisionSource.user,
       ),
     ),
@@ -432,7 +439,12 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
           item,
     ];
     if (!isWholeSandwichFood(food) || sandwiches.length != 1) {
-      return _addFood(food, grams: suggestion.grams);
+      return _addFood(
+        food,
+        grams: suggestion.grams,
+        count: suggestion.count,
+        countProposed: suggestion.countProposed,
+      );
     }
     final item = sandwiches.single;
     setState(() {
@@ -653,7 +665,7 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
       return;
     }
     final units = food.portionUnits;
-    final amount = await showDialog<double>(
+    final picked = await showDialog<({double grams, int? count})>(
       context: context,
       builder: (c) => SimpleDialog(
         title: Text(
@@ -669,8 +681,10 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
           if (units != null)
             for (final count in [1, 2, 3, 4, 6])
               SimpleDialogOption(
-                onPressed: () =>
-                    Navigator.pop(c, estimatedGrams(food: food, count: count)),
+                onPressed: () => Navigator.pop(c, (
+                  grams: estimatedGrams(food: food, count: count),
+                  count: count,
+                )),
                 child: Text(
                   '$count · ${estimatedGrams(food: food, count: count).round()} g',
                 ),
@@ -678,8 +692,10 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
           if (units == null)
             for (final size in PortionSize.values)
               SimpleDialogOption(
-                onPressed: () =>
-                    Navigator.pop(c, estimatedGrams(food: food, size: size)),
+                onPressed: () => Navigator.pop(c, (
+                  grams: estimatedGrams(food: food, size: size),
+                  count: null,
+                )),
                 child: Text(
                   '${t.isEnglish ? size.name : switch (size) {
                           PortionSize.small => "Pequena",
@@ -691,7 +707,18 @@ class _PhotoFoodPageState extends State<PhotoFoodPage> {
         ],
       ),
     );
-    if (amount != null && mounted) setState(() => item.grams = amount);
+    if (picked != null && mounted) {
+      setState(() {
+        item.grams = picked.grams;
+        // A chosen count replaces any proposal: the line now shows what was picked.
+        if (picked.count != null) {
+          item.detected = item.detected.copyWith(
+            count: picked.count,
+            countProposed: false,
+          );
+        }
+      });
+    }
   }
 
   Future<void> _pickRecipe() async {

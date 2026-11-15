@@ -1,6 +1,6 @@
 ---
 name: nutrition-database
-description: How VYRO's offline nutrition database (USDA, Ciqual, TACO) was built and how to update calories, add foods, aliases, portions and image labels
+description: How VYRO's offline nutrition database (USDA, Ciqual, TACO, INSA, brands) was built and how to update calories, add foods, aliases, portions and image labels
 ---
 
 # Offline nutrition database
@@ -31,6 +31,14 @@ VYRO never invents calories. Every food in the app comes from
    - `taco`: TACO 4.ª ed., NEPA/UNICAMP (citation required). `source_ref` = the
      food number in Table 1. The PDF is parsed by `taco_parser.py` (needs
      `pypdf` at build time), which rejects rows failing kJ/kcal or Atwater checks.
+   - `insa`: INSA Tabela da Composição de Alimentos v7.1 (2026, Portugal). Terms
+     of use, not an open licence: the source must be visible wherever the data
+     is shown. `source_ref` = the INSA code (column `Cod`). The xlsx is kept in
+     `build/insa/insa_tca.xlsx` (never committed; SHA-256 checked) and read with
+     `xlsx_reader.py`. Energy includes 2 × fibre, so the Atwater check uses it.
+     Only eight rows so far (francesinha, bacalhau à Brás and à Gomes de Sá,
+     cozido, caldeirada, carne de porco à alentejana, pastel de nata, bolo de
+     arroz). Their gram portions are VYRO estimates (`portion_pt` says so).
 3. It writes `foods.json` (schema 2) with the values, `source`, `sourceRef`,
    `sourceLabel` (original name in the table), `region`, the licence block and
    the TSV's SHA-256. Missing energy/macros or unknown refs fail the build.
@@ -47,9 +55,9 @@ VYRO never invents calories. Every food in the app comes from
      cooked/prepared forms that match how people eat it).
    - Ciqual: search the xlsx by French name (`alim_nom_fr`), copy `alim_code`.
    - TACO: find the number in the PDF's Table 1.
-   Prefer Ciqual for Portuguese/European foods, TACO for Brazilian ones, USDA
-   for generic ones. Do not use INSA/PortFIR data until its licence allows
-   redistribution (see docs).
+   Prefer Ciqual for Portuguese/European foods, INSA for Portuguese dishes it
+   has (francesinha, cozido…), TACO for Brazilian ones, USDA for generic ones.
+   Before a public release, confirm INSA's reuse terms with INSA (see docs).
 2. Add or edit the TSV row: unique snake_case `key`; PT-PT `name_pt`;
    realistic `portion_g` with a clear `portion_pt` ("1 bife", "1 concha");
    `portion_units` only when the portion really is N pieces (check that

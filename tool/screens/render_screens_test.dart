@@ -550,6 +550,49 @@ void main() {
       final suffix = size.$1 == 360 ? '_w360' : '';
 
       testWidgets(
+        'photo review with two plates proposed ($mode, ${size.$1.toInt()})',
+        skip: !_enabled,
+        (tester) async {
+          final francesinha = foods.byKey('francesinha')!;
+          vision.result = Future.value(
+            FoodVisionResult(
+              source: VisionSource.regionClassifier,
+              foods: [
+                DetectedFood(
+                  food: francesinha,
+                  label: francesinha.namePt,
+                  grams: 1100,
+                  count: 2,
+                  countProposed: true,
+                  source: VisionSource.regionClassifier,
+                ),
+              ],
+            ),
+          );
+          final key = await pumpPhone(
+            tester,
+            photoPage(),
+            dark: dark,
+            width: size.$1,
+            height: size.$2,
+          );
+          await _settle(tester);
+          await tester.tap(find.text('Escolher da galeria'));
+          await _settle(tester);
+          await _settle(tester);
+          await _capture(tester, key, 'photo_plates_${mode}$suffix', unmount: false);
+          // The count hint sits below the fold; scroll it into view too.
+          await tester.scrollUntilVisible(
+            find.textContaining('Parece haver'),
+            200,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await _settle(tester);
+          await _capture(tester, key, 'photo_plates_hint_${mode}$suffix');
+        },
+      );
+
+      testWidgets(
         'photo review 360 ($mode)',
         skip: !_enabled || size.$1 != 360,
         (tester) async {

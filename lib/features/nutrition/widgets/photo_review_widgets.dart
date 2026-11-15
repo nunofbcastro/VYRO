@@ -576,6 +576,20 @@ class _FoodReviewCardState extends State<FoodReviewCard> {
                         ),
                         const SizedBox(height: 3),
                         subtitle,
+                        if (detected.countProposed &&
+                            food != null &&
+                            !item.pending) ...[
+                          const SizedBox(height: 3),
+                          Text(
+                            t
+                                .get('photoCountHint')
+                                .replaceAll('{n}', '${detected.count}'),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: VyroTheme.accentTextOf(context),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
