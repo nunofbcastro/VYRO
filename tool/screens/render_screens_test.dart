@@ -580,7 +580,12 @@ void main() {
           await tester.tap(find.text('Escolher da galeria'));
           await _settle(tester);
           await _settle(tester);
-          await _capture(tester, key, 'photo_plates_${mode}$suffix', unmount: false);
+          await _capture(
+            tester,
+            key,
+            'photo_plates_${mode}$suffix',
+            unmount: false,
+          );
           // The count hint sits below the fold; scroll it into view too.
           await tester.scrollUntilVisible(
             find.textContaining('Parece haver'),

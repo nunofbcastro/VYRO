@@ -9,10 +9,15 @@ library;
 /// Row-major 4×4 grid (16 cells) of the region classifier.
 const int dishGridSide = 4;
 
-/// Counts the 4-connected blobs of marked cells that have at least two cells.
-/// Returns that count (2 or 3) when it is exactly 2 or 3 blobs; otherwise 1.
-/// Single marked cells are noise and are ignored. Blobs that touch (share an
-/// edge) are one blob, so they count once.
+/// Smallest blob, in cells, that counts as a plate. Real-photo eval
+/// (19 Wikimedia Commons photos, 14 single-plate francesinha photos): blobs of 2
+/// cells produced one false "2 plates"; a plate covers at least 3 cells.
+const int minBlobCells = 3;
+
+/// Counts the 4-connected blobs of marked cells that have at least
+/// [minBlobCells] cells. Returns that count (2 or 3) when it is exactly 2 or 3
+/// blobs; otherwise 1. Smaller blobs (1 or 2 cells) are noise and are ignored.
+/// Blobs that touch (share an edge) are one blob, so they count once.
 int separatePlateCount(List<List<bool>> marked, {int maxCount = 3}) {
   final rows = marked.length;
   if (rows == 0) return 1;
@@ -37,7 +42,7 @@ int separatePlateCount(List<List<bool>> marked, {int maxCount = 3}) {
           stack.add((ny, nx));
         }
       }
-      if (size >= 2) blobs++;
+      if (size >= minBlobCells) blobs++;
     }
   }
   return blobs >= 2 && blobs <= maxCount ? blobs : 1;

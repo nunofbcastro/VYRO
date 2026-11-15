@@ -36,9 +36,22 @@ VYRO never invents calories. Every food in the app comes from
      is shown. `source_ref` = the INSA code (column `Cod`). The xlsx is kept in
      `build/insa/insa_tca.xlsx` (never committed; SHA-256 checked) and read with
      `xlsx_reader.py`. Energy includes 2 × fibre, so the Atwater check uses it.
-     Only eight rows so far (francesinha, bacalhau à Brás and à Gomes de Sá,
-     cozido, caldeirada, carne de porco à alentejana, pastel de nata, bolo de
-     arroz). Their gram portions are VYRO estimates (`portion_pt` says so).
+     Thirty rows: the eight of 0.6.18 (francesinha, bacalhau à Brás and à Gomes
+     de Sá, cozido, caldeirada, carne de porco à alentejana, pastel de nata, bolo
+     de arroz) and 22 of 0.6.19 (soups, rice dishes, sausages, bifana and prego
+     without bread, desserts, broa). Their gram portions are VYRO estimates
+     (`portion_pt` says so). In 0.6.19 the aliases `caldo verde`, `frango assado`,
+     `roast chicken` and `bifana` moved to the INSA rows. Removed by the
+     token-collision check: the plain alias `leite creme` (same tokens as
+     `creme de leite`, the cooking-cream row). The INSA row is now named
+     `Leite-creme (sobremesa)` with aliases `leite creme sobremesa` and
+     `leite-creme queimado`; `FoodDatabase.search` gives a +12 bonus when the
+     query's words appear in order in a name or alias, so "leite creme" finds
+     the dessert and "creme de leite" still finds cooking cream. The names
+     `bola de berlim sem creme` (`sem` is a stop word, so it equals the Pans
+     `com creme` alias) became `Bola de Berlim (simples, sem creme)`, and the
+     4- and 6-unit Taco Bell chicken nachos rows say `quatro`/`seis unidades`
+     (digits of one character are dropped, so the names tokenised alike).
 3. It writes `foods.json` (schema 2) with the values, `source`, `sourceRef`,
    `sourceLabel` (original name in the table), `region`, the licence block and
    the TSV's SHA-256. Missing energy/macros or unknown refs fail the build.
@@ -89,7 +102,8 @@ VYRO never invents calories. Every food in the app comes from
    with `runpy` (the build itself is unchanged). The eval builder
    (`tool/eval_data/build_nutrition5k.py`) needs Pillow, which the eval venv has.
 4. Sanity-check the new values against the source (kcal plausible, Atwater
-   test passes) and commit the TSV **and** the regenerated `foods.json`
+   test passes, kcal per 100 g <= 900 and protein + carbs + fat per 100 g
+   <= 100 g; `load_brand_pt` exits on either) and commit the TSV **and** the regenerated `foods.json`
    together. Never edit `foods.json` by hand.
 5. Updating a source edition (e.g. a new Ciqual release): change the URL and
    file name in `SOURCES`, delete the cached file in `build/`, rebuild, review
@@ -152,6 +166,15 @@ under the same name:
   the generic dish names kept on the generic rows. Domino's Pizza Portugal
   (`dominos_pt`, declaração nutricional, Jan 2020): pizza slices and sale
   portions, 1 fatia = slice weight from kcal per portion / kcal per 100 g.
+  Kept when kJ is within 6% of 4.184 x kcal and Atwater within 8%.
+  Telepizza (`telepizza_pt`, table updated 1 Jun 2026) and Starbucks
+  (`starbucks_pt`, Fall 2026 PDF, 82 rows after 0.6.19 removed 9 impossible
+  rows such as Salada Pesto Rosso at 972 kcal/100 g) publish only values per
+  100 g: grams 100,
+  portion "100 g (sem porção publicada)", the user enters the weight. Taco Bell
+  (`tacobell_pt`, Viva Bem table printed 4 Nov 2026): per unit, weight derived
+  from unit kcal / per-100 g kcal; the table has no fibre (stored as 0). No Taco
+  Bell item is a sandwich, so none of these rows enter `burger_rules.dart`.
   Pizza Hut Portugal (`pizzahut_pt`, table printed 2 Nov 2026): pizza slices,
   Super Fatias, PANxPAN, starters, salads (named "Salada <Name>
   (Pizza Hut)") and desserts: ice cream (scoops, soft, cones, Ice Hut),

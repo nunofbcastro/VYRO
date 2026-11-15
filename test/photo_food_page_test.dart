@@ -49,14 +49,24 @@ void main() {
   });
   tearDown(() => database.close());
 
-  Future<void> open(WidgetTester tester, {FoodVisionService? service}) async {
-    tester.view.physicalSize = const Size(1170, 2532);
-    tester.view.devicePixelRatio = 3;
+  Future<void> open(
+    WidgetTester tester, {
+    FoodVisionService? service,
+    Size logicalSize = const Size(390, 844),
+    double devicePixelRatio = 3,
+    TextScaler textScaler = TextScaler.noScaling,
+  }) async {
+    tester.view.physicalSize = logicalSize * devicePixelRatio;
+    tester.view.devicePixelRatio = devicePixelRatio;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       AppServicesScope(
         services: AppServices(database: database),
         child: MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+            child: child!,
+          ),
           theme: VyroTheme.dark,
           locale: const Locale('pt', 'PT'),
           supportedLocales: VyroStrings.supportedLocales,
@@ -340,12 +350,15 @@ void main() {
     expect(find.text('Adicionar 0 ao diário'), findsOneWidget);
 
     vision.result = Future.value(meal(['espresso']));
+    // The list is lazy: the retry card is only built while it is near the
+    // viewport. Scrolling to a lower widget first unbuilds it, so bring the
+    // button into view explicitly, then centre it (the default alignment (0)
+    // parks it under the app bar).
     await tester.scrollUntilVisible(
-      find.text('Adicionar alimento'),
-      200,
+      find.text('Tentar de novo'),
+      100,
       scrollable: find.byType(Scrollable).first,
     );
-    // The default alignment (0) parks the button under the app bar; centre it.
     await Scrollable.ensureVisible(
       tester.element(find.text('Tentar de novo')),
       alignment: 0.5,
@@ -495,6 +508,71 @@ void main() {
     expect(find.text('Adicionar 1 ao diário'), findsOneWidget);
     expect(find.text(db.byKey('chicken_sandwich')!.namePt), findsNothing);
     expect(find.text('182 g · 419 kcal'), findsOneWidget);
+  });
+
+  group('offline source chip', () {
+    const chipLabel = 'Reconhecimento offline (pouco fiável)';
+
+    Future<void> openWithOfflineChip(
+      WidgetTester tester, {
+      required Size size,
+      TextScaler textScaler = TextScaler.noScaling,
+    }) async {
+      vision.result = Future.value(
+        FoodVisionResult(
+          source: VisionSource.regionClassifier,
+          foods: [
+            DetectedFood(
+              food: db.byKey('lettuce_raw'),
+              label: 'Alface',
+              grams: 50,
+              source: VisionSource.regionClassifier,
+            ),
+          ],
+        ),
+      );
+      await open(
+        tester,
+        logicalSize: size,
+        devicePixelRatio: 1,
+        textScaler: textScaler,
+      );
+      await choose(tester, first: true);
+      await tester.pumpAndSettle();
+      expect(find.text(chipLabel), findsOneWidget);
+    }
+
+    /// The chip's pill (its nearest Container) and the round camera button.
+    Rect chipRect(WidgetTester tester) => tester.getRect(
+      find
+          .ancestor(of: find.text(chipLabel), matching: find.byType(Container))
+          .first,
+    );
+    Rect cameraRect(WidgetTester tester) => tester.getRect(
+      find.widgetWithIcon(IconButton, Icons.photo_camera_outlined),
+    );
+
+    for (final scale in [1.0, 1.3]) {
+      testWidgets(
+        'at 360x800 with text scale $scale the chip never overlaps the camera button',
+        (tester) async {
+          await openWithOfflineChip(
+            tester,
+            size: const Size(360, 800),
+            textScaler: TextScaler.linear(scale),
+          );
+          final chip = chipRect(tester);
+          final camera = cameraRect(tester);
+          expect(
+            chip.overlaps(camera),
+            isFalse,
+            reason: 'chip $chip overlaps camera button $camera',
+          );
+          expect(chip.right <= camera.left, isTrue);
+          expect(find.text(chipLabel), findsOneWidget);
+        },
+      );
+    }
   });
 
   testWidgets('system AI failed: offline guesses are suggestions, CTA is 0', (

@@ -12,16 +12,32 @@ List<List<bool>> _grid(List<String> rows) => [
 
 void main() {
   group('separatePlateCount (pure clustering)', () {
-    test('two separate blobs of two cells each give 2', () {
-      expect(separatePlateCount(_grid(['xx..', '....', '....', '..xx'])), 2);
+    test('minBlobCells is 3', () {
+      expect(minBlobCells, 3);
     });
 
-    test('three separate blobs of two cells give 3', () {
-      expect(separatePlateCount(_grid(['xx.x', '...x', '....', 'xx..'])), 3);
+    test('two separate blobs of three cells each give 2', () {
+      expect(separatePlateCount(_grid(['xxx.', '....', '....', '.xxx'])), 2);
     });
 
-    test('four blobs are not proposed (cap at 3)', () {
-      expect(separatePlateCount(_grid(['xx.x', '...x', 'x...', 'x.xx'])), 1);
+    test('blobs of 3 and 2 cells give 1 (the 2-cell blob is noise)', () {
+      expect(separatePlateCount(_grid(['xxx.', '....', '....', '..xx'])), 1);
+      expect(separatePlateCount(_grid(['xx..', '....', '....', '.xxx'])), 1);
+    });
+
+    test('two separate blobs of two cells each give 1', () {
+      expect(separatePlateCount(_grid(['xx..', '....', '....', '..xx'])), 1);
+    });
+
+    test('three separate blobs of three cells give 3', () {
+      expect(separatePlateCount(_grid(['xxx.', '...x', 'x..x', 'xx.x'])), 3);
+    });
+
+    test('four blobs of three cells are not proposed (cap at 3)', () {
+      expect(
+        separatePlateCount(_grid(['xxx.xxx', '.......', 'xxx.xxx', '.......'])),
+        1,
+      );
     });
 
     test('one blob gives 1', () {
@@ -29,17 +45,17 @@ void main() {
     });
 
     test('touching blobs (shared edge) are one blob', () {
-      expect(separatePlateCount(_grid(['xx..', '.xx.', '..xx', '....'])), 1);
+      expect(separatePlateCount(_grid(['xxx.', '.xxx', '..xx', '....'])), 1);
     });
 
     test('blobs touching only at a corner are two blobs', () {
-      expect(separatePlateCount(_grid(['xx..', 'xx..', '..xx', '..xx'])), 2);
+      expect(separatePlateCount(_grid(['xx..', 'x...', '.xx.', '..x.'])), 2);
     });
 
-    test('single-cell noise is ignored', () {
+    test('single-cell and two-cell noise is ignored', () {
       expect(separatePlateCount(_grid(['x...', '....', '..xx', '..xx'])), 1);
-      expect(separatePlateCount(_grid(['xx..', '....', '....', '..xx'])), 2);
       expect(separatePlateCount(_grid(['x..x', '....', '....', '....'])), 1);
+      expect(separatePlateCount(_grid(['xxx.', '....', '....', '.xxx'])), 2);
     });
 
     test('an empty grid gives 1', () {
@@ -109,10 +125,23 @@ void main() {
       return crops;
     }
 
+    test('a 2-cell blob beside a 3-cell blob gives one plate', () {
+      final result = RegionFoodVision.interpretRegions(
+        db,
+        perCrop(['xxx.', '....', '....', '..xx']),
+        labels,
+      );
+      final francesinha = result.foods.firstWhere(
+        (f) => f.food?.key == 'francesinha',
+      );
+      expect(francesinha.count, isNull);
+      expect(francesinha.countProposed, isFalse);
+    });
+
     test('two separate blobs of a whole francesinha give two plates', () {
       final result = RegionFoodVision.interpretRegions(
         db,
-        perCrop(['xx..', '....', '....', '..xx']),
+        perCrop(['xxx.', '....', '....', '.xxx']),
         labels,
       );
       final francesinha = result.foods.firstWhere(
@@ -141,7 +170,7 @@ void main() {
       // Pastel de nata has portion_units 1 but is not a whole dish.
       final result = RegionFoodVision.interpretRegions(
         db,
-        perCrop(['xx..', '....', '....', '..xx']).map((crop) {
+        perCrop(['xxx.', '....', '....', '.xxx']).map((crop) {
           return [for (final (k, p) in crop) (k == 1 ? 2 : k, p)];
         }).toList(),
         labels,

@@ -1266,19 +1266,25 @@ class _PhotoBlock extends StatelessWidget {
                 label: t.get(draft ? 'photoStepConfirm' : 'photoStepIdentify'),
               ),
             if (!analysing && source != null)
+              // Stops before the camera button (10 dp inset + 48 dp target +
+              // 8 dp gap) so a long label wraps instead of running under it.
               Positioned(
                 left: 12,
+                right: _retakeButtonReserve,
                 bottom: 10,
-                child: _GlassTag(
-                  icon: source == VisionSource.systemAi
-                      ? Icons.auto_awesome_rounded
-                      : Icons.grid_view_rounded,
-                  label: t.get(
-                    source == VisionSource.systemAi
-                        ? 'photoSourceSystem'
-                        : source == VisionSource.fused
-                        ? 'photoSourceFused'
-                        : 'photoSourceRegions',
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: _GlassTag(
+                    icon: source == VisionSource.systemAi
+                        ? Icons.auto_awesome_rounded
+                        : Icons.grid_view_rounded,
+                    label: t.get(
+                      source == VisionSource.systemAi
+                          ? 'photoSourceSystem'
+                          : source == VisionSource.fused
+                          ? 'photoSourceFused'
+                          : 'photoSourceRegions',
+                    ),
                   ),
                 ),
               ),
@@ -1313,6 +1319,10 @@ class _PhotoBlock extends StatelessWidget {
     );
   }
 }
+
+/// Space the photo's camera button takes at the bottom-right of [_PhotoBlock]:
+/// its 10 dp inset, a 48 dp tap target and an 8 dp gap.
+const double _retakeButtonReserve = 66;
 
 class _FailureCard extends StatelessWidget {
   const _FailureCard({
@@ -1460,7 +1470,6 @@ class _GlassTag extends StatelessWidget {
         Flexible(
           child: Text(
             label,
-            overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w600,

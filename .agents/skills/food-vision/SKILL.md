@@ -120,10 +120,14 @@ cloud, no paid API, the photo stays in memory. Full details:
 - Region classifier: only `isWholeDish` foods with `portion_units` 1. The
   rule in `dish_count.dart` (`markCellsForFood`, `separatePlateCount`) marks
   the 4×4 cells where the dish's label is the top food label and counts
-  4-connected blobs of at least two cells. Exactly 2 or 3 blobs propose 2 or 3
+  4-connected blobs of at least three cells (`minBlobCells`; two-cell blobs
+  gave a false 2 in the real-photo eval). Exactly 2 or 3 blobs propose 2 or 3
   (`countProposed`, shown as "Parece haver {n} — confirma."); otherwise 1.
-- Heuristic. Not measured on real multi-plate photos; it can be wrong in both
-  directions. The user always confirms in the review.
+- Eval on 19 openly-licensed Wikimedia Commons photos: francesinha recognised
+  in 13/14 single-plate photos. One false "2" came from 2-cell blobs before the
+  3-cell minimum; that minimum removes it. No real two-francesinha photos were
+  available, so missed doubles are unmeasured. Heuristic; it can be wrong in
+  both directions. The user always confirms in the review.
 
 ## Rules
 

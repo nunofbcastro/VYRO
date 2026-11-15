@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart' show rootBundle;
 
-import '../../assistant/domain/meal_proposal.dart' show foodTokens;
+import '../../assistant/domain/meal_proposal.dart' show foodTokens, foodWords;
 import '../food_vision/fast_food_names.dart';
 
 /// One food from the bundled nutrition database (values per 100 g from an
@@ -36,8 +36,8 @@ class FoodRef {
   final String category;
 
   /// Composition table the values come from: `usda`, `ciqual`, `taco`, `insa`,
-  /// `mcd_pt`, `kfc_pt`, `bk_pt`, `subway_pt`, `pans_pt`, `dominos_pt` or
-  /// `pizzahut_pt`.
+  /// `mcd_pt`, `kfc_pt`, `bk_pt`, `subway_pt`, `pans_pt`, `dominos_pt`,
+  /// `pizzahut_pt`, `telepizza_pt`, `starbucks_pt` or `tacobell_pt`.
   final String source;
 
   /// Id of the food in that table (FDC id, Ciqual alim_code, TACO number, INSA code).
@@ -78,6 +78,9 @@ class FoodRef {
     'pans_pt' => 'Pans & Company',
     'dominos_pt' => "Domino's",
     'pizzahut_pt' => 'Pizza Hut',
+    'telepizza_pt' => 'Telepizza',
+    'starbucks_pt' => 'Starbucks',
+    'tacobell_pt' => 'Taco Bell',
     'recipe' => 'VYRO',
     _ => source,
   };
@@ -186,16 +189,21 @@ class FoodDatabase {
   List<FoodRef> search(String text, {int limit = 20}) {
     final q = foodTokens(text);
     if (q.isEmpty) return foods.take(limit).toList();
+    final run = foodWords(text);
     final scored = <(FoodRef, int)>[];
     for (final f in foods) {
-      final phrases = [
-        for (final c in [f.namePt, f.nameEn, ...f.aliases]) foodTokens(c),
-      ];
+      final names = [f.namePt, f.nameEn, ...f.aliases];
+      final phrases = [for (final c in names) foodTokens(c)];
       final words = {for (final p in phrases) ...p};
       // Whole-phrase hits first: "pão de queijo" beats "pão" + "queijo".
       var score = phrases.any((p) => p.length == q.length && p.containsAll(q))
           ? 10
           : 0;
+      // The query's words in the same order, next to each other, as in
+      // "leite creme" vs "creme de leite": the dessert wins its own query.
+      if (names.any((c) => _containsRun(foodWords(c), run))) {
+        score += orderedRunBonus;
+      }
       for (final token in q) {
         if (words.contains(token)) {
           score += 3;
@@ -207,5 +215,25 @@ class FoodDatabase {
     }
     scored.sort((a, b) => b.$2.compareTo(a.$2));
     return [for (final s in scored.take(limit)) s.$1];
+  }
+
+  /// Score added when the query's words appear in order, next to each other,
+  /// in one name or alias. Larger than the whole-phrase bonus of a same-word
+  /// row, so "leite creme" ranks "Leite-creme (sobremesa)" above "creme de leite".
+  static const orderedRunBonus = 12;
+
+  static bool _containsRun(List<String> haystack, List<String> needle) {
+    if (needle.isEmpty || needle.length > haystack.length) return false;
+    for (var i = 0; i + needle.length <= haystack.length; i++) {
+      var same = true;
+      for (var j = 0; j < needle.length; j++) {
+        if (haystack[i + j] != needle[j]) {
+          same = false;
+          break;
+        }
+      }
+      if (same) return true;
+    }
+    return false;
   }
 }

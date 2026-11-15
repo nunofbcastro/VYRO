@@ -182,7 +182,7 @@ const Map<String, String> vyroStringsDe = <String, String>{
   'photoEstimateNote':
       'Lebensmittel und Gramm sind Schätzungen aus dem Foto: passe sie vor dem Speichern an. Kalorien werden als Gramm × kcal/100 g berechnet.',
   'nutritionSourcesNote':
-      'Werte pro 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP), INSA (Tabelle v7.1, 2026) und Angaben von McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s und Pizza Hut in Portugal. INSA-Zitat: Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026.',
+      'Werte pro 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP), INSA (Tabelle v7.1, 2026) und Angaben von McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s, Pizza Hut, Telepizza, Starbucks und Taco Bell in Portugal. Telepizza und Starbucks veröffentlichen nur Werte pro 100 g: die Portion gibt der Nutzer ein. INSA-Zitat: Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026.',
   'photoSourceSystem': 'KI des Telefons',
   'photoSourceRegions': 'Offline-Erkennung (wenig zuverlässig)',
   'offlineNoFood':

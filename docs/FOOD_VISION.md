@@ -134,6 +134,7 @@ os nomes confirmados sugerem molhos e acompanhamentos, sem perguntar ao modelo:
   mesmo registo da base), natas, maionese, ketchup (se existir na base);
 - massa, esparguete, lasanha → natas, molho de tomate e queijo ralado (se existirem);
 - batata frita → ketchup, maionese;
+- bifana e prego (carne sem pão) → papo-seco (`bread_roll`), desde a 0.6.19;
 - salada, alface → azeite.
 
 São **sugestões** (`suggestions`), fora dos totais, e só aparecem se existirem na
@@ -211,15 +212,20 @@ o ketchup, o molho de tomate e o queijo ralado não existem, por isso não apare
   `portion_units` 1. Usa a grelha 4×4 (`dish_count.dart`): marca as células em
   que a etiqueta do prato é a etiqueta alimentar mais provável e o fundo não
   ganha (`markCellsForFood`), depois conta as manchas de células vizinhas (4
-  vizinhos, sem diagonais) com pelo menos 2 células (`separatePlateCount`).
+  vizinhos, sem diagonais) com pelo menos 3 células (`minBlobCells` = 3, `separatePlateCount`; na 0.6.19 eram 2).
   Se houver exatamente 2 ou 3 manchas separadas, propõe 2 ou 3 pratos; caso
-  contrário fica 1. Células isoladas são ruído. Manchas que se tocam são uma só.
+  contrário fica 1. Células isoladas são ruído. Manchas que se tocam são uma só. Uma mancha de 3 e outra de 2 células dão 1.
 - A proposta é **sempre editável**: a linha mostra «Parece haver 2 — confirma.»
   (`photoCountHint`), e «Esclarecer alimento ou porção» deixa escolher 1, 2, 3, 4
   ou 6 peças (isso substitui a proposta).
-- **Heurística, não medida.** Não foi feita nenhuma avaliação em fotos reais
-  com dois pratos. Pode falhar em qualquer sentido: um prato grande pode
-  formar duas manchas, dois pratos juntos podem formar uma só.
+- **Avaliação em fotos reais (0.6.19).** 19 fotos de domínio público ou licença
+  aberta do Wikimedia Commons. A francesinha foi reconhecida em 13 de 14 fotos
+  com um só prato. Antes desta alteração, o mínimo de 2 células deu 1 «2» falso
+  nas 13 fotos de uma só francesinha; o mínimo de 3 células (`minBlobCells`)
+  remove-o. Não havia fotos reais com duas francesinhas, por isso os «2»
+  que faltam (falhas por omissão) ficam por medir.
+  Pode falhar em qualquer sentido: um prato grande pode formar duas manchas,
+  dois pratos juntos podem formar uma só.
 
 ## Fallback offline — `RegionFoodVision`
 

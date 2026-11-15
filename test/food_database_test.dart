@@ -544,6 +544,19 @@ void main() {
     });
   });
 
+  group('leite-creme search', () {
+    test('"leite creme" and "leite-creme" find the dessert first', () {
+      expect(db.search('leite creme').first.key, 'leite_creme');
+      expect(db.search('leite-creme').first.key, 'leite_creme');
+      expect(db.search('Leite-creme (sobremesa)').first.key, 'leite_creme');
+    });
+
+    test('"creme de leite" still finds cooking cream first', () {
+      expect(db.search('creme de leite').first.key, 'cooking_cream');
+      expect(db.search('creme de leite').first.key, isNot('leite_creme'));
+    });
+  });
+
   group('alias hygiene', () {
     test('no name or alias maps to two different foods', () {
       final owners = <String, Set<String>>{};
@@ -617,7 +630,106 @@ void main() {
       final ketchup = db.byKey('ketchup')!;
       expect(ketchup.kcal * ketchup.portionG / 100, closeTo(16.2, 0.05));
     });
+
+    test('a bifana or a prego suggests the bread roll (meat-only rows)', () {
+      for (final name in [
+        'Bifana (carne, sem pão)',
+        'Prego (carne, sem pão)',
+      ]) {
+        expect(
+          [
+            for (final c in mealCompanions([food(name)], db)) c.food?.key,
+          ],
+          contains('bread_roll'),
+          reason: name,
+        );
+      }
+    });
   });
+
+  group(
+    '0.6.19 data: INSA extras, Domino\'s extras, Telepizza, Starbucks, Taco Bell',
+    () {
+      test('caldo verde resolves to the INSA row, not the vegetable soup', () {
+        expect(db.match('caldo verde')?.key, 'caldo_verde');
+        final row = db.byKey('caldo_verde')!;
+        expect(row.sourceKey, 'insa_782');
+        expect(row.portionPt, contains('(estimativa)'));
+        expect(row.portionEn, contains('(estimate)'));
+        expect(
+          db.byKey('soup_vegetables')!.aliases,
+          isNot(contains('caldo verde')),
+        );
+      });
+
+      test('bifana resolves to the meat-only INSA row', () {
+        expect(db.match('bifana')?.key, 'bifana_carne');
+        final row = db.byKey('bifana_carne')!;
+        expect(row.namePt, 'Bifana (carne, sem pão)');
+        expect(row.nameEn, 'Bifana pork (meat only, no bread)');
+        expect(
+          db.byKey('pork_loin_broiled')!.aliases,
+          isNot(contains('bifana')),
+        );
+      });
+
+      test('a Bolo-Rei is not matched by the King cake label', () {
+        expect(
+          db.byKey('bolo_rei')!.visionLabels,
+          isNot(contains('King cake')),
+        );
+      });
+
+      test(
+        "Domino's Americana Grande Original is one slice of 112 g and 210 kcal",
+        () {
+          final slice = db.byKey('dominos_americana_grande_original_fatia')!;
+          expect(slice.sourceName, "Domino's");
+          expect(slice.portionG, 112);
+          expect(slice.portionPt, '1 fatia');
+          expect(slice.portionG * slice.kcal / 100, closeTo(210, 0.6));
+        },
+      );
+
+      test(
+        'a Taco Bell unit keeps its derived weight: Taquito Lupita 113 g, 245 kcal',
+        () {
+          final taquito = db.byKey('tacobell_taquito_lupita_unidade_consumo')!;
+          expect(taquito.sourceName, 'Taco Bell');
+          expect(taquito.portionG, 113);
+          expect(taquito.portionG * taquito.kcal / 100, closeTo(245, 0.6));
+          expect(
+            db.match('taquito lupita taco bell')?.key,
+            'tacobell_taquito_lupita_unidade_consumo',
+          );
+        },
+      );
+
+      test('a Telepizza row is per 100 g with no published portion', () {
+        final pizza = db.byKey('telepizza_pizza_barbecue_100g')!;
+        expect(pizza.sourceName, 'Telepizza');
+        expect(pizza.portionG, 100);
+        expect(pizza.portionPt, contains('sem porção publicada'));
+        expect(pizza.kcal, closeTo(281, 0.6));
+      });
+
+      test('a Starbucks row is per 100 g with no published portion', () {
+        final pastel = db.byKey('starbucks_pastel_de_nata_100g')!;
+        expect(pastel.sourceName, 'Starbucks');
+        expect(pastel.portionG, 100);
+        expect(pastel.portionPt, contains('sem porção publicada'));
+        expect(pastel.kcal, closeTo(197, 0.6));
+      });
+
+      test('0.6.19 removed Starbucks rows with impossible per-100 g values', () {
+        // Removed in 0.6.19: 972 kcal/100 g for the pesto salad, and macros
+        // above 100 g per 100 g for eight other rows (see the staging review).
+        expect(db.byKey('starbucks_salada_pesto_rosso_100g'), isNull);
+        expect(db.byKey('starbucks_carrot_cake_100g'), isNull);
+        expect(db.byKey('starbucks_torrada_100g'), isNull);
+      });
+    },
+  );
 
   group('portion maths', () {
     test('kcal = grams × kcal/100 g ÷ 100', () {
@@ -793,7 +905,8 @@ void main() {
             .map((l) => l.substring(l.indexOf(',') + 1).trim())
             .toSet();
         final insa = db.foods.where((f) => f.source == 'insa').toList();
-        expect(insa.length, 8);
+        // 8 rows of 0.6.18 and 22 of 0.6.19 (see .agents/skills/nutrition-database).
+        expect(insa.length, 30);
         for (final f in insa) {
           expect(f.portionPt, contains('estimativa'), reason: f.key);
           expect(f.portionUnits, 1, reason: f.key);

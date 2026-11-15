@@ -228,7 +228,7 @@ class VyroStrings {
     'photoEstimateNote':
         'Os alimentos e as gramas são estimativas a partir da foto: ajusta antes de guardar. As calorias são calculadas como gramas × kcal/100 g.',
     'nutritionSourcesNote':
-        'Valores por 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP), INSA (tabela v7.1, 2026) e fichas publicadas pela McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s e Pizza Hut em Portugal. Citação INSA: Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026.',
+        'Valores por 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP), INSA (tabela v7.1, 2026) e fichas publicadas pela McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s, Pizza Hut, Telepizza, Starbucks e Taco Bell em Portugal. Telepizza e Starbucks publicam só valores por 100 g: a porção tem de ser indicada pelo utilizador. Citação INSA: Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026.',
     'photoSourceSystem': 'IA do telemóvel',
     'photoSourceRegions': 'Reconhecimento offline (pouco fiável)',
     'offlineNoFood':
@@ -1380,7 +1380,7 @@ class VyroStrings {
     'photoEstimateNote':
         'Foods and grams are estimates from the photo: adjust before saving. Calories are grams × kcal/100 g.',
     'nutritionSourcesNote':
-        'Values per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP), INSA (table v7.1, 2026) and labels published by McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s and Pizza Hut in Portugal. INSA citation: Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026.',
+        'Values per 100 g: USDA FoodData Central, Ciqual 2025 (ANSES), TACO (NEPA/UNICAMP), INSA (table v7.1, 2026) and labels published by McDonald\'s, Burger King, KFC, Subway, Pans & Company, Domino\'s, Pizza Hut, Telepizza, Starbucks and Taco Bell in Portugal. Telepizza and Starbucks publish values per 100 g only: the user enters the portion. INSA citation: Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026.',
     'photoSourceSystem': 'Phone AI',
     'photoSourceRegions': 'Offline recognition (low reliability)',
     'offlineNoFood':

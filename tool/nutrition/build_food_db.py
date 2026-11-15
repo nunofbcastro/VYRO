@@ -38,9 +38,10 @@ Sources (downloaded into build/, never committed):
          imported. Rows whose kJ and kcal disagree are left out.
   dominos_pt Domino's Pizza Portugal nutrition declaration (Jan 2020 table,
          PDF on the official Portuguese market cache). Unit = 1 slice or a
-         sale portion; slice weight = portion kcal / per-100 g kcal. Only rows
-         whose kJ agrees with kcal within 3% are kept (checked when the rows
-         were imported; the kJ column is not stored in the JSON).
+         sale portion; slice weight = portion kcal / per-100 g kcal. Rows are
+         kept when kJ is within 6% of 4.184 x kcal (the table's kJ runs about
+         4-5% low) and Atwater within 8% (checked when the rows were imported;
+         the kJ column is not stored in the JSON).
   insa   INSA Tabela da Composição de Alimentos v7.1 (2026, Portugal). Excel
          file, read with xlsx_reader. ref = INSA food code (column Cod).
          Values are per 100 g of edible part, as published. The INSA energy
@@ -54,6 +55,18 @@ Sources (downloaded into build/, never committed):
          unit weight = portion kcal / per-100 g kcal. Rows whose kJ, kcal,
          Atwater or per-100 g columns disagree are left out. Salads are
          named "Salada <Name> (Pizza Hut)".
+  telepizza_pt Telepizza Portugal "Tabela Nutricional" (per 100 g only, page
+         updated 1 Jun 2026). The brand publishes no unit weight: grams = 100
+         and the portion is "100 g (sem porção publicada)"; the user enters
+         the weight. Rows whose Atwater check fails are left out.
+  starbucks_pt Starbucks Portugal "Informação nutricional ISBP Fall 2026" (per
+         100 g only). No unit weight is printed: grams = 100 and the portion
+         is "100 g (sem porção publicada)". kJ within 3% of 4.184 x kcal and
+         Atwater within 8%, otherwise the row is left out.
+  tacobell_pt Taco Bell Portugal "Informação nutricional" table (Viva Bem,
+         printed 4 Nov 2026). Unit = 1 unidade de consumo; the unit weight is
+         derived as unit kcal / per-100 g kcal. Fibre is not in the table
+         (stored as 0, not measured). Drinks and sauces alone are left out.
 
 Brand sources (BRAND_SOURCES) share one shape in manufacturer_pt.json: the
 published unit totals (grams, kcal, macros), converted to per 100 g.
@@ -148,7 +161,7 @@ SOURCES = {
         'name': "Domino's Pizza Portugal — declaração nutricional",
         'license': 'Valores publicados pelo fabricante para o mercado português; citados com a data da tabela',
         'url': 'https://cache.dominos.com/olo/6_13_2/assets/build/market/PT/_pt/pdf/nutricional.pdf',
-        'citation': "Domino's Pizza Portugal. Declaração nutricional, valores médios da receita por 100 g e por porção, última atualização em janeiro de 2020 (consultada em 15 de novembro de 2026). A unidade é a fatia ou a dose de venda; o peso da fatia é o quociente entre as kcal por porção e as kcal por 100 g. Só entram linhas em que os kJ concordam com as kcal em 3%. A tabela de 2023, só por 100 g, não permite pesos por porção e não foi usada.",
+        'citation': "Domino's Pizza Portugal. Declaração nutricional, valores médios da receita por 100 g e por porção, última atualização em janeiro de 2020 (consultada em 15 de novembro de 2026). A unidade é a fatia ou a dose de venda; o peso da fatia é o quociente entre as kcal por porção e as kcal por 100 g. Só entram linhas em que os kJ estão a menos de 6% de 4,184 × kcal (a tabela publica kJ cerca de 4 a 5% abaixo) e o cálculo de Atwater a menos de 8%. A tabela de 2023, só por 100 g, não permite pesos por porção e não foi usada.",
         'file': MANUFACTURER,
     },
     'pans_pt': {
@@ -158,11 +171,35 @@ SOURCES = {
         'citation': 'Pans & Company. Tabela nutricional válida para Portugal (impressa em 12 de novembro de 2026, documento PSA IC 001pac.56). O peso da unidade é o quociente entre a energia da unidade e a energia por 100 g. Bebidas e linhas em que os kJ não concordam com as kcal ficaram de fora.',
         'file': MANUFACTURER,
     },
+    'telepizza_pt': {
+        'name': 'Telepizza Portugal — tabela nutricional (por 100 g)',
+        'license': 'Valores publicados pelo fabricante no site; citados com a data de atualização',
+        'url': 'https://www.telepizza.pt/tabela-nutricional.html',
+        'citation': 'Telepizza Portugal. Tabela nutricional por 100 g, página atualizada em 1 de junho de 2026 (consultada em 15 de novembro de 2026). A marca publica apenas valores por 100 g: não há peso de porção publicado, por isso o VYRO usa 100 g e pede ao utilizador o peso real. Só entram linhas em que o cálculo de Atwater fica a menos de 8% da energia.',
+        'file': MANUFACTURER,
+    },
+    'starbucks_pt': {
+        'name': 'Starbucks Portugal — informação nutricional (Fall 2026, por 100 g)',
+        'license': 'Valores publicados pelo fabricante; citados com a data do documento',
+        'url': 'https://starbucks.pt/sites/starbucks-pt-pwa/files/2026-09/info-nutricional-pt-fall-26_0.pdf',
+        'citation': 'Starbucks Portugal. Informação nutricional ISBP Fall 2026 (PDF de setembro de 2026, consultado em 15 de novembro de 2026), valores por 100 g. A marca publica apenas valores por 100 g: não há peso de porção publicado, por isso o VYRO usa 100 g e pede ao utilizador o peso real. Só entram linhas em que os kJ estão a menos de 3% de 4,184 × kcal e o Atwater a menos de 8%.',
+        'file': MANUFACTURER,
+    },
+    'tacobell_pt': {
+        'name': 'Taco Bell Portugal — informação nutricional',
+        'license': 'Valores publicados pelo fabricante para os restaurantes em Portugal; citados com a data de impressão',
+        'url': 'https://www.vivabem.pt/tabelas/tabela_taco_bell.pdf',
+        'citation': 'Taco Bell Portugal. Informação nutricional, tabela válida para Portugal (impressa em 4 de novembro de 2026, documento PSA IC 001tb.30). O peso da unidade é o quociente entre a energia da unidade e a energia por 100 g. A tabela não publica fibra: o VYRO guarda 0, que não é um valor medido. Bebidas, molhos isolados e linhas em que os kJ, o cálculo de Atwater ou os macronutrientes não concordam ficaram de fora.',
+        'file': MANUFACTURER,
+    },
 }
 
 
 # Brand chains whose rows are published unit totals (see load_brand_pt).
-BRAND_SOURCES = {'mcd_pt', 'kfc_pt', 'bk_pt', 'subway_pt', 'pans_pt', 'dominos_pt', 'pizzahut_pt'}
+BRAND_SOURCES = {
+    'mcd_pt', 'kfc_pt', 'bk_pt', 'subway_pt', 'pans_pt', 'dominos_pt', 'pizzahut_pt',
+    'telepizza_pt', 'starbucks_pt', 'tacobell_pt',
+}
 
 
 def download(source):
@@ -354,6 +391,15 @@ def load_brand_pt(refs):
             field: float(row[field]) * 100 / grams
             for field in ('kcal', 'protein', 'carbs', 'fat')
         }
+        # Physically impossible per-100 g values mean a transcription error:
+        # 100 g of food cannot hold more than 900 kcal (pure fat) or more than
+        # 100 g of protein + carbohydrate + fat.
+        macros = per100['protein'] + per100['carbs'] + per100['fat']
+        if per100['kcal'] > 900 or macros > 100:
+            sys.exit(
+                f'{ref}: implausible per-100 g values (kcal {per100["kcal"]:.0f} > 900 or '
+                f'protein+carbs+fat {macros:.1f} g > 100 g); fix the row in manufacturer_pt.json'
+            )
         expected = 4 * per100['protein'] + 4 * per100['carbs'] + 9 * per100['fat']
         if abs(per100['kcal'] - expected) / per100['kcal'] > 0.08:
             sys.exit(f'{ref}: published kcal {row["kcal"]} disagrees with Atwater {expected * grams / 100:.0f}')
@@ -379,6 +425,9 @@ LOADERS = {
     'pans_pt': load_brand_pt,
     'dominos_pt': load_brand_pt,
     'pizzahut_pt': load_brand_pt,
+    'telepizza_pt': load_brand_pt,
+    'starbucks_pt': load_brand_pt,
+    'tacobell_pt': load_brand_pt,
 }
 
 

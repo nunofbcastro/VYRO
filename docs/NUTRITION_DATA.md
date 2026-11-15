@@ -11,7 +11,7 @@ alimentos descarregadas legalmente.
 foods_pt.tsv (curado à mão: nomes PT/EN, fonte + referência, porção, unidades da porção, aliases, etiquetas de imagem)
         │
         ▼  build_food_db.py  (descarrega/usa build/usda, build/ciqual, build/taco, build/insa)
-assets/nutrition/foods.json  (784 alimentos, valores por 100 g, fonte de cada um)
+assets/nutrition/foods.json  (1169 alimentos, valores por 100 g, fonte de cada um)
         │
         ▼  FoodDatabase.load()  (lib/features/nutrition/data/food_database.dart)
 fotografia, assistente, diário  →  kcal = gramas × kcal/100 g ÷ 100
@@ -30,6 +30,9 @@ ingredientes e do peso final cozinhado. Não entram em `foods.json`.
 | [TACO 4.ª edição — NEPA/UNICAMP](https://www.cfn.org.br/wp-content/uploads/2017/03/taco_4_edicao_ampliada_e_revisada.pdf) | `br` | Reprodução permitida desde que citada a fonte | número do alimento na Tabela 1 |
 | [INSA — Tabela da Composição de Alimentos v7.1 (2026)](https://portfir.insa.min-saude.pt/) | `pt` | Termos do INSA: utilização com indicação visível da fonte (não é licença aberta; confirmar com o INSA antes de uma publicação pública) | código INSA (coluna `Cod`) |
 | [McDonald's Portugal — ficha do produto](https://www.mcdonalds.pt/produtos/informacao-nutricional-alergenios) | `pt` | Valores publicados pelo fabricante, citados com a data de consulta | id em `tool/nutrition/manufacturer_pt.json` |
+| [Telepizza Portugal — tabela nutricional](https://www.telepizza.pt/tabela-nutricional.html) | `pt` | Valores publicados pelo fabricante (só por 100 g), citados com a data de atualização | id em `tool/nutrition/manufacturer_pt.json` |
+| [Starbucks Portugal — informação nutricional ISBP Fall 2026](https://www.starbucks.pt/informacao-nutricional) | `pt` | Valores publicados pelo fabricante (só por 100 g), citados com a data do documento | id em `tool/nutrition/manufacturer_pt.json` |
+| [Taco Bell Portugal — informação nutricional](https://www.tacobell.pt/informacao-nutricional/) | `pt` | Valores publicados pelo fabricante para Portugal, citados com a data de impressão | id em `tool/nutrition/manufacturer_pt.json` |
 
 Citações (também guardadas em `foods.json → sources`):
 
@@ -39,6 +42,10 @@ Citações (também guardadas em `foods.json → sources`):
 - McDonald's Portugal. PDF do balcão de 27 de outubro de 2026 e fichas de produto consultadas em 14 de novembro de 2026 (Big Mac, Cheeseburger, Hamburger, Double Cheeseburger, Big Tasty Single e Double, CBO, McRoyal Bacon e Double, McCrispy Cheddar Bacon, 10 Chicken McNuggets, McChicken, McCrispy, McCrispy Hot Honey). O Big Tasty vem da ficha de produto: a linha do PDF não reconciliava kJ com kcal. Quando a ficha não traz fibra, fica a 0.
 - KFC Portugal. Tabela nutricional de 15 de abril de 2025 (Clássica Zinger Single e Tower Zinger Single). O peso é o quociente entre a unidade de consumo e os valores por 100 g, arredondado ao grama. A tabela não traz fibra.
 - Fonte: Base de Dados da Composição de Alimentos. Instituto Nacional de Saúde Doutor Ricardo Jorge, I. P. - INSA. v 7.1 - 2026. (INSA, `insa_tca.xlsx`, descarregado de `https://portfir.insa.min-saude.pt/wp-content/uploads/2025/11/insa_tca.xlsx`, SHA-256 `155d233b…75c066ca`). Os valores por 100 g são os publicados, a energia inclui 2 × fibra (verificado pelo Atwater no build) e as gramas da porção NÃO vêm do INSA (ver abaixo).
+- Telepizza Portugal. Tabela nutricional por 100 g, página atualizada em 1 de junho de 2026 (consultada em 15 de novembro de 2026). A marca não publica peso de porção: o VYRO usa 100 g e o utilizador indica o peso.
+- Starbucks Portugal. Informação nutricional ISBP Fall 2026 (PDF de setembro de 2026, consultado em 15 de novembro de 2026), por 100 g. Sem peso de porção publicado: 100 g e o utilizador indica o peso. São 82 linhas em `starbucks_pt` (0.6.19: saíram 9 linhas com valores impossíveis por 100 g, entre elas a Salada Pesto Rosso com 972 kcal/100 g).
+- Taco Bell Portugal. Informação nutricional (tabela Viva Bem, impressa em 4 de novembro de 2026, PSA IC 001tb.30). O peso da unidade é a energia da unidade a dividir pela energia por 100 g. A tabela não publica fibra: fica a 0, que não é um valor medido.
+- Domino's Pizza Portugal. Declaração nutricional (valores médios, última atualização em janeiro de 2020, consultada em 15 de novembro de 2026). Regras de validação na linha de Domino's abaixo.
 
 A app mostra esta atribuição no ecrã de fotografia (`nutritionSourcesNote`)
 e cada registo do diário guarda a origem em `food_entries.source`
@@ -53,13 +60,15 @@ energia com Atwater (4 P + 4 H + 9 G + 2 × fibra) e falha se uma linha não
 bater certo. O ficheiro é guardado em `build/insa/` (nunca versionado) e o
 build confere o SHA-256.
 
+Na 0.6.19 entram mais 22 linhas INSA (`source=insa`): caldo verde, canja de galinha, arroz doce, pão de ló, rissol e pastel de bacalhau tradicionais, alheira grelhada, farinheira, arroz de pato, arroz de tamboril, açorda, bifana (só carne, sem pão), prego (só carne, sem pão), entrecosto grelhado, frango assado no churrasco, mousse de chocolate, leite-creme, bolo de bolacha, bolo-rei, broa de milho, queijada e bola de Berlim sem creme. Os aliases «caldo verde» e «frango assado» passam da sopa de legumes e da coxa de frango (USDA) para as linhas INSA, e «bifana» passa do lombo de porco (USDA) para a bifana. Sem o pão, a bifana e o prego sugerem o papo-seco (`bread_roll`). Etiquetas de imagem novas: «Rice pudding», «Doughnut» e «Cornbread». A etiqueta «King cake» não foi atribuída ao bolo-rei, porque é um bolo de Carnaval.
+
 - **Os termos do INSA não são uma licença aberta.** Descarregar o ficheiro
   implica aceitar as condições, que exigem a fonte visível onde os dados são
   mostrados (a citação está em `foods.json → sources.insa`, na app em
   `nutritionSourcesNote` e na fotografia). Antes de uma publicação pública,
   confirmar com o INSA (tabela.alimentos@insa.min-saude.pt) se a
   redistribuição de valores derivados na app é permitida.
-- **As porções dos oito alimentos são estimativas do VYRO, não do INSA.** A
+- **As porções dos 30 alimentos INSA são estimativas do VYRO, não do INSA.** A
   tabela não traz gramas por prato. Os `portion_pt` dizem «(estimativa)».
 - A tabela não tem uma francesinha «poveira»: a francesinha normal é a
   hipótese mais próxima, e as duas etiquetas de imagem apontam para ela.
@@ -81,7 +90,7 @@ sardinha, polvo, chouriço, queijo de ovelha, pão caseiro…).
 - Porções (`portion_g`, `portion_pt`) são **estimativas do VYRO** para sugerir
   quantidades. O utilizador confirma sempre as gramas. Nas fontes de marca e
   INSA as porções também são do VYRO, salvo quando o próprio fabricante as
-  publica (McDonald's, KFC, Pizza Hut…).
+  publica (McDonald's, KFC, Pizza Hut…). Telepizza e Starbucks só publicam valores por 100 g: `portion_g` = 100 e o utilizador indica o peso.
 - `portion_units` (coluna opcional, última do TSV; preenchida em 378 dos 484
   alimentos) indica quantas peças correspondem a `portion_g`: 3 sardinhas = 120 g
   ⇒ `portion_units = 3`. A app escala a contagem de peças por
@@ -157,8 +166,10 @@ alimento e as gramas.
   - Subway Portugal (`subway_pt`, PDF de janeiro de 2025): subs de 15 cm em que os kJ, as kcal e a coluna por 100 g concordam (almôndegas 306 g / 479 kcal, atum, BLT, B.M.T., frango tikka, e as outras que passam a mesma verificação). Uma Sub30 é o dobro da de 15 cm, como a própria tabela indica.
   - Pans & Company (`pans_pt`, tabela válida para Portugal, impressa em 12 de novembro de 2026): sandes, empanadas e pastelaria em que o peso calculado a partir das kcal por 100 g fecha com a unidade. Bebidas e linhas com kJ incoerentes ficam de fora.
   - McDonald's Portugal (`mcd_pt`) passa a cobrir o menu completo do balcão (cerca de 80 linhas): McFlurry e Sundae, McMuffin e padaria, Snack Wrap, McNuggets, saladas, batatas, Big Arch e as opções sem glúten. Os nomes genéricos («batatas fritas», «torrada com manteiga», «panquecas», «croissant simples», «tosta mista») ficam na linha genérica e não levam alias da McDonald's.
-  - Domino's Pizza Portugal (`dominos_pt`, declaração nutricional com última atualização em janeiro de 2020): fatias das gamas Média e Grande (Original e Italiana), mais pão de alho, pão de queijo, batatas rústicas, kickers, tiras, delícias de queijo e três sobremesas. Uma fatia pesa o quociente entre as kcal da porção e as kcal por 100 g. Só entram linhas em que os kJ concordam com as kcal em 3%. A folha de 2023, só por 100 g, não permite pesos e não foi usada.
+  - Domino's Pizza Portugal (`dominos_pt`, declaração nutricional com última atualização em janeiro de 2020): fatias das gamas Média e Grande (Original e Italiana), mais pão de alho, pão de queijo, batatas rústicas, kickers, tiras, delícias de queijo e três sobremesas. Uma fatia pesa o quociente entre as kcal da porção e as kcal por 100 g. Só entram linhas em que os kJ estão a menos de 6% de 4,184 × kcal (a tabela publica kJ cerca de 4 a 5% abaixo) e o Atwater a menos de 8%. Na 0.6.19 entram seis fatias (Mediterrânica Média e Grande Original, Carbonara Média Italiana, Frango BBQ Média Italiana, Americana Grande Original, Vegetariana Grande Original); as Mediterrânica Italiana ficam de fora, com kJ 6 a 7% abaixo. A folha de 2023, só por 100 g, não permite pesos e não foi usada.
   - Pizza Hut Portugal (`pizzahut_pt`, tabela impressa em 2 de novembro de 2026): fatias, pedaços, Super Fatias, PANxPAN, entradas e saladas (chamam-se «Salada <Nome> (Pizza Hut)»). Entram também as sobremesas: gelados (bola, soft, cone e Ice Hut), sundaes, mousses, profiteroles, cookies, bolo, tarte, gelatina, Pintarolas e os potes de fruta (abacaxi, laranja, melão, pêssego, uvas e salada de frutas). Ficam de fora os Morangos e os Cinnamon Sticks, porque os macros não batem com as kcal, e os molhos, as coberturas (toppings) e os dips. Linhas com kJ, kcal, Atwater ou coluna por 100 g discordantes também ficam de fora. O Ovo Smarties foi retirado por duplicar o Ovo de Páscoa (40 g, 212 kcal).
+  - Telepizza Portugal (`telepizza_pt`, tabela atualizada em 1 de junho de 2026) e Starbucks Portugal (`starbucks_pt`, ISBP Fall 2026): só publicam valores por 100 g. A linha tem `portion_g` 100 e a porção «100 g (sem porção publicada)»; o utilizador indica o peso. Validação: Atwater a 8% (Starbucks também kJ a 3%); e, por 100 g, kcal ≤ 900 e proteína + hidratos + gordura ≤ 100 g (`load_brand_pt` falha o build caso contrário).
+  - Taco Bell Portugal (`tacobell_pt`, tabela Viva Bem impressa em 4 de novembro de 2026): 206 linhas por unidade de consumo, com o peso derivado de kcal da unidade / kcal por 100 g. Ficam de fora as bebidas, os molhos isolados e as linhas que não passam na validação (kJ, Atwater e macronutrientes). Nenhum item é sandes: não entra nas regras de sanduíche de marca.
   - As marcas de pizza não entram nas regras de «sanduíche de marca» (`burger_rules.dart`, `region_food_vision.dart`): uma pizza não é uma sandes e não deve competir com um hambúrguer ou frango na mesma foto.
   - `quarter_pounder_cheese`, 199 g, «McDONALD'S, QUARTER POUNDER with Cheese» (170719), 258 kcal/100 g.
   - `filet_o_fish`, 134 g, «McDONALD'S, FILET-O-FISH» (170319), 282 kcal/100 g (peixe, não é hambúrguer nem frango).

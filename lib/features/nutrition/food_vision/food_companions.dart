@@ -60,6 +60,8 @@ const _companionRules = [
     {'salada', 'alface', 'rucula', 'salad', 'lettuce'},
     ['olive_oil'],
   ),
+  // Bifana and prego rows are meat only (no bread): the roll is the companion.
+  _CompanionRule({'bifana', 'prego'}, ['bread_roll']),
 ];
 
 /// Database food for a key or an exact name (normalised, aliases included,
