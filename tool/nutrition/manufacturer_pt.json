@@ -5061,5 +5061,302 @@
     "protein": 12.5,
     "carbs": 32.0,
     "fat": 8.1
+  },
+  "pizzahut-abacaxi-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Abacaxi, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 141,
+    "kcal": 62,
+    "protein": 0.7,
+    "carbs": 13.3,
+    "fat": 0.3
+  },
+  "pizzahut-bolo-de-chocolate-fatia": {
+    "label": "Pizza Hut Portugal, Bolo de Chocolate, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 78,
+    "kcal": 300,
+    "protein": 3.0,
+    "carbs": 31.4,
+    "fat": 17.5
+  },
+  "pizzahut-cookie-de-chocolate-eat-in-cookie": {
+    "label": "Pizza Hut Portugal, Cookie de Chocolate Eat-In, 1 cookie (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 100,
+    "kcal": 462,
+    "protein": 6.1,
+    "carbs": 62.1,
+    "fat": 21
+  },
+  "pizzahut-cookie-de-chocolate-delivery-cookie": {
+    "label": "Pizza Hut Portugal, Cookie de Chocolate Delivery, 1 cookie (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 39,
+    "kcal": 175,
+    "protein": 2.1,
+    "carbs": 25.0,
+    "fat": 7.2
+  },
+  "pizzahut-cone-de-gelado-cone": {
+    "label": "Pizza Hut Portugal, Cone de Gelado, 1 cone (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 10,
+    "kcal": 38,
+    "protein": 0.6,
+    "carbs": 7.4,
+    "fat": 0.7
+  },
+  "pizzahut-gelatina-ananas-morango-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Gelatina Ananás/Morango, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 200,
+    "kcal": 114,
+    "protein": 3.0,
+    "carbs": 24.0,
+    "fat": 1.0
+  },
+  "pizzahut-ice-hut-chips-ahoy-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Ice Hut Chips Ahoy, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 221,
+    "kcal": 633,
+    "protein": 6.6,
+    "carbs": 87.4,
+    "fat": 28.3
+  },
+  "pizzahut-ice-hut-oreo-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Ice Hut Oreo, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 221,
+    "kcal": 595,
+    "protein": 7.4,
+    "carbs": 85.1,
+    "fat": 24.7
+  },
+  "pizzahut-laranja-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Laranja, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 136,
+    "kcal": 57,
+    "protein": 1.5,
+    "carbs": 12.0,
+    "fat": 0.3
+  },
+  "pizzahut-melao-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Melão, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 141,
+    "kcal": 38,
+    "protein": 0.8,
+    "carbs": 8.1,
+    "fat": 0.4
+  },
+  "pizzahut-mousse-de-chocolate-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Mousse de Chocolate, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 100,
+    "kcal": 311,
+    "protein": 7.6,
+    "carbs": 22.0,
+    "fat": 21.7
+  },
+  "pizzahut-pessego-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Pêssego, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 140,
+    "kcal": 81,
+    "protein": 0.0,
+    "carbs": 19.6,
+    "fat": 0.0
+  },
+  "pizzahut-pizza-doce-aniversario-media-fatia": {
+    "label": "Pizza Hut Portugal, Pizza Doce (Aniversário) Média, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 41,
+    "kcal": 165,
+    "protein": 4.2,
+    "carbs": 24.6,
+    "fat": 5.2
+  },
+  "pizzahut-profiteroles-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Profiteroles, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 104,
+    "kcal": 331,
+    "protein": 4.5,
+    "carbs": 36.7,
+    "fat": 18.2
+  },
+  "pizzahut-salada-de-frutas-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Salada de Frutas, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 140,
+    "kcal": 74,
+    "protein": 0.8,
+    "carbs": 16.5,
+    "fat": 0.4
+  },
+  "pizzahut-shot-de-profiteroles-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Shot de Profiteroles, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 45,
+    "kcal": 143,
+    "protein": 2.0,
+    "carbs": 17.4,
+    "fat": 7.1
+  },
+  "pizzahut-sundae-caramelo-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Sundae Caramelo, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 145,
+    "kcal": 241,
+    "protein": 3.7,
+    "carbs": 41.6,
+    "fat": 6.6
+  },
+  "pizzahut-sundae-chips-ahoy-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Sundae Chips Ahoy, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 152,
+    "kcal": 305,
+    "protein": 4.9,
+    "carbs": 44.1,
+    "fat": 11.8
+  },
+  "pizzahut-sundae-chocolate-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Sundae Chocolate, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 145,
+    "kcal": 236,
+    "protein": 4.0,
+    "carbs": 39.4,
+    "fat": 6.7
+  },
+  "pizzahut-sundae-morango-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Sundae Morango, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 145,
+    "kcal": 237,
+    "protein": 3.7,
+    "carbs": 40.5,
+    "fat": 6.5
+  },
+  "pizzahut-sundae-oreo-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Sundae Oreo, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 152,
+    "kcal": 287,
+    "protein": 5.2,
+    "carbs": 44.4,
+    "fat": 9.6
+  },
+  "pizzahut-tarte-de-maca-fatia": {
+    "label": "Pizza Hut Portugal, Tarte de Maçã, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 208,
+    "kcal": 335,
+    "protein": 3.1,
+    "carbs": 56.6,
+    "fat": 9.8
+  },
+  "pizzahut-uvas-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Uvas, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 140,
+    "kcal": 112,
+    "protein": 0.4,
+    "carbs": 25.2,
+    "fat": 0.7
+  },
+  "pizzahut-bola-de-gelado-3-chocolates-bola": {
+    "label": "Pizza Hut Portugal, Bola de Gelado 3 Chocolates, 1 bola (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 55,
+    "kcal": 125,
+    "protein": 2.0,
+    "carbs": 15.4,
+    "fat": 6.1
+  },
+  "pizzahut-bola-de-gelado-baunilha-bola": {
+    "label": "Pizza Hut Portugal, Bola de Gelado Baunilha, 1 bola (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 51,
+    "kcal": 96,
+    "protein": 1.3,
+    "carbs": 13.8,
+    "fat": 3.8
+  },
+  "pizzahut-bola-de-gelado-cheesecake-morango-bola": {
+    "label": "Pizza Hut Portugal, Bola de Gelado Cheesecake Morango, 1 bola (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 55,
+    "kcal": 113,
+    "protein": 1.5,
+    "carbs": 17.6,
+    "fat": 4.0
+  },
+  "pizzahut-bola-de-gelado-morango-bola": {
+    "label": "Pizza Hut Portugal, Bola de Gelado Morango, 1 bola (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 52,
+    "kcal": 58,
+    "protein": 0.8,
+    "carbs": 8.3,
+    "fat": 2.3
+  },
+  "pizzahut-gelado-soft-algodao-doce-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Gelado Soft Algodão Doce, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 85,
+    "kcal": 199,
+    "protein": 2.4,
+    "carbs": 28.4,
+    "fat": 8.2
+  },
+  "pizzahut-gelado-soft-baunilha-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Gelado Soft Baunilha, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 85,
+    "kcal": 200,
+    "protein": 2.4,
+    "carbs": 27.7,
+    "fat": 8.2
+  },
+  "pizzahut-gelado-soft-caramelo-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Gelado Soft Caramelo, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 85,
+    "kcal": 199,
+    "protein": 2.3,
+    "carbs": 29.9,
+    "fat": 7.9
+  },
+  "pizzahut-gelado-soft-chocolate-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Gelado Soft Chocolate, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 85,
+    "kcal": 208,
+    "protein": 2.7,
+    "carbs": 29.9,
+    "fat": 8.2
+  },
+  "pizzahut-gelado-soft-morango-unidade-consumo": {
+    "label": "Pizza Hut Portugal, Gelado Soft Morango, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 85,
+    "kcal": 199,
+    "protein": 2.1,
+    "carbs": 30.7,
+    "fat": 7.4
+  },
+  "pizzahut-pintarolas-tubo-dose": {
+    "label": "Pizza Hut Portugal, Pintarolas Tubo, 1 dose (tabela Viva Bem, impressa 2026-11-02)",
+    "url": "https://www.vivabem.pt/tabelas/tabela_pizza_hut.pdf",
+    "grams": 22,
+    "kcal": 106,
+    "protein": 0.8,
+    "carbs": 15.6,
+    "fat": 4.4
   }
 }

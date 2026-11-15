@@ -523,6 +523,17 @@ void main() {
       );
     });
 
+    test('a Pizza Hut dessert keeps its published unit weight', () {
+      final sundae = db.byKey('pizzahut_sundae_oreo_unidade_consumo')!;
+      expect(sundae.sourceName, 'Pizza Hut');
+      expect(sundae.portionG, 152);
+      expect(sundae.portionG * sundae.kcal / 100, closeTo(287, 0.6));
+      expect(
+        db.match('sundae oreo pizza hut')?.key,
+        'pizzahut_sundae_oreo_unidade_consumo',
+      );
+    });
+
     test('generic dish names still point to the generic rows', () {
       expect(db.match('batatas fritas')?.key, 'potato_fries_oven');
       expect(db.match('pão de queijo')?.key, 'pao_de_queijo');

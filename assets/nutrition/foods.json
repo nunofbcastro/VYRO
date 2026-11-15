@@ -62,7 +62,7 @@
   }
  },
  "curatedList": "tool/nutrition/foods_pt.tsv",
- "curatedSha256": "12eb393f0c078452f31046915b125d21505fd4c83b795a74d4bc5e280e800229",
+ "curatedSha256": "91a90a9fb0d390801dbcd05db66abeea564e8007975be3f0edcd20faae414eff",
  "portionNote": "Typical portions are VYRO estimates for suggestions; users confirm grams.",
  "foods": [
   {
@@ -17353,6 +17353,30 @@
    "visionLabels": []
   },
   {
+   "key": "pizzahut_abacaxi_unidade_consumo",
+   "namePt": "Abacaxi, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Abacaxi, 1 unit",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-abacaxi-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Abacaxi, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 44.0,
+   "protein": 0.5,
+   "carbs": 9.43,
+   "fat": 0.21,
+   "fiber": 0.0,
+   "portionG": 141.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 unit",
+   "aliases": [
+    "abacaxi pizza hut",
+    "pizza hut abacaxi"
+   ],
+   "visionLabels": []
+  },
+  {
    "key": "acai_bowl",
    "namePt": "Açaí na tigela (com xarope)",
    "nameEn": "Açaí bowl (with syrup)",
@@ -17375,6 +17399,102 @@
     "acai bowl",
     "tigela de açaí",
     "bowl de açaí"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_bola_de_gelado_3_chocolates_bola",
+   "namePt": "Bola de Gelado 3 Chocolates, 1 bola (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Bola de Gelado 3 Chocolates, 1 scoop",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-bola-de-gelado-3-chocolates-bola",
+   "sourceLabel": "Pizza Hut Portugal, Bola de Gelado 3 Chocolates, 1 bola (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 227.3,
+   "protein": 3.64,
+   "carbs": 28.0,
+   "fat": 11.09,
+   "fiber": 0.0,
+   "portionG": 55.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 bola",
+   "portionEn": "1 scoop",
+   "aliases": [
+    "bola de gelado 3 chocolates pizza hut",
+    "pizza hut bola de gelado 3 chocolates"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_bola_de_gelado_baunilha_bola",
+   "namePt": "Bola de Gelado Baunilha, 1 bola (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Bola de Gelado Baunilha, 1 scoop",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-bola-de-gelado-baunilha-bola",
+   "sourceLabel": "Pizza Hut Portugal, Bola de Gelado Baunilha, 1 bola (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 188.2,
+   "protein": 2.55,
+   "carbs": 27.06,
+   "fat": 7.45,
+   "fiber": 0.0,
+   "portionG": 51.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 bola",
+   "portionEn": "1 scoop",
+   "aliases": [
+    "bola de gelado baunilha pizza hut",
+    "pizza hut bola de gelado baunilha"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_bola_de_gelado_cheesecake_morango_bola",
+   "namePt": "Bola de Gelado Cheesecake Morango, 1 bola (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Bola de Gelado Cheesecake Morango, 1 scoop",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-bola-de-gelado-cheesecake-morango-bola",
+   "sourceLabel": "Pizza Hut Portugal, Bola de Gelado Cheesecake Morango, 1 bola (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 205.5,
+   "protein": 2.73,
+   "carbs": 32.0,
+   "fat": 7.27,
+   "fiber": 0.0,
+   "portionG": 55.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 bola",
+   "portionEn": "1 scoop",
+   "aliases": [
+    "bola de gelado cheesecake morango pizza hut",
+    "pizza hut bola de gelado cheesecake morango"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_bola_de_gelado_morango_bola",
+   "namePt": "Bola de Gelado Morango, 1 bola (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Bola de Gelado Morango, 1 scoop",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-bola-de-gelado-morango-bola",
+   "sourceLabel": "Pizza Hut Portugal, Bola de Gelado Morango, 1 bola (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 111.5,
+   "protein": 1.54,
+   "carbs": 15.96,
+   "fat": 4.42,
+   "fiber": 0.0,
+   "portionG": 52.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 bola",
+   "portionEn": "1 scoop",
+   "aliases": [
+    "bola de gelado morango pizza hut",
+    "pizza hut bola de gelado morango"
    ],
    "visionLabels": []
   },
@@ -17451,6 +17571,30 @@
     "bolo de arroz (pans & company)",
     "pans bolo de arroz",
     "pans & company bolo de arroz"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_bolo_de_chocolate_fatia",
+   "namePt": "Bolo de Chocolate, 1 fatia (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Bolo de Chocolate, 1 slice",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-bolo-de-chocolate-fatia",
+   "sourceLabel": "Pizza Hut Portugal, Bolo de Chocolate, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 384.6,
+   "protein": 3.85,
+   "carbs": 40.26,
+   "fat": 22.44,
+   "fiber": 0.0,
+   "portionG": 78.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 fatia",
+   "portionEn": "1 slice",
+   "aliases": [
+    "bolo de chocolate pizza hut",
+    "pizza hut bolo de chocolate"
    ],
    "visionLabels": []
   },
@@ -17533,6 +17677,78 @@
     "pizza cinnabites domino's",
     "dominos cinnabites",
     "domino's cinnabites"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_cone_de_gelado_cone",
+   "namePt": "Cone de Gelado, 1 cone (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Cone de Gelado, 1 cone",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-cone-de-gelado-cone",
+   "sourceLabel": "Pizza Hut Portugal, Cone de Gelado, 1 cone (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 380.0,
+   "protein": 6.0,
+   "carbs": 74.0,
+   "fat": 7.0,
+   "fiber": 0.0,
+   "portionG": 10.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 cone",
+   "portionEn": "1 cone",
+   "aliases": [
+    "cone de gelado pizza hut",
+    "pizza hut cone de gelado"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_cookie_de_chocolate_delivery_cookie",
+   "namePt": "Cookie de Chocolate Delivery, 1 cookie (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Cookie de Chocolate Delivery, 1 cookie",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-cookie-de-chocolate-delivery-cookie",
+   "sourceLabel": "Pizza Hut Portugal, Cookie de Chocolate Delivery, 1 cookie (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 448.7,
+   "protein": 5.38,
+   "carbs": 64.1,
+   "fat": 18.46,
+   "fiber": 0.0,
+   "portionG": 39.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 cookie",
+   "portionEn": "1 cookie",
+   "aliases": [
+    "cookie de chocolate delivery pizza hut",
+    "pizza hut cookie de chocolate delivery"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_cookie_de_chocolate_eat_in_cookie",
+   "namePt": "Cookie de Chocolate Eat-In, 1 cookie (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Cookie de Chocolate Eat-In, 1 cookie",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-cookie-de-chocolate-eat-in-cookie",
+   "sourceLabel": "Pizza Hut Portugal, Cookie de Chocolate Eat-In, 1 cookie (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 462.0,
+   "protein": 6.1,
+   "carbs": 62.1,
+   "fat": 21.0,
+   "fiber": 0.0,
+   "portionG": 100.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 cookie",
+   "portionEn": "1 cookie",
+   "aliases": [
+    "cookie de chocolate eat-in pizza hut",
+    "pizza hut cookie de chocolate eat-in"
    ],
    "visionLabels": []
   },
@@ -17848,6 +18064,198 @@
    "visionLabels": []
   },
   {
+   "key": "pizzahut_gelado_soft_algodao_doce_unidade_consumo",
+   "namePt": "Gelado Soft Algodão Doce, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Gelado Soft Algodão Doce, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-gelado-soft-algodao-doce-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Gelado Soft Algodão Doce, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 234.1,
+   "protein": 2.82,
+   "carbs": 33.41,
+   "fat": 9.65,
+   "fiber": 0.0,
+   "portionG": 85.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "gelado soft algodão doce pizza hut",
+    "pizza hut gelado soft algodão doce"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_gelado_soft_baunilha_unidade_consumo",
+   "namePt": "Gelado Soft Baunilha, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Gelado Soft Baunilha, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-gelado-soft-baunilha-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Gelado Soft Baunilha, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 235.3,
+   "protein": 2.82,
+   "carbs": 32.59,
+   "fat": 9.65,
+   "fiber": 0.0,
+   "portionG": 85.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "gelado soft baunilha pizza hut",
+    "pizza hut gelado soft baunilha"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_gelado_soft_caramelo_unidade_consumo",
+   "namePt": "Gelado Soft Caramelo, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Gelado Soft Caramelo, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-gelado-soft-caramelo-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Gelado Soft Caramelo, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 234.1,
+   "protein": 2.71,
+   "carbs": 35.18,
+   "fat": 9.29,
+   "fiber": 0.0,
+   "portionG": 85.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "gelado soft caramelo pizza hut",
+    "pizza hut gelado soft caramelo"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_gelado_soft_chocolate_unidade_consumo",
+   "namePt": "Gelado Soft Chocolate, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Gelado Soft Chocolate, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-gelado-soft-chocolate-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Gelado Soft Chocolate, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 244.7,
+   "protein": 3.18,
+   "carbs": 35.18,
+   "fat": 9.65,
+   "fiber": 0.0,
+   "portionG": 85.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "gelado soft chocolate pizza hut",
+    "pizza hut gelado soft chocolate"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_gelado_soft_morango_unidade_consumo",
+   "namePt": "Gelado Soft Morango, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Gelado Soft Morango, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-gelado-soft-morango-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Gelado Soft Morango, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 234.1,
+   "protein": 2.47,
+   "carbs": 36.12,
+   "fat": 8.71,
+   "fiber": 0.0,
+   "portionG": 85.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "gelado soft morango pizza hut",
+    "pizza hut gelado soft morango"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_gelatina_ananas_morango_unidade_consumo",
+   "namePt": "Gelatina Ananás/Morango, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Gelatina Ananás/Morango, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-gelatina-ananas-morango-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Gelatina Ananás/Morango, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 57.0,
+   "protein": 1.5,
+   "carbs": 12.0,
+   "fat": 0.5,
+   "fiber": 0.0,
+   "portionG": 200.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "gelatina ananás/morango pizza hut",
+    "pizza hut gelatina ananás/morango"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_ice_hut_chips_ahoy_unidade_consumo",
+   "namePt": "Ice Hut Chips Ahoy, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Ice Hut Chips Ahoy, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-ice-hut-chips-ahoy-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Ice Hut Chips Ahoy, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 286.4,
+   "protein": 2.99,
+   "carbs": 39.55,
+   "fat": 12.81,
+   "fiber": 0.0,
+   "portionG": 221.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "ice hut chips ahoy pizza hut",
+    "pizza hut ice hut chips ahoy"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_ice_hut_oreo_unidade_consumo",
+   "namePt": "Ice Hut Oreo, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Ice Hut Oreo, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-ice-hut-oreo-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Ice Hut Oreo, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 269.2,
+   "protein": 3.35,
+   "carbs": 38.51,
+   "fat": 11.18,
+   "fiber": 0.0,
+   "portionG": 221.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "ice hut oreo pizza hut",
+    "pizza hut ice hut oreo"
+   ],
+   "visionLabels": []
+  },
+  {
    "key": "kfc_kream_ball_caramelo",
    "namePt": "Kream Ball Caramelo (KFC)",
    "nameEn": "Kream Ball Caramelo (KFC)",
@@ -18023,6 +18431,30 @@
    "visionLabels": []
   },
   {
+   "key": "pizzahut_laranja_unidade_consumo",
+   "namePt": "Laranja, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Laranja, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-laranja-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Laranja, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 41.9,
+   "protein": 1.1,
+   "carbs": 8.82,
+   "fat": 0.22,
+   "fiber": 0.0,
+   "portionG": 136.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "laranja pizza hut",
+    "pizza hut laranja"
+   ],
+   "visionLabels": []
+  },
+  {
    "key": "mcd_mcflurry_biscoff_caramel",
    "namePt": "McFlurry Biscoff & Caramel (McDonald's)",
    "nameEn": "McFlurry Biscoff & Caramel (McDonald's)",
@@ -18149,6 +18581,30 @@
     "mcdonalds mcflurry snickers",
     "mcflurry snickers",
     "mcflurry snickers mcdonald's"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_melao_unidade_consumo",
+   "namePt": "Melão, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Melão, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-melao-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Melão, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 27.0,
+   "protein": 0.57,
+   "carbs": 5.74,
+   "fat": 0.28,
+   "fiber": 0.0,
+   "portionG": 141.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "melão pizza hut",
+    "pizza hut melão"
    ],
    "visionLabels": []
   },
@@ -18433,6 +18889,30 @@
    "visionLabels": []
   },
   {
+   "key": "pizzahut_mousse_de_chocolate_unidade_consumo",
+   "namePt": "Mousse de Chocolate, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Mousse de Chocolate, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-mousse-de-chocolate-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Mousse de Chocolate, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 311.0,
+   "protein": 7.6,
+   "carbs": 22.0,
+   "fat": 21.7,
+   "fiber": 0.0,
+   "portionG": 100.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "mousse de chocolate pizza hut",
+    "pizza hut mousse de chocolate"
+   ],
+   "visionLabels": []
+  },
+  {
    "key": "pans_muffin_triplo_de_chocolate",
    "namePt": "Muffin Triplo de Chocolate (Pans & Company)",
    "nameEn": "Muffin Triplo de Chocolate (Pans & Company)",
@@ -18535,6 +19015,54 @@
    "visionLabels": []
   },
   {
+   "key": "pizzahut_pintarolas_tubo_dose",
+   "namePt": "Pintarolas Tubo, 1 dose (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Pintarolas Tubo, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-pintarolas-tubo-dose",
+   "sourceLabel": "Pizza Hut Portugal, Pintarolas Tubo, 1 dose (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 481.8,
+   "protein": 3.64,
+   "carbs": 70.91,
+   "fat": 20.0,
+   "fiber": 0.0,
+   "portionG": 22.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 dose",
+   "portionEn": "1 serving",
+   "aliases": [
+    "pintarolas tubo pizza hut",
+    "pizza hut pintarolas tubo"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_pizza_doce_aniversario_media_fatia",
+   "namePt": "Pizza Doce (Aniversário) Média, 1 fatia (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Pizza Doce (Aniversário) Média, 1 slice",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-pizza-doce-aniversario-media-fatia",
+   "sourceLabel": "Pizza Hut Portugal, Pizza Doce (Aniversário) Média, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 402.4,
+   "protein": 10.24,
+   "carbs": 60.0,
+   "fat": 12.68,
+   "fiber": 0.0,
+   "portionG": 41.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 fatia",
+   "portionEn": "1 slice",
+   "aliases": [
+    "pizza doce (aniversário) média pizza hut",
+    "pizza hut pizza doce (aniversário) média"
+   ],
+   "visionLabels": []
+  },
+  {
    "key": "mcd_polpa_de_fruta",
    "namePt": "Polpa de Fruta (McDonald's)",
    "nameEn": "Fruit pulp (McDonald's)",
@@ -18555,6 +19083,30 @@
    "aliases": [
     "mcdonalds polpa de fruta",
     "polpa de fruta mcdonald's"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_profiteroles_unidade_consumo",
+   "namePt": "Profiteroles, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Profiteroles, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-profiteroles-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Profiteroles, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 318.3,
+   "protein": 4.33,
+   "carbs": 35.29,
+   "fat": 17.5,
+   "fiber": 0.0,
+   "portionG": 104.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "profiteroles pizza hut",
+    "pizza hut profiteroles"
    ],
    "visionLabels": []
   },
@@ -18584,6 +19136,30 @@
     "crème caramel",
     "caramel custard",
     "pudim de ovos"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_pessego_unidade_consumo",
+   "namePt": "Pêssego, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Pêssego, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-pessego-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Pêssego, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 57.9,
+   "protein": 0.0,
+   "carbs": 14.0,
+   "fat": 0.0,
+   "fiber": 0.0,
+   "portionG": 140.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "pêssego pizza hut",
+    "pizza hut pêssego"
    ],
    "visionLabels": []
   },
@@ -18744,6 +19320,54 @@
    "visionLabels": []
   },
   {
+   "key": "pizzahut_salada_de_frutas_unidade_consumo",
+   "namePt": "Salada de Frutas, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Salada de Frutas, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-salada-de-frutas-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Salada de Frutas, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 52.9,
+   "protein": 0.57,
+   "carbs": 11.79,
+   "fat": 0.29,
+   "fiber": 0.0,
+   "portionG": 140.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "salada de frutas pizza hut",
+    "pizza hut salada de frutas"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_shot_de_profiteroles_unidade_consumo",
+   "namePt": "Shot de Profiteroles, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Shot de Profiteroles, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-shot-de-profiteroles-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Shot de Profiteroles, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 317.8,
+   "protein": 4.44,
+   "carbs": 38.67,
+   "fat": 15.78,
+   "fiber": 0.0,
+   "portionG": 45.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "shot de profiteroles pizza hut",
+    "pizza hut shot de profiteroles"
+   ],
+   "visionLabels": []
+  },
+  {
    "key": "mcd_sundae_caramelo",
    "namePt": "Sundae Caramelo (McDonald's)",
    "nameEn": "Caramel sundae (McDonald's)",
@@ -18769,6 +19393,54 @@
    "visionLabels": []
   },
   {
+   "key": "pizzahut_sundae_caramelo_unidade_consumo",
+   "namePt": "Sundae Caramelo, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Sundae Caramelo, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-sundae-caramelo-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Sundae Caramelo, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 166.2,
+   "protein": 2.55,
+   "carbs": 28.69,
+   "fat": 4.55,
+   "fiber": 0.0,
+   "portionG": 145.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "sundae caramelo pizza hut",
+    "pizza hut sundae caramelo"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_sundae_chips_ahoy_unidade_consumo",
+   "namePt": "Sundae Chips Ahoy, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Sundae Chips Ahoy, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-sundae-chips-ahoy-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Sundae Chips Ahoy, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 200.7,
+   "protein": 3.22,
+   "carbs": 29.01,
+   "fat": 7.76,
+   "fiber": 0.0,
+   "portionG": 152.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "sundae chips ahoy pizza hut",
+    "pizza hut sundae chips ahoy"
+   ],
+   "visionLabels": []
+  },
+  {
    "key": "mcd_sundae_chocolate",
    "namePt": "Sundae Chocolate (McDonald's)",
    "nameEn": "Chocolate sundae (McDonald's)",
@@ -18790,6 +19462,30 @@
     "mcdonalds sundae chocolate",
     "sundae chocolate",
     "sundae chocolate mcdonald's"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_sundae_chocolate_unidade_consumo",
+   "namePt": "Sundae Chocolate, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Sundae Chocolate, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-sundae-chocolate-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Sundae Chocolate, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 162.8,
+   "protein": 2.76,
+   "carbs": 27.17,
+   "fat": 4.62,
+   "fiber": 0.0,
+   "portionG": 145.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "sundae chocolate pizza hut",
+    "pizza hut sundae chocolate"
    ],
    "visionLabels": []
   },
@@ -18839,6 +19535,30 @@
    "aliases": [
     "mcdonalds sundae morango",
     "sundae morango mcdonald's"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_sundae_morango_unidade_consumo",
+   "namePt": "Sundae Morango, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Sundae Morango, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-sundae-morango-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Sundae Morango, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 163.4,
+   "protein": 2.55,
+   "carbs": 27.93,
+   "fat": 4.48,
+   "fiber": 0.0,
+   "portionG": 145.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "sundae morango pizza hut",
+    "pizza hut sundae morango"
    ],
    "visionLabels": []
   },
@@ -18917,6 +19637,30 @@
    "visionLabels": []
   },
   {
+   "key": "pizzahut_sundae_oreo_unidade_consumo",
+   "namePt": "Sundae Oreo, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Sundae Oreo, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-sundae-oreo-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Sundae Oreo, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 188.8,
+   "protein": 3.42,
+   "carbs": 29.21,
+   "fat": 6.32,
+   "fiber": 0.0,
+   "portionG": 152.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "sundae oreo pizza hut",
+    "pizza hut sundae oreo"
+   ],
+   "visionLabels": []
+  },
+  {
    "key": "kfc_sundae_pintalinguas",
    "namePt": "Sundae Pintalínguas (KFC)",
    "nameEn": "Sundae Pintalínguas (KFC)",
@@ -18962,6 +19706,54 @@
    "aliases": [
     "mcdonalds tarte de maçã",
     "tarte de maçã mcdonald's"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_tarte_de_maca_fatia",
+   "namePt": "Tarte de Maçã, 1 fatia (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Tarte de Maçã, 1 slice",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-tarte-de-maca-fatia",
+   "sourceLabel": "Pizza Hut Portugal, Tarte de Maçã, 1 fatia (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 161.1,
+   "protein": 1.49,
+   "carbs": 27.21,
+   "fat": 4.71,
+   "fiber": 0.0,
+   "portionG": 208.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 fatia",
+   "portionEn": "1 slice",
+   "aliases": [
+    "tarte de maçã pizza hut",
+    "pizza hut tarte de maçã"
+   ],
+   "visionLabels": []
+  },
+  {
+   "key": "pizzahut_uvas_unidade_consumo",
+   "namePt": "Uvas, 1 unidade de consumo (Pizza Hut)",
+   "nameEn": "Pizza Hut Portugal Uvas, 1 serving",
+   "category": "sobremesas",
+   "region": "pt",
+   "source": "pizzahut_pt",
+   "sourceRef": "pizzahut-uvas-unidade-consumo",
+   "sourceLabel": "Pizza Hut Portugal, Uvas, 1 unidade de consumo (tabela Viva Bem, impressa 2026-11-02)",
+   "kcal": 80.0,
+   "protein": 0.29,
+   "carbs": 18.0,
+   "fat": 0.5,
+   "fiber": 0.0,
+   "portionG": 140.0,
+   "portionUnits": 1.0,
+   "portionPt": "1 unidade de consumo",
+   "portionEn": "1 serving",
+   "aliases": [
+    "uvas pizza hut",
+    "pizza hut uvas"
    ],
    "visionLabels": []
   },

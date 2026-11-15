@@ -145,8 +145,13 @@ under the same name:
   (`dominos_pt`, declaração nutricional, Jan 2020): pizza slices and sale
   portions, 1 fatia = slice weight from kcal per portion / kcal per 100 g.
   Pizza Hut Portugal (`pizzahut_pt`, table printed 2 Nov 2026): pizza slices,
-  Super Fatias, PANxPAN, starters and salads (salads named "Salada <Name>
-  (Pizza Hut)"). Pizza is not a sandwich, so both pizza sources stay out of
+  Super Fatias, PANxPAN, starters, salads (named "Salada <Name>
+  (Pizza Hut)") and desserts: ice cream (scoops, soft, cones, Ice Hut),
+  sundaes, mousses, profiteroles, cookies, cake, tart, jelly, Pintarolas and
+  fruit pots (pineapple, orange, melon, peach, grapes, fruit salad). Morangos
+  and Cinnamon Sticks are left out because their macros do not match kcal;
+  toppings, sauces and dips are excluded. Every Pizza Hut alias contains
+  "pizza hut". Pizza is not a sandwich, so both pizza sources stay out of
   the branded-sandwich rules in `burger_rules.dart` and
   `region_food_vision.dart`. Bare generic names ("pão de queijo", "pão de
   alho", "batatas rústicas", "croissant simples", "tosta mista",
